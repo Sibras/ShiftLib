@@ -1,0 +1,10 @@
+
+include(CmakeFindDependencyMacro)
+
+# Set any required configure values here
+# set(my-config-var @my-config-var@)
+
+find_dependency(ShiftLib REQUIRED)
+
+# Add the targets file
+include("${CMAKE_CURRENTLIST_DIR}/ShiftLibTargets.cmake")
