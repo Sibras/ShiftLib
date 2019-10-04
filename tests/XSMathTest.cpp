@@ -194,195 +194,6 @@ TEST(Math, Subc)
     ASSERT_EQ(carryOut, 1_ui8);
 }
 
-TEST(Math, Bswap)
-{
-    // Has separate implementations for 32b and 64b
-    ASSERT_EQ(bswap<int16>(0x965A_i16), 0x5A96_i16);
-    ASSERT_EQ(bswap<uint16>(0x965A_ui16), 0x5A96_ui16);
-
-    ASSERT_EQ(bswap<int32>(0x965AF04B_i32), 0x4BF05A96_i32);
-    ASSERT_EQ(bswap<uint32>(0x965AF04B_ui32), 0x4BF05A96_ui32);
-
-    ASSERT_EQ(bswap<int64>(0x965AF04B12CDE387_i64), 0x87E3CD124BF05A96_i64);
-    ASSERT_EQ(bswap<uint64>(0x965AF04B12CDE387_ui64), 0x87E3CD124BF05A96_ui64);
-}
-
-TEST(Math, Bsr)
-{
-    // Has separate implementations for 32b and 64b
-    ASSERT_EQ(bsr<int32>(0x00000004_i32), 2_ui32);
-    ASSERT_EQ(bsr<int32>(0x0FFF0F00_i32), 27_ui32);
-
-    ASSERT_EQ(bsr<uint32>(0x00000004_ui32), 2_ui32);
-    ASSERT_EQ(bsr<uint32>(0x0FFF0F00_ui32), 27_ui32);
-
-    ASSERT_EQ(bsr<int64>(0x00000004_i64), 2_ui32);
-    ASSERT_EQ(bsr<int64>(0x0FFF0F00_i64), 27_ui32);
-    ASSERT_EQ(bsr<int64>(0x0FF000FF0FFF0F00_i64), 59_ui32);
-    ASSERT_EQ(bsr<int64>(0x0FF0000000000000_i64), 59_ui32);
-
-    ASSERT_EQ(bsr<uint64>(0x00000004_ui64), 2_ui32);
-    ASSERT_EQ(bsr<uint64>(0x0FFF0F00_ui64), 27_ui32);
-    ASSERT_EQ(bsr<uint64>(0x0FF000FF0FFF0F00_ui64), 59_ui32);
-    ASSERT_EQ(bsr<uint64>(0x0FF0000000000000_i64), 59_ui32);
-}
-
-TEST(Math, Popcnt)
-{
-    // Has separate implementations for 32b, 64b and SSE4.2+
-    ASSERT_EQ(popcnt<int32>(0x00000004_i32), 1_ui32);
-    ASSERT_EQ(popcnt<int32>(0x0FFF0F00_i32), 16_ui32);
-
-    ASSERT_EQ(popcnt<uint32>(0x00000004_ui32), 1_ui32);
-    ASSERT_EQ(popcnt<uint32>(0x0FFF0F00_ui32), 16_ui32);
-
-    ASSERT_EQ(popcnt<int64>(0x00000004_i64), 1_ui32);
-    ASSERT_EQ(popcnt<int64>(0x0FFF0F00_i64), 16_ui32);
-    ASSERT_EQ(popcnt<int64>(0x0FF000FF0FFF0F00_i64), 32_ui32);
-    ASSERT_EQ(popcnt<int64>(0x0FF0000000000000_i64), 8_ui32);
-
-    ASSERT_EQ(popcnt<uint64>(0x00000004_ui64), 1_ui32);
-    ASSERT_EQ(popcnt<uint64>(0x0FFF0F04_ui64), 17_ui32);
-    ASSERT_EQ(popcnt<uint64>(0x0FF000FF0FFF0F00_ui64), 32_ui32);
-    ASSERT_EQ(popcnt<uint64>(0x0FF0000000000000_ui64), 8_ui32);
-}
-
-TEST(Math, Ctz)
-{
-    // Has separate implementations for 32b, 64b and AVX2
-    ASSERT_EQ(ctz<int32>(0x00000004_i32), 2_ui32);
-    ASSERT_EQ(ctz<int32>(0x0FFF0F00_i32), 8_ui32);
-
-    ASSERT_EQ(ctz<uint32>(0x00000004_ui32), 2_ui32);
-    ASSERT_EQ(ctz<uint32>(0x0FFF0F00_ui32), 8_ui32);
-
-    ASSERT_EQ(ctz<int64>(0x00000004_i64), 2_ui32);
-    ASSERT_EQ(ctz<int64>(0x0FFF0F00_i64), 8_ui32);
-    ASSERT_EQ(ctz<int64>(0x0FF000FF0FFF0F00_i64), 8_ui32);
-    ASSERT_EQ(ctz<int64>(0x0FF0000000000000_i64), 52_ui32);
-
-    ASSERT_EQ(ctz<uint64>(0x00000004_ui64), 2_ui32);
-    ASSERT_EQ(ctz<uint64>(0x0FFF0F00_ui64), 8_ui32);
-    ASSERT_EQ(ctz<uint64>(0x0FF000FF0FFF0F00_ui64), 8_ui32);
-    ASSERT_EQ(ctz<uint64>(0x0FF0000000000000_ui64), 52_ui32);
-}
-
-TEST(Math, Clz)
-{
-    // Has separate implementations for 32b, 64b and AVX2
-    ASSERT_EQ(clz<int32>(0x00000004_i32), 29_ui32);
-    ASSERT_EQ(clz<int32>(0x0FFF0F00_i32), 4_ui32);
-
-    ASSERT_EQ(clz<uint32>(0x00000004_ui32), 29_ui32);
-    ASSERT_EQ(clz<uint32>(0x0FFF0F00_ui32), 4_ui32);
-
-    ASSERT_EQ(clz<int64>(0x00000004_i64), 61_ui32);
-    ASSERT_EQ(clz<int64>(0x0FFF0F00_i64), 36_ui32);
-    ASSERT_EQ(clz<int64>(0x0FF000FF0FFF0F00_i64), 4_ui32);
-    ASSERT_EQ(clz<int64>(0x0FF0000000000000_i64), 4_ui32);
-
-    ASSERT_EQ(clz<uint64>(0x00000004_ui64), 61_ui32);
-    ASSERT_EQ(clz<uint64>(0x0FFF0F04_ui64), 36_ui32);
-    ASSERT_EQ(clz<uint64>(0x0FF000FF0FFF0F00_ui64), 4_ui32);
-    ASSERT_EQ(clz<uint64>(0x0FF0000000000000_ui64), 4_ui32);
-}
-
-TEST(Math, BitExtract)
-{
-    // Has separate implementations for 32b and 64b
-    ASSERT_EQ(bitExtract<int32>(0x00000004_i32, 0_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<int32>(0x00000004_i32, 2_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<int32>(0x0FFF0F00_i32, 31_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<int32>(0x0FFF0F00_i32, 27_ui32), 1_ui8);
-
-    ASSERT_EQ(bitExtract<uint32>(0x00000004_ui32, 0_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<uint32>(0x00000004_ui32, 2_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<uint32>(0x0FFF0F00_ui32, 31_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<uint32>(0x0FFF0F00_ui32, 27_ui32), 1_ui8);
-
-    ASSERT_EQ(bitExtract<int64>(0x00000004_i64, 0_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<int64>(0x00000004_i64, 2_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<int64>(0x0FFF0F00_i64, 31_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<int64>(0x0FFF0F00_i64, 27_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<int64>(0x0FF000FF0FFF0F00_i64, 62_ui32), 0_ui32);
-    ASSERT_EQ(bitExtract<int64>(0x0FF000FF0FFF0F00_i64, 58_ui32), 1_ui32);
-    ASSERT_EQ(bitExtract<int64>(0x0FF0000000000000_i64, 62_ui32), 0_ui32);
-    ASSERT_EQ(bitExtract<int64>(0x0FF0000000000000_i64, 58_ui32), 1_ui32);
-
-    ASSERT_EQ(bitExtract<uint64>(0x00000004_ui64, 0_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<uint64>(0x00000004_ui64, 2_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<uint64>(0x0FFF0F00_ui64, 31_ui32), 0_ui8);
-    ASSERT_EQ(bitExtract<uint64>(0x0FFF0F00_ui64, 27_ui32), 1_ui8);
-    ASSERT_EQ(bitExtract<uint64>(0x0FF000FF0FFF0F00_ui64, 62_ui32), 0_ui32);
-    ASSERT_EQ(bitExtract<uint64>(0x0FF000FF0FFF0F00_ui64, 58_ui32), 1_ui32);
-    ASSERT_EQ(bitExtract<uint64>(0x0FF0000000000000_ui64, 62_ui32), 0_ui32);
-    ASSERT_EQ(bitExtract<uint64>(0x0FF0000000000000_ui64, 58_ui32), 1_ui32);
-}
-
-TEST(Math, BitSet)
-{
-    // Has separate implementations for 32b and 64b
-    ASSERT_EQ(bitSet<int32>(0x00000004_i32, 0_ui32), 0x00000005_i32);
-    ASSERT_EQ(bitSet<int32>(0x00000004_i32, 2_ui32), 0x00000004_i32);
-    ASSERT_EQ(bitSet<int32>(0x0FFF0F00_i32, 31_ui32), 0x8FFF0F00_i32);
-    ASSERT_EQ(bitSet<int32>(0x0FFF0F00_i32, 27_ui32), 0x0FFF0F00_i32);
-
-    ASSERT_EQ(bitSet<uint32>(0x00000004_ui32, 0_ui32), 0x00000005_ui32);
-    ASSERT_EQ(bitSet<uint32>(0x00000004_ui32, 2_ui32), 0x00000004_ui32);
-    ASSERT_EQ(bitSet<uint32>(0x0FFF0F00_ui32, 31_ui32), 0x8FFF0F00_ui32);
-    ASSERT_EQ(bitSet<uint32>(0x0FFF0F00_ui32, 27_ui32), 0x0FFF0F00_ui32);
-
-    ASSERT_EQ(bitSet<int64>(0x00000004_i64, 0_ui32), 0x00000005_i64);
-    ASSERT_EQ(bitSet<int64>(0x00000004_i64, 2_ui32), 0x00000004_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FFF0F00_i64, 31_ui32), 0x8FFF0F00_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FFF0F00_i64, 27_ui32), 0x0FFF0F00_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FF000FF0FFF0F00_i64, 62_ui32), 0x4FF000FF0FFF0F00_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FF000FF0FFF0F00_i64, 58_ui32), 0x0FF000FF0FFF0F00_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FF0000000000000_i64, 62_ui32), 0x4FF0000000000000_i64);
-    ASSERT_EQ(bitSet<int64>(0x0FF0000000000000_i64, 58_ui32), 0x0FF0000000000000_i64);
-
-    ASSERT_EQ(bitSet<uint64>(0x00000004_ui64, 0_ui32), 0x00000005_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x00000004_ui64, 2_ui32), 0x00000004_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FFF0F00_ui64, 31_ui32), 0x8FFF0F00_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FFF0F00_ui64, 27_ui32), 0x0FFF0F00_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FF000FF0FFF0F00_ui64, 62_ui32), 0x4FF000FF0FFF0F00_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FF000FF0FFF0F00_ui64, 58_ui32), 0x0FF000FF0FFF0F00_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FF0000000000000_ui64, 62_ui32), 0x4FF0000000000000_ui64);
-    ASSERT_EQ(bitSet<uint64>(0x0FF0000000000000_ui64, 58_ui32), 0x0FF0000000000000_ui64);
-}
-
-TEST(Math, BitClear)
-{
-    // Has separate implementations for 32b and 64b
-    ASSERT_EQ(bitClear<int32>(0x00000004_i32, 0_ui32), 0x00000004_i32);
-    ASSERT_EQ(bitClear<int32>(0x00000004_i32, 2_ui32), 0x00000000_i32);
-    ASSERT_EQ(bitClear<int32>(0x0FFF0F00_i32, 31_ui32), 0x0FFF0F00_i32);
-    ASSERT_EQ(bitClear<int32>(0x0FFF0F00_i32, 27_ui32), 0x07FF0F00_i32);
-
-    ASSERT_EQ(bitClear<uint32>(0x00000004_ui32, 0_ui32), 0x00000004_ui32);
-    ASSERT_EQ(bitClear<uint32>(0x00000004_ui32, 2_ui32), 0x00000000_ui32);
-    ASSERT_EQ(bitClear<uint32>(0x0FFF0F00_ui32, 31_ui32), 0x0FFF0F00_ui32);
-    ASSERT_EQ(bitClear<uint32>(0x0FFF0F00_ui32, 27_ui32), 0x07FF0F00_ui32);
-
-    ASSERT_EQ(bitClear<int64>(0x00000004_i64, 0_ui32), 0x00000004_i64);
-    ASSERT_EQ(bitClear<int64>(0x00000004_i64, 2_ui32), 0x00000000_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FFF0F00_i64, 31_ui32), 0x0FFF0F00_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FFF0F00_i64, 27_ui32), 0x07FF0F00_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FF000FF0FFF0F00_i64, 62_ui32), 0x0FF000FF0FFF0F00_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FF000FF0FFF0F00_i64, 58_ui32), 0x0BF000FF0FFF0F00_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FF0000000000000_i64, 62_ui32), 0x0FF0000000000000_i64);
-    ASSERT_EQ(bitClear<int64>(0x0FF0000000000000_i64, 58_ui32), 0x0BF0000000000000_i64);
-
-    ASSERT_EQ(bitClear<uint64>(0x00000004_ui64, 0_ui32), 0x00000004_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x00000004_ui64, 2_ui32), 0x00000000_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FFF0F00_ui64, 31_ui32), 0x0FFF0F00_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FFF0F00_ui64, 27_ui32), 0x07FF0F00_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FF000FF0FFF0F00_ui64, 62_ui32), 0x0FF000FF0FFF0F00_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FF000FF0FFF0F00_ui64, 58_ui32), 0x0BF000FF0FFF0F00_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FF0000000000000_ui64, 62_ui32), 0x0FF0000000000000_ui64);
-    ASSERT_EQ(bitClear<uint64>(0x0FF0000000000000_ui64, 58_ui32), 0x0BF0000000000000_ui64);
-}
-
 TEST(Math, Exp)
 {
     ASSERT_FLOAT_EQ(exp<float32>(10._f32), 22026.465794806716516957900645284_f32);
@@ -521,51 +332,110 @@ TEST(Math, Rsqrt)
 
 TEST(Math, Sin)
 {
-    ASSERT_NEAR(sin<float32>(static_cast<float32>(valPi)), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(static_cast<float32>(valPi2)), 1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(static_cast<float32>(-valPi)), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(static_cast<float32>(-valPi2)), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sin<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sin<float32>(valPi2<float32>), 1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sin<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sin<float32>(-valPi2<float32>), -1._f32, FLT_EPSILON * 2.);
 
-    ASSERT_NEAR(sin<float64>(static_cast<float64>(valPi)), 0._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sin<float64>(static_cast<float64>(valPi2)), 1._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sin<float64>(static_cast<float64>(-valPi)), 0._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sin<float64>(static_cast<float64>(-valPi2)), -1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sin<float64>(valPi<float64>), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sin<float64>(valPi2<float64>), 1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sin<float64>(-valPi<float64>), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sin<float64>(-valPi2<float64>), -1._f64, DBL_EPSILON * 2.);
 }
 
 TEST(Math, Cos)
 {
-    ASSERT_NEAR(cos<float32>(static_cast<float32>(valPi)), -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(static_cast<float32>(valPi2)), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(static_cast<float32>(-valPi)), -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(static_cast<float32>(-valPi2)), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(cos<float32>(valPi<float32>), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(cos<float32>(valPi2<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(cos<float32>(-valPi<float32>), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(cos<float32>(-valPi2<float32>), 0._f32, FLT_EPSILON * 2.);
 
-    ASSERT_NEAR(cos<float64>(static_cast<float64>(valPi)), -1._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(cos<float64>(static_cast<float64>(valPi2)), 0._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(cos<float64>(static_cast<float64>(-valPi)), -1._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(cos<float64>(static_cast<float64>(-valPi2)), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(cos<float64>(valPi<float64>), -1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(cos<float64>(valPi2<float64>), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(cos<float64>(-valPi<float64>), -1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(cos<float64>(-valPi2<float64>), 0._f64, DBL_EPSILON * 2.);
+}
+
+TEST(Math, Tan)
+{
+    ASSERT_NEAR(tan<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(tan<float32>(valPi4<float32>), 1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(tan<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(tan<float32>(-valPi4<float32>), -1._f32, FLT_EPSILON * 2.);
+
+    ASSERT_NEAR(tan<float64>(valPi<float64>), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(tan<float64>(valPi4<float64>), 1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(tan<float64>(-valPi<float64>), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(tan<float64>(-valPi4<float64>), -1._f64, DBL_EPSILON * 2.);
 }
 
 TEST(Math, Sincos)
 {
     float32 cosRes;
-    ASSERT_NEAR(sincos<float32>(static_cast<float32>(valPi), cosRes), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float32>(valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.);
     ASSERT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(static_cast<float32>(valPi2), cosRes), 1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float32>(valPi2<float32>, cosRes), 1._f32, FLT_EPSILON * 2.);
     ASSERT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(static_cast<float32>(-valPi), cosRes), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float32>(-valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.);
     ASSERT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(static_cast<float32>(-valPi2), cosRes), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float32>(-valPi2<float32>, cosRes), -1._f32, FLT_EPSILON * 2.);
     ASSERT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.);
 
     float64 cosRes2;
-    ASSERT_NEAR(sincos<float64>(static_cast<float64>(valPi), cosRes2), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float64>(valPi<float64>, cosRes2), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(cosRes2, -1._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float64>(static_cast<float64>(valPi2), cosRes2), 1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float64>(valPi2<float64>, cosRes2), 1._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(cosRes2, 0._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float64>(static_cast<float64>(-valPi), cosRes2), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float64>(-valPi<float64>, cosRes2), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(cosRes2, -1._f64, DBL_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float64>(static_cast<float64>(-valPi2), cosRes2), -1._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(sincos<float64>(-valPi2<float64>, cosRes2), -1._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(cosRes2, 0._f64, DBL_EPSILON * 2.);
+}
+
+TEST(Math, Asin)
+{
+    ASSERT_NEAR(asin<float32>(0._f32), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(asin<float32>(1._f32), valPi2<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(asin<float32>(-1._f32), -valPi2<float32>, FLT_EPSILON * 2.);
+
+    ASSERT_NEAR(asin<float64>(0._f64), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(asin<float64>(1._f64), valPi2<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(asin<float64>(-1._f64), -valPi2<float64>, DBL_EPSILON * 2.);
+}
+
+TEST(Math, Acos)
+{
+    ASSERT_NEAR(acos<float32>(0._f32), valPi2<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(acos<float32>(1._f32), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(acos<float32>(-1._f32), valPi<float32>, FLT_EPSILON * 2.);
+
+    ASSERT_NEAR(acos<float64>(0._f64), valPi2<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(acos<float64>(1._f64), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(acos<float64>(-1._f64), valPi<float64>, DBL_EPSILON * 2.);
+}
+
+TEST(Math, Atan)
+{
+    ASSERT_NEAR(atan<float32>(0._f32), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_NEAR(atan<float32>(1._f32), valPi4<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(atan<float32>(-1._f32), -valPi4<float32>, FLT_EPSILON * 2.);
+
+    ASSERT_NEAR(atan<float64>(0._f64), 0._f64, DBL_EPSILON * 2.);
+    ASSERT_NEAR(atan<float64>(1._f64), valPi4<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(atan<float64>(-1._f64), -valPi4<float64>, DBL_EPSILON * 2.);
+}
+
+TEST(Math, Atan2)
+{
+    ASSERT_NEAR(atan2<float32>(2._f32, 0._f32), valPi2<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float32>(-2._f32, 0._f32), -valPi2<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float32>(1._f32, 1._f32), valPi4<float32>, FLT_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float32>(1._f32, -1._f32), val3Pi4<float32>, FLT_EPSILON * 2.);
+
+    ASSERT_NEAR(atan2<float64>(2._f64, 0._f64), valPi2<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float64>(-2._f64, 0._f64), -valPi2<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float64>(1._f64, 1._f64), valPi4<float64>, DBL_EPSILON * 2.);
+    ASSERT_NEAR(atan2<float64>(1._f64, -1._f64), val3Pi4<float64>, DBL_EPSILON * 2.);
 }
 
 TEST(Math, Pow)
@@ -617,6 +487,45 @@ TEST(Math, Recip)
 
     ASSERT_DOUBLE_EQ(recip<float64>(10._f64), 0.1_f64);
     ASSERT_DOUBLE_EQ(recip<float64>(0.2_f64), 5._f64);
+}
+
+TEST(Math, Ceil)
+{
+    ASSERT_FLOAT_EQ(ceil<float32>(2.5_f32), 3.0_f32);
+    ASSERT_FLOAT_EQ(ceil<float32>(2.01_f32), 3.0_f32);
+    ASSERT_FLOAT_EQ(ceil<float32>(-2.5_f32), -2.0_f32);
+    ASSERT_FLOAT_EQ(ceil<float32>(-2.01_f32), -2.0_f32);
+
+    ASSERT_DOUBLE_EQ(ceil<float64>(2.5_f64), 3.0_f64);
+    ASSERT_DOUBLE_EQ(ceil<float64>(2.01_f64), 3.0_f64);
+    ASSERT_DOUBLE_EQ(ceil<float64>(-2.5_f64), -2.0_f64);
+    ASSERT_DOUBLE_EQ(ceil<float64>(-2.01_f64), -2.0_f64);
+}
+
+TEST(Math, Floor)
+{
+    ASSERT_FLOAT_EQ(floor<float32>(2.5_f32), 2.0_f32);
+    ASSERT_FLOAT_EQ(floor<float32>(2.01_f32), 2.0_f32);
+    ASSERT_FLOAT_EQ(floor<float32>(-2.5_f32), -3.0_f32);
+    ASSERT_FLOAT_EQ(floor<float32>(-2.01_f32), -3.0_f32);
+
+    ASSERT_DOUBLE_EQ(floor<float64>(2.5_f64), 2.0_f64);
+    ASSERT_DOUBLE_EQ(floor<float64>(2.01_f64), 2.0_f64);
+    ASSERT_DOUBLE_EQ(floor<float64>(-2.5_f64), -3.0_f64);
+    ASSERT_DOUBLE_EQ(floor<float64>(-2.01_f64), -3.0_f64);
+}
+
+TEST(Math, Trunc)
+{
+    ASSERT_FLOAT_EQ(trunc<float32>(2.5_f32), 2.0_f32);
+    ASSERT_FLOAT_EQ(trunc<float32>(2.01_f32), 2.0_f32);
+    ASSERT_FLOAT_EQ(trunc<float32>(-2.5_f32), -2.0_f32);
+    ASSERT_FLOAT_EQ(trunc<float32>(-2.01_f32), -2.0_f32);
+
+    ASSERT_DOUBLE_EQ(trunc<float64>(2.5_f64), 2.0_f64);
+    ASSERT_DOUBLE_EQ(trunc<float64>(2.01_f64), 2.0_f64);
+    ASSERT_DOUBLE_EQ(trunc<float64>(-2.5_f64), -2.0_f64);
+    ASSERT_DOUBLE_EQ(trunc<float64>(-2.01_f64), -2.0_f64);
 }
 
 TEST(Math, Ldexp)

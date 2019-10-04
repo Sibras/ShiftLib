@@ -21,45 +21,46 @@
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
 #    include <intrin.h>
 #endif
+#include "XSBit.inl"
 #include "XSMath.inl"
 
 namespace Shift {
-XS_FORCEINLINE constexpr UInt128::UInt128() noexcept
+XS_INLINE constexpr UInt128::UInt128() noexcept
     : m_high(0_ui64)
     , m_low(0_ui64)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const uint32 other) noexcept
+XS_INLINE constexpr UInt128::UInt128(const uint32 other) noexcept
     : m_high(0_ui64)
     , m_low(other)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const uint64 other) noexcept
+XS_INLINE constexpr UInt128::UInt128(const uint64 other) noexcept
     : m_high(0_ui64)
     , m_low(other)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const int32 other) noexcept
+XS_INLINE constexpr UInt128::UInt128(const int32 other) noexcept
     : m_high((other >= 0) ? 0_i64 : -1_i64)
     , m_low(other)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const int64 other) noexcept
+XS_INLINE constexpr UInt128::UInt128(const int64 other) noexcept
     : m_high((other >= 0) ? 0_i64 : -1_i64)
     , m_low(other)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const Int128 other) noexcept
+XS_INLINE constexpr UInt128::UInt128(const Int128 other) noexcept
     : m_high(other.m_high)
     , m_low(other.m_low)
 {}
 
-XS_FORCEINLINE constexpr UInt128::UInt128(const uint64 high, const uint64 low) noexcept
+XS_INLINE constexpr UInt128::UInt128(const uint64 high, const uint64 low) noexcept
     : m_high(high)
     , m_low(low)
 {}
 
-XS_FORCEINLINE UInt128::UInt128(const float32 other) noexcept
+XS_INLINE UInt128::UInt128(const float32 other) noexcept
 {
     if (other < 0) {
         // Negative overflow
@@ -71,7 +72,7 @@ XS_FORCEINLINE UInt128::UInt128(const float32 other) noexcept
         m_high = 0_ui64;
     } else if (other < 1.7014118346046e38) {
         // take the 23 mantissa bits and shift into position
-        uint32 t = *((uint32*)&other);
+        auto t = bitCast<uint32>(other);
         const uint64 m = (t & 0x007FFFFF_ui32) | 0x00800000_ui32;
         t = (t & 0x7FFFFFFF_ui32) >> 23_ui8;
         // if x is 1.5 * 2^1, t will be 128
@@ -91,7 +92,7 @@ XS_FORCEINLINE UInt128::UInt128(const float32 other) noexcept
     }
 }
 
-XS_FORCEINLINE UInt128::UInt128(const float64 other) noexcept
+XS_INLINE UInt128::UInt128(const float64 other) noexcept
 {
     if (other < 0) {
         // Negative overflow
@@ -103,7 +104,7 @@ XS_FORCEINLINE UInt128::UInt128(const float64 other) noexcept
         m_high = 0_ui64;
     } else if (other < 1.7014118346046e38) {
         // take the 52 mantissa bits and shift into position
-        uint64 t = *((uint64*)&other);
+        auto t = bitCast<uint64>(other);
         const uint64 m = (t & 0x000FFFFFFFFFFFFF_ui64) | 0x0010000000000000_ui64;
         t = (t & 0x7FFFFFFFFFFFFFFF_ui64) >> 52_ui8;
         // if x is 1.5 * 2^1, t will be 1024
@@ -123,113 +124,113 @@ XS_FORCEINLINE UInt128::UInt128(const float64 other) noexcept
     }
 }
 
-XS_FORCEINLINE constexpr UInt128::operator bool() const noexcept
+XS_INLINE constexpr UInt128::operator bool() const noexcept
 {
     return ((m_high | m_low) != 0_ui64);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator uint8() const noexcept
+XS_INLINE constexpr UInt128::operator uint8() const noexcept
 {
     return static_cast<uint8>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator uint16() const noexcept
+XS_INLINE constexpr UInt128::operator uint16() const noexcept
 {
     return static_cast<uint16>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator uint32() const noexcept
+XS_INLINE constexpr UInt128::operator uint32() const noexcept
 {
     return static_cast<uint32>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator uint64() const noexcept
+XS_INLINE constexpr UInt128::operator uint64() const noexcept
 {
     return m_low;
 }
 
-XS_FORCEINLINE constexpr UInt128::operator int8() const noexcept
+XS_INLINE constexpr UInt128::operator int8() const noexcept
 {
     return static_cast<int8>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator int16() const noexcept
+XS_INLINE constexpr UInt128::operator int16() const noexcept
 {
     return static_cast<int16>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator int32() const noexcept
+XS_INLINE constexpr UInt128::operator int32() const noexcept
 {
     return static_cast<int32>(m_low);
 }
 
-XS_FORCEINLINE constexpr UInt128::operator int64() const noexcept
+XS_INLINE constexpr UInt128::operator int64() const noexcept
 {
     return static_cast<int64>(m_low);
 }
 
-XS_FORCEINLINE UInt128::operator float32() const noexcept
+XS_INLINE UInt128::operator float32() const noexcept
 {
     return static_cast<float32>(m_low) + ldexp<float32>(static_cast<float32>(m_high), 64_i32);
 }
 
-XS_FORCEINLINE UInt128::operator float64() const noexcept
+XS_INLINE UInt128::operator float64() const noexcept
 {
     return static_cast<float64>(m_low) + ldexp(static_cast<float64>(m_high), 64_i32);
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator=(const uint32 other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator=(const uint32 other) noexcept
 {
     m_high = 0_ui64;
     m_low = other;
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator=(const uint64 other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator=(const uint64 other) noexcept
 {
     m_high = 0_ui64;
     m_low = other;
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator=(const int32 other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator=(const int32 other) noexcept
 {
     m_high = (other >= 0) ? 0_i64 : -1_i64;
     m_low = other;
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator=(const int64 other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator=(const int64 other) noexcept
 {
     m_high = (other >= 0) ? 0_i64 : -1_i64;
     m_low = other;
     return *this;
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator=(const float32 other) noexcept
+XS_INLINE UInt128& UInt128::operator=(const float32 other) noexcept
 {
     *this = UInt128(other);
     return *this;
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator=(const float64 other) noexcept
+XS_INLINE UInt128& UInt128::operator=(const float64 other) noexcept
 {
     *this = UInt128(other);
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128 UInt128::operator&(const UInt128& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator&(const UInt128& other) const noexcept
 {
     return UInt128(m_high & other.m_high, m_low & other.m_low);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 UInt128::operator&(const T& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator&(const T& other) const noexcept
 {
     return UInt128(0_ui64, m_low & static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator&=(const UInt128& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator&=(const UInt128& other) noexcept
 {
     m_high &= other.m_high;
     m_low &= other.m_low;
@@ -237,25 +238,25 @@ XS_FORCEINLINE constexpr UInt128& UInt128::operator&=(const UInt128& other) noex
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128& UInt128::operator&=(const T& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator&=(const T& other) noexcept
 {
     m_high = 0_ui64;
     m_low &= static_cast<uint64>(other);
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128 UInt128::operator|(const UInt128& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator|(const UInt128& other) const noexcept
 {
     return UInt128(m_high | other.m_high, m_low | other.m_low);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 UInt128::operator|(const T& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator|(const T& other) const noexcept
 {
     return UInt128(0_ui64, m_low | static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator|=(const UInt128& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator|=(const UInt128& other) noexcept
 {
     m_high |= other.m_high;
     m_low |= other.m_low;
@@ -263,24 +264,24 @@ XS_FORCEINLINE constexpr UInt128& UInt128::operator|=(const UInt128& other) noex
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128& UInt128::operator|=(const T& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator|=(const T& other) noexcept
 {
     m_low |= static_cast<uint64>(other);
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128 UInt128::operator^(const UInt128& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator^(const UInt128& other) const noexcept
 {
     return UInt128(m_high ^ other.m_high, m_low ^ other.m_low);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 UInt128::operator^(const T& other) const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator^(const T& other) const noexcept
 {
     return UInt128(0_ui64, m_low ^ static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr UInt128& UInt128::operator^=(const UInt128& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator^=(const UInt128& other) noexcept
 {
     m_high ^= other.m_high;
     m_low ^= other.m_low;
@@ -288,24 +289,24 @@ XS_FORCEINLINE constexpr UInt128& UInt128::operator^=(const UInt128& other) noex
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128& UInt128::operator^=(const T& other) noexcept
+XS_INLINE constexpr UInt128& UInt128::operator^=(const T& other) noexcept
 {
     m_low ^= static_cast<uint64>(other);
     return *this;
 }
 
-XS_FORCEINLINE constexpr UInt128 UInt128::operator~() const noexcept
+XS_INLINE constexpr UInt128 UInt128::operator~() const noexcept
 {
     return UInt128(~m_high, ~m_low);
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator<<(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator<<(const UInt128& other) const noexcept
 {
     return *this << static_cast<uint8>(other);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator<<(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator<<(const T& other) const noexcept
 {
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
@@ -320,26 +321,26 @@ XS_FORCEINLINE UInt128 UInt128::operator<<(const T& other) const noexcept
 #endif
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator<<=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator<<=(const UInt128& other) noexcept
 {
     *this = *this << other;
     return *this;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator<<=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator<<=(const T& other) noexcept
 {
     *this = *this << other;
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator>>(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator>>(const UInt128& other) const noexcept
 {
     return *this >> static_cast<uint8>(other);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator>>(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator>>(const T& other) const noexcept
 {
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
@@ -353,101 +354,101 @@ XS_FORCEINLINE UInt128 UInt128::operator>>(const T& other) const noexcept
 #endif
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator>>=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator>>=(const UInt128& other) noexcept
 {
     *this = *this >> other;
     return *this;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator>>=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator>>=(const T& other) noexcept
 {
     *this = *this >> other;
     return *this;
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator!() const noexcept
+XS_INLINE constexpr bool UInt128::operator!() const noexcept
 {
     return ((m_high | m_low) == 0_ui64);
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator&&(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator&&(const UInt128& other) const noexcept
 {
     return static_cast<bool>(*this) && static_cast<bool>(other);
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator||(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator||(const UInt128& other) const noexcept
 {
     return static_cast<bool>(*this) || static_cast<bool>(other);
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator==(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator==(const UInt128& other) const noexcept
 {
     return (m_high == other.m_high) && (m_low == other.m_low);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator==(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator==(const T& other) const noexcept
 {
     return !m_high && (m_low == static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator!=(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator!=(const UInt128& other) const noexcept
 {
     return (m_high != other.m_high) || (m_low != other.m_low);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator!=(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator!=(const T& other) const noexcept
 {
     return m_high || (m_low != static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator>(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator>(const UInt128& other) const noexcept
 {
     return (m_high == other.m_high) ? m_low > other.m_low : m_high > other.m_high;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator>(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator>(const T& other) const noexcept
 {
     return m_high || (m_low > static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator<(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator<(const UInt128& other) const noexcept
 {
     return (m_high == other.m_high) ? m_low < other.m_low : m_high < other.m_high;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator<(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator<(const T& other) const noexcept
 {
     return (!m_high) ? (m_low < static_cast<uint64>(other)) : false;
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator>=(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator>=(const UInt128& other) const noexcept
 {
     return (m_high == other.m_high) ? m_low >= other.m_low : m_high >= other.m_high;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator>=(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator>=(const T& other) const noexcept
 {
     return m_high || (m_low >= static_cast<uint64>(other));
 }
 
-XS_FORCEINLINE constexpr bool UInt128::operator<=(const UInt128& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator<=(const UInt128& other) const noexcept
 {
     return (m_high == other.m_high) ? m_low <= other.m_low : m_high <= other.m_high;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool UInt128::operator<=(const T& other) const noexcept
+XS_INLINE constexpr bool UInt128::operator<=(const T& other) const noexcept
 {
     return (!m_high) ? (m_low <= static_cast<uint64>(other)) : false;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator+(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator+(const UInt128& other) const noexcept
 {
     uint8 carry;
     const auto low = addc<uint64>(m_low, other.m_low, 0, carry);
@@ -455,14 +456,14 @@ XS_FORCEINLINE UInt128 UInt128::operator+(const UInt128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator+(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator+(const T& other) const noexcept
 {
     uint8 carry;
     const auto low = addc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
     return UInt128(addc<uint64>(m_high, 0, carry, carry), low);
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator+=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator+=(const UInt128& other) noexcept
 {
     uint8 carry;
     m_low = addc<uint64>(m_low, other.m_low, 0, carry);
@@ -471,7 +472,7 @@ XS_FORCEINLINE UInt128& UInt128::operator+=(const UInt128& other) noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator+=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator+=(const T& other) noexcept
 {
     uint8 carry;
     m_low = addc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
@@ -479,7 +480,7 @@ XS_FORCEINLINE UInt128& UInt128::operator+=(const T& other) noexcept
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator-(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator-(const UInt128& other) const noexcept
 {
     uint8 carry;
     const auto low = subc<uint64>(m_low, other.m_low, 0, carry);
@@ -487,14 +488,14 @@ XS_FORCEINLINE UInt128 UInt128::operator-(const UInt128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator-(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator-(const T& other) const noexcept
 {
     uint8 carry;
     const auto low = subc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
     return UInt128(subc<uint64>(m_high, 0, carry, carry), low);
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator-=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator-=(const UInt128& other) noexcept
 {
     uint8 carry;
     m_low = subc<uint64>(m_low, other.m_low, 0, carry);
@@ -503,7 +504,7 @@ XS_FORCEINLINE UInt128& UInt128::operator-=(const UInt128& other) noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator-=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator-=(const T& other) noexcept
 {
     uint8 carry;
     m_low = subc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
@@ -511,7 +512,7 @@ XS_FORCEINLINE UInt128& UInt128::operator-=(const T& other) noexcept
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator*(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator*(const UInt128& other) const noexcept
 {
     if constexpr (currentArch == Architecture::Bit32) {
         // Split values into 4 32-bit parts
@@ -576,7 +577,7 @@ XS_FORCEINLINE UInt128 UInt128::operator*(const UInt128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator*(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator*(const T& other) const noexcept
 {
     if constexpr (sizeof(T) <= sizeof(uint64)) {
         T absv;
@@ -594,20 +595,20 @@ XS_FORCEINLINE UInt128 UInt128::operator*(const T& other) const noexcept
     }
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator*=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator*=(const UInt128& other) noexcept
 {
     *this = *this * other;
     return *this;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator*=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator*=(const T& other) noexcept
 {
     *this = *this * UInt128(other);
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::divide(const UInt128& denom, UInt128& rem) const noexcept
+XS_INLINE UInt128 UInt128::divide(const UInt128& denom, UInt128& rem) const noexcept
 {
     UInt128 quot(0, 0);
     rem = 0_ui64;
@@ -628,32 +629,32 @@ XS_FORCEINLINE UInt128 UInt128::divide(const UInt128& denom, UInt128& rem) const
     return quot;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator/(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator/(const UInt128& other) const noexcept
 {
     UInt128 rem;
     return divide(other, rem);
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator/(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator/(const T& other) const noexcept
 {
     return *this / UInt128(other);
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator/=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator/=(const UInt128& other) noexcept
 {
     *this = *this / other;
     return *this;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator/=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator/=(const T& other) noexcept
 {
     *this = *this / UInt128(other);
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator%(const UInt128& other) const noexcept
+XS_INLINE UInt128 UInt128::operator%(const UInt128& other) const noexcept
 {
     UInt128 rem;
     divide(other, rem);
@@ -661,140 +662,140 @@ XS_FORCEINLINE UInt128 UInt128::operator%(const UInt128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128 UInt128::operator%(const T& other) const noexcept
+XS_INLINE UInt128 UInt128::operator%(const T& other) const noexcept
 {
     return *this % UInt128(other);
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator%=(const UInt128& other) noexcept
+XS_INLINE UInt128& UInt128::operator%=(const UInt128& other) noexcept
 {
     *this = *this % other;
     return *this;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE UInt128& UInt128::operator%=(const T& other) noexcept
+XS_INLINE UInt128& UInt128::operator%=(const T& other) noexcept
 {
     *this = *this % UInt128(other);
     return *this;
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator++() noexcept
+XS_INLINE UInt128& UInt128::operator++() noexcept
 {
     *this += 1_ui64;
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator++(int) noexcept
+XS_INLINE UInt128 UInt128::operator++(int) noexcept
 {
     const UInt128 ret = *this;
     *this += 1_ui64;
     return ret;
 }
 
-XS_FORCEINLINE UInt128& UInt128::operator--() noexcept
+XS_INLINE UInt128& UInt128::operator--() noexcept
 {
     *this -= 1_ui64;
     return *this;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator--(int) noexcept
+XS_INLINE UInt128 UInt128::operator--(int) noexcept
 {
     const UInt128 ret = *this;
     *this -= 1_ui64;
     return ret;
 }
 
-XS_FORCEINLINE UInt128 UInt128::operator-() const noexcept
+XS_INLINE UInt128 UInt128::operator-() const noexcept
 {
     return ~*this + 1_ui64;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator&(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator&(const T& param1, const UInt128& param2) noexcept
 {
     return param2 & param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator|(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator|(const T& param1, const UInt128& param2) noexcept
 {
     return param2 | param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator^(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator^(const T& param1, const UInt128& param2) noexcept
 {
     return param2 ^ param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator==(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator==(const T& param1, const UInt128& param2) noexcept
 {
     return param2 == param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator!=(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator!=(const T& param1, const UInt128& param2) noexcept
 {
     return param2 != param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator>(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator>(const T& param1, const UInt128& param2) noexcept
 {
     return param2 < param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator<(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator<(const T& param1, const UInt128& param2) noexcept
 {
     return param2 > param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator>=(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator>=(const T& param1, const UInt128& param2) noexcept
 {
     return param2 <= param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr bool operator<=(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr bool operator<=(const T& param1, const UInt128& param2) noexcept
 {
     return param2 >= param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator+(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator+(const T& param1, const UInt128& param2) noexcept
 {
     return param2 + param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator-(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator-(const T& param1, const UInt128& param2) noexcept
 {
     return UInt128(param1) - param2;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator*(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator*(const T& param1, const UInt128& param2) noexcept
 {
     return param2 * param1;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator/(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator/(const T& param1, const UInt128& param2) noexcept
 {
     return UInt128(param1) / param2;
 }
 
 template<typename T, typename>
-XS_FORCEINLINE constexpr UInt128 operator%(const T& param1, const UInt128& param2) noexcept
+XS_INLINE constexpr UInt128 operator%(const T& param1, const UInt128& param2) noexcept
 {
     return UInt128(param1) % param2;
 }
 
-XS_FORCEINLINE constexpr UInt128 operator"" _ui128(const unsigned long long v) // NOLINT(google-runtime-int)
+XS_INLINE constexpr UInt128 operator"" _ui128(const unsigned long long v) // NOLINT(google-runtime-int)
 {
     return UInt128(v);
 }

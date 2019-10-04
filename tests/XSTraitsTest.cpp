@@ -221,87 +221,23 @@ TEST(Traits, Promote)
 
 TEST(Traits, hasSIMD)
 {
-    static_assert(hasSIMD512<SIMD::Scalar> == false);
-    static_assert(hasSIMD512<SIMD::SSE3> == false);
-    static_assert(hasSIMD512<SIMD::SSE41> == false);
-    static_assert(hasSIMD512<SIMD::SSE42> == false);
-    static_assert(hasSIMD512<SIMD::AVX> == false);
-    static_assert(hasSIMD512<SIMD::AVXIn128> == false);
-    static_assert(hasSIMD512<SIMD::AVX2> == false);
-    static_assert(hasSIMD512<SIMD::AVX2In128> == false);
-    static_assert(hasSIMD512<SIMD::AVX512> == true);
-    static_assert(hasSIMD512<SIMD::AVX512In128> == false);
-    static_assert(hasSIMD512<SIMD::AVX512In256> == false);
+    static_assert(hasSIMD<float32> == (defaultSIMD > SIMD::Scalar));
+    static_assert(hasSIMD<uint32> == true);
+    static_assert(hasSIMD<float64> == false);
+    static_assert(hasSIMD<Int128> == false);
 
-    static_assert(hasSIMD256<SIMD::Scalar> == false);
-    static_assert(hasSIMD256<SIMD::SSE3> == false);
-    static_assert(hasSIMD256<SIMD::SSE41> == false);
-    static_assert(hasSIMD256<SIMD::SSE42> == false);
-    static_assert(hasSIMD256<SIMD::AVX> == true);
-    static_assert(hasSIMD256<SIMD::AVXIn128> == false);
-    static_assert(hasSIMD256<SIMD::AVX2> == true);
-    static_assert(hasSIMD256<SIMD::AVX2In128> == false);
-    static_assert(hasSIMD256<SIMD::AVX512> == true);
-    static_assert(hasSIMD256<SIMD::AVX512In128> == false);
-    static_assert(hasSIMD256<SIMD::AVX512In256> == true);
+    static_assert(hasFMA<float32> == (defaultSIMD >= SIMD::AVX2));
+    static_assert(hasFMA<uint32> == false);
+    static_assert(hasFMA<float64> == false);
+    static_assert(hasFMA<Int128> == false);
 
-    static_assert(hasSIMD128<SIMD::Scalar> == false);
-    static_assert(hasSIMD128<SIMD::SSE3> == true);
-    static_assert(hasSIMD128<SIMD::SSE41> == true);
-    static_assert(hasSIMD128<SIMD::SSE42> == true);
-    static_assert(hasSIMD128<SIMD::AVX> == true);
-    static_assert(hasSIMD128<SIMD::AVXIn128> == true);
-    static_assert(hasSIMD128<SIMD::AVX2> == true);
-    static_assert(hasSIMD128<SIMD::AVX2In128> == true);
-    static_assert(hasSIMD128<SIMD::AVX512> == true);
-    static_assert(hasSIMD128<SIMD::AVX512In128> == true);
-    static_assert(hasSIMD128<SIMD::AVX512In256> == true);
+    static_assert(hasFMS<float32> == (defaultSIMD >= SIMD::AVX2));
+    static_assert(hasFMS<uint32> == false);
+    static_assert(hasFMS<float64> == false);
+    static_assert(hasFMS<Int128> == false);
 
-    static_assert(hasSIMD<SIMD::Scalar> == false);
-    static_assert(hasSIMD<SIMD::SSE3> == true);
-    static_assert(hasSIMD<SIMD::SSE41> == true);
-    static_assert(hasSIMD<SIMD::SSE42> == true);
-    static_assert(hasSIMD<SIMD::AVX> == true);
-    static_assert(hasSIMD<SIMD::AVXIn128> == true);
-    static_assert(hasSIMD<SIMD::AVX2> == true);
-    static_assert(hasSIMD<SIMD::AVX2In128> == true);
-    static_assert(hasSIMD<SIMD::AVX512> == true);
-    static_assert(hasSIMD<SIMD::AVX512In128> == true);
-    static_assert(hasSIMD<SIMD::AVX512In256> == true);
-
-    static_assert(hasFMA<SIMD::Scalar> == false);
-    static_assert(hasFMA<SIMD::SSE3> == false);
-    static_assert(hasFMA<SIMD::SSE41> == false);
-    static_assert(hasFMA<SIMD::SSE42> == false);
-    static_assert(hasFMA<SIMD::AVX> == false);
-    static_assert(hasFMA<SIMD::AVXIn128> == false);
-    static_assert(hasFMA<SIMD::AVX2> == true);
-    static_assert(hasFMA<SIMD::AVX2In128> == true);
-    static_assert(hasFMA<SIMD::AVX512> == true);
-    static_assert(hasFMA<SIMD::AVX512In128> == true);
-    static_assert(hasFMA<SIMD::AVX512In256> == true);
-
-    static_assert(hasFMS<SIMD::Scalar> == false);
-    static_assert(hasFMS<SIMD::SSE3> == false);
-    static_assert(hasFMS<SIMD::SSE41> == false);
-    static_assert(hasFMS<SIMD::SSE42> == false);
-    static_assert(hasFMS<SIMD::AVX> == false);
-    static_assert(hasFMS<SIMD::AVXIn128> == false);
-    static_assert(hasFMS<SIMD::AVX2> == true);
-    static_assert(hasFMS<SIMD::AVX2In128> == true);
-    static_assert(hasFMS<SIMD::AVX512> == true);
-    static_assert(hasFMS<SIMD::AVX512In128> == true);
-    static_assert(hasFMS<SIMD::AVX512In256> == true);
-
-    static_assert(hasFMAFree<SIMD::Scalar> == false);
-    static_assert(hasFMAFree<SIMD::SSE3> == false);
-    static_assert(hasFMAFree<SIMD::SSE41> == false);
-    static_assert(hasFMAFree<SIMD::SSE42> == false);
-    static_assert(hasFMAFree<SIMD::AVX> == false);
-    static_assert(hasFMAFree<SIMD::AVXIn128> == false);
-    static_assert(hasFMAFree<SIMD::AVX2> == false);
-    static_assert(hasFMAFree<SIMD::AVX2In128> == false);
-    static_assert(hasFMAFree<SIMD::AVX512> == true);
-    static_assert(hasFMAFree<SIMD::AVX512In128> == true);
-    static_assert(hasFMAFree<SIMD::AVX512In256> == true);
+    static_assert(hasFMAFree<float32> == (defaultSIMD >= SIMD::AVX512));
+    static_assert(hasFMAFree<uint32> == false);
+    static_assert(hasFMAFree<float64> == false);
+    static_assert(hasFMAFree<Int128> == false);
 }

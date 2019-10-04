@@ -199,33 +199,33 @@ struct Promote<T, true>
 };
 
 template<typename T, typename T2>
-XS_FORCEINLINE constexpr bool getIsSame() noexcept
+XS_INLINE constexpr bool getIsSame() noexcept
 {
     return NoExport::IsSame<typename NoExport::RemoveQualifiers<T>::type,
         typename NoExport::RemoveQualifiers<T2>::type>::value;
 }
 
 template<typename T, typename T2>
-XS_FORCEINLINE constexpr bool getIsSameCV() noexcept
+XS_INLINE constexpr bool getIsSameCV() noexcept
 {
     return NoExport::IsSame<T, T2>::value;
 }
 
 template<typename T, typename... Types>
-XS_FORCEINLINE constexpr bool getIsSameAny() noexcept
+XS_INLINE constexpr bool getIsSameAny() noexcept
 {
     return NoExport::Disjunction<NoExport::IsSame<typename NoExport::RemoveQualifiers<T>::type,
         typename NoExport::RemoveQualifiers<Types>::type>...>::value;
 }
 
 template<typename T, typename... Types>
-XS_FORCEINLINE constexpr bool getIsSameAnyCV() noexcept
+XS_INLINE constexpr bool getIsSameAnyCV() noexcept
 {
     return NoExport::Disjunction<NoExport::IsSame<T, Types>...>::value;
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsInteger() noexcept
+XS_INLINE constexpr bool getIsInteger() noexcept
 {
     return getIsSameAny<T, unsigned char, signed char, char, unsigned short, signed short, // NOLINT(google-runtime-int)
         unsigned int, signed int, unsigned long, signed long, unsigned long long,          // NOLINT(google-runtime-int)
@@ -233,19 +233,19 @@ XS_FORCEINLINE constexpr bool getIsInteger() noexcept
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsFloat() noexcept
+XS_INLINE constexpr bool getIsFloat() noexcept
 {
     return getIsSameAny<T, float, double, long double>();
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsArithmetic() noexcept
+XS_INLINE constexpr bool getIsArithmetic() noexcept
 {
     return isInteger<T> || isFloat<T>;
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsSigned() noexcept
+XS_INLINE constexpr bool getIsSigned() noexcept
 {
     if constexpr (getIsInteger<T>()) {
         using T2 = typename NoExport::RemoveQualifiers<T>::type;
@@ -256,7 +256,7 @@ XS_FORCEINLINE constexpr bool getIsSigned() noexcept
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsUnsigned() noexcept
+XS_INLINE constexpr bool getIsUnsigned() noexcept
 {
     if constexpr (getIsInteger<T>()) {
         using T2 = typename NoExport::RemoveQualifiers<T>::type;
@@ -268,84 +268,49 @@ XS_FORCEINLINE constexpr bool getIsUnsigned() noexcept
 }
 
 template<typename T>
-XS_FORCEINLINE constexpr bool getIsNative() noexcept
+XS_INLINE constexpr bool getIsNative() noexcept
 {
     return getIsSameAny<T, float, double, long double, unsigned char, signed char, char, // NOLINT(google-runtime-int)
         unsigned short, signed short, unsigned int, signed int, unsigned long,           // NOLINT(google-runtime-int)
         signed long, unsigned long long, signed long long>();                            // NOLINT(google-runtime-int)
 }
 
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasSIMD512() noexcept
+template<typename T>
+XS_INLINE constexpr bool getHasSIMD() noexcept
 {
-    if constexpr (T == SIMD::AVX512) {
-        return true;
-    } else {
-        return false;
-    }
+    return isSameAny<T, float32, uint32> && (defaultSIMD > SIMD::Scalar);
 }
 
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasSIMD256() noexcept
-{
-    if constexpr (hasSIMD512<T> || T == SIMD::AVX512In256 || T == SIMD::AVX2 || T == SIMD::AVX) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasSIMD128() noexcept
-{
-    if constexpr (hasSIMD512<T> || hasSIMD256<T> || T == SIMD::AVX512In128 || T == SIMD::AVX2In128 ||
-        T == SIMD::AVXIn128 || T == SIMD::SSE42 || T == SIMD::SSE41 || T == SIMD::SSE3) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasSIMD() noexcept
-{
-    if constexpr (hasSIMD512<T> || hasSIMD256<T> || hasSIMD128<T>) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasFMA() noexcept
+template<typename T>
+XS_INLINE constexpr bool getHasFMA() noexcept
 {
 #if XS_ISA == XS_GPU
     return true;
 #elif XS_ISA == XS_X86
-    return T >= SIMD::AVX2;
+    return defaultSIMD >= SIMD::AVX2 ? isSame<T, float32> && getHasSIMD<T>() : false;
 #else
     return false;
 #endif
 }
 
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasFMS() noexcept
+template<typename T>
+XS_INLINE constexpr bool getHasFMS() noexcept
 {
 #if XS_ISA == XS_X86
-    return T >= SIMD::AVX2;
+    return defaultSIMD >= SIMD::AVX2 ? isSame<T, float32> && getHasSIMD<T>() : false;
 #else
     return false;
 #endif
 }
 
-template<SIMD T>
-XS_FORCEINLINE constexpr bool getHasFMAFree() noexcept
+template<typename T>
+XS_INLINE constexpr bool getHasFMAFree() noexcept
 {
 #if XS_ISA == XS_GPU
     return true;
 #elif XS_ISA == XS_X86
     /* Its also free on Broadwell+Skylake CPUs but this cannot be checked for */
-    return T >= SIMD::AVX512;
+    return defaultSIMD >= SIMD::AVX512 ? getHasFMA<T>() : false;
 #else
     return false;
 #endif

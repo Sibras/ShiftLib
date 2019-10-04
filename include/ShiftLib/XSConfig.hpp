@@ -15,27 +15,6 @@
  * limitations under the License.
  */
 
-#define XS_SCALAR 0      /**< Use standard scalar non-vector operations. */
-#define XS_SSE3 1        /**< Use x86 SSE3 128bit vector operations. */
-#define XS_SSE41 2       /**< Use x86 SSE4.1 128bit vector operations. */
-#define XS_SSE42 3       /**< Use x86 SSE4.2 128bit vector operations. */
-#define XS_AVX 4         /**< Use x86 AVX 256bit vector operations. */
-#define XS_AVX_128 5     /**< Use x86 AVX vector operations but limited to 128bit registers. */
-#define XS_AVX2 6        /**< Use x86 AVX2 256bit vector operations. */
-#define XS_AVX2_128 7    /**< Use x86 AVX2 vector operations but limited to 128bit registers. */
-#define XS_AVX512 8      /**< Use x86 AVX512 512bit vector operations. */
-#define XS_AVX512_128 9  /**< Use x86 AVX512 vector operations but limited to 128bit registers. */
-#define XS_AVX512_256 10 /**< Use x86 AVX512 vector operations but limited to 256bit registers. */
-
-/**
- * Sets the use of any vector instructions that should be used as default. This can be used to improve performance
- * provided the host computer can support the requested instructions. This is used to set the default optimisation that
- * will be used should one not be explicitly specified. Default: XS_AVX2_128 (7)
- */
-#ifndef XS_SIMD
-#    define XS_SIMD XS_AVX2_128
-#endif
-
 /**
  * Sets the use of faster but less precise floating point operations. This will enable several faster mathematical
  * approximations such as the faster reciprocal operations when using divide operations. i.e. replaces a / b -> a *
@@ -48,3 +27,8 @@
 #ifndef XS_FPRECISION
 #    define XS_FPRECISION XS_FFAST
 #endif
+
+/**
+ * Sets whether assert checks should always be performed even when not in debug mode. Default: No (0)
+ */
+#define XS_ALWAYS_ASSERT 1

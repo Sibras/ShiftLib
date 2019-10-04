@@ -40,6 +40,20 @@
 #define XS_ARM 3
 #define XS_GPU 4
 
+#define XS_SCALAR 0      /**< Use standard scalar non-vector operations. */
+#define XS_SSE3 1        /**< Use x86 SSE3 128bit vector operations. */
+#define XS_SSE41 2       /**< Use x86 SSE4.1 128bit vector operations. */
+#define XS_SSE42 3       /**< Use x86 SSE4.2 128bit vector operations. */
+#define XS_AVX 4         /**< Use x86 AVX 256bit vector operations. */
+#define XS_AVX_128 5     /**< Use x86 AVX vector operations but limited to 128bit registers. */
+#define XS_AVX2 6        /**< Use x86 AVX2 256bit vector operations. */
+#define XS_AVX2_128 7    /**< Use x86 AVX2 vector operations but limited to 128bit registers. */
+#define XS_AVX512 8      /**< Use x86 AVX512 512bit vector operations. */
+#define XS_AVX512_128 9  /**< Use x86 AVX512 vector operations but limited to 128bit registers. */
+#define XS_AVX512_256 10 /**< Use x86 AVX512 vector operations but limited to 256bit registers. */
+
+#define XS_SIMD XS_SCALAR
+
 /* Finds the compiler type and version. */
 #if defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #    define XS_COMPILER XS_ICL
@@ -102,21 +116,21 @@
 /* Set specific values for compiler specific functionality*/
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
 #    define XS_FUNCTION __declspec(noalias)
-#    define XS_FORCEINLINE inline __declspec(noalias)
+#    define XS_INLINE inline __declspec(noalias)
 #    define XS_RESTRICT __restrict
 #    define XS_UNREACHABLE __assume(0)
 #    define XS_ALIGNMALLOC(size, al) _aligned_malloc((size), (al)) //_mm_malloc
 #    define XS_ALIGNFREE(loc) _aligned_free((loc))                 //_mm_free
 #elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG)
 #    define XS_FUNCTION XS_IMPORT __declspec(noalias)
-#    define XS_FORCEINLINE XS_HIDDEN __inline __attribute__((always_inline))
+#    define XS_INLINE XS_HIDDEN __inline __attribute__((always_inline))
 #    define XS_RESTRICT __restrict__
 #    define XS_UNREACHABLE __builtin_unreachable()
 #    define XS_ALIGNMALLOC(size, al) memalign((al), (size))
 #    define XS_ALIGNFREE(loc) free((loc))
 #elif XS_COMPILER == XS_CUDA
 #    define XS_FUNCTION __device__
-#    define XS_FORCEINLINE __forceinline__ __device__
+#    define XS_INLINE __forceinline__ __device__
 #    define XS_RESTRICT
 #    define XS_ALIGNMALLOC(size, al)
 #    define XS_ALIGNFREE(loc)
@@ -126,7 +140,12 @@
 #endif
 
 /* Set up functions for optimised branch prediction */
-#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC)
+#if defined(__has_cpp_attribute)
+#    if __has_cpp_attribute(likely)
+#        define XS_EXPECT(expr) [[likely]] expr
+#        define XS_UNEXPECT(expr) [[unlikely]] expr
+#    endif
+#elif (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC)
 #    define XS_EXPECT(expr) __builtin_expect((long)(expr), true)
 #    define XS_UNEXPECT(expr) __builtin_expect((long)(expr), false)
 #else
@@ -134,51 +153,84 @@
 #    define XS_UNEXPECT(expr) expr
 #endif
 
+#ifdef __cpp_lib_concepts
+#    define XS_REQUIRES(expr) requires(expr)
+#else
+#    define XS_REQUIRES(expr)
+#endif
+
 /* Check for compilation settings on native compilers */
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC)
-#    if defined(__AVX512F__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX512
-#    elif defined(__AVX2__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX2
-#    elif defined(__AVX__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX
-#    elif defined(__SSE4_2__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE42
-#    elif defined(__SSE4_1__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE41
-#    elif defined(__SSSE3__) || defined(__SSE3__) || defined(__SSE2__) || defined(__SSE__)
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE3
+#    if XS_ISA == XS_X86
+#        if defined(__AVX512F__)
+#            define XS_AVX512_OPT
+#        elif defined(__AVX2__)
+#            define XS_AVX2_OPT
+#        elif defined(__AVX__)
+#            define XS_AVX_OPT
+#        elif defined(__SSE4_2__)
+#            define XS_SSE42_OPT
+#        elif defined(__SSE4_1__)
+#            define XS_SSE41_OPT
+#        elif defined(__SSSE3__) || defined(__SSE3__)
+#            define XS_SSE3_OPT
+#        endif
 #    endif
 #elif XS_COMPILER == XS_MSVC
-#    if defined(_M_IX86_FP) && (_M_IX86_FP == 1)
+#    if XS_ISA == XS_X86
+#        if defined(_M_IX86_FP) && (_M_IX86_FP == 1)
+#            define XS_SSE3_OPT
+#        elif (XS_ARCH == XS_ARCH64) || (_M_IX86_FP == 2)
+#            if defined(__AVX512F__)
+#                define XS_AVX512_OPT
+#            elif defined(__AVX2__)
+#                define XS_AVX2_OPT
+#            elif defined(__AVX__)
+#                define XS_AVX_OPT
+#            else
+#                define XS_SSE3_OPT
+#            endif
+#        endif
+#    endif
+#endif
+
+/* Change base ISA to match compiler settings */
+#if XS_ISA == XS_X86
+#    ifdef XS_AVX512_OPT
+#        undef XS_SIMD
+#        define XS_SIMD XS_AVX512
+#        undef XS_AVX512_OPT
+#    endif
+#    ifdef XS_AVX2_OPT
+#        undef XS_SIMD
+#        define XS_SIMD XS_AVX2
+#        undef XS_AVX2_OPT
+#    endif
+#    ifdef XS_AVX_OPT
+#        undef XS_SIMD
+#        define XS_SIMD XS_AVX
+#        undef XS_AVX_OPT
+#    endif
+#    ifdef XS_SSE42_OPT
+#        undef XS_SIMD
+#        define XS_SIMD XS_SSE42
+#        undef XS_SSE42_OPT
+#    endif
+#    ifdef XS_SSE41_OPT
+#        undef XS_SIMD
+#        define XS_SIMD XS_SSE41
+#        undef XS_SSE41_OPT
+#    endif
+#    ifdef XS_SSE3_OPT
 #        undef XS_SIMD
 #        define XS_SIMD XS_SSE3
-#    elif (XS_ARCH == XS_ARCH64) || (_M_IX86_FP == 2)
-#        if defined(__AVX512F__)
-#            undef XS_SIMD
-#            define XS_SIMD XS_AVX512
-#        elif defined(__AVX2__)
-#            undef XS_SIMD
-#            define XS_SIMD XS_AVX2
-#        elif defined(__AVX__)
-#            undef XS_SIMD
-#            define XS_SIMD XS_AVX
-#        else // Technically only SSE2 but we have min SSE3 support
-#            undef XS_SIMD
-#            define XS_SIMD XS_SSE3
-#        endif
+#        undef XS_SSE_OPT
 #    endif
 #endif
 
 /* Reset any x86 specific optimisations if building for different architecture */
 #if XS_ISA != XS_X86
-#    if (XS_SIMD != XS_SCALAR) && (XS_SCALAR <= XS_AVX512_256)
+#    if (XS_SIMD != XS_SCALAR)
 #        error Error: Chosen SIMD optimisation instructions are not valid for current architecture.
 #    endif
 #endif
@@ -227,17 +279,13 @@ constexpr Precision defaultPrecision = static_cast<Precision>(XS_FPRECISION);
 
 enum class SIMD
 {
-    Scalar = XS_SCALAR,          /**< Use standard scalar non-vector operations. */
-    SSE3 = XS_SSE3,              /**< Use x86 SSE3 128bit vector operations. */
-    SSE41 = XS_SSE41,            /**< Use x86 SSE4.1 128bit vector operations. */
-    SSE42 = XS_SSE42,            /**< Use x86 SSE4.2 128bit vector operations. */
-    AVX = XS_AVX,                /**< Use x86 AVX 256bit vector operations. */
-    AVXIn128 = XS_AVX_128,       /**< Use x86 AVX vector operations but limited to 128bit registers. */
-    AVX2 = XS_AVX2,              /**< Use x86 AVX2 256bit vector operations. */
-    AVX2In128 = XS_AVX2_128,     /**< Use x86 AVX2 vector operations but limited to 128bit registers. */
-    AVX512 = XS_AVX512,          /**< Use x86 AVX512 512bit vector operations. */
-    AVX512In128 = XS_AVX512_128, /**< Use x86 AVX512 vector operations but limited to 128bit registers. */
-    AVX512In256 = XS_AVX512_256  /**< Use x86 AVX512 vector operations but limited to 256bit registers. */
+    Scalar = XS_SCALAR, /**< Use standard scalar non-vector operations. */
+    SSE3 = XS_SSE3,     /**< Use x86 SSE3 128bit vector operations. */
+    SSE41 = XS_SSE41,   /**< Use x86 SSE4.1 128bit vector operations. */
+    SSE42 = XS_SSE42,   /**< Use x86 SSE4.2 128bit vector operations. */
+    AVX = XS_AVX,       /**< Use x86 AVX 256bit vector operations. */
+    AVX2 = XS_AVX2,     /**< Use x86 AVX2 256bit vector operations. */
+    AVX512 = XS_AVX512, /**< Use x86 AVX512 512bit vector operations. */
 };
 
 constexpr SIMD defaultSIMD = static_cast<SIMD>(XS_SIMD);
@@ -271,4 +319,18 @@ using float32 = float;
 
 /* Floating point 64-bit typedefs */
 using float64 = double;
+
+#if defined(_DEBUG) || XS_ALWAYS_ASSERT
+#    if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
+#        include <cassert>
+#        define XS_ASSERT(x) (void)((!!(x)) || (_wassert(_CRT_WIDE(#        x), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0))
+#    else
+#        include <cstdlib>
+#        define XS_ASSERT(x)                                                                                          \
+            ((void)(!(x) &&                                                                                           \
+                printf("Assertion failed: (%s), function %s, file %s, line %d.\n", #x, __PRETTY_FUNCTION__, __FILE__, \
+                    __LINE__) &&                                                                                      \
+                abort()))
+#    endif
+#endif
 } // namespace Shift
