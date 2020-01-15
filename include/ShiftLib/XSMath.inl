@@ -28,7 +28,6 @@
 #ifdef max
 #    undef max
 #endif
-#include "SIMD/XSSIMDTypes.inl"
 #include "XSInt128.inl"
 #include "XSUInt128.inl"
 
@@ -85,6 +84,7 @@ XS_INLINE constexpr float64 operator"" _f64(const long double v)
 }
 
 template<typename T>
+XS_REQUIRES(isSigned<T>)
 XS_INLINE T sign(const T param1, const T param2) noexcept
 {
     static_assert(isSigned<T>);
@@ -93,6 +93,7 @@ XS_INLINE T sign(const T param1, const T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isSigned<T>)
 XS_INLINE T abs(const T param) noexcept
 {
     static_assert(isSigned<T>);
@@ -114,6 +115,7 @@ XS_INLINE T abs(const T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isInteger<T>)
 XS_INLINE auto mul(const T param1, const T param2) noexcept -> promote<T>
 {
     static_assert(isInteger<T>);
@@ -157,15 +159,16 @@ XS_INLINE auto mul(const T param1, const T param2) noexcept -> promote<T>
         return uint128(hi, lo);
     } else if constexpr (isSame<T, int64> && currentArch == Architecture::Bit32) {
         const auto ret(mul<uint64>(param1, param2));
-        int64 hi = ret.m_high;
+        int64 hi = ret.high;
         hi -= ((param1 < 0) ? param2 : 0_i64) + ((param2 < 0) ? param1 : 0_i64);
-        return Int128(hi, ret.m_low);
+        return Int128(hi, ret.low);
     } else {
         return promote<T>{param1} * promote<T>{param2};
     }
 }
 
 template<typename T>
+XS_REQUIRES(isInteger<T>)
 XS_INLINE T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>);
@@ -218,6 +221,7 @@ XS_INLINE T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isInteger<T>)
 XS_INLINE T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>);
@@ -270,6 +274,7 @@ XS_INLINE T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T exp(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -286,6 +291,7 @@ XS_INLINE T exp(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T exp2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -302,6 +308,7 @@ XS_INLINE T exp2(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T log(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -318,6 +325,7 @@ XS_INLINE T log(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T log2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -334,31 +342,31 @@ XS_INLINE T log2(T param) noexcept
 }
 
 #ifdef FP_FAST_FMAF
-constexpr bool hasFastFMA32 = true;
+inline constexpr bool hasFastFMA32 = true;
 #else
-constexpr bool hasFastFMA32 = false;
+inline constexpr bool hasFastFMA32 = false;
 #endif
 #ifdef FP_FAST_FMA
-constexpr bool hasFastFMA64 = true;
+inline constexpr bool hasFastFMA64 = true;
 #else
-constexpr bool hasFastFMA64 = false;
+inline constexpr bool hasFastFMA64 = false;
 #endif
 #ifdef FP_FAST_FMAL
-constexpr bool hasFastFMALong = true;
+inline constexpr bool hasFastFMALong = true;
 #else
-constexpr bool hasFastFMALong = false;
+inline constexpr bool hasFastFMALong = false;
 #endif
 
 template<typename T>
+XS_REQUIRES(isArithmetic<T>)
 XS_INLINE T fma(T param1, T param2, T param3) noexcept
 {
     static_assert(isArithmetic<T>);
-    if constexpr (isSame<T, float> && hasFMA<T> && ((defaultPrecision == Precision::Precise) || hasFastFMA32)) {
+    if constexpr (isSame<T, float> && hasFMA<T> && hasFastFMA32) {
         return ::fmaf(param1, param2, param3);
-    } else if constexpr (isSame<T, double> && hasFMA<T> && ((defaultPrecision == Precision::Precise) || hasFastFMA64)) {
+    } else if constexpr (isSame<T, double> && hasFMA<T> && hasFastFMA64) {
         return ::fma(param1, param2, param3);
-    } else if constexpr (isSame<T, long double> && hasFMA<T> &&
-        ((defaultPrecision == Precision::Precise) || hasFastFMALong)) {
+    } else if constexpr (isSame<T, long double> && hasFMA<T> && hasFastFMALong) {
         return ::fmal(param1, param2, param3);
     } else {
         return ((param1 * param2) + param3);
@@ -366,6 +374,7 @@ XS_INLINE T fma(T param1, T param2, T param3) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isArithmetic<T>)
 XS_INLINE T min(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>);
@@ -381,6 +390,7 @@ XS_INLINE T min(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isArithmetic<T>)
 XS_INLINE T max(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>);
@@ -396,6 +406,7 @@ XS_INLINE T max(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES(isSigned<T>)
 XS_INLINE T copysign(T param1, T param2) noexcept
 {
     static_assert(isSigned<T>);
@@ -411,6 +422,7 @@ XS_INLINE T copysign(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T sqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -427,6 +439,7 @@ XS_INLINE T sqrt(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T rsqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -453,6 +466,7 @@ XS_INLINE T rsqrt(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T sin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -469,6 +483,7 @@ XS_INLINE T sin(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T cos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -485,6 +500,7 @@ XS_INLINE T cos(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T tan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -501,6 +517,7 @@ XS_INLINE T tan(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T sincos(T param, T& cosResult) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -521,6 +538,7 @@ XS_INLINE T sincos(T param, T& cosResult) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T asin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -537,6 +555,7 @@ XS_INLINE T asin(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T acos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -553,6 +572,7 @@ XS_INLINE T acos(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T atan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -569,6 +589,7 @@ XS_INLINE T atan(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T atan2(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -585,6 +606,7 @@ XS_FUNCTION T atan2(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T pow(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -601,6 +623,7 @@ XS_INLINE T pow(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T powr(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -618,6 +641,7 @@ XS_INLINE T powr(T param1, T param2) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T recip(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -625,6 +649,7 @@ XS_INLINE T recip(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T ceil(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -641,6 +666,7 @@ XS_INLINE T ceil(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T floor(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -657,6 +683,7 @@ XS_INLINE T floor(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T trunc(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
@@ -673,6 +700,7 @@ XS_INLINE T trunc(T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T ldexp(T value, int32 exp) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);

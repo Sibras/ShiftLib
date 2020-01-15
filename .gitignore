@@ -35,3 +35,9 @@
 .vs/
 build/
 install/
+
+*.pdb
+packages/
+*.onnx
+_Resharper.Caches
+*.DotSettings

@@ -199,33 +199,33 @@ struct Promote<T, true>
 };
 
 template<typename T, typename T2>
-XS_INLINE constexpr bool getIsSame() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsSame() noexcept
 {
     return NoExport::IsSame<typename NoExport::RemoveQualifiers<T>::type,
         typename NoExport::RemoveQualifiers<T2>::type>::value;
 }
 
 template<typename T, typename T2>
-XS_INLINE constexpr bool getIsSameCV() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsSameCV() noexcept
 {
     return NoExport::IsSame<T, T2>::value;
 }
 
 template<typename T, typename... Types>
-XS_INLINE constexpr bool getIsSameAny() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsSameAny() noexcept
 {
     return NoExport::Disjunction<NoExport::IsSame<typename NoExport::RemoveQualifiers<T>::type,
         typename NoExport::RemoveQualifiers<Types>::type>...>::value;
 }
 
 template<typename T, typename... Types>
-XS_INLINE constexpr bool getIsSameAnyCV() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsSameAnyCV() noexcept
 {
     return NoExport::Disjunction<NoExport::IsSame<T, Types>...>::value;
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsInteger() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsInteger() noexcept
 {
     return getIsSameAny<T, unsigned char, signed char, char, unsigned short, signed short, // NOLINT(google-runtime-int)
         unsigned int, signed int, unsigned long, signed long, unsigned long long,          // NOLINT(google-runtime-int)
@@ -233,19 +233,19 @@ XS_INLINE constexpr bool getIsInteger() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsFloat() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsFloat() noexcept
 {
     return getIsSameAny<T, float, double, long double>();
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsArithmetic() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsArithmetic() noexcept
 {
     return isInteger<T> || isFloat<T>;
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsSigned() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsSigned() noexcept
 {
     if constexpr (getIsInteger<T>()) {
         using T2 = typename NoExport::RemoveQualifiers<T>::type;
@@ -256,7 +256,7 @@ XS_INLINE constexpr bool getIsSigned() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsUnsigned() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsUnsigned() noexcept
 {
     if constexpr (getIsInteger<T>()) {
         using T2 = typename NoExport::RemoveQualifiers<T>::type;
@@ -268,7 +268,7 @@ XS_INLINE constexpr bool getIsUnsigned() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getIsNative() noexcept
+XS_INLINE XS_CONSTEVAL bool getIsNative() noexcept
 {
     return getIsSameAny<T, float, double, long double, unsigned char, signed char, char, // NOLINT(google-runtime-int)
         unsigned short, signed short, unsigned int, signed int, unsigned long,           // NOLINT(google-runtime-int)
@@ -276,13 +276,17 @@ XS_INLINE constexpr bool getIsNative() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getHasSIMD() noexcept
+XS_INLINE XS_CONSTEVAL bool getHasSIMD() noexcept
 {
-    return isSameAny<T, float32, uint32> && (defaultSIMD > SIMD::Scalar);
+#if XS_ISA == XS_X86
+    return isSameAny<T, float32> && (defaultSIMD > SIMD::Scalar);
+#else
+    return false;
+#endif
 }
 
 template<typename T>
-XS_INLINE constexpr bool getHasFMA() noexcept
+XS_INLINE XS_CONSTEVAL bool getHasFMA() noexcept
 {
 #if XS_ISA == XS_GPU
     return true;
@@ -294,7 +298,7 @@ XS_INLINE constexpr bool getHasFMA() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getHasFMS() noexcept
+XS_INLINE XS_CONSTEVAL bool getHasFMS() noexcept
 {
 #if XS_ISA == XS_X86
     return defaultSIMD >= SIMD::AVX2 ? isSame<T, float32> && getHasSIMD<T>() : false;
@@ -304,7 +308,7 @@ XS_INLINE constexpr bool getHasFMS() noexcept
 }
 
 template<typename T>
-XS_INLINE constexpr bool getHasFMAFree() noexcept
+XS_INLINE XS_CONSTEVAL bool getHasFMAFree() noexcept
 {
 #if XS_ISA == XS_GPU
     return true;

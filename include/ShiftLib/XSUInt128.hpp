@@ -24,8 +24,8 @@ class Int128;
 class UInt128
 {
 public:
-    uint64 m_high;
-    uint64 m_low;
+    uint64 high;
+    uint64 low;
 
     XS_FUNCTION constexpr UInt128() noexcept;
 
@@ -39,7 +39,7 @@ public:
 
     XS_FUNCTION constexpr explicit UInt128(Int128 other) noexcept;
 
-    XS_FUNCTION constexpr UInt128(uint64 high, uint64 low) noexcept;
+    XS_FUNCTION constexpr UInt128(uint64 hi, uint64 lo) noexcept;
 
     XS_FUNCTION explicit UInt128(float32 other) noexcept;
 

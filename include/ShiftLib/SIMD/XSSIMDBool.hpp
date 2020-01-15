@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-#include "XSSIMDTypes.inl"
+#include "XSSIMDData.inl"
+#include "XSSIMDTraits.inl"
 
 namespace Shift {
 /** Dual Boolean object used to store true/false values for 2 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool2
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool2 : public NoExport::SIMDBoolData<2, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<2, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<2, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool2() = default;
@@ -164,14 +164,13 @@ public:
 };
 
 /** Tri Boolean object used to store true/false values for 3 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool3
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool3 : public NoExport::SIMDBoolData<3, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<3, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<3, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool3() = default;
@@ -310,14 +309,13 @@ public:
 };
 
 /** Hex Boolean object used to store true/false values for 2 lots of 3 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool3x2
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool3x2 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<6, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<6, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool3x2() = default;
@@ -466,14 +464,13 @@ public:
 };
 
 /** Quad Boolean object used to store true/false values for 4 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool4
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool4 : public NoExport::SIMDBoolData<4, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<4, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<4, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool4() = default;
@@ -613,14 +610,13 @@ public:
 };
 
 /** Hex Boolean object used to store true/false values for 6 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool6
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool6 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<6, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<6, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool6() = default;
@@ -762,14 +758,13 @@ public:
 };
 
 /** Oct Boolean object used to store true/false values for 8 different booleans at once in a single value. */
-template<bool SIMD = (defaultSIMD >= SIMD::Scalar)>
-class Bool8
+template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+class Bool8 : public NoExport::SIMDBoolData<8, IsSIMD>
 {
 public:
-    static constexpr bool usingSIMD = SIMD;
-    using Data = NoExport::SIMDBoolData<8, SIMD>;
-
-    Data m_data;
+    static constexpr bool usingSIMD = IsSIMD;
+    using Data = NoExport::SIMDBoolData<8, IsSIMD>;
+    using Data::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool8() = default;

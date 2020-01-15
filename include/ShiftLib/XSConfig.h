@@ -16,19 +16,6 @@
  */
 
 /**
- * Sets the use of faster but less precise floating point operations. This will enable several faster mathematical
- * approximations such as the faster reciprocal operations when using divide operations. i.e. replaces a / b -> a *
- * (1/b). When set to precise will use slower but more precise IEEE compliant methods. Default: XS_FFAST (1)
- */
-#define XS_FPRECISE 0 /**< Use standard IEEE numerical precision operations. */
-#define XS_FFAST 1    /**< Use faster optimised operations with slight increase in error. */
-#define XS_FFAST2 2   /**< Use fastest operations with even increased error. */
-
-#ifndef XS_FPRECISION
-#    define XS_FPRECISION XS_FFAST
-#endif
-
-/**
  * Sets whether assert checks should always be performed even when not in debug mode. Default: No (0)
  */
 #define XS_ALWAYS_ASSERT 1

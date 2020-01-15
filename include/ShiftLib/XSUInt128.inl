@@ -26,51 +26,51 @@
 
 namespace Shift {
 XS_INLINE constexpr UInt128::UInt128() noexcept
-    : m_high(0_ui64)
-    , m_low(0_ui64)
+    : high(0_ui64)
+    , low(0_ui64)
 {}
 
 XS_INLINE constexpr UInt128::UInt128(const uint32 other) noexcept
-    : m_high(0_ui64)
-    , m_low(other)
+    : high(0_ui64)
+    , low(other)
 {}
 
 XS_INLINE constexpr UInt128::UInt128(const uint64 other) noexcept
-    : m_high(0_ui64)
-    , m_low(other)
+    : high(0_ui64)
+    , low(other)
 {}
 
 XS_INLINE constexpr UInt128::UInt128(const int32 other) noexcept
-    : m_high((other >= 0) ? 0_i64 : -1_i64)
-    , m_low(other)
+    : high((other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64))
+    , low(static_cast<uint64>(other))
 {}
 
 XS_INLINE constexpr UInt128::UInt128(const int64 other) noexcept
-    : m_high((other >= 0) ? 0_i64 : -1_i64)
-    , m_low(other)
+    : high((other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64))
+    , low(static_cast<uint64>(other))
 {}
 
 XS_INLINE constexpr UInt128::UInt128(const Int128 other) noexcept
-    : m_high(other.m_high)
-    , m_low(other.m_low)
+    : high(static_cast<uint64>(other.high))
+    , low(other.low)
 {}
 
-XS_INLINE constexpr UInt128::UInt128(const uint64 high, const uint64 low) noexcept
-    : m_high(high)
-    , m_low(low)
+XS_INLINE constexpr UInt128::UInt128(const uint64 hi, const uint64 lo) noexcept
+    : high(hi)
+    , low(lo)
 {}
 
 XS_INLINE UInt128::UInt128(const float32 other) noexcept
 {
     if (other < 0) {
         // Negative overflow
-        m_high = 0_ui64;
-        m_low = 0_ui64;
-    } else if (other < 9.2233720368547e18) {
+        high = 0_ui64;
+        low = 0_ui64;
+    } else if (other < 9.2233720368547e18f) {
         // it will fit in a u64
-        m_low = static_cast<uint64>(other);
-        m_high = 0_ui64;
-    } else if (other < 1.7014118346046e38) {
+        low = static_cast<uint64>(other);
+        high = 0_ui64;
+    } else if (other < 1.7014118346046e38f) {
         // take the 23 mantissa bits and shift into position
         auto t = bitCast<uint32>(other);
         const uint64 m = (t & 0x007FFFFF_ui32) | 0x00800000_ui32;
@@ -79,16 +79,16 @@ XS_INLINE UInt128::UInt128(const float32 other) noexcept
         // if x is 1.5 * 2^23, t will be 128+22 = 150
         t = t - 150_ui32;
         if (t > 64_ui32) {
-            m_low = 0_ui64;
-            m_high = m << (t - 64_ui32);
+            low = 0_ui64;
+            high = m << (t - 64_ui32);
         } else {
-            m_low = m << t;
-            m_high = m >> (64_ui32 - t);
+            low = m << t;
+            high = m >> (64_ui32 - t);
         }
     } else {
         // Positive overflow
-        m_high = 0xFFFFFFFFFFFFFFFF_ui64;
-        m_low = 0xFFFFFFFFFFFFFFFF_ui64;
+        high = 0xFFFFFFFFFFFFFFFF_ui64;
+        low = 0xFFFFFFFFFFFFFFFF_ui64;
     }
 }
 
@@ -96,12 +96,12 @@ XS_INLINE UInt128::UInt128(const float64 other) noexcept
 {
     if (other < 0) {
         // Negative overflow
-        m_high = 0_ui64;
-        m_low = 0_ui64;
+        high = 0_ui64;
+        low = 0_ui64;
     } else if (other < 9.2233720368547e18) {
         // it will fit in a u64
-        m_low = static_cast<uint64>(other);
-        m_high = 0_ui64;
+        low = static_cast<uint64>(other);
+        high = 0_ui64;
     } else if (other < 1.7014118346046e38) {
         // take the 52 mantissa bits and shift into position
         auto t = bitCast<uint64>(other);
@@ -111,99 +111,99 @@ XS_INLINE UInt128::UInt128(const float64 other) noexcept
         // if x is 1.5 * 2^52, t will be 1024+51 = 1075
         t = t - 1075_ui64;
         if (t > 64_ui64) {
-            m_low = 0_ui64;
-            m_high = m << (t - 64_ui64);
+            low = 0_ui64;
+            high = m << (t - 64_ui64);
         } else {
-            m_low = m << t;
-            m_high = m >> (64_ui64 - t);
+            low = m << t;
+            high = m >> (64_ui64 - t);
         }
     } else {
         // Positive overflow
-        m_high = 0xFFFFFFFFFFFFFFFF_ui64;
-        m_low = 0xFFFFFFFFFFFFFFFF_ui64;
+        high = 0xFFFFFFFFFFFFFFFF_ui64;
+        low = 0xFFFFFFFFFFFFFFFF_ui64;
     }
 }
 
 XS_INLINE constexpr UInt128::operator bool() const noexcept
 {
-    return ((m_high | m_low) != 0_ui64);
+    return ((high | low) != 0_ui64);
 }
 
 XS_INLINE constexpr UInt128::operator uint8() const noexcept
 {
-    return static_cast<uint8>(m_low);
+    return static_cast<uint8>(low);
 }
 
 XS_INLINE constexpr UInt128::operator uint16() const noexcept
 {
-    return static_cast<uint16>(m_low);
+    return static_cast<uint16>(low);
 }
 
 XS_INLINE constexpr UInt128::operator uint32() const noexcept
 {
-    return static_cast<uint32>(m_low);
+    return static_cast<uint32>(low);
 }
 
 XS_INLINE constexpr UInt128::operator uint64() const noexcept
 {
-    return m_low;
+    return low;
 }
 
 XS_INLINE constexpr UInt128::operator int8() const noexcept
 {
-    return static_cast<int8>(m_low);
+    return static_cast<int8>(low);
 }
 
 XS_INLINE constexpr UInt128::operator int16() const noexcept
 {
-    return static_cast<int16>(m_low);
+    return static_cast<int16>(low);
 }
 
 XS_INLINE constexpr UInt128::operator int32() const noexcept
 {
-    return static_cast<int32>(m_low);
+    return static_cast<int32>(low);
 }
 
 XS_INLINE constexpr UInt128::operator int64() const noexcept
 {
-    return static_cast<int64>(m_low);
+    return static_cast<int64>(low);
 }
 
 XS_INLINE UInt128::operator float32() const noexcept
 {
-    return static_cast<float32>(m_low) + ldexp<float32>(static_cast<float32>(m_high), 64_i32);
+    return static_cast<float32>(low) + ldexp<float32>(static_cast<float32>(high), 64_i32);
 }
 
 XS_INLINE UInt128::operator float64() const noexcept
 {
-    return static_cast<float64>(m_low) + ldexp(static_cast<float64>(m_high), 64_i32);
+    return static_cast<float64>(low) + ldexp(static_cast<float64>(high), 64_i32);
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator=(const uint32 other) noexcept
 {
-    m_high = 0_ui64;
-    m_low = other;
+    high = 0_ui64;
+    low = other;
     return *this;
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator=(const uint64 other) noexcept
 {
-    m_high = 0_ui64;
-    m_low = other;
+    high = 0_ui64;
+    low = other;
     return *this;
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator=(const int32 other) noexcept
 {
-    m_high = (other >= 0) ? 0_i64 : -1_i64;
-    m_low = other;
+    high = (other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64);
+    low = static_cast<uint64>(other);
     return *this;
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator=(const int64 other) noexcept
 {
-    m_high = (other >= 0) ? 0_i64 : -1_i64;
-    m_low = other;
+    high = (other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64);
+    low = static_cast<uint64>(other);
     return *this;
 }
 
@@ -221,83 +221,83 @@ XS_INLINE UInt128& UInt128::operator=(const float64 other) noexcept
 
 XS_INLINE constexpr UInt128 UInt128::operator&(const UInt128& other) const noexcept
 {
-    return UInt128(m_high & other.m_high, m_low & other.m_low);
+    return UInt128(high & other.high, low & other.low);
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128 UInt128::operator&(const T& other) const noexcept
 {
-    return UInt128(0_ui64, m_low & static_cast<uint64>(other));
+    return UInt128(0_ui64, low & static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator&=(const UInt128& other) noexcept
 {
-    m_high &= other.m_high;
-    m_low &= other.m_low;
+    high &= other.high;
+    low &= other.low;
     return *this;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128& UInt128::operator&=(const T& other) noexcept
 {
-    m_high = 0_ui64;
-    m_low &= static_cast<uint64>(other);
+    high = 0_ui64;
+    low &= static_cast<uint64>(other);
     return *this;
 }
 
 XS_INLINE constexpr UInt128 UInt128::operator|(const UInt128& other) const noexcept
 {
-    return UInt128(m_high | other.m_high, m_low | other.m_low);
+    return UInt128(high | other.high, low | other.low);
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128 UInt128::operator|(const T& other) const noexcept
 {
-    return UInt128(0_ui64, m_low | static_cast<uint64>(other));
+    return UInt128(0_ui64, low | static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator|=(const UInt128& other) noexcept
 {
-    m_high |= other.m_high;
-    m_low |= other.m_low;
+    high |= other.high;
+    low |= other.low;
     return *this;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128& UInt128::operator|=(const T& other) noexcept
 {
-    m_low |= static_cast<uint64>(other);
+    low |= static_cast<uint64>(other);
     return *this;
 }
 
 XS_INLINE constexpr UInt128 UInt128::operator^(const UInt128& other) const noexcept
 {
-    return UInt128(m_high ^ other.m_high, m_low ^ other.m_low);
+    return UInt128(high ^ other.high, low ^ other.low);
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128 UInt128::operator^(const T& other) const noexcept
 {
-    return UInt128(0_ui64, m_low ^ static_cast<uint64>(other));
+    return UInt128(0_ui64, low ^ static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr UInt128& UInt128::operator^=(const UInt128& other) noexcept
 {
-    m_high ^= other.m_high;
-    m_low ^= other.m_low;
+    high ^= other.high;
+    low ^= other.low;
     return *this;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr UInt128& UInt128::operator^=(const T& other) noexcept
 {
-    m_low ^= static_cast<uint64>(other);
+    low ^= static_cast<uint64>(other);
     return *this;
 }
 
 XS_INLINE constexpr UInt128 UInt128::operator~() const noexcept
 {
-    return UInt128(~m_high, ~m_low);
+    return UInt128(~high, ~low);
 }
 
 XS_INLINE UInt128 UInt128::operator<<(const UInt128& other) const noexcept
@@ -311,13 +311,12 @@ XS_INLINE UInt128 UInt128::operator<<(const T& other) const noexcept
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
     return (other < 64) ?
-        UInt128(__shiftleft128(m_low, m_high, static_cast<uint8>(other)), m_low << static_cast<uint8>(other)) :
-        UInt128(m_low << static_cast<uint8>(other - 64_ui8), 0_ui64);
+        UInt128(__shiftleft128(low, high, static_cast<uint8>(other)), low << static_cast<uint8>(other)) :
+        UInt128(low << static_cast<uint8>(other - 64_ui8), 0_ui64);
 #else
-    return (other < 64) ?
-        UInt128((m_high << static_cast<uint8>(other)) + (m_low >> (64_ui8 - static_cast<uint8>(other))),
-            m_low << static_cast<uint8>(other)) :
-        UInt128(m_low << static_cast<uint8>(other - 64_ui8), 0_ui64);
+    return (other < 64) ? UInt128((high << static_cast<uint8>(other)) + (low >> (64_ui8 - static_cast<uint8>(other))),
+                              low << static_cast<uint8>(other)) :
+                          UInt128(low << static_cast<uint8>(other - 64_ui8), 0_ui64);
 #endif
 }
 
@@ -345,12 +344,12 @@ XS_INLINE UInt128 UInt128::operator>>(const T& other) const noexcept
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
     return (other < 64) ?
-        UInt128(m_high >> static_cast<uint8>(other), __shiftright128(m_low, m_high, static_cast<uint8>(other))) :
-        UInt128(m_high >> 63_ui8, (m_high >> static_cast<uint8>(other - 64_ui8)));
+        UInt128(high >> static_cast<uint8>(other), __shiftright128(low, high, static_cast<uint8>(other))) :
+        UInt128(high >> 63_ui8, (high >> static_cast<uint8>(other - 64_ui8)));
 #else
-    return (other < 64) ? UInt128(m_high >> static_cast<uint8>(other),
-                              (m_high << (64_ui8 - static_cast<uint8>(other))) + (m_low >> static_cast<uint8>(other))) :
-                          UInt128(0_ui64, (m_high >> static_cast<uint8>(other - 64_ui8)));
+    return (other < 64) ? UInt128(high >> static_cast<uint8>(other),
+                              (high << (64_ui8 - static_cast<uint8>(other))) + (low >> static_cast<uint8>(other))) :
+                          UInt128(0_ui64, (high >> static_cast<uint8>(other - 64_ui8)));
 #endif
 }
 
@@ -369,7 +368,7 @@ XS_INLINE UInt128& UInt128::operator>>=(const T& other) noexcept
 
 XS_INLINE constexpr bool UInt128::operator!() const noexcept
 {
-    return ((m_high | m_low) == 0_ui64);
+    return ((high | low) == 0_ui64);
 }
 
 XS_INLINE constexpr bool UInt128::operator&&(const UInt128& other) const noexcept
@@ -384,90 +383,90 @@ XS_INLINE constexpr bool UInt128::operator||(const UInt128& other) const noexcep
 
 XS_INLINE constexpr bool UInt128::operator==(const UInt128& other) const noexcept
 {
-    return (m_high == other.m_high) && (m_low == other.m_low);
+    return (high == other.high) && (low == other.low);
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator==(const T& other) const noexcept
 {
-    return !m_high && (m_low == static_cast<uint64>(other));
+    return !high && (low == static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr bool UInt128::operator!=(const UInt128& other) const noexcept
 {
-    return (m_high != other.m_high) || (m_low != other.m_low);
+    return (high != other.high) || (low != other.low);
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator!=(const T& other) const noexcept
 {
-    return m_high || (m_low != static_cast<uint64>(other));
+    return high || (low != static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr bool UInt128::operator>(const UInt128& other) const noexcept
 {
-    return (m_high == other.m_high) ? m_low > other.m_low : m_high > other.m_high;
+    return (high == other.high) ? low > other.low : high > other.high;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator>(const T& other) const noexcept
 {
-    return m_high || (m_low > static_cast<uint64>(other));
+    return high || (low > static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr bool UInt128::operator<(const UInt128& other) const noexcept
 {
-    return (m_high == other.m_high) ? m_low < other.m_low : m_high < other.m_high;
+    return (high == other.high) ? low < other.low : high < other.high;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator<(const T& other) const noexcept
 {
-    return (!m_high) ? (m_low < static_cast<uint64>(other)) : false;
+    return (!high) ? (low < static_cast<uint64>(other)) : false;
 }
 
 XS_INLINE constexpr bool UInt128::operator>=(const UInt128& other) const noexcept
 {
-    return (m_high == other.m_high) ? m_low >= other.m_low : m_high >= other.m_high;
+    return (high == other.high) ? low >= other.low : high >= other.high;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator>=(const T& other) const noexcept
 {
-    return m_high || (m_low >= static_cast<uint64>(other));
+    return high || (low >= static_cast<uint64>(other));
 }
 
 XS_INLINE constexpr bool UInt128::operator<=(const UInt128& other) const noexcept
 {
-    return (m_high == other.m_high) ? m_low <= other.m_low : m_high <= other.m_high;
+    return (high == other.high) ? low <= other.low : high <= other.high;
 }
 
 template<typename T, typename>
 XS_INLINE constexpr bool UInt128::operator<=(const T& other) const noexcept
 {
-    return (!m_high) ? (m_low <= static_cast<uint64>(other)) : false;
+    return (!high) ? (low <= static_cast<uint64>(other)) : false;
 }
 
 XS_INLINE UInt128 UInt128::operator+(const UInt128& other) const noexcept
 {
     uint8 carry;
-    const auto low = addc<uint64>(m_low, other.m_low, 0, carry);
-    return UInt128(addc<uint64>(m_high, other.m_high, carry, carry), low);
+    const auto newLow = addc<uint64>(low, other.low, 0, carry);
+    return UInt128(addc<uint64>(high, other.high, carry, carry), newLow);
 }
 
 template<typename T, typename>
 XS_INLINE UInt128 UInt128::operator+(const T& other) const noexcept
 {
     uint8 carry;
-    const auto low = addc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
-    return UInt128(addc<uint64>(m_high, 0, carry, carry), low);
+    const auto newLow = addc<uint64>(low, static_cast<uint64>(other), 0, carry);
+    return UInt128(addc<uint64>(high, 0, carry, carry), newLow);
 }
 
 XS_INLINE UInt128& UInt128::operator+=(const UInt128& other) noexcept
 {
     uint8 carry;
-    m_low = addc<uint64>(m_low, other.m_low, 0, carry);
-    m_high = addc<uint64>(m_high, other.m_high, carry, carry);
+    low = addc<uint64>(low, other.low, 0, carry);
+    high = addc<uint64>(high, other.high, carry, carry);
     return *this;
 }
 
@@ -475,31 +474,31 @@ template<typename T, typename>
 XS_INLINE UInt128& UInt128::operator+=(const T& other) noexcept
 {
     uint8 carry;
-    m_low = addc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
-    m_high = addc<uint64>(m_high, 0, carry, carry);
+    low = addc<uint64>(low, static_cast<uint64>(other), 0, carry);
+    high = addc<uint64>(high, 0, carry, carry);
     return *this;
 }
 
 XS_INLINE UInt128 UInt128::operator-(const UInt128& other) const noexcept
 {
     uint8 carry;
-    const auto low = subc<uint64>(m_low, other.m_low, 0, carry);
-    return UInt128(subc<uint64>(m_high, other.m_high, carry, carry), low);
+    const auto newLow = subc<uint64>(low, other.low, 0, carry);
+    return UInt128(subc<uint64>(high, other.high, carry, carry), newLow);
 }
 
 template<typename T, typename>
 XS_INLINE UInt128 UInt128::operator-(const T& other) const noexcept
 {
     uint8 carry;
-    const auto low = subc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
-    return UInt128(subc<uint64>(m_high, 0, carry, carry), low);
+    const auto newLow = subc<uint64>(low, static_cast<uint64>(other), 0, carry);
+    return UInt128(subc<uint64>(high, 0, carry, carry), newLow);
 }
 
 XS_INLINE UInt128& UInt128::operator-=(const UInt128& other) noexcept
 {
     uint8 carry;
-    m_low = subc<uint64>(m_low, other.m_low, 0, carry);
-    m_high = subc<uint64>(m_high, other.m_high, carry, carry);
+    low = subc<uint64>(low, other.low, 0, carry);
+    high = subc<uint64>(high, other.high, carry, carry);
     return *this;
 }
 
@@ -507,8 +506,8 @@ template<typename T, typename>
 XS_INLINE UInt128& UInt128::operator-=(const T& other) noexcept
 {
     uint8 carry;
-    m_low = subc<uint64>(m_low, static_cast<uint64>(other), 0, carry);
-    m_high = subc<uint64>(m_high, 0, carry, carry);
+    low = subc<uint64>(low, static_cast<uint64>(other), 0, carry);
+    high = subc<uint64>(high, 0, carry, carry);
     return *this;
 }
 
@@ -516,11 +515,14 @@ XS_INLINE UInt128 UInt128::operator*(const UInt128& other) const noexcept
 {
     if constexpr (currentArch == Architecture::Bit32) {
         // Split values into 4 32-bit parts
-        const uint32 top[4] = {static_cast<uint32>(m_high >> 32_ui8), static_cast<uint32>(m_high & 0xFFFFFFFF_ui64),
-            static_cast<uint32>(m_low >> 32_ui8), static_cast<uint32>(m_low & 0xFFFFFFFF_ui64)};
-        const uint32 bottom[4] = {static_cast<uint32>(other.m_high >> 32_ui8),
-            static_cast<uint32>(other.m_high & 0xFFFFFFFF_ui64), static_cast<uint32>(other.m_low >> 32_ui8),
-            static_cast<uint32>(other.m_low & 0xFFFFFFFF_ui64)};
+        // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+        const uint32 top[4] = {static_cast<uint32>(high >> 32_ui8), static_cast<uint32>(high & 0xFFFFFFFF_ui64),
+            static_cast<uint32>(low >> 32_ui8), static_cast<uint32>(low & 0xFFFFFFFF_ui64)};
+        // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+        const uint32 bottom[4] = {static_cast<uint32>(other.high >> 32_ui8),
+            static_cast<uint32>(other.high & 0xFFFFFFFF_ui64), static_cast<uint32>(other.low >> 32_ui8),
+            static_cast<uint32>(other.low & 0xFFFFFFFF_ui64)};
+        // NOLINTNEXTLINE(modernize-avoid-c-arrays)
         const uint64 products[4][4] = {{mul<uint32>(top[0], bottom[3]), mul<uint32>(top[1], bottom[3]),
                                            mul<uint32>(top[2], bottom[3]), mul<uint32>(top[3], bottom[3])},
             {mul<uint32>(top[0], bottom[2]), mul<uint32>(top[1], bottom[2]), mul<uint32>(top[2], bottom[2]),
@@ -568,11 +570,11 @@ XS_INLINE UInt128 UInt128::operator*(const UInt128& other) const noexcept
         // -------------
         //      ad bd
         //      bc
-        const UInt128 bd = mul<uint64>(m_low, other.m_low);
-        const uint64 bc = m_low * other.m_high;
-        const uint64 ad = m_high * other.m_low;
-        const uint64 hi = (bc + ad) + bd.m_high;
-        return UInt128(hi, bd.m_low);
+        const UInt128 bd = mul<uint64>(low, other.low);
+        const uint64 bc = low * other.high;
+        const uint64 ad = high * other.low;
+        const uint64 hi = (bc + ad) + bd.high;
+        return UInt128(hi, bd.low);
     }
 }
 
@@ -586,10 +588,10 @@ XS_INLINE UInt128 UInt128::operator*(const T& other) const noexcept
         } else {
             absv = other;
         }
-        const UInt128 bd = mul<uint64>(m_low, absv);
-        const uint64 ad = m_high * absv;
-        const uint64 hi = ad + bd.m_high;
-        return UInt128(hi, bd.m_low);
+        const UInt128 bd = mul<uint64>(low, absv);
+        const uint64 ad = high * absv;
+        const uint64 hi = ad + bd.high;
+        return UInt128(hi, bd.low);
     } else {
         return *this * UInt128(other);
     }
@@ -612,7 +614,7 @@ XS_INLINE UInt128 UInt128::divide(const UInt128& denom, UInt128& rem) const noex
 {
     UInt128 quot(0, 0);
     rem = 0_ui64;
-    const uint32 bits = (m_high) ? bsr<uint64>(m_high) + 65_ui32 : bsr<uint64>(m_low) + 1_ui32;
+    const uint32 bits = (high) ? bsr<uint64>(high) + 65_ui32 : bsr<uint64>(low) + 1_ui32;
     for (auto x = static_cast<uint8>(bits); x > 0_ui8; --x) {
         quot <<= 1_ui8;
         rem <<= 1_ui8;

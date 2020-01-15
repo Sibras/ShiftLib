@@ -38,13 +38,16 @@ using require = typename Requires<Cond, T>::type;
  * @returns True if same, false if not.
  */
 template<typename T, typename T2>
-XS_FUNCTION constexpr bool getIsSame() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsSame() noexcept;
 
 template<typename T, typename T2>
 inline constexpr bool isSame = getIsSame<T, T2>();
 
-template<typename T, typename T2>
-using requireSame = require<isSame<T, T2>>;
+template<typename T, typename T2, typename Tx = void>
+using requireSame = require<isSame<T, T2>, Tx>;
+
+template<typename T, typename T2, typename Tx = void>
+using requireNotSame = require<!isSame<T, T2>, Tx>;
 
 /**
  * Query if 2 object types are the same (including qualifiers).
@@ -53,13 +56,16 @@ using requireSame = require<isSame<T, T2>>;
  * @returns True if same, false if not.
  */
 template<typename T, typename T2>
-XS_FUNCTION constexpr bool getIsSameCV() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsSameCV() noexcept;
 
 template<typename T, typename T2>
 inline constexpr bool isSameCV = getIsSameCV<T, T2>();
 
-template<typename T, typename T2>
-using requireSameCV = require<isSameCV<T, T2>>;
+template<typename T, typename T2, typename Tx = void>
+using requireSameCV = require<isSameCV<T, T2>, Tx>;
+
+template<typename T, typename T2, typename Tx = void>
+using requireNotSameCV = require<!isSameCV<T, T2>, Tx>;
 
 /**
  * Query if an objects type is one of a list of others (excluding qualifiers).
@@ -68,13 +74,16 @@ using requireSameCV = require<isSameCV<T, T2>>;
  * @returns True if same, false if not.
  */
 template<typename T, typename... Types>
-XS_FUNCTION constexpr bool getIsSameAny() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsSameAny() noexcept;
 
 template<typename T, typename... Types>
 inline constexpr bool isSameAny = getIsSameAny<T, Types...>();
 
 template<typename T, typename... Types>
 using requireSameAny = require<isSameAny<T, Types...>>;
+
+template<typename T, typename... Types>
+using requireNotSameAny = require<!isSameAny<T, Types...>>;
 
 /**
  * Query if an objects type is one of a list of others (including qualifiers).
@@ -83,7 +92,7 @@ using requireSameAny = require<isSameAny<T, Types...>>;
  * @returns True if same, false if not.
  */
 template<typename T, typename... Types>
-XS_FUNCTION constexpr bool getIsSameAnyCV() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsSameAnyCV() noexcept;
 
 template<typename T, typename... Types>
 inline constexpr bool isSameAnyCV = getIsSameAnyCV<T, Types...>();
@@ -91,19 +100,25 @@ inline constexpr bool isSameAnyCV = getIsSameAnyCV<T, Types...>();
 template<typename T, typename... Types>
 using requireSameAnyCV = require<isSameAnyCV<T, Types...>>;
 
+template<typename T, typename... Types>
+using requireNotSameAnyCV = require<!isSameAnyCV<T, Types...>>;
+
 /**
  * Query if a type is integer.
  * @tparam T Generic type parameter.
  * @returns True if integer, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsInteger() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsInteger() noexcept;
 
 template<typename T>
 inline constexpr bool isInteger = getIsInteger<T>();
 
-template<typename T>
-using requireInteger = require<isInteger<T>>;
+template<typename T, typename Tx = void>
+using requireInteger = require<isInteger<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotInteger = require<!isInteger<T>, Tx>;
 
 /**
  * Query if a type is floating point.
@@ -111,13 +126,16 @@ using requireInteger = require<isInteger<T>>;
  * @returns True if float, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsFloat() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsFloat() noexcept;
 
 template<typename T>
 inline constexpr bool isFloat = getIsFloat<T>();
 
-template<typename T>
-using requireFloat = require<isFloat<T>>;
+template<typename T, typename Tx = void>
+using requireFloat = require<isFloat<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotFloat = require<!isFloat<T>, Tx>;
 
 /**
  * Query if a type is arithmetic.
@@ -125,13 +143,16 @@ using requireFloat = require<isFloat<T>>;
  * @returns True if arithmetic, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsArithmetic() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsArithmetic() noexcept;
 
 template<typename T>
 inline constexpr bool isArithmetic = getIsArithmetic<T>();
 
-template<typename T>
-using requireArithmetic = require<isArithmetic<T>>;
+template<typename T, typename Tx = void>
+using requireArithmetic = require<isArithmetic<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotArithmetic = require<!isArithmetic<T>, Tx>;
 
 /**
  * Query if a type is arithmetic and supports signed values.
@@ -139,13 +160,16 @@ using requireArithmetic = require<isArithmetic<T>>;
  * @returns True if signed, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsSigned() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsSigned() noexcept;
 
 template<typename T>
 inline constexpr bool isSigned = getIsSigned<T>();
 
-template<typename T>
-using requireSigned = require<isSigned<T>>;
+template<typename T, typename Tx = void>
+using requireSigned = require<isSigned<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotSigned = require<!isSigned<T>, Tx>;
 
 /**
  * Query if a type is arithmetic and only supports unsigned values.
@@ -153,13 +177,16 @@ using requireSigned = require<isSigned<T>>;
  * @returns True if signed, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsUnsigned() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsUnsigned() noexcept;
 
 template<typename T>
 inline constexpr bool isUnsigned = getIsUnsigned<T>();
 
-template<typename T>
-using requireUnsigned = require<isUnsigned<T>>;
+template<typename T, typename Tx = void>
+using requireUnsigned = require<isUnsigned<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotUnsigned = require<!isUnsigned<T>, Tx>;
 
 /**
  * Query if a type is a native type to the compiler.
@@ -167,22 +194,25 @@ using requireUnsigned = require<isUnsigned<T>>;
  * @returns True if native, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getIsNative() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getIsNative() noexcept;
 
 template<typename T>
 inline constexpr bool isNative = getIsNative<T>();
 
-template<typename T>
-using requireNative = require<isNative<T>>;
+template<typename T, typename Tx = void>
+using requireNative = require<isNative<T>, Tx>;
 
-template<typename T>
-using requireNativeInteger = require<isNative<T> && isInteger<T>>;
+template<typename T, typename Tx = void>
+using requireNotNative = require<!isNative<T>, Tx>;
 
-template<typename T>
-using requireNativeFloat = require<isNative<T> && isFloat<T>>;
+template<typename T, typename Tx = void>
+using requireNativeInteger = require<isNative<T> && isInteger<T>, Tx>;
 
-template<typename T>
-using requireNativeArithmetic = require<isNative<T> && isArithmetic<T>>;
+template<typename T, typename Tx = void>
+using requireNativeFloat = require<isNative<T> && isFloat<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNativeArithmetic = require<isNative<T> && isArithmetic<T>, Tx>;
 
 template<typename T, bool = isInteger<T>>
 struct Promote
@@ -204,7 +234,7 @@ using promote = typename Promote<T>::type;
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasSIMD() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasSIMD() noexcept;
 
 template<typename T>
 inline constexpr bool hasSIMD = getHasSIMD<T>();
@@ -215,7 +245,7 @@ inline constexpr bool hasSIMD = getHasSIMD<T>();
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasFMA() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasFMA() noexcept;
 
 template<typename T>
 inline constexpr bool hasFMA = getHasFMA<T>();
@@ -226,7 +256,7 @@ inline constexpr bool hasFMA = getHasFMA<T>();
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasFMS() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasFMS() noexcept;
 
 template<typename T>
 inline constexpr bool hasFMS = getHasFMS<T>();
@@ -237,7 +267,7 @@ inline constexpr bool hasFMS = getHasFMS<T>();
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasFMAFree() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasFMAFree() noexcept;
 
 template<typename T>
 inline constexpr bool hasFMAFree = getHasFMAFree<T>();

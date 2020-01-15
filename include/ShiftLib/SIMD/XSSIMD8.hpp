@@ -16,7 +16,8 @@
  */
 
 #include "XSSIMDBool.hpp"
-#include "XSSIMDTypes.inl"
+#include "XSSIMDData.inl"
+#include "XSSIMDTraits.inl"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
@@ -32,19 +33,16 @@ class SIMD6;
 template<typename T, SIMDWidth Width>
 class SIMD3x2;
 template<typename T, SIMDWidth Width>
-class SIMD16;
-template<typename T, SIMDWidth Width>
 class SIMD8;
 
 template<typename T>
-XS_REQUIRES(isArithmetic<T>)
-class alignas(sizeof(T) * 4) SIMD8Data
+class alignas(maxAlignment<T, 8>) SIMD8Data
 {
     static_assert(isArithmetic<T>);
 
 public:
-    T m_value0, m_value1, m_value2, m_value3;
-    T m_value4, m_value5, m_value6, m_value7;
+    T value0, value1, value2, value3;
+    T value4, value5, value6, value7;
 
     /** Default constructor. */
     XS_FUNCTION SIMD8Data() noexcept = default;
@@ -61,16 +59,16 @@ public:
      * Directly set the contents this object.
      * @note This function is used to set data using pre-calculated values.
      * This removes the necessity to load and then store.
-     * @param value0 The first value.
-     * @param value1 The second value.
-     * @param value2 The third value.
-     * @param value3 The fourth value.
-     * @param value4 The fifth value.
-     * @param value5 The sixth value.
-     * @param value6 The seventh value.
-     * @param value7 The eighth value.
+     * @param other0 The first value.
+     * @param other1 The second value.
+     * @param other2 The third value.
+     * @param other3 The fourth value.
+     * @param other4 The fifth value.
+     * @param other5 The sixth value.
+     * @param other6 The seventh value.
+     * @param other7 The eighth value.
      */
-    XS_FUNCTION void setData(T value0, T value1, T value2, T value3, T value4, T value5, T value6, T value7) noexcept;
+    XS_FUNCTION void setData(T other0, T other1, T other2, T other3, T other4, T other5, T other6, T other7) noexcept;
 
     /**
      * Save to memory.
@@ -90,30 +88,36 @@ public:
 };
 
 template<typename T>
-XS_REQUIRES(isArithmetic<T>)
 using SIMD8DataPad = SIMD8Data<T>;
 
 template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
-XS_REQUIRES(isArithmetic<T>)
-class SIMD8
+class SIMD8 : public NoExport::SIMDData<T, 8, 0, Width>
 {
     static_assert(isArithmetic<T>);
 
 public:
     using Type = T;
-    static constexpr SIMDWidth width = Width;
     using Data = NoExport::SIMDData<T, 8, 0, Width>;
-    using BaseDef = SIMDBase<T, Data::width>;
-
-    Data m_data;
+    static constexpr SIMDWidth width = Width;
+    static constexpr SIMDWidth widthImpl = Data::width;
+    using BaseDef = SIMDBase<T, widthImpl>;
+    using InBaseDef = SIMDInBase<T, widthImpl>;
+    using SIMD2Def = SIMD2<T, widthImpl>;
+    using SIMD4Def = SIMD4<T, widthImpl>;
+    using SIMD6Def = SIMD6<T, widthImpl>;
+    using SIMD3x2Def = SIMD3x2<T, widthImpl>;
+    using Data::SIMDData;
 
     /** Oct Mask object used to store 8 different masks at once. */
-    class Mask
+    class Mask : public NoExport::SIMDMaskData<T, 8, 0, Width>
     {
     public:
+        using Type = T;
         using Data = NoExport::SIMDMaskData<T, 8, 0, Width>;
-
-        Data m_data;
+        static constexpr SIMDWidth width = Width;
+        static constexpr SIMDWidth widthImpl = Data::width;
+        using Data::SIMDMaskData;
+        using Bool = Bool8<hasSIMD<T> && (Width > SIMDWidth::Scalar)>;
 
         /** Default constructor. */
         XS_FUNCTION Mask() noexcept = default;
@@ -161,12 +165,6 @@ public:
         XS_FUNCTION explicit Mask(uint32 mask) noexcept;
 
         /**
-         * Constructor.
-         * @param data The data.
-         */
-        XS_FUNCTION explicit Mask(const Data& data) noexcept;
-
-        /**
          * Construct a mask from individual booleans.
          * @param bool0 The first boolean value.
          * @param bool1 The second boolean value.
@@ -187,13 +185,13 @@ public:
          * @returns Mask4 containing the desired values.
          */
         template<uint32 Index>
-        XS_FUNCTION typename SIMD4<T, Width>::Mask getMask4() const noexcept;
+        XS_FUNCTION typename SIMD4Def::Mask getMask4() const noexcept;
 
         /**
          * Get the boolean equivalent of the mask.
          * @returns The bool.
          */
-        XS_FUNCTION Bool8<hasSIMD<T> && (Width > SIMDWidth::Scalar)> getBool8() const noexcept;
+        XS_FUNCTION Bool getBool8() const noexcept;
 
         /**
          * Get boolean signalling if any element of mask is set.
@@ -267,12 +265,15 @@ public:
         XS_FUNCTION void mask8ElseFunction(MaskOperator& maskFunc) const noexcept;
     };
 
-    /** Oct shuffle class used to store shuffle information for SIMD8s. */
-    class Shuffle
+    /** Shuffle class used to store shuffle information for SIMD8s. */
+    class Shuffle : public NoExport::SIMDShuffleData<T, 8, 0, Width>
     {
+    public:
+        using Type = T;
         using Data = NoExport::SIMDShuffleData<T, 8, 0, Width>;
-
-        Data m_data;
+        static constexpr SIMDWidth width = Width;
+        static constexpr SIMDWidth widthImpl = Data::width;
+        using Data::SIMDShuffleData;
 
         /** Default constructor. */
         XS_FUNCTION Shuffle() noexcept = default;
@@ -318,12 +319,6 @@ public:
             uint32 shuff6, uint32 shuff7) noexcept;
 
         /**
-         * Constructor.
-         * @param data The data.
-         */
-        XS_FUNCTION explicit Shuffle(const Data& data) noexcept;
-
-        /**
          * Construct a shuffle that broadcasts a single element to all positions.
          * @param shuffle Input element to broadcast (must be between 0 and 7).
          */
@@ -343,8 +338,8 @@ public:
         XS_FUNCTION static Shuffle Swap2() noexcept;
 
         /**
-         * Constructor to build a Shuffle that swaps the high element with the low element of each internal group of 4
-         * values.
+         * Constructor to build a Shuffle that swaps the high 2 elements with the low 2 elements of each internal group
+         * of 4 values.
          * @returns Newly constructed Shuffle with required attributes.
          */
         XS_FUNCTION static Shuffle Swap4() noexcept;
@@ -400,69 +395,45 @@ public:
 
     /**
      * Constructor to set all elements to the same scalar value.
-     * @tparam Width2 Type of SIMD being used.
      * @param other Value to set all elements to.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION explicit SIMD8(const SIMDBase<T, Width2>& other) noexcept;
+    XS_FUNCTION explicit SIMD8(const BaseDef& other) noexcept;
 
     /**
      * Constructor to set all elements to the same scalar value.
-     * @tparam Width2 Type of SIMD being used.
      * @param other Value to set all elements to.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION explicit SIMD8(const SIMDInBase<T, Width2>& other) noexcept;
+    XS_FUNCTION explicit SIMD8(const InBaseDef& other) noexcept;
 
     /**
      * Construct from 4 different SIMD2s.
-     * @tparam Width2 Type of SIMD being used.
      * @param other0 The first SIMD2.
      * @param other1 The second SIMD2.
      * @param other2 The third SIMD2.
      * @param other3 The fourth SIMD2.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-    XS_FUNCTION SIMD8(const SIMD2<T, Width2>& other0, const SIMD2<T, Width2>& other1, const SIMD2<T, Width2>& other2,
-        const SIMD2<T, Width2>& other3) noexcept;
+    XS_FUNCTION SIMD8(
+        const SIMD2Def& other0, const SIMD2Def& other1, const SIMD2Def& other2, const SIMD2Def& other3) noexcept;
 
     /**
      * Construct from 2 different SIMD4s.
-     * @tparam Width2 Type of SIMD being used.
      * @param other0 The first SIMD4.
      * @param other1 The second SIMD4.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION SIMD8(const SIMD4<T, Width2>& other0, const SIMD4<T, Width2>& other1) noexcept;
+    XS_FUNCTION SIMD8(const SIMD4Def& other0, const SIMD4Def& other1) noexcept;
 
     /**
      * Construct from a single SIMD4.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The SIMD4.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION explicit SIMD8(const SIMD4<T, Width2>& other) noexcept;
+    XS_FUNCTION explicit SIMD8(const SIMD4Def& other) noexcept;
 
     /**
      * Construct from a SIMD6 and a SIMD2.
-     * @tparam Width2 Type of SIMD being used.
      * @param other0 The SIMD6.
      * @param other1 The SIMD2.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD6<T, Width>, SIMD6<T, Width2>> && sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-    XS_FUNCTION SIMD8(const SIMD6<T, Width2>& other0, const SIMD2<T, Width2>& other1) noexcept;
-
-    /**
-     * Constructor.
-     * @param data The data.
-     */
-    XS_FUNCTION explicit SIMD8(const Data& data) noexcept;
+    XS_FUNCTION SIMD8(const SIMD6Def& other0, const SIMD2Def& other1) noexcept;
 
     /**
      * Constructor to build set to 0.
@@ -480,45 +451,37 @@ public:
      * Get an element of the object.
      * @note Optimised for getting value from register.
      * @tparam Index The index of the element to retrieve (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @returns SIMDInBase containing the desired value.
      */
-    template<uint32 Index, SIMDWidth Width2 = Width>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION SIMDInBase<T, Width2> getValueInBase() const noexcept;
+    template<uint32 Index>
+    XS_FUNCTION InBaseDef getValueInBase() const noexcept;
 
     /**
      * Get an element of the object.
      * @note Optimised for getting value from register.
      * @tparam Index The index of the element to retrieve (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @returns BaseDef containing the desired value.
      */
-    template<uint32 Index, SIMDWidth Width2 = Width>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMDBase<T, Width2> getValue() const noexcept;
+    template<uint32 Index>
+    XS_FUNCTION BaseDef getValue() const noexcept;
 
     /**
      * Get a SIMD2.
      * @note Optimised for getting value from register.
      * @tparam Index The index of the element to retrieve (range is 0-3).
-     * @tparam Width2 Type of SIMD being used.
      * @returns SIMD2 containing the desired values.
      */
-    template<uint32 Index, SIMDWidth Width2 = Width>
-    XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-    XS_FUNCTION SIMD2<T, Width2> getValue2() const noexcept;
+    template<uint32 Index>
+    XS_FUNCTION SIMD2Def getValue2() const noexcept;
 
     /**
      * Get a SIMD4.
      * @note Optimised for getting value from register.
      * @tparam Index The index of the element to retrieve (range is 0-1).
-     * @tparam Width2 Type of SIMD being used.
      * @returns SIMD4 containing the desired values.
      */
-    template<uint32 Index, SIMDWidth Width2 = Width>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION SIMD4<T, Width2> getValue4() const noexcept;
+    template<uint32 Index>
+    XS_FUNCTION SIMD4Def getValue4() const noexcept;
 
     /**
      * Get any 3 elements of each sub SIMD4.
@@ -526,92 +489,74 @@ public:
      * @tparam Index0 The index of the first element to retrieve (range is 0-3).
      * @tparam Index1 The index of the second element to retrieve (range is 0-3).
      * @tparam Index2 The index of the third element to retrieve (range is 0-3).
-     * @tparam Width2 Type of SIMD being used.
      * @returns SIMD3x2 containing the desired values.
      */
-    template<uint32 Index0, uint32 Index1, uint32 Index2, SIMDWidth Width2 = Width>
-    XS_REQUIRES((sameImpl<SIMD3x2<T, Width>, SIMD3x2<T, Width2>>))
-    XS_FUNCTION SIMD3x2<T, Width2> getValue3x2() const noexcept;
+    template<uint32 Index0, uint32 Index1, uint32 Index2>
+    XS_FUNCTION SIMD3x2Def getValue3x2() const noexcept;
 
     /**
      * Set an element of the object.
      * @tparam Index The index of the element to set (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The new value.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION void setValue(const SIMDInBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void setValue(const InBaseDef& other) noexcept;
 
     /**
      * Set an element of the object.
      * @tparam Index The index of the element to set (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The new value.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION void setValue(const SIMDBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void setValue(const BaseDef& other) noexcept;
 
     /**
      * Set a SIMD2.
      * @tparam Index The index of the element to set (range is 0-3).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The new values.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-    XS_FUNCTION void setValue2(const SIMD2<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void setValue2(const SIMD2Def& other) noexcept;
 
     /**
      * Set a SIMD4.
      * @tparam Index The index of the element to set (range is 0-1).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The new values.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION void setValue4(const SIMD4<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void setValue4(const SIMD4Def& other) noexcept;
 
     /**
      * Add a value to an element of the object.
      * @tparam Index The index of the element to modify (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value to add.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION void addValue(const SIMDInBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void addValue(const InBaseDef& other) noexcept;
 
     /**
      * Subtract a value from an element of the object.
      * @tparam Index The index of the element to modify (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value to subtract.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION void subValue(const SIMDInBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void subValue(const InBaseDef& other) noexcept;
 
     /**
      * Multiply an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value to multiply by.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION void mulValue(const SIMDInBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void mulValue(const InBaseDef& other) noexcept;
 
     /**
      * Divide an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value to divide by.
      */
-    template<uint32 Index, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMDInBase<T, Width>, SIMDInBase<T, Width2>>))
-    XS_FUNCTION void divValue(const SIMDInBase<T, Width2>& other) noexcept;
+    template<uint32 Index>
+    XS_FUNCTION void divValue(const InBaseDef& other) noexcept;
 
     /**
      * Negate an element of the object.
@@ -630,190 +575,137 @@ public:
 
     /**
      * Multiply this object by another and then add another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 mad(const SIMD8<T, Width2>& other1, const SIMD8<T, Width2>& other2) const noexcept;
+    XS_FUNCTION SIMD8 mad(const SIMD8& other1, const SIMD8& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 mad(const SIMDBase<T, Width2>& other1, const SIMD8<T, Width>& other2) const noexcept;
+    XS_FUNCTION SIMD8 mad(const BaseDef& other1, const SIMD8& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 mad(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) const noexcept;
+    XS_FUNCTION SIMD8 mad(const SIMD8& other1, const BaseDef& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION SIMD8 mad(const SIMD4<T, Width2>& other1, const SIMD4<T, Width2>& other2) const noexcept;
+    XS_FUNCTION SIMD8 mad(const SIMD4Def& other1, const SIMD4Def& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-    XS_FUNCTION SIMD8 mad(const SIMD4<T, Width2>& other1, const SIMD8<T, Width>& other2) const noexcept;
+    XS_FUNCTION SIMD8 mad(const SIMD4Def& other1, const SIMD8& other2) const noexcept;
 
     /**
      * Multiply this object by another and then subtract another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to subtract.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 msub(const SIMD8<T, Width2>& other1, const SIMD8<T, Width2>& other2) const noexcept;
+    XS_FUNCTION SIMD8 msub(const SIMD8& other1, const SIMD8& other2) const noexcept;
 
     /**
      * Multiply each internal SIMD4 by an element of a SIMD22.
      * @param other The 2 values to multiple each SIMD4 by.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-    XS_FUNCTION SIMD8 mulH4(const SIMD2<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 mulH4(const SIMD2Def& other) const noexcept;
 
     /**
      * Compare two objects are equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION Mask equalMask(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask equalMask(const SIMD8& other) const noexcept;
 
     /**
      * Compare two objects are less or equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION Mask lessOrEqualMask(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask lessOrEqualMask(const SIMD8& other) const noexcept;
 
     /**
      * Compare two objects are less than.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION Mask lessThanMask(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask lessThanMask(const SIMD8& other) const noexcept;
 
     /**
      * Compare two objects are not equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION Mask notEqualMask(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask notEqualMask(const SIMD8& other) const noexcept;
 
     /**
      * Compare two objects are equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask equalMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask equalMask(const BaseDef& other) const noexcept;
 
     /**
      * Compare two objects are less or equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask lessOrEqualMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask lessOrEqualMask(const BaseDef& other) const noexcept;
 
     /**
      * Compare two objects are less than.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask lessThanMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask lessThanMask(const BaseDef& other) const noexcept;
 
     /**
      * Compare two objects are greater or equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask greaterOrEqualMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask greaterOrEqualMask(const BaseDef& other) const noexcept;
 
     /**
      * Compare two objects are greater than.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask greaterThanMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask greaterThanMask(const BaseDef& other) const noexcept;
 
     /**
      * Compare two objects are not equal.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION Mask notEqualMask(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION Mask notEqualMask(const BaseDef& other) const noexcept;
 
     /**
      * Negate this object based on the sign of another.
-     * @tparam Width2 Type of SIMD being used.
      * @note If the sign of the second input is negative the first input will be negated.
      * If the sign of the second input is positive then the first input will be returned unchanged.
      * @param other The second object whose sign to check.
      * @returns Result of operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 sign(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 sign(const SIMD8& other) const noexcept;
 
     /**
      * Compute the absolute value of this object.
@@ -823,67 +715,55 @@ public:
 
     /**
      * Maximum of two objects per element.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object.
      * @returns The maximum value.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 max(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 max(const SIMD8& other) const noexcept;
 
     /**
      * Minimum of two objects per element.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object.
      * @returns The minimum value.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 min(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 min(const SIMD8& other) const noexcept;
 
     /**
      * Maximum of two objects per element.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object.
      * @returns The maximum value.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 max(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 max(const BaseDef& other) const noexcept;
 
     /**
      * Minimum of two objects per element.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The second object.
      * @returns The minimum value.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 min(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 min(const BaseDef& other) const noexcept;
 
     /**
      * Maximum of each internally stored SIMD2.
      * @returns SIMD2 set to the largest value between each internal SIMD2.
      */
-    XS_FUNCTION SIMD2<T, Width> max2() const noexcept;
+    XS_FUNCTION SIMD2Def max2() const noexcept;
 
     /**
      * Minimum of each internally stored SIMD2.
      * @returns SIMD2 set to the largest value between each internal SIMD2.
      */
-    XS_FUNCTION SIMD2<T, Width> min2() const noexcept;
+    XS_FUNCTION SIMD2Def min2() const noexcept;
 
     /**
      * Maximum of each internally stored SIMD4.
      * @returns SIMD4 set to the largest value between each internal SIMD4.
      */
-    XS_FUNCTION SIMD4<T, Width> max4() const noexcept;
+    XS_FUNCTION SIMD4Def max4() const noexcept;
 
     /**
      * Minimum of each internally stored SIMD4.
      * @returns SIMD4 set to the largest value between each internal SIMD4.
      */
-    XS_FUNCTION SIMD4<T, Width> min4() const noexcept;
+    XS_FUNCTION SIMD4Def min4() const noexcept;
 
     /**
      * Maximum element of this object.
@@ -901,13 +781,13 @@ public:
      * Maximum element of this object.
      * @returns SIMDInBase set to the largest value.
      */
-    XS_FUNCTION SIMDInBase<T, Width> hmaxInBase() const noexcept;
+    XS_FUNCTION InBaseDef hmaxInBase() const noexcept;
 
     /**
      * Minimum element this object returned as a SIMDInBase.
      * @returns SIMDInBase set to the smallest value.
      */
-    XS_FUNCTION SIMDInBase<T, Width> hminInBase() const noexcept;
+    XS_FUNCTION InBaseDef hminInBase() const noexcept;
 
     /**
      * Maximum element of this object along with the max elements index.
@@ -927,28 +807,28 @@ public:
      * Maximum element from each SIMD2.
      * @returns SIMD4 set to the largest value in each SIMD2.
      */
-    XS_FUNCTION SIMD4<T, Width> hmax2() const noexcept;
+    XS_FUNCTION SIMD4Def hmax2() const noexcept;
 
     /**
      * Minimum element from each SIMD2.
      * @returns SIMD4 set to the smallest value in each SIMD2.
      */
-    XS_FUNCTION SIMD4<T, Width> hmin2() const noexcept;
+    XS_FUNCTION SIMD4Def hmin2() const noexcept;
 
     /**
      * Maximum element from each SIMD4.
      * @returns SIMD2 set to the largest value in each SIMD4.
      */
-    XS_FUNCTION SIMD2<T, Width> hmax4() const noexcept;
+    XS_FUNCTION SIMD2Def hmax4() const noexcept;
 
     /**
      * Minimum element from each SIMD4.
      * @returns SIMD2 set to the largest value in each SIMD4.
      */
-    XS_FUNCTION SIMD2<T, Width> hmin4() const noexcept;
+    XS_FUNCTION SIMD2Def hmin4() const noexcept;
 
     /**
-     * Reciprocal (1/other) of SIMD8 per element.
+     * Approximate reciprocal (1/other) of SIMD8 per element.
      * @returns Result of operation.
      */
     XS_FUNCTION SIMD8 reciprocal() const noexcept;
@@ -957,19 +837,19 @@ public:
      * Compute the sum of each internally stored SIMD2.
      * @returns SIMD2 set to the sum of all elements between each internal SIMD2.
      */
-    XS_FUNCTION SIMD2<T, Width> add2() const noexcept;
+    XS_FUNCTION SIMD2Def add2() const noexcept;
 
     /**
      * Compute the sum of each internally stored SIMD4.
      * @returns SIMD4 set to the sum of all elements between each internal SIMD4.
      */
-    XS_FUNCTION SIMD4<T, Width> add4() const noexcept;
+    XS_FUNCTION SIMD4Def add4() const noexcept;
 
     /**
      * Compute the difference of each internally stored SIMD4.
      * @returns SIMD4 set to the difference of all elements between each internal SIMD4.
      */
-    XS_FUNCTION SIMD4<T, Width> sub4() const noexcept;
+    XS_FUNCTION SIMD4Def sub4() const noexcept;
 
     /**
      * Compute the sum of all elements.
@@ -981,25 +861,25 @@ public:
      * Compute the sum of all elements.
      * @returns SIMDInBase set to the sum of all elements.
      */
-    XS_FUNCTION SIMDInBase<T, Width> haddInBase() const noexcept;
+    XS_FUNCTION InBaseDef haddInBase() const noexcept;
 
     /**
      * Compute the sum of each SIMD2.
      * @returns SIMD4 set to the sum of all elements in each SIMD2.
      */
-    XS_FUNCTION SIMD4<T, Width> hadd2() const noexcept;
+    XS_FUNCTION SIMD4Def hadd2() const noexcept;
 
     /**
      * Compute the sum of each SIMD4.
      * @returns SIMD2 set to the sum of all elements in each SIMD4.
      */
-    XS_FUNCTION SIMD2<T, Width> hadd4() const noexcept;
+    XS_FUNCTION SIMD2Def hadd4() const noexcept;
 
     /**
      * Compute the difference of each SIMD2.
      * @returns SIMD4 set to the difference of all elements in each SIMD2.
      */
-    XS_FUNCTION SIMD4<T, Width> hsub2() const noexcept;
+    XS_FUNCTION SIMD4Def hsub2() const noexcept;
 
     /**
      * Round up each element of the object.
@@ -1026,7 +906,7 @@ public:
     XS_FUNCTION SIMD8 sqrt() const noexcept;
 
     /**
-     * Returns the reciprocal square root of each element in the object.
+     * Approximate reciprocal square root of each element in the object.
      * @note Useful as the reciprocal square root is faster to determine.
      * @returns The result of the operation.
      */
@@ -1058,45 +938,33 @@ public:
 
     /**
      * Returns object to the power of the elements in another object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object containing the exponents.
      * @returns Object containing the input values to the power of the second inputs.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 pow(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 pow(const SIMD8& other) const noexcept;
 
     /**
      * Returns object (where all elements must be > 0) to the power of the elements in another object.
      * @note The current object must have all elements > 0.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object containing the exponents.
      * @returns Object containing the input values to the power of the second inputs.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 powr(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 powr(const SIMD8& other) const noexcept;
 
     /**
      * Returns object to the power of another value.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 pow(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 pow(const BaseDef& other) const noexcept;
 
     /**
      * Returns object (where all elements must be > 0) to the power of another value.
      * @note The current object must have all elements > 0.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<BaseDef, SIMDBase<T, Width2>>))
-    XS_FUNCTION SIMD8 powr(const SIMDBase<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 powr(const BaseDef& other) const noexcept;
 
     /**
      * Returns sine of each element in the object.
@@ -1123,9 +991,10 @@ public:
      * Returns sine and cosine of each element in the object.
      * @note This is provided because it is much quicker to determine the cosine of a set of values if the sine is
      * already known.
-     * @returns Object containing the sined values in its lower elements and the cos vales in its upper elements.
+     * @param [out] cosReturn The cosine return values.
+     * @returns Object containing the sined values.
      */
-    XS_FUNCTION SIMD16<T, Width> sincos() const noexcept;
+    XS_FUNCTION SIMD8 sincos(SIMD8& cosReturn) const noexcept;
 
     /**
      * Returns arcsine of each element in the object.
@@ -1147,51 +1016,42 @@ public:
 
     /**
      * Returns the distance between a planes positive x-axis and the points given by the input objects.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object containing the second parameter of each of the three input points.
      * @returns Object containing the angles (results in radians).
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 atan2(const SIMD8<T, Width2>& other) const noexcept;
+    XS_FUNCTION SIMD8 atan2(const SIMD8& other) const noexcept;
 
     /**
      * Extracts an element from a object at an index and inserts it into another object at a specified index.
      * @tparam Index0 The index in the first object to insert the element (range is 0-7).
      * @tparam Index1 The index in the second object to copy element from (range is 0-7).
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to extract an element from to insert into the first.
      * @returns The result of the operation.
      */
-    template<uint32 Index0, uint32 Index1, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 insert(const SIMD8<T, Width2>& other) const noexcept;
+    template<uint32 Index0, uint32 Index1>
+    XS_FUNCTION SIMD8 insert(const SIMD8& other) const noexcept;
 
     /**
      * Extracts an element from a object at an index and inserts it into another object at a specified index. This
      * performs the same operation on each internal SIMD2.
-     * @tparam Index0 The index in the first object to insert the element (range is 0-2).
-     * @tparam Index1 The index in the second object to copy element from (range is 0-2).
-     * @tparam Width2 Type of SIMD being used.
+     * @tparam Index0 The index in the first object to insert the element (range is 0-1).
+     * @tparam Index1 The index in the second object to copy element from (range is 0-1).
      * @param other The object to extract an element from to insert into the first.
      * @returns The result of the operation.
      */
-    template<uint32 Index0, uint32 Index1, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 insert2(const SIMD8<T, Width2>& other) const noexcept;
+    template<uint32 Index0, uint32 Index1>
+    XS_FUNCTION SIMD8 insert2(const SIMD8& other) const noexcept;
 
     /**
      * Extracts an element from a object at an index and inserts it into another object at a specified index. This
      * performs the same operation on each internal SIMD4.
-     * @tparam Index0 The index in the first object to insert the element (range is 0-2).
-     * @tparam Index1 The index in the second object to copy element from (range is 0-2).
-     * @tparam Width2 Type of SIMD being used.
+     * @tparam Index0 The index in the first object to insert the element (range is 0-3).
+     * @tparam Index1 The index in the second object to copy element from (range is 0-3).
      * @param other The object to extract an element from to insert into the first.
      * @returns The result of the operation.
      */
-    template<uint32 Index0, uint32 Index1, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 insert4(const SIMD8<T, Width2>& other) const noexcept;
+    template<uint32 Index0, uint32 Index1>
+    XS_FUNCTION SIMD8 insert4(const SIMD8& other) const noexcept;
 
     /**
      * Blends values from the second object into the first based on a mask.
@@ -1207,23 +1067,18 @@ public:
      * @param other The object to blend into the first.
      * @returns Result of operation.
      */
-    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3, bool Elem4, bool Elem5, bool Elem6, bool Elem7,
-        SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blend(const SIMD8<T, Width2>& other) const noexcept;
+    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3, bool Elem4, bool Elem5, bool Elem6, bool Elem7>
+    XS_FUNCTION SIMD8 blend(const SIMD8& other) const noexcept;
 
     /**
      * Blends values from the second object into the first based on a dynamic mask.
      * @note A value form the second object is copied into the first based on the corresponding input elements of the
      * mask.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to blend into the first.
      * @param mask The object mask used to define which elements to blend.
      * @returns The result of the operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blendVar(const SIMD8<T, Width2>& other, const Mask& mask) const noexcept;
+    XS_FUNCTION SIMD8 blendVar(const SIMD8& other, const Mask& mask) const noexcept;
 
     /**
      * Swaps values between the second object and the first based on a mask.
@@ -1239,22 +1094,17 @@ public:
      * @param [in,out] other The object to swap elements with the first.
      * @returns The result of the operation.
      */
-    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3, bool Elem4, bool Elem5, bool Elem6, bool Elem7,
-        SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blendSwap(SIMD8<T, Width2>& other) const noexcept;
+    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3, bool Elem4, bool Elem5, bool Elem6, bool Elem7>
+    XS_FUNCTION SIMD8 blendSwap(SIMD8& other) const noexcept;
 
     /**
      * Swaps values between the second object and the first based on a dynamic mask.
      * @note A value form the second object is swapped with the first based on the corresponding input elements.
-     * @tparam Width2 Type of SIMD being used.
      * @param [in,out] other The object to swap elements with the first.
      * @param          mask The object mask used to define which elements to swap.
      * @returns The result of the operation.
      */
-    template<SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blendSwapVar(SIMD8<T, Width2>& other, const Mask& mask) const noexcept;
+    XS_FUNCTION SIMD8 blendSwapVar(SIMD8& other, const Mask& mask) const noexcept;
 
     /**
      * Blends values from the second object into the first based on a mask. This performs the same operation on each
@@ -1262,13 +1112,11 @@ public:
      * @note A value form the second object is copied into the first based on the corresponding input elements.
      * @tparam Elem0 Whether to copy the first element of the first input into the returned object.
      * @tparam Elem1 Whether to copy the second element of the first input into the returned object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to blend into the first.
      * @returns The result of the operation.
      */
-    template<bool Elem0, bool Elem1, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blend2(const SIMD8<T, Width2>& other) const noexcept;
+    template<bool Elem0, bool Elem1>
+    XS_FUNCTION SIMD8 blend2(const SIMD8& other) const noexcept;
 
     /**
      * Blends values from the second object into the first based on a mask. This performs the same operation on each
@@ -1278,13 +1126,11 @@ public:
      * @tparam Elem1 Whether to copy the second element of the first input into the returned object.
      * @tparam Elem2 Whether to copy the third element of the first input into the returned object.
      * @tparam Elem3 Whether to copy the fourth element of the first input into the returned object.
-     * @tparam Width2 Type of SIMD being used.
      * @param other The object to blend into the first.
      * @returns The result of the operation.
      */
-    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3, SIMDWidth Width2>
-    XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-    XS_FUNCTION SIMD8 blend4(const SIMD8<T, Width2>& other) const noexcept;
+    template<bool Elem0, bool Elem1, bool Elem2, bool Elem3>
+    XS_FUNCTION SIMD8 blend4(const SIMD8& other) const noexcept;
 
     /**
      * Shuffles the elements of the object.
@@ -1356,9 +1202,8 @@ public:
  * @param other2 SIMD8 to add to the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Add a value to all elements of a SIMD8.
@@ -1366,9 +1211,9 @@ XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator+(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Add a SIMD2 to each pair of elements in a SIMD8.
@@ -1376,9 +1221,9 @@ XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator+(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Add a SIMD4 to each quadruple of elements in a SIMD8.
@@ -1386,9 +1231,9 @@ XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD2
  * @param other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator+(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Subtract a SIMD8 from another SIMD8.
@@ -1396,9 +1241,8 @@ XS_FUNCTION SIMD8<T, Width> operator+(const SIMD8<T, Width>& other1, const SIMD4
  * @param other2 SIMD8 to subtract from the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Subtract a value from all elements of a SIMD8.
@@ -1406,9 +1250,9 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to subtract from the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator-(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Subtract all elements of a SIMD8 from a value.
@@ -1416,9 +1260,9 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 The SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator-(const SIMDBase<T, Width2>& other1, const SIMD8<T, Width>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator-(
+    const typename SIMD8<T, Width>::BaseDef& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Subtract a SIMD2 from each pair of elements in a SIMD8.
@@ -1426,9 +1270,9 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMDBase<T, Width2>& other1, const S
  * @param other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator-(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Subtract a SIMD4 from each quadruple of elements in a SIMD8.
@@ -1436,9 +1280,9 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD2
  * @param other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator-(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Multiply two SIMD8s per element.
@@ -1446,9 +1290,8 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other1, const SIMD4
  * @param other2 The second SIMD8 to multiply the first.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Multiply a SIMD8 by a scalar.
@@ -1456,9 +1299,9 @@ XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator*(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Multiply each pair of elements in a SIMD8 by a SIMD2.
@@ -1466,9 +1309,9 @@ XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 Values to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator*(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Multiply each quadruple of elements in a SIMD8 by a SIMD4.
@@ -1476,9 +1319,9 @@ XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD2
  * @param other2 Values to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator*(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Divide two SIMD8s per element.
@@ -1486,9 +1329,8 @@ XS_FUNCTION SIMD8<T, Width> operator*(const SIMD8<T, Width>& other1, const SIMD4
  * @param other2 The second SIMD8 to divide the first with.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Divide a SIMD8 by a scalar.
@@ -1496,9 +1338,9 @@ XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator/(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Divide a scalar by all elements of a SIMD8.
@@ -1506,9 +1348,9 @@ XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 The SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator/(const SIMDBase<T, Width2>& other1, const SIMD8<T, Width>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator/(
+    const typename SIMD8<T, Width>::BaseDef& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Divide each pair of elements in a SIMD8 by a SIMD2.
@@ -1516,9 +1358,9 @@ XS_FUNCTION SIMD8<T, Width> operator/(const SIMDBase<T, Width2>& other1, const S
  * @param other2 Values to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator/(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Divide each quadruple of elements in a SIMD8 by a SIMD4.
@@ -1526,9 +1368,9 @@ XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD2
  * @param other2 Values to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator/(const SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator/(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Negate all elements of a SIMD8.
@@ -1544,9 +1386,8 @@ XS_FUNCTION SIMD8<T, Width> operator-(const SIMD8<T, Width>& other) noexcept;
  * @param          other2 SIMD8 to add to first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Perform compound assignment and addition with a SIMD8.
@@ -1554,9 +1395,9 @@ XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD8<T, 
  * @param          other2 Value to add to the first SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator+=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Perform compound assignment and addition of a SIMD2 to each pair of elements in a SIMD8.
@@ -1564,9 +1405,9 @@ XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMDBase<
  * @param          other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator+=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Perform compound assignment and addition of a SIMD4 to each quadruple of elements in a SIMD8.
@@ -1574,9 +1415,9 @@ XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD2<T, 
  * @param          other2 Values to add to the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator+=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction by a SIMD8.
@@ -1584,9 +1425,8 @@ XS_FUNCTION SIMD8<T, Width>& operator+=(SIMD8<T, Width>& other1, const SIMD4<T, 
  * @param          other2 SIMD8 to subtract from first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction with a SIMD8.
@@ -1594,9 +1434,9 @@ XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD8<T, 
  * @param          other2 Value to subtract from the first SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator-=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction of a SIMD2 from each pair of elements in a SIMD8.
@@ -1604,9 +1444,9 @@ XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMDBase<
  * @param          other2 Values to subtract from the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator-=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction of a SIMD4 from each quadruple of elements in a SIMD8.
@@ -1614,9 +1454,9 @@ XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD2<T, 
  * @param          other2 Values to subtract from the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator-=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Perform SIMD8 compound assignment and multiplication.
@@ -1624,9 +1464,8 @@ XS_FUNCTION SIMD8<T, Width>& operator-=(SIMD8<T, Width>& other1, const SIMD4<T, 
  * @param          other2 SIMD8 to multiply the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication by a scalar.
@@ -1634,9 +1473,9 @@ XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD8<T, 
  * @param          other2 Value to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator*=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication of each pair of elements in a SIMD8 by a SIMD2.
@@ -1644,9 +1483,9 @@ XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMDBase<
  * @param          other2 Values to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator*=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication of each quadruple of elements in a SIMD8 by a SIMD4.
@@ -1654,9 +1493,9 @@ XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD2<T, 
  * @param          other2 Values to multiply the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator*=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Perform compound assignment and division.
@@ -1664,9 +1503,8 @@ XS_FUNCTION SIMD8<T, Width>& operator*=(SIMD8<T, Width>& other1, const SIMD4<T, 
  * @param          other2 Value to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Perform compound assignment and division by a scalar.
@@ -1674,9 +1512,9 @@ XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD8<T, 
  * @param          other2 Value to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator/=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Perform compound assignment and division of each pair of elements in a SIMD8 by a SIMD2.
@@ -1684,9 +1522,9 @@ XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMDBase<
  * @param          other2 Values to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD2<T, Width>, SIMD2<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD2<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator/=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD2Def& other2) noexcept;
 
 /**
  * Perform compound assignment and division of each quadruple of elements in a SIMD8 by a SIMD4.
@@ -1694,9 +1532,9 @@ XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD2<T, 
  * @param          other2 Values to divide the SIMD8 by.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD4<T, Width>, SIMD4<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD4<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width>& operator/=(
+    SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::SIMD4Def& other2) noexcept;
 
 /**
  * Compare two SIMD8s are equal.
@@ -1704,39 +1542,8 @@ XS_FUNCTION SIMD8<T, Width>& operator/=(SIMD8<T, Width>& other1, const SIMD4<T, 
  * @param other2 The second SIMD8 to compare to the first.
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION bool operator==(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
-
-/**
- * Compare two SIMD8s are less or equal.
- * @param other1 The first SIMD8.
- * @param other2 The second SIMD8 to compare to the first.
- * @returns Boolean signalling if compare was valid for every element of the input.
- */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION bool operator<=(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
-
-/**
- * Compare two SIMD8s are less than.
- * @param other1 The first SIMD8.
- * @param other2 The second SIMD8 to compare to the first.
- * @returns Boolean signalling if compare was valid for every element of the input.
- */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION bool operator<(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
-
-/**
- * Compare two SIMD8s are not equal.
- * @param other1 The first SIMD8.
- * @param other2 The second SIMD8 to compare to the first.
- * @returns Boolean signalling if compare was valid for every element of the input.
- */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator==(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Compare a SIMD8 to a value.
@@ -1744,9 +1551,17 @@ XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const SIMD8<T, Width2
  * @param other2 The value to compare to the SIMD8.
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION bool operator==(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator==(const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
+
+/**
+ * Compare two SIMD8s are less or equal.
+ * @param other1 The first SIMD8.
+ * @param other2 The second SIMD8 to compare to the first.
+ * @returns Boolean signalling if compare was valid for every element of the input.
+ */
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator<=(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Compare SIMD8 is less than or equal to a value.
@@ -1754,9 +1569,17 @@ XS_FUNCTION bool operator==(const SIMD8<T, Width>& other1, const SIMDBase<T, Wid
  * @param other2 The value to compare to the SIMD8.
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION bool operator<=(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator<=(const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
+
+/**
+ * Compare two SIMD8s are less than.
+ * @param other1 The first SIMD8.
+ * @param other2 The second SIMD8 to compare to the first.
+ * @returns Boolean signalling if compare was valid for every element of the input.
+ */
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator<(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Compare SIMD8 is less than a value.
@@ -1764,9 +1587,17 @@ XS_FUNCTION bool operator<=(const SIMD8<T, Width>& other1, const SIMDBase<T, Wid
  * @param other2 The value to compare to the SIMD8.
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION bool operator<(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator<(const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
+
+/**
+ * Compare two SIMD8s are not equal.
+ * @param other1 The first SIMD8.
+ * @param other2 The second SIMD8 to compare to the first.
+ * @returns Boolean signalling if compare was valid for every element of the input.
+ */
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Compare SIMD8 is not equal to a value.
@@ -1774,9 +1605,8 @@ XS_FUNCTION bool operator<(const SIMD8<T, Width>& other1, const SIMDBase<T, Widt
  * @param other2 The value to compare to the SIMD8.
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * And 2 SIMD8s.
@@ -1786,9 +1616,8 @@ XS_FUNCTION bool operator!=(const SIMD8<T, Width>& other1, const SIMDBase<T, Wid
  * @param other2 SIMD8 to and with the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator&(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator&(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * And a SIMD8s with a value.
@@ -1798,9 +1627,9 @@ XS_FUNCTION SIMD8<T, Width> operator&(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to and with the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator&(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator&(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Or 2 SIMD8s.
@@ -1810,9 +1639,8 @@ XS_FUNCTION SIMD8<T, Width> operator&(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 SIMD8 to and with the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator|(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator|(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Or a SIMD8s with a value.
@@ -1822,9 +1650,9 @@ XS_FUNCTION SIMD8<T, Width> operator|(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to and with the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator|(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator|(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Xor 2 SIMD8s.
@@ -1834,9 +1662,8 @@ XS_FUNCTION SIMD8<T, Width> operator|(const SIMD8<T, Width>& other1, const SIMDB
  * @param other2 SIMD8 to and with the first one.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<SIMD8<T, Width>, SIMD8<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator^(const SIMD8<T, Width>& other1, const SIMD8<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator^(const SIMD8<T, Width>& other1, const SIMD8<T, Width>& other2) noexcept;
 
 /**
  * Xor a SIMD8s with a value.
@@ -1846,9 +1673,9 @@ XS_FUNCTION SIMD8<T, Width> operator^(const SIMD8<T, Width>& other1, const SIMD8
  * @param other2 Value to and with the SIMD8.
  * @returns The result of the operation.
  */
-template<typename T, SIMDWidth Width, SIMDWidth Width2>
-XS_REQUIRES((sameImpl<typename SIMD8<T, Width>::BaseDef, SIMDBase<T, Width2>>))
-XS_FUNCTION SIMD8<T, Width> operator^(const SIMD8<T, Width>& other1, const SIMDBase<T, Width2>& other2) noexcept;
+template<typename T, SIMDWidth Width>
+XS_FUNCTION SIMD8<T, Width> operator^(
+    const SIMD8<T, Width>& other1, const typename SIMD8<T, Width>::BaseDef& other2) noexcept;
 
 /**
  * Not a SIMD8.

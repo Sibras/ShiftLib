@@ -170,7 +170,6 @@ XS_FUNCTION auto mul(T param1, T param2) noexcept -> promote<T>;
 /**
  * Adds 2 values and adds additional carry.
  * @tparam T Generic type parameter.
- * @tparam T Generic type parameter.
  * @param       param1   The first parameter.
  * @param       param2   The second parameter.
  * @param       carryIn  The input carry.
@@ -183,7 +182,6 @@ XS_FUNCTION T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept;
 
 /**
  * Subtracts 2 values and subtracts additional carry.
- * @tparam T Generic type parameter.
  * @tparam T Generic type parameter.
  * @param       param1   The first parameter.
  * @param       param2   The second parameter.
@@ -202,7 +200,7 @@ XS_FUNCTION T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T exp(T param) noexcept;
 
 /**
@@ -212,7 +210,7 @@ XS_FUNCTION T exp(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T exp2(T param) noexcept;
 
 /**
@@ -222,7 +220,7 @@ XS_FUNCTION T exp2(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T log(T param) noexcept;
 
 /**
@@ -232,7 +230,7 @@ XS_FUNCTION T log(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T log2(T param) noexcept;
 
 /**
@@ -287,7 +285,7 @@ XS_FUNCTION T copysign(T param1, T param2) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T sqrt(T param) noexcept;
 
 /**
@@ -298,7 +296,7 @@ XS_FUNCTION T sqrt(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T rsqrt(T param) noexcept;
 
 /**
@@ -308,7 +306,7 @@ XS_FUNCTION T rsqrt(T param) noexcept;
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T sin(T param) noexcept;
 
 /**
@@ -318,7 +316,7 @@ XS_FUNCTION T sin(T param) noexcept;
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T cos(T param) noexcept;
 
 /**
@@ -328,7 +326,7 @@ XS_FUNCTION T cos(T param) noexcept;
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T tan(T param) noexcept;
 
 /**
@@ -339,7 +337,7 @@ XS_FUNCTION T tan(T param) noexcept;
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T sincos(T param, T& cosResult) noexcept;
 
 /**
@@ -349,7 +347,7 @@ XS_FUNCTION T sincos(T param, T& cosResult) noexcept;
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T asin(T param) noexcept;
 
 /**
@@ -359,7 +357,7 @@ XS_FUNCTION T asin(T param) noexcept;
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T acos(T param) noexcept;
 
 /**
@@ -369,7 +367,7 @@ XS_FUNCTION T acos(T param) noexcept;
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T atan(T param) noexcept;
 
 /**
@@ -380,7 +378,7 @@ XS_FUNCTION T atan(T param) noexcept;
  * @returns Object containing the angle (result in radians).
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T atan2(T param1, T param2) noexcept;
 
 /**
@@ -391,7 +389,7 @@ XS_FUNCTION T atan2(T param1, T param2) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T pow(T param1, T param2) noexcept;
 
 /**
@@ -402,7 +400,7 @@ XS_FUNCTION T pow(T param1, T param2) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T powr(T param1, T param2) noexcept;
 
 /**
@@ -412,7 +410,7 @@ XS_FUNCTION T powr(T param1, T param2) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T recip(T param) noexcept;
 
 /**
@@ -422,7 +420,7 @@ XS_FUNCTION T recip(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T ceil(T param) noexcept;
 
 /**
@@ -432,7 +430,7 @@ XS_FUNCTION T ceil(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T floor(T param) noexcept;
 
 /**
@@ -441,8 +439,8 @@ XS_FUNCTION T floor(T param) noexcept;
  * @param param The input value.
  * @returns Resultant value.
  */
-XS_REQUIRES(isNative<T>&& isFloat<T>)
 template<typename T>
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T trunc(T param) noexcept;
 
 /**
@@ -453,6 +451,6 @@ XS_FUNCTION T trunc(T param) noexcept;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isNative<T>&& isFloat<T>)
+XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_FUNCTION T ldexp(T param, int32 exp) noexcept;
 } // namespace Shift

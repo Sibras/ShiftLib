@@ -28,6 +28,7 @@
 
 namespace Shift {
 template<typename T>
+XS_REQUIRES((isSameAny<T, int16, uint16, int32, uint32, int64, uint64>))
 XS_INLINE T bswap(const T param) noexcept
 {
     static_assert(isSameAny<T, int16, uint16, int32, uint32, int64, uint64>);
@@ -73,6 +74,7 @@ XS_INLINE T bswap(const T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 bsr(const T param) noexcept
 {
     static_assert(isSameAny<T, int32, uint32, int64, uint64>);
@@ -129,7 +131,7 @@ XS_INLINE uint32 bsr(const T param) noexcept
         if constexpr (currentArch == Architecture::Bit64) {
             uint64 res;
             asm("bsrq %1,%0" : "=r"(res) : "rm"(param));
-            return res;
+            return static_cast<uint32>(res);
         } else {
             uint32 res;
             auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
@@ -153,6 +155,7 @@ XS_INLINE uint32 bsr(const T param) noexcept
 }
 
 template<typename T>
+XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint32 popcnt(const T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
@@ -204,20 +207,17 @@ XS_INLINE uint32 popcnt(const T param) noexcept
 #    endif
         }
 #endif
-#if XS_ISA == XS_X86
     } else if constexpr (isSameAny<T, int8, uint8>) {
         return static_cast<T>(popcnt(static_cast<uint32>(static_cast<uint8>(param))));
     } else if constexpr (isSameAny<T, int16, uint16>) {
         return static_cast<T>(popcnt(static_cast<uint32>(static_cast<uint16>(param))));
-    }
-#else
     } else {
         return T{0};
     }
-#endif
 } // namespace Shift
 
 template<typename T>
+XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint32 ctz(const T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
@@ -229,25 +229,25 @@ XS_INLINE uint32 ctz(const T param) noexcept
         // Clang doesn't allow tzcnt unless BMI is enabled during compile
         return __builtin_ctz(param);
 #else
-            if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
-                // return is 32 if input is zero
-                return _tzcnt_u32(param); // tzcnt added to AMD with Piledriver(AVX) and Intel with Haswell(AVX2)
-            } else {
+        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+            // return is 32 if input is zero
+            return _tzcnt_u32(param); // tzcnt added to AMD with Piledriver(AVX) and Intel with Haswell(AVX2)
+        } else {
 #    if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
-                // return is undefined if input is zero
-                return _bit_scan_forward(param); // faster than _BitScanForward as it avoids memory indirection
+            // return is undefined if input is zero
+            return _bit_scan_forward(param); // faster than _BitScanForward as it avoids memory indirection
 #    elif XS_COMPILER == XS_MSVC
-                // return is undefined if input is zero (function returns 0 but we are not checking that)
-                unsigned long res;
-                _BitScanForward(&res, param);
-                return res;
+            // return is undefined if input is zero (function returns 0 but we are not checking that)
+            unsigned long res;
+            _BitScanForward(&res, param);
+            return res;
 #    elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-                // return is undefined if input is zero
-                return __builtin_ctz(param);
+            // return is undefined if input is zero
+            return __builtin_ctz(param);
 #    else
 #        error Unsupported compiler
 #    endif
-            }
+        }
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if XS_COMPILER == XS_CUDA
@@ -257,64 +257,61 @@ XS_INLINE uint32 ctz(const T param) noexcept
         // Clang doesn't allow tzcnt unless BMI is enabled during compile
         return __builtin_ctzll(param);
 #else
-            if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
-                // return is 64 if input is zero
-                if constexpr (currentArch == Architecture::Bit64) {
-                    return static_cast<uint32>(_tzcnt_u64(static_cast<uint64>(param)));
-                } else {
-                    return (static_cast<uint32>(param) == 0) ?
-                        _tzcnt_u32(static_cast<uint32>(static_cast<uint64>(param) >> 32)) + 32 :
-                        _tzcnt_u32(static_cast<uint32>(param));
-                }
+        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+            // return is 64 if input is zero
+            if constexpr (currentArch == Architecture::Bit64) {
+                return static_cast<uint32>(_tzcnt_u64(static_cast<uint64>(param)));
             } else {
+                return (static_cast<uint32>(param) == 0) ?
+                    _tzcnt_u32(static_cast<uint32>(static_cast<uint64>(param) >> 32)) + 32 :
+                    _tzcnt_u32(static_cast<uint32>(param));
+            }
+        } else {
 #    if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
-                // return is undefined if input is zero
-                if constexpr (currentArch == Architecture::Bit64) {
-                    uint64_t res;
-                    __asm__("bsfq %1,%0" : "=r"(res) : "rm"(param));
-                    return static_cast<uint32_t>(res);
-                } else {
-                    // faster than _BitScanReverse as it avoids memory indirection
-                    return (static_cast<uint32_t>(param) == 0) ?
-                        _bit_scan_forward(static_cast<uint32_t>(static_cast<uint64>(param) >> 32)) + 32 :
-                        _bit_scan_forward(static_cast<uint32_t>(param));
-                }
+            // return is undefined if input is zero
+            if constexpr (currentArch == Architecture::Bit64) {
+                uint64_t res;
+                __asm__("bsfq %1,%0" : "=r"(res) : "rm"(param));
+                return static_cast<uint32_t>(res);
+            } else {
+                // faster than _BitScanReverse as it avoids memory indirection
+                return (static_cast<uint32_t>(param) == 0) ?
+                    _bit_scan_forward(static_cast<uint32_t>(static_cast<uint64>(param) >> 32)) + 32 :
+                    _bit_scan_forward(static_cast<uint32_t>(param));
+            }
 #    elif XS_COMPILER == XS_MSVC
-                // return is undefined if input is zero (function returns 0 but we are not checking that)
-                unsigned long res;
-                if constexpr (currentArch == Architecture::Bit64) {
-                    _BitScanForward64(&res, param);
+            // return is undefined if input is zero (function returns 0 but we are not checking that)
+            unsigned long res;
+            if constexpr (currentArch == Architecture::Bit64) {
+                _BitScanForward64(&res, param);
+            } else {
+                if (static_cast<uint32>(param) == 0) {
+                    _BitScanForward(&res, static_cast<uint32>(static_cast<uint64>(param) >> 32));
+                    res += 32;
                 } else {
-                    if (static_cast<uint32>(param) == 0) {
-                        _BitScanForward(&res, static_cast<uint32>(static_cast<uint64>(param) >> 32));
-                        res += 32;
-                    } else {
-                        _BitScanForward(&res, static_cast<uint32>(param));
-                    }
+                    _BitScanForward(&res, static_cast<uint32>(param));
                 }
-                return res;
+            }
+            return res;
 #    elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-                // return is undefined if input is zero
-                return __builtin_ctzll(param);
+            // return is undefined if input is zero
+            return __builtin_ctzll(param);
 #    else
 #        error Unsupported compiler
 #    endif
-            }
+        }
 #endif
-#if XS_ISA == XS_X86
     } else if constexpr (isSigned<T>) {
         return static_cast<T>(ctz(static_cast<int32>(param)));
     } else if constexpr (isUnsigned<T>) {
         return static_cast<T>(ctz(static_cast<uint32>(param)));
-    }
-#else
     } else {
         return T{0};
     }
-#endif
 } // namespace Shift
 
 template<typename T>
+XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 clz(const T param) noexcept
 {
     static_assert(isSameAny<T, int32, uint32, int64, uint64>);
@@ -326,25 +323,25 @@ XS_INLINE uint32 clz(const T param) noexcept
         // Clang doesn't allow lzcnt unless BMI is enabled during compile
         return __builtin_clz(param);
 #else
-                if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
-                    // return is 32 if input is zero
-                    return _lzcnt_u32(param); // lzcnt added to AMD with Barcelona(SSE4a) and Intel with Haswell(AVX2)
-                } else {
+        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+            // return is 32 if input is zero
+            return _lzcnt_u32(param); // lzcnt added to AMD with Barcelona(SSE4a) and Intel with Haswell(AVX2)
+        } else {
 #    if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
-                    // return is undefined if input is zero
-                    return 31 - _bit_scan_reverse(param);
+            // return is undefined if input is zero
+            return 31 - _bit_scan_reverse(param);
 #    elif XS_COMPILER == XS_MSVC
-                    // return is undefined if input is zero (function returns 0 but we are not checking that)
-                    unsigned long res;
-                    _BitScanReverse(&res, param);
-                    return 31 - res;
+            // return is undefined if input is zero (function returns 0 but we are not checking that)
+            unsigned long res;
+            _BitScanReverse(&res, param);
+            return 31 - res;
 #    elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-                    // return is undefined if input is zero
-                    return __builtin_clz(param);
+            // return is undefined if input is zero
+            return __builtin_clz(param);
 #    else
 #        error Unsupported compiler
 #    endif
-                }
+        }
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if XS_COMPILER == XS_CUDA
@@ -354,49 +351,47 @@ XS_INLINE uint32 clz(const T param) noexcept
         // Clang doesn't allow lzcnt unless BMI is enabled during compile
         return __builtin_clzll(param);
 #else
-                if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
-                    if constexpr (currentArch == Architecture::Bit64) {
-                        return static_cast<uint32>(_lzcnt_u64(param));
-                    } else {
-                        const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
-                        return (high == 0) ? _lzcnt_u32(static_cast<uint32>(param)) + 32 : _lzcnt_u32(high);
-                    }
-                } else {
+        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+            if constexpr (currentArch == Architecture::Bit64) {
+                return static_cast<uint32>(_lzcnt_u64(param));
+            } else {
+                const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
+                return (high == 0) ? _lzcnt_u32(static_cast<uint32>(param)) + 32 : _lzcnt_u32(high);
+            }
+        } else {
 #    if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
-                    // return is undefined if input is zero
-                    if constexpr (currentArch == Architecture::Bit64) {
-                        uint64 res;
-                        __asm__("bsrq %1,%0" : "=r"(res) : "rm"(param));
-                        return 63 - static_cast<uint32>(res);
-                    } else {
-                        // faster than _BitScanReverse as it avoids memory indirection
-                        const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
-                        return (high == 0) ? 63 - _bit_scan_reverse(static_cast<uint32>(param)) :
-                                             31 - _bit_scan_reverse(high);
-                    }
+            // return is undefined if input is zero
+            if constexpr (currentArch == Architecture::Bit64) {
+                uint64 res;
+                __asm__("bsrq %1,%0" : "=r"(res) : "rm"(param));
+                return 63 - static_cast<uint32>(res);
+            } else {
+                // faster than _BitScanReverse as it avoids memory indirection
+                const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
+                return (high == 0) ? 63 - _bit_scan_reverse(static_cast<uint32>(param)) : 31 - _bit_scan_reverse(high);
+            }
 #    elif XS_COMPILER == XS_MSVC
-                    // return is undefined if input is zero (function returns 0 but we are not checking that)
-                    unsigned long res;
-                    if constexpr (currentArch == Architecture::Bit64) {
-                        _BitScanReverse64(&res, param);
-                        return 63 - res;
-                    } else {
-                        auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
-                        if (high == 0) {
-                            _BitScanReverse(&res, static_cast<uint32>(param));
-                            return 63 - res;
-                        } else {
-                            _BitScanReverse(&res, high);
-                            return 31 - res;
-                        }
-                    }
+            // return is undefined if input is zero (function returns 0 but we are not checking that)
+            unsigned long res;
+            if constexpr (currentArch == Architecture::Bit64) {
+                _BitScanReverse64(&res, param);
+                return 63 - res;
+            } else {
+                const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
+                if (high == 0) {
+                    _BitScanReverse(&res, static_cast<uint32>(param));
+                    return 63 - res;
+                }
+                _BitScanReverse(&res, high);
+                return 31 - res;
+            }
 #    elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-                    // return is undefined if input is zero
-                    return __builtin_clzll(param);
+            // return is undefined if input is zero
+            return __builtin_clzll(param);
 #    else
 #        error Unsupported compiler
 #    endif
-                }
+        }
 #endif
     } else {
         return T{0};
@@ -404,6 +399,7 @@ XS_INLINE uint32 clz(const T param) noexcept
 } // namespace Shift
 
 template<typename T>
+XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint8 bitExtract(const T param, const uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
@@ -420,7 +416,7 @@ XS_INLINE uint8 bitExtract(const T param, const uint32 bit) noexcept
 #elif XS_COMPILER == XS_MSVC
         return static_cast<uint8>(_bittest(reinterpret_cast<const long*>(&param), bit));
 #else
-                return static_cast<uint8>((static_cast<uint32>(param) >> bit) & 0x1);
+        return static_cast<uint8>((static_cast<uint32>(param) >> bit) & 0x1);
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
@@ -452,22 +448,19 @@ XS_INLINE uint8 bitExtract(const T param, const uint32 bit) noexcept
             return _bittest(reinterpret_cast<const long*>(&val), bit2);
         }
 #else
-                return static_cast<uint8>((static_cast<uint32>(param) >> bit) & 0x1_ui32);
+        return static_cast<uint8>((static_cast<uint32>(param) >> bit) & 0x1_ui32);
 #endif
-#if XS_ISA == XS_X86
     } else if constexpr (isSigned<T>) {
         return static_cast<T>(bitExtract(static_cast<int32>(param), bit));
     } else if constexpr (isUnsigned<T>) {
         return static_cast<T>(bitExtract(static_cast<uint32>(param), bit));
-    }
-#else
     } else {
         return static_cast<uint8>((param >> bit) & 0x1);
     }
-#endif
 }
 
 template<typename T>
+XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE T bitSet(const T param, const uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
@@ -479,7 +472,7 @@ XS_INLINE T bitSet(const T param, const uint32 bit) noexcept
 #elif XS_COMPILER == XS_MSVC
         _bittestandset(reinterpret_cast<long*>(&ret), bit);
 #else
-                    ret = param | (1 << bit);
+        ret = param | (1 << bit);
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
@@ -503,23 +496,20 @@ XS_INLINE T bitSet(const T param, const uint32 bit) noexcept
             reinterpret_cast<uint32*>(&ret)[bit >= 32] = val;
         }
 #else
-                    ret = (param | (T{1} << bit));
+        ret = (param | (T{1} << bit));
 #endif
-#if XS_ISA == XS_X86
     } else if constexpr (isSigned<T>) {
         ret = static_cast<T>(bitSet(static_cast<int32>(param), bit));
     } else if constexpr (isUnsigned<T>) {
         ret = static_cast<T>(bitSet(static_cast<uint32>(param), bit));
-    }
-#else
     } else {
         ret = (param | (T{1} << bit));
     }
-#endif
     return ret;
 }
 
 template<typename T>
+XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE T bitClear(const T param, const uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
@@ -531,7 +521,7 @@ XS_INLINE T bitClear(const T param, const uint32 bit) noexcept
 #elif XS_COMPILER == XS_MSVC
         _bittestandreset(reinterpret_cast<long*>(&ret), bit);
 #else
-                        ret = param & ~(1_ui32 << bit);
+        ret = param & ~(1_ui32 << bit);
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
@@ -555,38 +545,41 @@ XS_INLINE T bitClear(const T param, const uint32 bit) noexcept
             reinterpret_cast<uint32*>(&ret)[bit >= 32] = val;
         }
 #else
-                        ret = (param & ~(T{1} << bit));
+        ret = (param & ~(T{1} << bit));
 #endif
-#if XS_ISA == XS_X86
     } else if constexpr (isSigned<T>) {
         ret = static_cast<T>(bitClear(static_cast<int32>(param), bit));
     } else if constexpr (isUnsigned<T>) {
         ret = static_cast<T>(bitClear(static_cast<uint32>(param), bit));
-    }
-#else
     } else {
         ret = (param & ~(T{1} << bit));
     }
-#endif
 
     return ret;
 }
 
 template<typename T, typename T2>
+XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
 XS_INLINE T bitCast(const T2& param) noexcept
 {
     static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
+    // TODO: Add specialised SIMD type casting (e.g. _mm_castps_si128)
     if constexpr (isSame<T, T2>) {
         return param;
     } else {
         // Reinterpret cast and unions are not usable due to aliasing rules.
+#ifdef __cpp_lib_bit_cast
+        return __builtin_bit_cast(T, param);
+#else
         T ret;
         memcpy(&ret, &param, sizeof(T));
         return ret;
+#endif
     }
 }
 
 template<typename T, typename T2>
+XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
 XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 {
     static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
@@ -616,6 +609,7 @@ XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 }
 
 template<typename T, typename T2>
+XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
 XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 {
     static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
@@ -645,6 +639,7 @@ XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 }
 
 template<typename T, typename T2>
+XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
 XS_INLINE T bitXor(const T& param1, const T2& param2) noexcept
 {
     static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));

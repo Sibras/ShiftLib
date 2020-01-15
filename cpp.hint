@@ -1,0 +1,12 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define XS_FUNCTION __declspec(noalias)
+#define XS_REQUIRES(expr) requires (expr)
+#define XS_REQUIRES(expr)
+#define XS_REQUIRES(expr) requires(expr)
+#define XS_REQUIRES(expr)
+#define XS_REQUIRES(expr) requires(expr)
+#define XS_FUNCTION __declspec(noalias)
+#define XS_FUNCTION XS_IMPORT __declspec(noalias)
+#define XS_FUNCTION

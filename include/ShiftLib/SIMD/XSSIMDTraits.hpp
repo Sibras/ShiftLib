@@ -17,21 +17,7 @@
 
 #include "XSTraits.inl"
 
-#if XS_ISA == XS_X86
-#    include "SIMD/XSSIMDx86.hpp"
-#endif
-
 namespace Shift {
-enum class SIMDWidth
-{
-    Scalar, /**< SIMD will not be used */
-#if XS_ISA == XS_X86
-    B16, /**< 16Byte or 128bit SIMD */
-    B32, /**< 32Byte or 256bit SIMD */
-    B64, /**< 64Byte or 512bit SIMD */
-#endif
-};
-
 /**
  * Gets number of values that can be stored in SIMD type.
  * @tparam T     Type of values.
@@ -39,10 +25,10 @@ enum class SIMDWidth
  * @returns The number of values.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION constexpr uint32 getNumValues() noexcept;
+XS_FUNCTION XS_CONSTEVAL uint32 getNumValues() noexcept;
 
 template<typename T, SIMDWidth Width>
-inline constexpr bool numValues = getNumValues<T, Width>();
+inline constexpr uint32 numValues = getNumValues<T, Width>();
 
 /**
  * Gets the width available by a SIMD implementation.
@@ -50,7 +36,7 @@ inline constexpr bool numValues = getNumValues<T, Width>();
  * @returns The width.
  */
 template<SIMD Impl>
-XS_FUNCTION constexpr SIMDWidth getWidthSIMD() noexcept;
+XS_FUNCTION XS_CONSTEVAL SIMDWidth getWidthSIMD() noexcept;
 
 template<SIMD Impl>
 inline constexpr SIMDWidth widthSIMD = getWidthSIMD<Impl>();
@@ -62,13 +48,13 @@ inline constexpr SIMDWidth widthSIMD = getWidthSIMD<Impl>();
  * @returns True if same.
  */
 template<typename T, typename T2>
-XS_FUNCTION constexpr bool getSameWidth() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getSameImpl() noexcept;
 
 template<typename T, typename T2>
-inline constexpr bool sameImpl = getSameWidth<T, T2>();
+inline constexpr bool sameImpl = getSameImpl<T, T2>();
 
 template<typename T, typename T2>
-using requireSameWidth = require<sameImpl<T, T2>>;
+using requireSameImpl = require<sameImpl<T, T2>>;
 
 /**
  * Query if 512bit SIMD operations are supported.
@@ -76,7 +62,7 @@ using requireSameWidth = require<sameImpl<T, T2>>;
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasSIMD512() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasSIMD512() noexcept;
 
 template<typename T>
 inline constexpr bool hasSIMD512 = getHasSIMD512<T>();
@@ -87,7 +73,7 @@ inline constexpr bool hasSIMD512 = getHasSIMD512<T>();
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasSIMD256() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasSIMD256() noexcept;
 
 template<typename T>
 inline constexpr bool hasSIMD256 = getHasSIMD256<T>();
@@ -98,8 +84,20 @@ inline constexpr bool hasSIMD256 = getHasSIMD256<T>();
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION constexpr bool getHasSIMD128() noexcept;
+XS_FUNCTION XS_CONSTEVAL bool getHasSIMD128() noexcept;
 
 template<typename T>
 inline constexpr bool hasSIMD128 = getHasSIMD128<T>();
+
+/**
+ * Gets maximum alignment required to store requested number of elements based on the current available SIMD widths.
+ * @tparam T Type to check support for.
+ * @tparam Size Number of elements stored in sequence.
+ * @returns The maximum alignment.
+ */
+template<typename T, uint32 Size>
+XS_FUNCTION XS_CONSTEVAL uint32 getMaxAlignment() noexcept;
+
+template<typename T, uint32 Size>
+inline constexpr uint32 maxAlignment = getMaxAlignment<T, Size>();
 } // namespace Shift
