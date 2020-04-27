@@ -4,21 +4,27 @@ AccessModifierOffset: -4
 AlignAfterOpenBracket: DontAlign
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: false
 AlignEscapedNewlines: Left
 AlignOperands: false
 AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: false #Never
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Inline
 AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: true
 BinPackParameters: true
 BraceWrapping:
+  AfterCaseLabel: false
   AfterClass: true
   AfterControlStatement: false
   AfterEnum: true
@@ -29,6 +35,7 @@ BraceWrapping:
   AfterExternBlock: false
   BeforeCatch: false
   BeforeElse: false
+  #BeforeLambdaBody: false
   IndentBraces: false
   SplitEmptyFunction: false
   SplitEmptyRecord: false
@@ -46,6 +53,7 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
+#DeriveLineEnding: false
 DerivePointerAlignment: false
 DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
@@ -56,7 +64,10 @@ IncludeCategories:
     Priority:        1
   - Regex:           '^<'
     Priority:        2
+#IncludeIsMainSourceRegex: '(.inl)$'
+#IndentCaseBlocks: false
 IndentCaseLabels: true
+#IndentGotoLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: 4
 IndentWrappedFunctionNames: false
@@ -68,6 +79,7 @@ ReflowComments: true
 SortIncludes: true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeCpp11BracedList: false
@@ -75,15 +87,19 @@ SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
+#SpaceBeforeSquareBrackets: false
+#SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
 SpacesInCStyleCastParentheses: false
+#SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: Cpp11
+Standard: Auto #Latest
 TabWidth: 4
+#UseCRLF: false
 UseTab: Never
 ...
 
