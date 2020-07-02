@@ -64,49 +64,47 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSCompiler.h>"
 
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSTraits.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSMath.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSBit.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSInt128.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUInt128.hpp>"
-    
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSTraits.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSMath.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSMath.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSBit.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSBit.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSInt128.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSInt128.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUInt128.hpp>"    
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUInt128.inl>"
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBase.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDInBase.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD2.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD4.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD6.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x2.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD8.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x3.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD12.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x4.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD16.hpp>"
-    
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTypes.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBase.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBase.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDInBase.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDInBase.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD2.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD2.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD4.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD6.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD6.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x2.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x2.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD8.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD8.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x3.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x3.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD12.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD12.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x4.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD16.hpp>"    
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD16.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDx86.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDx86Functions.hpp>"
 )
 
 target_compile_features(ShiftLib
@@ -156,13 +154,16 @@ install(FILES ShiftLibConfig.cmake ShiftLibConfigVersion.cmake
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     find_package(GTest REQUIRED)
     include(GoogleTest)
-
-    add_executable(XSTest
-        tests/XSTraitsTest.cpp
-        tests/XSMathTest.cpp
-        tests/XSBitTest.cpp
+    
+    #Source files are included in main executable and in dependent ISA specific static libs
+    set(SHIFTLIBTESTFILES
+        tests/XSCompilerOptions.h
+        tests/XSTypes.hpp
         tests/XSUInt128Test.cpp
         tests/XSInt128Test.cpp
+        tests/XSMathTest.cpp
+        tests/XSTraitsTest.cpp
+        tests/XSBitTest.cpp
         tests/XSSIMDTraitsTest.cpp
         tests/XSSIMDBoolTest.cpp
         tests/XSSIMDBaseTest.cpp
@@ -178,41 +179,126 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/XSSIMD3x4Test.cpp
         tests/XSSIMD16Test.cpp
     )
+    
+    add_executable(ShiftLibTest)
 
-    include(CheckIPOSupported)
-    check_ipo_supported(RESULT IPO_FOUND)
-    if(IPO_FOUND)
-        set_target_properties(XSTest PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-    endif()
+    target_sources(ShiftLibTest PRIVATE ${SHIFTLIBTESTFILES})
 
-    target_link_libraries(XSTest
+    # XSTESTMAIN is used to signal if in main executable or ISA library
+    target_compile_definitions(ShiftLibTest PRIVATE XSTESTMAIN)
+    
+    set_target_properties(
+        ShiftLibTest PROPERTIES
+        EXCLUDE_FROM_ALL true
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    target_link_libraries(ShiftLibTest
         PRIVATE GTest::GTest
         PRIVATE GTest::Main
         PRIVATE ShiftLib
     )
-
-    set_target_properties(
-        XSTest PROPERTIES
-        EXCLUDE_FROM_ALL true
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
     
     # Enable all compile warnings
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        target_compile_options(XSTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
+        target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-        target_compile_options(XSTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror -wd1011>)
+        if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest>)
+        else()
+            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror -wd1011>)
+        endif()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        target_compile_options(XSTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3>)
+        target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest>)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            target_compile_options(XSTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX>)
+            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /std:c++latest>)
         else()
-            target_compile_options(XSTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
+            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
         endif()
     endif()
 
-    gtest_discover_tests(XSTest
+    # Create a list of tested compiler options
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBTESTOPTIONS -march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+        if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
+        else()
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        endif()
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS /arch:IA32 /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+        else()
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        endif()
+    endif()
+
+    #Add an library for each tested set of compiler options
+    foreach(SHIFTLIBCOMPILE ${SHIFTLIBTESTOPTIONSTAG})
+        add_library(ShiftLibTest_${SHIFTLIBCOMPILE} STATIC)        
+        
+        target_sources(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIBTESTFILES})
+
+        set_target_properties(
+            ShiftLibTest_${SHIFTLIBCOMPILE} PROPERTIES
+            EXCLUDE_FROM_ALL true
+            VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+
+        target_link_libraries(ShiftLibTest_${SHIFTLIBCOMPILE}
+            PRIVATE GTest::GTest
+            PRIVATE GTest::Main
+            PRIVATE ShiftLib
+        )
+    
+        # Enable all compile warnings and add any extra required linker flags to ensure that the static libs are correctly included in final program
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
+            target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibTest_${SHIFTLIBCOMPILE} --no-whole-archive>)
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+            if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /bigobj>)
+                target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibTest_${SHIFTLIBCOMPILE}>)
+            else()
+                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror -wd1011>)
+                target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibTest_${SHIFTLIBCOMPILE} --no-whole-archive>)
+            endif()
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /bigobj>)
+            target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibTest_${SHIFTLIBCOMPILE}>)
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+            if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /std:c++latest /bigobj>)
+                target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibTest_${SHIFTLIBCOMPILE}>)
+            else()
+                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
+                target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibTest_${SHIFTLIBCOMPILE} --no-whole-archive>)
+            endif()
+        endif()
+
+        # Add compiler options from list to lib
+        list(GET SHIFTLIBTESTOPTIONS 0 TESTOPTIONSTAG)
+        separate_arguments(TESTOPTIONSTAG)
+        foreach(TESTOPTIONS ${TESTOPTIONSTAG})
+            target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${TESTOPTIONS}>)
+        endforeach()
+        list(REMOVE_AT SHIFTLIBTESTOPTIONS 0)        
+        
+        # Add the ISA dependent lib as dependency of main test program
+        target_link_libraries(ShiftLibTest PRIVATE ShiftLibTest_${SHIFTLIBCOMPILE})
+    endforeach()
+    
+    gtest_discover_tests(ShiftLibTest
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
 endif()

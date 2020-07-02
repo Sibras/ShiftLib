@@ -16,6 +16,7 @@
 
 #include "XSTraits.inl"
 
+#include "XSCompilerOptions.h"
 #include "XSInt128.inl"
 #include "XSUInt128.inl"
 
@@ -26,6 +27,7 @@ using namespace Shift;
 class Test1;
 class Test2;
 
+#ifdef XSTESTMAIN
 TEST(Traits, IsSame)
 {
     static_assert(isSame<int32, uint32> == false);
@@ -218,11 +220,13 @@ TEST(Traits, Promote)
     static_assert(isSameCV<promote<const Int128>, const Int128> == true);
     static_assert(isSameCV<promote<const Int128>, const UInt128> == false);
 }
+#endif
 
-TEST(Traits, hasSIMD)
+#ifndef XSTESTMAIN
+TEST(Traits, TESTISA(hasSIMD))
 {
     static_assert(hasSIMD<float32> == (defaultSIMD > SIMD::Scalar));
-    static_assert(hasSIMD<uint32> == true);
+    static_assert(hasSIMD<uint32> == false);
     static_assert(hasSIMD<float64> == false);
     static_assert(hasSIMD<Int128> == false);
 
@@ -241,3 +245,4 @@ TEST(Traits, hasSIMD)
     static_assert(hasFMAFree<float64> == false);
     static_assert(hasFMAFree<Int128> == false);
 }
+#endif

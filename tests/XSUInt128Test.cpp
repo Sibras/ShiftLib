@@ -22,6 +22,7 @@
 
 using namespace Shift;
 
+#ifdef XSTESTMAIN
 TEST(UInt128, Constructor)
 {
     ASSERT_EQ(uint128(56_ui8), uint128(0_ui64, 56_ui64));
@@ -812,3 +813,4 @@ TEST(UInt128, Divide)
     test7 /= 57_i64;
     ASSERT_EQ(test7, uint128(1_ui64, UINT64_MAX));
 }
+#endif

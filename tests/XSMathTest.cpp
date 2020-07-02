@@ -20,6 +20,10 @@
 
 using namespace Shift;
 
+#ifdef XSTESTMAIN
+#    define ASSERT_FLOAT_NEAR(x, y, z) \
+        ASSERT_NEAR(static_cast<float32>(x), static_cast<float32>(y), static_cast<float32>(z))
+
 TEST(Math, Sign)
 {
     ASSERT_EQ(sign<int8>(64_i8, 1_i8), 64_i8);
@@ -332,10 +336,10 @@ TEST(Math, Rsqrt)
 
 TEST(Math, Sin)
 {
-    ASSERT_NEAR(sin<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(valPi2<float32>), 1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sin<float32>(-valPi2<float32>), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(sin<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sin<float32>(valPi2<float32>), 1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sin<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sin<float32>(-valPi2<float32>), -1._f32, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(sin<float64>(valPi<float64>), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(sin<float64>(valPi2<float64>), 1._f64, DBL_EPSILON * 2.);
@@ -345,10 +349,10 @@ TEST(Math, Sin)
 
 TEST(Math, Cos)
 {
-    ASSERT_NEAR(cos<float32>(valPi<float32>), -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(valPi2<float32>), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(-valPi<float32>), -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cos<float32>(-valPi2<float32>), 0._f32, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(cos<float32>(valPi<float32>), -1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cos<float32>(valPi2<float32>), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cos<float32>(-valPi<float32>), -1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cos<float32>(-valPi2<float32>), 0._f32, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(cos<float64>(valPi<float64>), -1._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(cos<float64>(valPi2<float64>), 0._f64, DBL_EPSILON * 2.);
@@ -358,10 +362,10 @@ TEST(Math, Cos)
 
 TEST(Math, Tan)
 {
-    ASSERT_NEAR(tan<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(tan<float32>(valPi4<float32>), 1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(tan<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(tan<float32>(-valPi4<float32>), -1._f32, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(tan<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(tan<float32>(valPi4<float32>), 1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(tan<float32>(-valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(tan<float32>(-valPi4<float32>), -1._f32, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(tan<float64>(valPi<float64>), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(tan<float64>(valPi4<float64>), 1._f64, DBL_EPSILON * 2.);
@@ -372,14 +376,14 @@ TEST(Math, Tan)
 TEST(Math, Sincos)
 {
     float32 cosRes;
-    ASSERT_NEAR(sincos<float32>(valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(valPi2<float32>, cosRes), 1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(-valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(sincos<float32>(-valPi2<float32>, cosRes), -1._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(sincos<float32>(valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sincos<float32>(valPi2<float32>, cosRes), 1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sincos<float32>(-valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cosRes, -1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(sincos<float32>(-valPi2<float32>, cosRes), -1._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(cosRes, 0._f32, FLT_EPSILON * 2.f);
 
     float64 cosRes2;
     ASSERT_NEAR(sincos<float64>(valPi<float64>, cosRes2), 0._f64, DBL_EPSILON * 2.);
@@ -394,9 +398,9 @@ TEST(Math, Sincos)
 
 TEST(Math, Asin)
 {
-    ASSERT_NEAR(asin<float32>(0._f32), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(asin<float32>(1._f32), valPi2<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(asin<float32>(-1._f32), -valPi2<float32>, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(asin<float32>(0._f32), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(asin<float32>(1._f32), valPi2<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(asin<float32>(-1._f32), -valPi2<float32>, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(asin<float64>(0._f64), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(asin<float64>(1._f64), valPi2<float64>, DBL_EPSILON * 2.);
@@ -405,9 +409,9 @@ TEST(Math, Asin)
 
 TEST(Math, Acos)
 {
-    ASSERT_NEAR(acos<float32>(0._f32), valPi2<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(acos<float32>(1._f32), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(acos<float32>(-1._f32), valPi<float32>, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(acos<float32>(0._f32), valPi2<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(acos<float32>(1._f32), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(acos<float32>(-1._f32), valPi<float32>, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(acos<float64>(0._f64), valPi2<float64>, DBL_EPSILON * 2.);
     ASSERT_NEAR(acos<float64>(1._f64), 0._f64, DBL_EPSILON * 2.);
@@ -416,9 +420,9 @@ TEST(Math, Acos)
 
 TEST(Math, Atan)
 {
-    ASSERT_NEAR(atan<float32>(0._f32), 0._f32, FLT_EPSILON * 2.);
-    ASSERT_NEAR(atan<float32>(1._f32), valPi4<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(atan<float32>(-1._f32), -valPi4<float32>, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(atan<float32>(0._f32), 0._f32, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(atan<float32>(1._f32), valPi4<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(atan<float32>(-1._f32), -valPi4<float32>, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(atan<float64>(0._f64), 0._f64, DBL_EPSILON * 2.);
     ASSERT_NEAR(atan<float64>(1._f64), valPi4<float64>, DBL_EPSILON * 2.);
@@ -427,10 +431,10 @@ TEST(Math, Atan)
 
 TEST(Math, Atan2)
 {
-    ASSERT_NEAR(atan2<float32>(2._f32, 0._f32), valPi2<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(atan2<float32>(-2._f32, 0._f32), -valPi2<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(atan2<float32>(1._f32, 1._f32), valPi4<float32>, FLT_EPSILON * 2.);
-    ASSERT_NEAR(atan2<float32>(1._f32, -1._f32), val3Pi4<float32>, FLT_EPSILON * 2.);
+    ASSERT_FLOAT_NEAR(atan2<float32>(2._f32, 0._f32), valPi2<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(atan2<float32>(-2._f32, 0._f32), -valPi2<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(atan2<float32>(1._f32, 1._f32), valPi4<float32>, FLT_EPSILON * 2.f);
+    ASSERT_FLOAT_NEAR(atan2<float32>(1._f32, -1._f32), val3Pi4<float32>, FLT_EPSILON * 2.f);
 
     ASSERT_NEAR(atan2<float64>(2._f64, 0._f64), valPi2<float64>, DBL_EPSILON * 2.);
     ASSERT_NEAR(atan2<float64>(-2._f64, 0._f64), -valPi2<float64>, DBL_EPSILON * 2.);
@@ -534,5 +538,6 @@ TEST(Math, Ldexp)
     ASSERT_FLOAT_EQ(ldexp<float32>(4._f32, 3_i32), 32._f32);
 
     ASSERT_DOUBLE_EQ(ldexp<float64>(7._f64, -4_i32), 0.4375_f64);
-    ASSERT_DOUBLE_EQ(ldexp<float64>(4._f32, 3_i32), 32._f64);
+    ASSERT_DOUBLE_EQ(ldexp<float64>(4._f64, 3_i32), 32._f64);
 }
+#endif
