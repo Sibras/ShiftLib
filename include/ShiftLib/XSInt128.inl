@@ -16,10 +16,7 @@
  */
 
 #include "XSInt128.hpp"
-#if (XS_ARCH == XS_ARCH64) && \
-    ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
-#    include <intrin.h>
-#endif
+
 #include "XSBit.inl"
 #include "XSMath.inl"
 #include "XSUInt128.inl"
