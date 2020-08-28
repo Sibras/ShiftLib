@@ -178,6 +178,15 @@ public:
         XS_FUNCTION bool getNone() const noexcept;
 
         /**
+         * Get a SIMD2::Mask.
+         * @note Optimised for getting value from register.
+         * @tparam Index The index of the element to retrieve (range is 0-2).
+         * @returns SIMD2::Mask containing the desired values.
+         */
+        template<uint32 Index>
+        XS_FUNCTION typename SIMD2Def::Mask getMask2() const noexcept;
+
+        /**
          * Perform automated instruction execution and masking operations.
          * @note This function can be used to apply optimisations when using masking to avoid conditional branches.
          *  This macro will automatically convert code in expression to an optimised form based on whether the program

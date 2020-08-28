@@ -183,6 +183,29 @@ XS_INLINE bool SIMD4<T, Width>::Mask::getNone() const noexcept
     }
 }
 
+template<typename T, SIMDWidth Width>
+template<uint32 Index>
+XS_INLINE typename SIMD4<T, Width>::SIMD2Def::Mask SIMD4<T, Width>::Mask::getMask2() const noexcept
+{
+    static_assert(Index < 2);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (Index == 0) {
+            return SIMD2Def::Mask(this->values);
+        } else {
+            if constexpr (defaultSIMD >= SIMD::AVX512) {
+                return SIMD2Def::Mask(_kshiftri_mask8(this->values, 2));
+            } else {
+                return SIMD2Def::Mask(_mm_shuffle3232_ps(this->values));
+            }
+        }
+    } else
+#endif
+    {
+        return SIMD2Def::Mask((&this->values0)[Index * 2], (&this->values0)[Index * 2 + 1]);
+    }
+}
+
 #if XS_ISA == XS_X86
 template<typename T, SIMDWidth Width>
 class SIMDMasker4X86
