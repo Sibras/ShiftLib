@@ -16,6 +16,7 @@
  */
 
 #include "XSBit.hpp"
+
 #include "XSMath.inl"
 
 #if XS_ISA == XS_X86
@@ -162,11 +163,8 @@ XS_INLINE uint32 popcnt(const T param) noexcept
     if constexpr (isSameAny<T, int32, uint32>) {
 #if XS_COMPILER == XS_CUDA
         return __popc(param);
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow popcnt unless popcnt is enabled during compile
-        return __builtin_popcount(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::SSE42) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::SSE42 || XS_ARCH_ABM)) {
             return _mm_popcnt_u32(
                 static_cast<uint32>(param)); // popcnt added to AMD with Barcelona(SSE4a) and Intel with Nehalem(SSE4.2)
         } else {
@@ -184,11 +182,8 @@ XS_INLINE uint32 popcnt(const T param) noexcept
     } else if constexpr (isSameAny<T, int64, uint64>) {
 #if XS_COMPILER == XS_CUDA
         return __popcll(param);
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow popcnt unless popcnt is enabled during compile
-        return __builtin_popcountll(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::SSE42) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::SSE42 || XS_ARCH_ABM)) {
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_mm_popcnt_u64(static_cast<uint64>(param)));
             } else {
@@ -225,11 +220,8 @@ XS_INLINE uint32 ctz(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         // return is 0 if input is zero
         return __ffs(param) - 1;
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow tzcnt unless BMI is enabled during compile
-        return __builtin_ctz(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI)) {
             // return is 32 if input is zero
             return _tzcnt_u32(param); // tzcnt added to AMD with Piledriver(AVX) and Intel with Haswell(AVX2)
         } else {
@@ -253,11 +245,8 @@ XS_INLINE uint32 ctz(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         // return is 0 if input is zero
         return __ffsll(param) - 1;
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow tzcnt unless BMI is enabled during compile
-        return __builtin_ctzll(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI)) {
             // return is 64 if input is zero
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_tzcnt_u64(static_cast<uint64>(param)));
@@ -319,11 +308,8 @@ XS_INLINE uint32 clz(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         // return is 32 if input is zero
         return __clz(param);
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow lzcnt unless BMI is enabled during compile
-        return __builtin_clz(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI || XS_ARCH_ABM)) {
             // return is 32 if input is zero
             return _lzcnt_u32(param); // lzcnt added to AMD with Barcelona(SSE4a) and Intel with Haswell(AVX2)
         } else {
@@ -347,11 +333,8 @@ XS_INLINE uint32 clz(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         // return is 64 if input is zero
         return __clzll(param);
-#elif (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-        // Clang doesn't allow lzcnt unless BMI is enabled during compile
-        return __builtin_clzll(param);
 #else
-        if constexpr (currentISA == ISA::X86 && defaultSIMD >= SIMD::AVX2) {
+        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI || XS_ARCH_ABM)) {
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_lzcnt_u64(param));
             } else {

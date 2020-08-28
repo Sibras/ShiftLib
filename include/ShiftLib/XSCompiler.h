@@ -83,18 +83,20 @@
 #endif
 
 /* Find the arch type */
-#if defined(__x86_64) || defined(_M_X64)
+#if defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || defined(__aarch64__) || \
+    defined(_M_ARM64) || defined(__PPC64__) || defined(__powerpc64__) || defined(_ARCH_PPC64)
 #    define XS_ARCH XS_ARCH64
 #else
 #    define XS_ARCH XS_ARCH32
 #endif
 
 /* Find the instruction set */
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(_M_IX86) || \
+    defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #    define XS_ISA XS_X86
-#elif defined(__ppc__)
+#elif defined(__ppc__) || defined(__PPC64__) || defined(__powerpc64__) || defined(_ARCH_PPC64)
 #    define XS_ISA XS_PPC
-#elif defined(__arm__) || defined(_M_ARM)
+#elif defined(__arm__) || defined(_M_ARM) || defined(__aarch64__) || defined(_M_ARM64)
 #    define XS_ISA XS_ARM
 #elif XS_PLATFORM == XS_GPGPU
 #    define XS_ISA XS_GPU
@@ -162,71 +164,164 @@
 #endif
 
 /* Check for compilation settings on native compilers */
-#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG)
-#    if XS_ISA == XS_X86
-#        if defined(__AVX512F__)
-#            define XS_AVX512_OPT
-#        elif defined(__AVX2__)
-#            define XS_AVX2_OPT
-#        elif defined(__AVX__)
-#            define XS_AVX_OPT
-#        elif defined(__SSE4_2__)
-#            define XS_SSE42_OPT
-#        elif defined(__SSE4_1__)
-#            define XS_SSE41_OPT
-#        elif defined(__SSSE3__) || defined(__SSE3__)
-#            define XS_SSE3_OPT
-#        endif
+#if XS_ISA == XS_X86
+#    if defined(__SSE__) || (_M_IX86_FP == 1)
+#        define XS_ARCH_SSE 1
+#    else
+#        define XS_ARCH_SSE 0
 #    endif
-#elif (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
-#    if XS_ISA == XS_X86
-#        if defined(_M_IX86_FP) && (_M_IX86_FP == 1)
-#            define XS_SSE3_OPT
-#        elif (XS_ARCH == XS_ARCH64) || (_M_IX86_FP == 2)
-#            if defined(__AVX512F__)
-#                define XS_AVX512_OPT
-#            elif defined(__AVX2__)
-#                define XS_AVX2_OPT
-#            elif defined(__AVX__)
-#                define XS_AVX_OPT
-#            else
-#                define XS_SSE3_OPT
-#            endif
-#        endif
+#    if defined(__SSE2__) || (_M_IX86_FP == 2)
+#        define XS_ARCH_SSE2 1
+#    else
+#        define XS_ARCH_SSE2 0
+#    endif
+#    if defined(__SSE3__)
+#        define XS_ARCH_SSE3 1
+#    else
+#        define XS_ARCH_SSE3 0
+#    endif
+#    if defined(__SSSE3__)
+#        define XS_ARCH_SSSE3 1
+#    else
+#        define XS_ARCH_SSSE3 0
+#    endif
+#    if defined(__SSE4_1__)
+#        define XS_ARCH_SSE4_1 1
+#    else
+#        define XS_ARCH_SSE4_1 0
+#    endif
+#    if defined(__SSE4_2__)
+#        define XS_ARCH_SSE4_2 1
+#    else
+#        define XS_ARCH_SSE4_2 0
+#    endif
+#    if defined(__AVX__)
+#        define XS_ARCH_AVX 1
+#    else
+#        define XS_ARCH_AVX 0
+#    endif
+#    if defined(__AVX2__)
+#        define XS_ARCH_AVX2 1
+#    else
+#        define XS_ARCH_AVX2 0
+#    endif
+#    if defined(__FMA__)
+#        define XS_ARCH_FMA3 1
+#    else
+#        define XS_ARCH_FMA3 0
+#    endif
+#    if defined(__FMA4__)
+#        define XS_ARCH_FMA4 1
+#    else
+#        define XS_ARCH_FMA4 0
+#    endif
+#    if defined(__F16C__)
+#        define XS_ARCH_F16C 1
+#    else
+#        define XS_ARCH_F16C 0
+#    endif
+#    if defined(__ABM__)
+#        define XS_ARCH_ABM 1
+#    else
+#        define XS_ARCH_ABM 0
+#    endif
+#    if defined(__ADX__)
+/* Added on Broadwell and Zen */
+#        define XS_ARCH_ADX 1
+#    else
+#        define XS_ARCH_ADX 0
+#    endif
+#    if defined(__BMI__)
+#        define XS_ARCH_BMI 1
+#    else
+#        define XS_ARCH_BMI 0
+#    endif
+#    if defined(__BMI2__)
+#        define XS_ARCH_BMI2 1
+#    else
+#        define XS_ARCH_BMI2 0
+#    endif
+#    if defined(__AVX512F__)
+#        define XS_ARCH_AVX512F 1
+#    else
+#        define XS_ARCH_AVX512F 0
+#    endif
+
+/* Fix up for backward propagation */
+#    if XS_ARCH_AVX512F && !XS_ARCH_AVX2
+#        undef XS_ARCH_AVX2
+#        define XS_ARCH_AVX2 1
+#    endif
+#    if XS_ARCH_AVX2 && !XS_ARCH_AVX
+#        undef XS_ARCH_AVX
+#        define XS_ARCH_AVX 1
+#    endif
+#    if XS_ARCH_AVX && !XS_ARCH_SSE4_2
+#        undef XS_ARCH_SSE4_2
+#        define XS_ARCH_SSE4_2 1
+#    endif
+#    if XS_ARCH_SSE4_2 && !XS_ARCH_SSE4_1
+#        undef XS_ARCH_SSE4_1
+#        define XS_ARCH_SSE4_1 1
+#    endif
+#    if XS_ARCH_SSE4_1 && !XS_ARCH_SSSE3
+#        undef XS_ARCH_SSSE3
+#        define XS_ARCH_SSSE3 1
+#    endif
+#    if XS_ARCH_SSSE3 && !XS_ARCH_SSE3
+#        undef XS_ARCH_SSE3
+#        define XS_ARCH_SSE3 1
+#    endif
+#    if XS_ARCH_SSE3 && !XS_ARCH_SSE2
+#        undef XS_ARCH_SSE2
+#        define XS_ARCH_SSE2 1
+#    endif
+#    if XS_ARCH_SSE2 && !XS_ARCH_SSE
+#        undef XS_ARCH_SSE
+#        define XS_ARCH_SSE 1
+#    endif
+
+#    if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && XS_ARCH_AVX2
+/* MSVC doesnt define subsets */
+#        undef XS_ARCH_FMA3
+#        define XS_ARCH_FMA3 1
+#        undef XS_ARCH_BMI
+#        define XS_ARCH_BMI 1
+#    elif XS_ARCH_AVX2 && !XS_ARCH_FMA3
+#        error Usage of AVX2 requires FMA3 to also be enabled
+#    elif XS_ARCH_AVX2 && !XS_ARCH_BMI
+#        error Usage of AVX2 requires BMI to also be enabled
+#    endif
+#    if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && XS_ARCH_AVX512F
+#        undef XS_ARCH_BMI2
+#        define XS_ARCH_BMI2 1
+#    elif XS_ARCH_AVX512F && !XS_ARCH_BMI2
+#        error Usage of AVX512 requires BMI2 to also be enabled
 #    endif
 #endif
 
 /* Change base ISA to match compiler settings */
 #if (XS_ISA == XS_X86) && !defined(XS_IGNORE_ISA_OPT)
-#    ifdef XS_AVX512_OPT
+#    if XS_ARCH_AVX512F
 #        undef XS_SIMD
 #        define XS_SIMD XS_AVX512
-#        undef XS_AVX512_OPT
-#    endif
-#    ifdef XS_AVX2_OPT
+#    elif XS_ARCH_AVX2
 #        undef XS_SIMD
 #        define XS_SIMD XS_AVX2
-#        undef XS_AVX2_OPT
-#    endif
-#    ifdef XS_AVX_OPT
+#    elif XS_ARCH_AVX
 #        undef XS_SIMD
 #        define XS_SIMD XS_AVX
-#        undef XS_AVX_OPT
-#    endif
-#    ifdef XS_SSE42_OPT
+#    elif XS_ARCH_SSE4_2
 #        undef XS_SIMD
 #        define XS_SIMD XS_SSE42
-#        undef XS_SSE42_OPT
-#    endif
-#    ifdef XS_SSE41_OPT
+#    elif XS_ARCH_SSE4_1
 #        undef XS_SIMD
 #        define XS_SIMD XS_SSE41
-#        undef XS_SSE41_OPT
-#    endif
-#    ifdef XS_SSE3_OPT
+#    elif XS_ARCH_SSE3 ||                                              \
+        (((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && \
+            (defined(XS_ARCH_SSE2) || (XS_ARCH == XS_ARCH64)))
 #        undef XS_SIMD
 #        define XS_SIMD XS_SSE3
-#        undef XS_SSE_OPT
 #    endif
 #endif
 
