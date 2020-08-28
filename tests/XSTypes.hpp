@@ -105,12 +105,20 @@ void assertType()
     static_assert(Shift::getIsSame<T, T2>(), "Types do not match, check compiler output for actual types");
 }
 
+#if defined(XS_TESTING_BASE) || defined(XS_TESTING_INBASE) || defined(XS_TESTING_SIMD2) ||     \
+    defined(XS_TESTING_SIMD3) || defined(XS_TESTING_SIMD4) || defined(XS_TESTING_SIMD6) ||     \
+    defined(XS_TESTING_SIMD3X2) || defined(XS_TESTING_SIMD8) || defined(XS_TESTING_SIMD3X3) || \
+    defined(XS_TESTING_SIMD12) || defined(XS_TESTING_SIMD3X4) || defined(XS_TESTING_SIMD16)
+#    define XS_TESTING_SIMD
+#endif
+
+#ifdef XS_TESTING_SIMD
 template<typename T>
 struct TestData128
 {
     using Type = T;
 };
-#if XS_ISA == XS_X86
+#    if XS_ISA == XS_X86
 template<>
 struct TestData128<Shift::float32>
 {
@@ -170,14 +178,14 @@ struct TestData128<Shift::float64>
 {
     using Type = __m128d;
 };
-#endif
+#    endif
 
 template<typename T>
 struct TestData256
 {
     using Type = T;
 };
-#if XS_ISA == XS_X86
+#    if XS_ISA == XS_X86
 template<>
 struct TestData256<Shift::float32>
 {
@@ -237,14 +245,14 @@ struct TestData256<Shift::float64>
 {
     using Type = __m256d;
 };
-#endif
+#    endif
 
 template<typename T>
 struct TestData512
 {
     using Type = T;
 };
-#if XS_ISA == XS_X86
+#    if XS_ISA == XS_X86
 template<>
 struct TestData512<Shift::float32>
 {
@@ -262,6 +270,7 @@ struct TestData512<Shift::float64>
 {
     using Type = __m512d;
 };
+#    endif
 #endif
 
 namespace Shift {
