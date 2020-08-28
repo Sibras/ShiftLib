@@ -22,6 +22,7 @@
 #    define XS_TESTING_BOOL
 #    define XS_TESTING_SIMD2
 #    define XS_TESTING_SIMD3
+#    define XS_TESTING_SIMD4
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD3)
 #    include "XSTypes.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
@@ -32,6 +33,7 @@ using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 #    define S3_ALL_NEGATE_TESTS 1
 #    define S3_ALL_SHUFFLE_TESTS 0
 #    define S3_ALL_COMBINE_TESTS 0
+#    define S3_ALL_COMBINE4_TESTS 0
 
 template<typename T>
 class TESTISA(SIMD3Test)
@@ -868,6 +870,70 @@ TYPED_TEST2(TESTISA(SIMD3Test), SIMD3)
     S3_COMBINE_TEST(2, 1, 0, test1, test3); //***
     S3_COMBINE_TEST(5, 1, 3, test1, test3); //***
     S3_COMBINE_TEST(2, 3, 5, test1, test3); //***
+#    endif
+
+#    define S3_COMBINE4_TEST(index0, index1, index2, index3, val0, val1)                       \
+        {                                                                                      \
+            typename TestFixture::TypeInt f0 = S3_GET2_INDEX##index0(val0, val1);              \
+            typename TestFixture::TypeInt f1 = S3_GET2_INDEX##index1(val0, val1);              \
+            typename TestFixture::TypeInt f2 = S3_GET2_INDEX##index2(val0, val1);              \
+            typename TestFixture::TypeInt f3 = S3_GET2_INDEX##index3(val0, val1);              \
+            ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::widthImpl>), \
+                ((val0).combine<index0, index1, index2, index3>(val1)), f0, f1, f2, f3);       \
+        }
+
+#    if S3_ALL_COMBINE4_TESTS
+#        define S3_COMBINE4_TESTXXX(index0, index1, index2, val0, val1) \
+            S3_COMBINE4_TEST(index0, index1, index2, 0, val0, val1)     \
+            S3_COMBINE4_TEST(index0, index1, index2, 1, val0, val1)     \
+            S3_COMBINE4_TEST(index0, index1, index2, 2, val0, val1)     \
+            S3_COMBINE4_TEST(index0, index1, index2, 3, val0, val1)     \
+            S3_COMBINE4_TEST(index0, index1, index2, 4, val0, val1)     \
+            S3_COMBINE4_TEST(index0, index1, index2, 5, val0, val1)
+
+#        define S3_COMBINE4_TESTXX(index0, index1, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 0, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 1, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 2, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 3, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 4, val0, val1) \
+            S3_COMBINE4_TESTXXX(index0, index1, 5, val0, val1)
+
+#        define S3_COMBINE4_TESTX(index0, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 0, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 1, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 2, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 3, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 4, val0, val1) \
+            S3_COMBINE4_TESTXX(index0, 5, val0, val1)
+
+    S3_COMBINE4_TESTX(0, test1, test3);
+    S3_COMBINE4_TESTX(1, test1, test3);
+    S3_COMBINE4_TESTX(2, test1, test3);
+    S3_COMBINE4_TESTX(3, test1, test3);
+    S3_COMBINE4_TESTX(4, test1, test3);
+    S3_COMBINE4_TESTX(5, test1, test3);
+#    else
+    S3_COMBINE4_TEST(0, 1, 3, 4, test1, test3);
+    S3_COMBINE4_TEST(3, 4, 0, 1, test1, test3);
+    S3_COMBINE4_TEST(0, 3, 1, 4, test1, test3);
+    S3_COMBINE4_TEST(3, 0, 4, 1, test1, test3);
+    S3_COMBINE4_TEST(2, 0, 1, 1, test1, test3);
+    S3_COMBINE4_TEST(5, 4, 4, 3, test1, test3);
+    S3_COMBINE4_TEST(1, 0, 5, 4, test1, test3);
+    S3_COMBINE4_TEST(5, 4, 1, 0, test1, test3);
+    S3_COMBINE4_TEST(0, 1, 2, 3, test1, test3);
+    S3_COMBINE4_TEST(3, 4, 5, 0, test1, test3);
+    S3_COMBINE4_TEST(3, 1, 2, 0, test1, test3);
+    S3_COMBINE4_TEST(4, 1, 5, 0, test1, test3);
+    S3_COMBINE4_TEST(5, 4, 3, 1, test1, test3);
+    S3_COMBINE4_TEST(5, 4, 2, 3, test1, test3);
+    S3_COMBINE4_TEST(5, 1, 4, 3, test1, test3);
+    S3_COMBINE4_TEST(0, 5, 4, 3, test1, test3);
+    S3_COMBINE4_TEST(3, 4, 2, 5, test1, test3); //***
+    S3_COMBINE4_TEST(2, 1, 4, 0, test1, test3); //***
+    S3_COMBINE4_TEST(2, 5, 4, 0, test1, test3); //***
+    S3_COMBINE4_TEST(1, 2, 4, 0, test1, test3); //***
 #    endif
 }
 #endif

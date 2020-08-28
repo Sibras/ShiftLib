@@ -2288,6 +2288,116 @@ XS_INLINE SIMD3<T, Width> SIMD3<T, Width>::combine(const SIMD3& other) const noe
 }
 
 template<typename T, SIMDWidth Width>
+template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+XS_INLINE typename SIMD3<T, Width>::SIMD4Def SIMD3<T, Width>::combine(const SIMD3& other) const noexcept
+{
+    static_assert(Index0 < 6 && Index1 < 6 && Index2 < 6 && Index3 < 6);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 3 && Index3 == 4) {
+            return SIMD4Def(_mm_movelh_ps(this->values, other.values));
+        } else if constexpr (Index0 == 3 && Index1 == 4 && Index2 == 0 && Index3 == 1) {
+            return SIMD4Def(_mm_movelh_ps(other.values, this->values));
+        } else if constexpr (Index0 == 0 && Index1 == 3 && Index2 == 1 && Index3 == 4) {
+            return SIMD4Def(_mm_unpacklo_ps(this->values, other.values));
+        } else if constexpr (Index0 == 3 && Index1 == 0 && Index2 == 4 && Index3 == 1) {
+            return SIMD4Def(_mm_unpacklo_ps(other.values, this->values));
+        } else if constexpr (Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3) {
+            return SIMD4Def(this->values).template shuffle<Index0, Index1, Index2, Index3>();
+        } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 >= 3 && Index3 >= 3) {
+            return SIMD4Def(other.values).template shuffle<Index0 - 3, Index1 - 3, Index2 - 3, Index3 - 3>();
+        } else if constexpr (Index0 < 3 && Index1 < 3 && Index2 >= 3 && Index3 >= 3) {
+            return SIMD4Def(
+                _mm_shuffle_ps(this->values, other.values, _MM_SHUFFLE(Index3 - 3, Index2 - 3, Index1, Index0)));
+        } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 < 3 && Index3 < 3) {
+            return SIMD4Def(
+                _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(Index3, Index2, Index1 - 3, Index0 - 3)));
+        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0 && Index1 == 1 && Index2 == 2) {
+            return SIMD4Def(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index3 - 3, 3, 0)));
+        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 3 && Index1 == 4 && Index2 == 5) {
+            return SIMD4Def(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index3, 3, 0)));
+        } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 < 3 && Index3 >= 3) {
+            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1 && Index2 == 2) {
+                return SIMD4Def(_mm_blend_ps(this->values,
+                    SIMD4Def(other.values)
+                        .template shuffle<Index0 - 3, XS_SHUFF128_DONTCARE_1_03(Index0 - 3, Index3 - 3),
+                            XS_SHUFF128_DONTCARE_2_03(Index0 - 3, Index3 - 3), Index3 - 3>()
+                        .values,
+                    _MM_BLEND(1, 0, 0, 1)));
+            } else {
+                auto val = combine<Index1, Index2, Index0, Index3>(other).values;
+                return SIMD4Def(_mm_permute_ps(val, _MM_SHUFFLE(3, 1, 0, 2)));
+            }
+        } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3 && Index3 < 3) {
+            auto val = combine<Index1, Index3, Index0, Index2>(other).values;
+            return SIMD4Def(_mm_permute_ps(val, _MM_SHUFFLE(1, 3, 0, 2)));
+        } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 >= 3 && Index3 < 3) {
+            return SIMD4Def(_mm_shuffle_ps(other.values,
+                combine<Index3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3 + (Index3 >= 3 ? 3 : 0), Index2,
+                    (XS_SHUFF128_DONTCARE_3_02(Index0 - 3, Index2 - 3)) % 3 + (Index2 >= 3 ? 3 : 0)>(other)
+                    .values,
+                _MM_SHUFFLE(0, 2, Index1 - 3, Index0 - 3)));
+        } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 < 3 && Index3 >= 3) {
+            if constexpr (defaultSIMD >= SIMD::SSE41 && Index2 == 2) {
+                return SIMD4Def(_mm_blend_ps(this->values,
+                    SIMD4Def(other.values)
+                        .template shuffle<Index0 - 3, Index1 - 3,
+                            (XS_SHUFF128_DONTCARE_2(Index0 - 3, Index1 - 3, Index3 - 3)) % 3, Index3 - 3>()
+                        .values,
+                    _MM_BLEND(1, 0, 1, 1)));
+            } else {
+                return SIMD4Def(_mm_shuffle_ps(other.values,
+                    combine<Index2, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3 + (Index2 >= 3 ? 3 : 0),
+                        Index3, (XS_SHUFF128_DONTCARE_3_02(Index0 - 3, Index2 - 3)) % 3 + (Index3 >= 3 ? 3 : 0)>(other)
+                        .values,
+                    _MM_SHUFFLE(2, 0, Index1 - 3, Index0 - 3)));
+            }
+        } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3 && Index3 >= 3) {
+            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1) {
+                return SIMD4Def(_mm_blend_ps(this->values,
+                    SIMD4Def(other.values)
+                        .template shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1(Index0 - 3, Index2 - 3, Index3 - 3)) % 3,
+                            Index2 - 3, Index3 - 3>()
+                        .values,
+                    _MM_BLEND(1, 1, 0, 1)));
+            } else {
+                return SIMD4Def(_mm_shuffle_ps(
+                    combine<Index1, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3 + (Index1 >= 3 ? 3 : 0),
+                        Index0, (XS_SHUFF128_DONTCARE_3_02(Index0 - 3, Index2 - 3)) % 3 + (Index0 >= 3 ? 3 : 0)>(other)
+                        .values,
+                    other.values, _MM_SHUFFLE(Index3 - 3, Index2 - 3, 0, 2)));
+            }
+        } else if constexpr (Index0 < 3 && Index1 >= 3 && Index2 >= 3 && Index3 >= 3) {
+            if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0) {
+                return SIMD4Def(_mm_blend_ps(this->values,
+                    SIMD4Def(other.values)
+                        .template shuffle<(XS_SHUFF128_DONTCARE_0(Index1 - 3, Index2 - 3, Index3 - 3)) % 3, Index1 - 3,
+                            Index2 - 3, Index3 - 3>()
+                        .values,
+                    _MM_BLEND(1, 1, 1, 0)));
+            } else {
+                return SIMD4Def(_mm_shuffle_ps(
+                    combine<Index0, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3 + (Index0 >= 3 ? 3 : 0),
+                        Index1, (XS_SHUFF128_DONTCARE_3_02(Index0 - 3, Index2 - 3)) % 3 + (Index1 >= 3 ? 3 : 0)>(other)
+                        .values,
+                    other.values, _MM_SHUFFLE(Index3 - 3, Index2 - 3, 2, 0)));
+            }
+        } else {
+            // Just use specialisation for inverse arrangement
+            return other.combine<Index0 + 3 - ((Index0 >= 3) * 6), Index1 + 3 - ((Index1 >= 3) * 6),
+                Index2 + 3 - ((Index2 >= 3) * 6), Index3 + 3 - ((Index3 >= 3) * 6)>(*this);
+        }
+    } else
+#endif
+    {
+        return SIMD4Def(((Index0 < 3) ? &this->values0 : &other.values0)[Index0 % 3],
+            ((Index1 < 3) ? &this->values0 : &other.values0)[Index1 % 3],
+            ((Index2 < 3) ? &this->values0 : &other.values0)[Index2 % 3],
+            ((Index3 < 3) ? &this->values0 : &other.values0)[Index3 % 3]);
+    }
+}
+
+template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator+(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
