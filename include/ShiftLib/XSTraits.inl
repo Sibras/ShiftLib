@@ -161,6 +161,78 @@ struct PromoteHelper<Shift::int64>
     using type = Shift::Int128;
 };
 
+template<typename T>
+struct ToUnsignedHelper
+{
+    using type = T;
+};
+
+template<>
+struct ToUnsignedHelper<Shift::int8>
+{
+    using type = Shift::uint8;
+};
+
+template<>
+struct ToUnsignedHelper<Shift::int16>
+{
+    using type = Shift::uint16;
+};
+
+template<>
+struct ToUnsignedHelper<Shift::int32>
+{
+    using type = Shift::uint32;
+};
+
+template<>
+struct ToUnsignedHelper<Shift::int64>
+{
+    using type = Shift::uint64;
+};
+
+template<>
+struct ToUnsignedHelper<Shift::Int128>
+{
+    using type = Shift::UInt128;
+};
+
+template<typename T>
+struct ToSignedHelper
+{
+    using type = T;
+};
+
+template<>
+struct ToSignedHelper<Shift::uint8>
+{
+    using type = Shift::int8;
+};
+
+template<>
+struct ToSignedHelper<Shift::uint16>
+{
+    using type = Shift::int16;
+};
+
+template<>
+struct ToSignedHelper<Shift::uint32>
+{
+    using type = Shift::int32;
+};
+
+template<>
+struct ToSignedHelper<Shift::uint64>
+{
+    using type = Shift::int64;
+};
+
+template<>
+struct ToSignedHelper<Shift::UInt128>
+{
+    using type = Shift::Int128;
+};
+
 template<typename T, typename U>
 struct IsSame : falseConstant
 {};
@@ -196,6 +268,20 @@ struct Promote<T, true>
 {
     using type = typename NoExport::CopyQualifiers<T,
         typename NoExport::PromoteHelper<typename NoExport::RemoveQualifiers<T>::type>::type>::type;
+};
+
+template<typename T>
+struct ToUnsigned<T, true>
+{
+    using type = typename NoExport::CopyQualifiers<T,
+        typename NoExport::ToUnsignedHelper<typename NoExport::RemoveQualifiers<T>::type>::type>::type;
+};
+
+template<typename T>
+struct ToSigned<T, true>
+{
+    using type = typename NoExport::CopyQualifiers<T,
+        typename NoExport::ToSignedHelper<typename NoExport::RemoveQualifiers<T>::type>::type>::type;
 };
 
 template<typename T, typename T2>
@@ -313,8 +399,9 @@ XS_INLINE XS_CONSTEVAL bool getHasFMAFree() noexcept
 #if XS_ISA == XS_GPU
     return true;
 #elif XS_ISA == XS_X86
-    /* Its also free on Broadwell+Skylake CPUs but this cannot be checked for */
-    return defaultSIMD >= SIMD::AVX512 ? getHasFMA<T>() : false;
+    // FMA is a free instruction on intel from broadwell onwards. Broadwell was the first to introduce ADX (supported on
+    // Zen onwards). FMA is also free on all AMD supporting CPUs
+    return defaultSIMD >= SIMD::AVX512 ? getHasFMA<T>() : (XS_ARCH_ADX || XS_ARCH_FMA4);
 #else
     return false;
 #endif

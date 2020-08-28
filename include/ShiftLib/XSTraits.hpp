@@ -221,12 +221,38 @@ struct Promote
 };
 
 /**
- * The promoted type of an arithmetic value. This determines the next largest type that is required to hold the current
- * arithmetic value. For instance a uint32 will promote to a uint64. When no promotions could be found the input type is
+ * The promoted type of an integer value. This determines the next largest type that is required to hold the current
+ * integer value. For instance a uint32 will promote to a uint64. When no promotions could be found the input type is
  * returned unchanged.
  */
 template<typename T>
 using promote = typename Promote<T>::type;
+
+template<typename T, bool = isInteger<T>>
+struct ToUnsigned
+{
+    using type = T;
+};
+
+/**
+ * The unsigned equivalent type of an integer value. For instance a int32 will convert to a uint32. When no equivalents
+ * could be found the input type is returned unchanged.
+ */
+template<typename T>
+using toUnsigned = typename ToUnsigned<T>::type;
+
+template<typename T, bool = isInteger<T>>
+struct ToSigned
+{
+    using type = T;
+};
+
+/**
+ * The signed equivalent type of an integer value. For instance a uint32 will convert to a int32. When no equivalents
+ * could be found the input type is returned unchanged.
+ */
+template<typename T>
+using toSigned = typename ToSigned<T>::type;
 
 /**
  * Query if any SIMD operations are supported.
