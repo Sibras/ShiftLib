@@ -15,7 +15,7 @@
  */
 
 #ifndef XSTESTMAIN
-#    include "XSCompilerOptions.h"
+#    include "../XSCompilerOptions.h"
 
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
@@ -26,7 +26,7 @@
 #    define XS_TESTING_SIMD12
 #    define XS_TESTING_SIMD16
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD16)
-#    include "XSTypes.hpp"
+#    include "XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
@@ -917,42 +917,82 @@ TYPED_TEST2(TESTISA(SIMD16Test), SIMD16)
         0.014f, 617.0f, 8000.58f, -19.8f, -0.0036f, -107.5f, -352.0f, 39.36f, -0.014f, -617.0f, -8000.58f, 19.8f,
         0.0036f, 107.5f);
 
-    TestType test17 = test1.mad(test3, test13);
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, test13)), 55.374f, 6.98f, -44.4312f, 3.8f, 19.5962f, -1.1453f, 80.34f, -2.2f,
+        44.906f, 3.308f, -33.8734f, 1.8f, 5.0654f, 0.9641f, 63.836f, -2.2f);
+
+    TestType test17 = test1.template mad<true>(test3, test13);
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>), test17, 55.374f, 6.98f, -44.4312f,
         3.8f, 19.5962f, -1.1453f, 80.34f, -2.2f, 44.906f, 3.308f, -33.8734f, 1.8f, 5.0654f, 0.9641f, 63.836f, -2.2f);
 
-    TestType test18 = test1.mad(TestType::BaseDef(5.2f), test12);
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(TestType::BaseDef(5.2f), test12)), 47.234f, 18.636f, 24.1211f, 22.0f, 15.6654f,
+        -9.4547f, 46.054f, -21.0f, -47.234f, -18.636f, -24.1211f, -22.0f, -15.6654f, 9.4547f, -46.054f, 21.0f);
+
+    TestType test18 = test1.template mad<true>(TestType::BaseDef(5.2f), test12);
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>), test18, 47.234f, 18.636f, 24.1211f,
         22.0f, 15.6654f, -9.4547f, 46.054f, -21.0f, -47.234f, -18.636f, -24.1211f, -22.0f, -15.6654f, 9.4547f, -46.054f,
         21.0f);
 
-    TestType test19 = test1.mad(test3, TestType::BaseDef(2.2f));
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, TestType::BaseDef(2.2f))), 54.54f, 9.544f, -34.7523f, 7.2f, 16.7308f, 4.3094f,
+        76.486f, 2.2f, 54.54f, 9.544f, -34.7523f, 7.2f, 16.7308f, 4.3094f, 76.486f, 2.2f);
+
+    TestType test19 = test1.template mad<true>(test3, TestType::BaseDef(2.2f));
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>), test19, 54.54f, 9.544f, -34.7523f,
         7.2f, 16.7308f, 4.3094f, 76.486f, 2.2f, 54.54f, 9.544f, -34.7523f, 7.2f, 16.7308f, 4.3094f, 76.486f, 2.2f);
 
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(
+        test1.template mad<false>(
             TestType::SIMD4Def(35.2f, -9.84f, 0.002f, 123.4f), TestType::SIMD4Def(4000.29f, 9.9f, -0.0004f, 21.5f)),
         4352.29f, -29.46f, 0.0136f, 638.5f, 4070.69f, 29.58f, 0.0176f, -595.5f, 3648.29f, 49.26f, -0.0144f, -595.5f,
         3929.89f, -9.78f, -0.0184f, 638.5f);
 
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(TestType::SIMD4Def(35.2f, -9.84f, 0.002f, 123.4f), test3), 357.234f, -37.524f, -5.2649f, 618.0f,
-        77.6654f, 18.6253f, 8.272f, -617.0f, -357.234f, 37.524f, 5.2649f, -618.0f, -77.6654f, -18.6253f, -8.272f,
-        617.0f);
+        test1.template mad<true>(
+            TestType::SIMD4Def(35.2f, -9.84f, 0.002f, 123.4f), TestType::SIMD4Def(4000.29f, 9.9f, -0.0004f, 21.5f)),
+        4352.29f, -29.46f, 0.0136f, 638.5f, 4070.69f, 29.58f, 0.0176f, -595.5f, 3648.29f, 49.26f, -0.0144f, -595.5f,
+        3929.89f, -9.78f, -0.0184f, 638.5f);
 
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f),
+        test1.template mad<false>(TestType::SIMD4Def(35.2f, -9.84f, 0.002f, 123.4f), test3), 357.234f, -37.524f,
+        -5.2649f, 618.0f, 77.6654f, 18.6253f, 8.272f, -617.0f, -357.234f, 37.524f, 5.2649f, -618.0f, -77.6654f,
+        -18.6253f, -8.272f, 617.0f);
+
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<true>(TestType::SIMD4Def(35.2f, -9.84f, 0.002f, 123.4f), test3), 357.234f, -37.524f,
+        -5.2649f, 618.0f, 77.6654f, 18.6253f, 8.272f, -617.0f, -357.234f, 37.524f, 5.2649f, -618.0f, -77.6654f,
+        -18.6253f, -8.272f, 617.0f);
+
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<false>(TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f),
             TestType::SIMD8Def(4000.29f, 9.9f, -0.0004f, 21.5f, 35.2f, -9.84f, 0.002f, 123.4f)),
         4352.29f, -29.46f, 0.0136f, 638.5f, 8035.78f, -29.64f, -0.0016f, 15.9f, 3648.29f, 49.26f, -0.0144f, -595.5f,
         -7965.38f, 9.96f, 0.0056f, 230.9f);
 
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f), test3), 357.234f,
-        -37.524f, -5.2649f, 618.0f, 8007.85f, -20.8547f, 8.2504f, -107.5f, -357.234f, 37.524f, 5.2649f, -618.0f,
-        -8007.85f, 20.8547f, -8.2504f, 107.5f);
+        test1.template mad<true>(TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f),
+            TestType::SIMD8Def(4000.29f, 9.9f, -0.0004f, 21.5f, 35.2f, -9.84f, 0.002f, 123.4f)),
+        4352.29f, -29.46f, 0.0136f, 638.5f, 8035.78f, -29.64f, -0.0016f, 15.9f, 3648.29f, 49.26f, -0.0144f, -595.5f,
+        -7965.38f, 9.96f, 0.0056f, 230.9f);
 
-    TestType test17B = test1.msub(test3, test13);
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<false>(
+            TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f), test3),
+        357.234f, -37.524f, -5.2649f, 618.0f, 8007.85f, -20.8547f, 8.2504f, -107.5f, -357.234f, 37.524f, 5.2649f,
+        -618.0f, -8007.85f, 20.8547f, -8.2504f, 107.5f);
+
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<true>(
+            TestType::SIMD8Def(35.2f, -9.84f, 0.002f, 123.4f, 4000.29f, 9.9f, -0.0004f, 21.5f), test3),
+        357.234f, -37.524f, -5.2649f, 618.0f, 8007.85f, -20.8547f, 8.2504f, -107.5f, -357.234f, 37.524f, 5.2649f,
+        -618.0f, -8007.85f, 20.8547f, -8.2504f, 107.5f);
+
+    ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template msub<false>(test3, test13), 49.306f, 7.708f, -29.4734f, 6.2f, 9.4654f, 5.3641f, 68.232f, 2.2f,
+        59.774f, 11.38f, -40.0312f, 8.2f, 23.9962f, 3.2547f, 84.74f, 2.2f);
+
+    TestType test17B = test1.template msub<true>(test3, test13);
     ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>), test17B, 49.306f, 7.708f,
         -29.4734f, 6.2f, 9.4654f, 5.3641f, 68.232f, 2.2f, 59.774f, 11.38f, -40.0312f, 8.2f, 23.9962f, 3.2547f, 84.74f,
         2.2f);
@@ -1362,43 +1402,43 @@ TYPED_TEST2(TESTISA(SIMD16Test), SIMD16)
     S16_INSERT8_TEST(2, 5, test1, test3); //***
 #    endif
 
-#    define S16_INSERT4_TEST(index0, index1, val1, val2)                                                              \
-        {                                                                                                             \
-            typename TestFixture::TypeInt f0 =                                                                        \
-                ((index0) == 0) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<0>().getValue();       \
-            typename TestFixture::TypeInt f1 =                                                                        \
-                ((index0) == 1) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<1>().getValue();       \
-            typename TestFixture::TypeInt f2 =                                                                        \
-                ((index0) == 2) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<2>().getValue();       \
-            typename TestFixture::TypeInt f3 =                                                                        \
-                ((index0) == 3) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<3>().getValue();       \
-            typename TestFixture::TypeInt f4 =                                                                        \
-                ((index0) == 0) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<4>().getValue();      \
-            typename TestFixture::TypeInt f5 =                                                                        \
-                ((index0) == 1) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<5>().getValue();      \
-            typename TestFixture::TypeInt f6 =                                                                        \
-                ((index0) == 2) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<6>().getValue();      \
-            typename TestFixture::TypeInt f7 =                                                                        \
-                ((index0) == 3) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<7>().getValue();      \
-            typename TestFixture::TypeInt f8 =                                                                        \
-                ((index0) == 0) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<8>().getValue();      \
-            typename TestFixture::TypeInt f9 =                                                                        \
-                ((index0) == 1) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<9>().getValue();      \
-            typename TestFixture::TypeInt f10 =                                                                       \
-                ((index0) == 2) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<10>().getValue();     \
-            typename TestFixture::TypeInt f11 =                                                                       \
-                ((index0) == 3) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<11>().getValue();     \
-            typename TestFixture::TypeInt f12 =                                                                       \
-                ((index0) == 0) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<12>().getValue();    \
-            typename TestFixture::TypeInt f13 =                                                                       \
-                ((index0) == 1) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<13>().getValue();    \
-            typename TestFixture::TypeInt f14 =                                                                       \
-                ((index0) == 2) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<14>().getValue();    \
-            typename TestFixture::TypeInt f15 =                                                                       \
-                ((index0) == 3) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<15>().getValue();    \
-            ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),                          \
-                (val1.template insert4<index0, index1>(val2)), f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, \
-                f13, f14, f15);                                                                                       \
+#    define S16_INSERT4_TEST(index0, index1, val1, val2)                                                           \
+        {                                                                                                          \
+            typename TestFixture::TypeInt f0 =                                                                     \
+                ((index0) == 0) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<0>().getValue();    \
+            typename TestFixture::TypeInt f1 =                                                                     \
+                ((index0) == 1) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<1>().getValue();    \
+            typename TestFixture::TypeInt f2 =                                                                     \
+                ((index0) == 2) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<2>().getValue();    \
+            typename TestFixture::TypeInt f3 =                                                                     \
+                ((index0) == 3) ? S16_GET_INDEX##index1(val2) : (val1).template getValueInBase<3>().getValue();    \
+            typename TestFixture::TypeInt f4 =                                                                     \
+                ((index0) == 0) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<4>().getValue();   \
+            typename TestFixture::TypeInt f5 =                                                                     \
+                ((index0) == 1) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<5>().getValue();   \
+            typename TestFixture::TypeInt f6 =                                                                     \
+                ((index0) == 2) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<6>().getValue();   \
+            typename TestFixture::TypeInt f7 =                                                                     \
+                ((index0) == 3) ? S16_GET_INDEX4##index1(val2) : (val1).template getValueInBase<7>().getValue();   \
+            typename TestFixture::TypeInt f8 =                                                                     \
+                ((index0) == 0) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<8>().getValue();   \
+            typename TestFixture::TypeInt f9 =                                                                     \
+                ((index0) == 1) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<9>().getValue();   \
+            typename TestFixture::TypeInt f10 =                                                                    \
+                ((index0) == 2) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<10>().getValue();  \
+            typename TestFixture::TypeInt f11 =                                                                    \
+                ((index0) == 3) ? S16_GET_INDEX8##index1(val2) : (val1).template getValueInBase<11>().getValue();  \
+            typename TestFixture::TypeInt f12 =                                                                    \
+                ((index0) == 0) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<12>().getValue(); \
+            typename TestFixture::TypeInt f13 =                                                                    \
+                ((index0) == 1) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<13>().getValue(); \
+            typename TestFixture::TypeInt f14 =                                                                    \
+                ((index0) == 2) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<14>().getValue(); \
+            typename TestFixture::TypeInt f15 =                                                                    \
+                ((index0) == 3) ? S16_GET_INDEX12##index1(val2) : (val1).template getValueInBase<15>().getValue(); \
+            ASSERT_PRED17((assertSIMD16<typename TestFixture::TypeInt, TestFixture::width>),                       \
+                ((val1).template insert4<index0, index1>(val2)), f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, \
+                f12, f13, f14, f15);                                                                               \
         }
 
 #    define S16_INSERT4_TESTX(index0, val1, val2)                                        \

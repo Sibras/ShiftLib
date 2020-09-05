@@ -137,25 +137,17 @@ XS_INLINE T SIMDInBase<T, Width>::getValue() const
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void SIMDInBase<T, Width>::setValue(T val) noexcept
-{
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        this->values = _mm_load_ss(&val);
-    } else
-#endif
-    {
-        this->value = val;
-    }
-}
-
-template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::mad(
     const SIMDInBase& other1, const SIMDInBase& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        return SIMDInBase(_mm_fmadd_ss(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMDInBase(_mm_fmadd_ss(this->values, other1.values, other2.values));
+        } else {
+            return SIMDInBase(_mm_add_ss(_mm_mul_ss(this->values, other1.values), other2.values));
+        }
     } else
 #endif
     {
@@ -164,12 +156,17 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::mad(
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::msub(
     const SIMDInBase& other1, const SIMDInBase& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        return SIMDInBase(_mm_fmsub_ss(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMDInBase(_mm_fmsub_ss(this->values, other1.values, other2.values));
+        } else {
+            return SIMDInBase(_mm_sub_ss(_mm_mul_ss(this->values, other1.values), other2.values));
+        }
     } else
 #endif
     {

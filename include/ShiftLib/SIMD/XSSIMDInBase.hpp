@@ -135,13 +135,13 @@ public:
 
     /**
      * Constructor to build set to 0.
-     * @return Newly constructed object with required attributes.
+     * @returns Newly constructed object with required attributes.
      */
     XS_FUNCTION static SIMDInBase Zero() noexcept;
 
     /**
      * Constructor to build set to 1.
-     * @return Newly constructed object with required attributes.
+     * @returns Newly constructed object with required attributes.
      */
     XS_FUNCTION static SIMDInBase One() noexcept;
 
@@ -152,25 +152,23 @@ public:
     XS_FUNCTION T getValue() const;
 
     /**
-     * Set the value of a object.
-     * @param value The new value.
-     */
-    XS_FUNCTION void setValue(T value) noexcept;
-
-    /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMDInBase mad(const SIMDInBase& other1, const SIMDInBase& other2) const noexcept;
 
     /**
      * Multiply this object by another and then subtract another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to subtract.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMDInBase msub(const SIMDInBase& other1, const SIMDInBase& other2) const noexcept;
 
     /**
@@ -178,88 +176,88 @@ public:
      * @note If the sign of the second input is negative the first input will be negated.
      * If the sign of the second input is positive then the first input will be returned unchanged.
      * @param other The second object whose sign to check.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase sign(const SIMDInBase& other) const noexcept;
 
     /**
      * Compute the absolute value of this object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase abs() const noexcept;
 
     /**
      * Maximum of two objects.
      * @param other The second object.
-     * @return The maximum value.
+     * @returns The maximum value.
      */
     XS_FUNCTION SIMDInBase max(const SIMDInBase& other) const noexcept;
 
     /**
      * Minimum of two objects.
      * @param other The second object.
-     * @return The minimum value.
+     * @returns The minimum value.
      */
     XS_FUNCTION SIMDInBase min(const SIMDInBase& other) const noexcept;
 
     /**
      * Approximate reciprocal (1/this) of object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase reciprocal() const noexcept;
 
     /**
      * Round up a object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase ceil() const noexcept;
 
     /**
      * Round down a object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase floor() const noexcept;
 
     /**
      * Round toward zero a object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase trunc() const noexcept;
 
     /**
      * Returns the sqrt of a object.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase sqrt() const noexcept;
 
     /**
      * Approximate reciprocal square root of a object.
      * @note Useful as the reciprocal square root is faster to determine.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase rsqrt() const noexcept;
 
     /**
      * Returns binary exponential of a object.
-     * @return object containing the binary exponential of the input.
+     * @returns object containing the binary exponential of the input.
      */
     XS_FUNCTION SIMDInBase exp2() const noexcept;
 
     /**
      * Returns exponential of a object.
-     * @return object containing the exponential of the input.
+     * @returns object containing the exponential of the input.
      */
     XS_FUNCTION SIMDInBase exp() const noexcept;
 
     /**
      * Returns binary logarithm of a object.
-     * @return object containing the binary logarithm of the input.
+     * @returns object containing the binary logarithm of the input.
      */
     XS_FUNCTION SIMDInBase log2() const noexcept;
 
     /**
      * Returns natural logarithm of a object.
-     * @return object containing the logarithm of the input.
+     * @returns object containing the logarithm of the input.
      */
     XS_FUNCTION SIMDInBase log() const noexcept;
 
@@ -274,28 +272,28 @@ public:
      * Returns object to the power of another object.
      * @note The current object must be > 0.
      * @param other The object containing the exponent.
-     * @return Result of operation.
+     * @returns Result of operation.
      */
     XS_FUNCTION SIMDInBase powr(const SIMDInBase& other) const noexcept;
 
     /**
      * Returns sine of a object.
      * @note Current object must have values in radians.
-     * @return Object containing the sined value.
+     * @returns Object containing the sined value.
      */
     XS_FUNCTION SIMDInBase sin() const noexcept;
 
     /**
      * Returns cosine of a object.
      * @note Current object must have values in radians.
-     * @return Object containing the cosined value.
+     * @returns Object containing the cosined value.
      */
     XS_FUNCTION SIMDInBase cos() const noexcept;
 
     /**
      * Returns tangent of a object.
      * @note Current object must have values in radians.
-     * @return Object containing the tangented value.
+     * @returns Object containing the tangented value.
      */
     XS_FUNCTION SIMDInBase tan() const noexcept;
 
@@ -304,32 +302,32 @@ public:
      * @note This is provided because it is much quicker to determine the cosine of value if the sine is already
      * known. Current object must have values in radians.
      * @param [out] cosReturn The cosine return values.
-     * @return Object containing the sine value.
+     * @returns Object containing the sine value.
      */
     XS_FUNCTION SIMDInBase sincos(SIMDInBase& cosReturn) const noexcept;
 
     /**
      * Returns arcsine of a object.
-     * @return Object containing the arcsined value (result in radians).
+     * @returns Object containing the arcsined value (result in radians).
      */
     XS_FUNCTION SIMDInBase asin() const noexcept;
 
     /**
      * Returns arccosine of a object.
-     * @return Object containing the arccosined value (result in radians).
+     * @returns Object containing the arccosined value (result in radians).
      */
     XS_FUNCTION SIMDInBase acos() const noexcept;
 
     /**
      * Returns arctangent of a object.
-     * @return Object containing the arctangented value (result in radians).
+     * @returns Object containing the arctangented value (result in radians).
      */
     XS_FUNCTION SIMDInBase atan() const noexcept;
 
     /**
      * Returns the distance between a planes positive x-axis and the points given by 2 input object.
      * @param other The object containing the second param of the input points.
-     * @return Object containing the angle (result in radians).
+     * @returns Object containing the angle (result in radians).
      */
     XS_FUNCTION SIMDInBase atan2(const SIMDInBase& other) const noexcept;
 };
@@ -337,7 +335,7 @@ public:
 /**
  * Increment an object.
  * @param [in,out] other object to perform operation on.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator++(SIMDInBase<T, Width>& other) noexcept;
@@ -345,7 +343,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator++(SIMDInBase<T, Width>& other) noexce
 /**
  * Post increment operator.
  * @param [in,out] other object to perform operation on.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator++(SIMDInBase<T, Width>& other, int32) noexcept;
@@ -353,7 +351,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator++(SIMDInBase<T, Width>& other, int32) 
 /**
  * Decrement an object.
  * @param [in,out] other object to perform operation on.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator--(SIMDInBase<T, Width>& other) noexcept;
@@ -361,7 +359,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator--(SIMDInBase<T, Width>& other) noexce
 /**
  * Post decrement operator.
  * @param [in,out] other object to perform operation on.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator--(SIMDInBase<T, Width>& other, int32) noexcept;
@@ -370,7 +368,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator--(SIMDInBase<T, Width>& other, int32) 
  * Add two objects.
  * @param other1 The first object.
  * @param other2 objects to add to the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator+(
@@ -380,7 +378,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator+(
  * Subtract a object from another object.
  * @param other1 The first object.
  * @param other2 object to subtract from the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator-(
@@ -390,7 +388,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator-(
  * Multiply two objects.
  * @param other1 The first object.
  * @param other2 The second object to multiply the first.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator*(
@@ -400,7 +398,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator*(
  * Divide two objects.
  * @param other1 The first object.
  * @param other2 The second object to divide the first with.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator/(
@@ -409,7 +407,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator/(
 /**
  * Negate a object.
  * @param other The object to negate.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator-(const SIMDInBase<T, Width>& other) noexcept;
@@ -418,7 +416,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator-(const SIMDInBase<T, Width>& other) no
  * Perform compound assignment and addition with a object.
  * @param [in,out] other1 The first object.
  * @param          other2 object to add to first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator+=(SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -427,7 +425,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator+=(SIMDInBase<T, Width>& other1, const
  * Perform compound assignment and subtraction by a object.
  * @param [in,out] other1 The first object.
  * @param          other2 object to subtract from first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator-=(SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -436,7 +434,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator-=(SIMDInBase<T, Width>& other1, const
  * Perform compound assignment and multiplication with a object.
  * @param [in,out] other1 The first object.
  * @param          other2 SIMDInBase<T, Width> to multiply the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator*=(SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -445,7 +443,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator*=(SIMDInBase<T, Width>& other1, const
  * Perform compound assignment and division with a object.
  * @param [in,out] other1 The object.
  * @param          other2 Value to divide the object by.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width>& operator/=(SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -454,7 +452,7 @@ XS_FUNCTION SIMDInBase<T, Width>& operator/=(SIMDInBase<T, Width>& other1, const
  * Compare two objects are equal.
  * @param other1 The first object.
  * @param other2 The second object to compare to the first.
- * @return true if the parameters are considered equivalent.
+ * @returns true if the parameters are considered equivalent.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION bool operator==(const SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -463,7 +461,7 @@ XS_FUNCTION bool operator==(const SIMDInBase<T, Width>& other1, const SIMDInBase
  * Compare two objects are less or equal.
  * @param other1 The first object.
  * @param other2 The second object to compare to the first.
- * @return true if the first parameter is less than or equal to the second.
+ * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION bool operator<=(const SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -472,7 +470,7 @@ XS_FUNCTION bool operator<=(const SIMDInBase<T, Width>& other1, const SIMDInBase
  * Compare two objects are less than.
  * @param other1 The first object.
  * @param other2 The second object to compare to the first.
- * @return true if the first parameter is less than the second.
+ * @returns true if the first parameter is less than the second.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION bool operator<(const SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -481,7 +479,7 @@ XS_FUNCTION bool operator<(const SIMDInBase<T, Width>& other1, const SIMDInBase<
  * Compare two objects are equal.
  * @param other1 The first object.
  * @param other2 The second object to compare to the first.
- * @return true if the parameters are not considered equivalent.
+ * @returns true if the parameters are not considered equivalent.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION bool operator!=(const SIMDInBase<T, Width>& other1, const SIMDInBase<T, Width>& other2) noexcept;
@@ -492,7 +490,7 @@ XS_FUNCTION bool operator!=(const SIMDInBase<T, Width>& other1, const SIMDInBase
  * as its operation is not defined on certain architectures.
  * @param other1 The first object.
  * @param other2 object to and with the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator&(
@@ -504,7 +502,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator&(
  * as its operation is not defined on certain architectures.
  * @param other1 The first object.
  * @param other2 object to and with the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator|(
@@ -516,7 +514,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator|(
  * as its operation is not defined on certain architectures.
  * @param other1 The first object.
  * @param other2 object to and with the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator^(
@@ -527,7 +525,7 @@ XS_FUNCTION SIMDInBase<T, Width> operator^(
  * @note This function is provided only for ease of optimisation. It should be used with care
  * as its operation is not defined on certain architectures.
  * @param other The object.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMDInBase<T, Width> operator~(const SIMDInBase<T, Width>& other) noexcept;

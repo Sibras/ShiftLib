@@ -63,9 +63,9 @@ XS_INLINE Shift::Rational<T> rationalReduceHelper(const T2 numerator, const T2 d
 namespace Shift {
 template<typename T>
 XS_INLINE RationalData<T>::RationalData(const Rational<T>& other) noexcept
-{
-    store(other);
-}
+    : numerator(other.numerator)
+    , denominator(other.denominator)
+{}
 
 template<typename T>
 XS_INLINE void RationalData<T>::setData(T value1, T value2) noexcept

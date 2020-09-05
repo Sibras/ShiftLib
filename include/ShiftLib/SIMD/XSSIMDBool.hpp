@@ -72,13 +72,13 @@ public:
 
     /**
      * Constructor to build a Bool2 with all elements set to True.
-     * @return Newly constructed Bool2 with required attributes.
+     * @returns Newly constructed Bool2 with required attributes.
      */
     XS_FUNCTION static constexpr Bool2 True() noexcept;
 
     /**
      * Constructor to build a Bool2 with all elements set to False.
-     * @return Newly constructed Bool2 with required attributes.
+     * @returns Newly constructed Bool2 with required attributes.
      */
     XS_FUNCTION static constexpr Bool2 False() noexcept;
 
@@ -88,7 +88,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 1).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 2)
@@ -112,19 +112,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() noexcept;
 
@@ -134,7 +134,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 1).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -152,13 +152,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };
@@ -217,13 +217,13 @@ public:
 
     /**
      * Constructor to build a Bool3 with all elements set to True.
-     * @return Newly constructed Bool3 with required attributes.
+     * @returns Newly constructed Bool3 with required attributes.
      */
     XS_FUNCTION static constexpr Bool3 True() noexcept;
 
     /**
      * Constructor to build a Bool3 with all elements set to False.
-     * @return Newly constructed Bool3 with required attributes.
+     * @returns Newly constructed Bool3 with required attributes.
      */
     XS_FUNCTION static constexpr Bool3 False() noexcept;
 
@@ -233,7 +233,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 2).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 3)
@@ -257,19 +257,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() noexcept;
 
@@ -279,7 +279,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 2).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -297,13 +297,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };
@@ -372,13 +372,13 @@ public:
 
     /**
      * Constructor to build a Bool3x2 with all elements set to True.
-     * @return Newly constructed Bool3x2 with required attributes.
+     * @returns Newly constructed Bool3x2 with required attributes.
      */
     XS_FUNCTION static constexpr Bool3x2 True() noexcept;
 
     /**
      * Constructor to build a Bool3x2 with all elements set to False.
-     * @return Newly constructed Bool3x2 with required attributes.
+     * @returns Newly constructed Bool3x2 with required attributes.
      */
     XS_FUNCTION static constexpr Bool3x2 False() noexcept;
 
@@ -388,7 +388,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 5).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
@@ -412,19 +412,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() noexcept;
 
@@ -434,7 +434,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 5).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -452,13 +452,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };
@@ -518,13 +518,13 @@ public:
 
     /**
      * Constructor to build a Bool4 with all elements set to True.
-     * @return Newly constructed Bool4 with required attributes.
+     * @returns Newly constructed Bool4 with required attributes.
      */
     XS_FUNCTION static constexpr Bool4 True() noexcept;
 
     /**
      * Constructor to build a Bool4 with all elements set to False.
-     * @return Newly constructed Bool4 with required attributes.
+     * @returns Newly constructed Bool4 with required attributes.
      */
     XS_FUNCTION static constexpr Bool4 False() noexcept;
 
@@ -534,7 +534,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 3).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 4)
@@ -558,19 +558,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() const noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() const noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() const noexcept;
 
@@ -580,7 +580,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 3).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -598,13 +598,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() const noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };
@@ -666,13 +666,13 @@ public:
 
     /**
      * Constructor to build a Bool6 with all elements set to True.
-     * @return Newly constructed Bool6 with required attributes.
+     * @returns Newly constructed Bool6 with required attributes.
      */
     XS_FUNCTION static constexpr Bool6 True() noexcept;
 
     /**
      * Constructor to build a Bool6 with all elements set to False.
-     * @return Newly constructed Bool6 with required attributes.
+     * @returns Newly constructed Bool6 with required attributes.
      */
     XS_FUNCTION static constexpr Bool6 False() noexcept;
 
@@ -682,7 +682,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 5).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
@@ -706,19 +706,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() noexcept;
 
@@ -728,7 +728,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 5).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -746,13 +746,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };
@@ -817,13 +817,13 @@ public:
 
     /**
      * Constructor to build a Bool8 with all elements set to True.
-     * @return Newly constructed Bool8 with required attributes.
+     * @returns Newly constructed Bool8 with required attributes.
      */
     XS_FUNCTION static constexpr Bool8 True() noexcept;
 
     /**
      * Constructor to build a Bool8 with all elements set to False.
-     * @return Newly constructed Bool8 with required attributes.
+     * @returns Newly constructed Bool8 with required attributes.
      */
     XS_FUNCTION static constexpr Bool8 False() noexcept;
 
@@ -833,7 +833,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @tparam Index The index of the bool to return (must be between 0 and 7).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 8)
@@ -857,19 +857,19 @@ public:
 
     /**
      * Get boolean signalling if any element of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAny() const noexcept;
 
     /**
      * Get boolean signalling if all elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getAll() const noexcept;
 
     /**
      * Get boolean signalling if no elements of bool is set.
-     * @return Boolean.
+     * @returns Boolean.
      */
     XS_FUNCTION constexpr bool getNone() const noexcept;
 
@@ -879,7 +879,7 @@ public:
      * always guaranteed the result will actually equal true. Instead a check for true should be treated as a check
      * for not false.
      * @param index The index of the bool to return (must be between 0 and 7).
-     * @return The requested bool.
+     * @returns The requested bool.
      */
     XS_FUNCTION bool getBool(uint32 index) const noexcept;
 
@@ -897,13 +897,13 @@ public:
 
     /**
      * Gets the index of the first internal boolean set to true.
-     * @return The zero-based index of the found first true, undefined if no valid element is found.
+     * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
     XS_FUNCTION uint32 indexOfFirstValid() const noexcept;
 
     /**
      * Get as an integer where each bit corresponds to a member bool.
-     * @return The required integer.
+     * @returns The required integer.
      */
     XS_FUNCTION constexpr uint8 getAsInteger() noexcept;
 };

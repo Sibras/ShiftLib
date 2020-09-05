@@ -16,7 +16,7 @@
 
 #include "SIMD/XSSIMDTraits.inl"
 
-#include "XSCompilerOptions.h"
+#include "../XSCompilerOptions.h"
 
 #include <gtest/gtest.h>
 

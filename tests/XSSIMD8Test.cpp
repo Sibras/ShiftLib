@@ -15,7 +15,7 @@
  */
 
 #ifndef XSTESTMAIN
-#    include "XSCompilerOptions.h"
+#    include "../XSCompilerOptions.h"
 
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
@@ -25,7 +25,7 @@
 #    define XS_TESTING_SIMD8
 #    define XS_TESTING_SIMD3X2
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD8)
-#    include "XSTypes.hpp"
+#    include "XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
@@ -614,27 +614,51 @@ TYPED_TEST2(TESTISA(SIMD8Test), SIMD8)
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
         test1 * TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), 22.0f, 12.8f, 29.4f, 26.0f, 4.4f, -6.4f, 37.8f, -26.0f);
 
-    TestType test17 = test1.mad(test3, test13);
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, test13)), 55.374f, 6.98f, -44.4312f, 3.8f, 19.5962f, -1.1453f, 80.34f, -2.2f);
+
+    TestType test17 = test1.template mad<true>(test3, test13);
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), test17, 55.374f, 6.98f, -44.4312f,
         3.8f, 19.5962f, -1.1453f, 80.34f, -2.2f);
 
-    TestType test18 = test1.mad(TestType::BaseDef(5.2f), test12);
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(TestType::BaseDef(5.2f), test12)), 47.234f, 18.636f, 24.1211f, 22.0f, 15.6654f,
+        -9.4547f, 46.054f, -21.0f);
+
+    TestType test18 = test1.template mad<true>(TestType::BaseDef(5.2f), test12);
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), test18, 47.234f, 18.636f, 24.1211f,
         22.0f, 15.6654f, -9.4547f, 46.054f, -21.0f);
 
-    TestType test19 = test1.mad(test3, TestType::BaseDef(2.2f));
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, TestType::BaseDef(2.2f))), 54.54f, 9.544f, -34.7523f, 7.2f, 16.7308f, 4.3094f,
+        76.486f, 2.2f);
+
+    TestType test19 = test1.template mad<true>(test3, TestType::BaseDef(2.2f));
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), test19, 54.54f, 9.544f, -34.7523f,
         7.2f, 16.7308f, 4.3094f, 76.486f, 2.2f);
 
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), TestType::SIMD4Def(3.034f, -0.364f, -7.4789f, -1.2f)),
+        test1.template mad<false>(
+            TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), TestType::SIMD4Def(3.034f, -0.364f, -7.4789f, -1.2f)),
         25.034f, 12.436f, 21.9211f, 24.8f, 7.434f, -6.764f, 30.3211f, -27.2f);
 
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.mad(TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), test3), 27.234f, 14.636f, 24.1211f, 27.0f, 11.6654f,
-        -7.4547f, 46.054f, -26.0f);
+        test1.template mad<true>(
+            TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), TestType::SIMD4Def(3.034f, -0.364f, -7.4789f, -1.2f)),
+        25.034f, 12.436f, 21.9211f, 24.8f, 7.434f, -6.764f, 30.3211f, -27.2f);
 
-    TestType test17B = test1.msub(test3, test13);
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<false>(TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), test3), 27.234f, 14.636f, 24.1211f, 27.0f,
+        11.6654f, -7.4547f, 46.054f, -26.0f);
+
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template mad<true>(TestType::SIMD4Def(2.2f, 3.2f, 4.2f, 5.2f), test3), 27.234f, 14.636f, 24.1211f, 27.0f,
+        11.6654f, -7.4547f, 46.054f, -26.0f);
+
+    ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template msub<false>(test3, test13)), 49.306f, 7.708f, -29.4734f, 6.2f, 9.4654f, 5.3641f, 68.232f, 2.2f);
+
+    TestType test17B = test1.template msub<true>(test3, test13);
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), test17B, 49.306f, 7.708f, -29.4734f,
         6.2f, 9.4654f, 5.3641f, 68.232f, 2.2f);
 

@@ -378,74 +378,92 @@ public:
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3x4& other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const BaseDef& other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3x4& other1, const BaseDef& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD4Def& other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3Def& other1, const SIMD3Def& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3Def& other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3x2Def& other1, const SIMD3x2Def& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 mad(const SIMD3x2Def& other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then subtract another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to subtract.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD3x4 msub(const SIMD3x4& other1, const SIMD3x4& other2) const noexcept;
 
     /**

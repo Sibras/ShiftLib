@@ -121,31 +121,31 @@ public:
 
     /**
      * Access the Rational as a normal float.
-     * @return Regular float containing the desired value.
+     * @returns Regular float containing the desired value.
      */
     XS_FUNCTION float32 getFloat() const;
 
     /**
      * Access the Rational as a normal double.
-     * @return Regular double containing the desired value.
+     * @returns Regular double containing the desired value.
      */
     XS_FUNCTION float64 getDouble() const;
 
     /**
      * Access the Rational as a normal integer.
-     * @return Regular int containing the desired value.
+     * @returns Regular int containing the desired value.
      */
     XS_FUNCTION int32_t getInt() const;
 
     /**
      * Access the Rational as a normal integer.
-     * @return Regular int containing the desired value.
+     * @returns Regular int containing the desired value.
      */
     XS_FUNCTION int64_t getLong() const;
 
     /**
      * Reciprocal (1/rational) of rational
-     * @return The result of the operation.
+     * @returns The result of the operation.
      */
     XS_FUNCTION Rational reciprocal() const;
 };
@@ -154,8 +154,8 @@ public:
  * Add two rational's.
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
- * @param other2 rational to add to the first one.
- * @return The result of the operation.
+ * @param other2 Rational to add to the first one.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T> operator+(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -164,8 +164,8 @@ XS_FUNCTION Rational<T> operator+(const Rational<T>& other1, const Rational<T>& 
  * Subtract a rational from another rational.
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
- * @param other2 rational to subtract from the first one.
- * @return The result of the operation.
+ * @param other2 Rational to subtract from the first one.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T> operator-(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -175,7 +175,7 @@ XS_FUNCTION Rational<T> operator-(const Rational<T>& other1, const Rational<T>& 
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to multiply the first.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T> operator*(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -185,7 +185,7 @@ XS_FUNCTION Rational<T> operator*(const Rational<T>& other1, const Rational<T>& 
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to divide the first with.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T> operator/(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -194,7 +194,7 @@ XS_FUNCTION Rational<T> operator/(const Rational<T>& other1, const Rational<T>& 
  * Negate a rational.
  * @tparam T Type of the internal integers.
  * @param other The rational to negate.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T> operator-(const Rational<T>& other) noexcept;
@@ -204,7 +204,7 @@ XS_FUNCTION Rational<T> operator-(const Rational<T>& other) noexcept;
  * @tparam T Type of the internal integers.
  * @param [in,out] other1 The first rational.
  * @param          other2 The second rational to add to first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -214,7 +214,7 @@ XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, const Rational<T>& othe
  * @tparam T Type of the internal integers.
  * @param [in,out] other1 The first rational.
  * @param          other2 The second rational to subtract from first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -224,7 +224,7 @@ XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, const Rational<T>& othe
  * @tparam T Type of the internal integers.
  * @param [in,out] other1 The first rational.
  * @param          other2 The second rational to multiply the first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -234,7 +234,7 @@ XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, const Rational<T>& othe
  * @tparam T Type of the internal integers.
  * @param [in,out] other1 The first rational.
  * @param          other2 The second rational to subtract from first one.
- * @return The result of the operation.
+ * @returns The result of the operation.
  */
 template<typename T>
 XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -244,7 +244,7 @@ XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, const Rational<T>& othe
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to compare to the first.
- * @return true if the parameters are considered equivalent.
+ * @returns true if the parameters are considered equivalent.
  */
 template<typename T>
 XS_FUNCTION bool operator==(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -254,7 +254,7 @@ XS_FUNCTION bool operator==(const Rational<T>& other1, const Rational<T>& other2
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to compare to the first.
- * @return true if the first parameter is less than or equal to the second.
+ * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T>
 XS_FUNCTION bool operator<=(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -264,7 +264,7 @@ XS_FUNCTION bool operator<=(const Rational<T>& other1, const Rational<T>& other2
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to compare to the first.
- * @return true if the first parameter is less than the second.
+ * @returns true if the first parameter is less than the second.
  */
 template<typename T>
 XS_FUNCTION bool operator<(const Rational<T>& other1, const Rational<T>& other2) noexcept;
@@ -274,7 +274,7 @@ XS_FUNCTION bool operator<(const Rational<T>& other1, const Rational<T>& other2)
  * @tparam T Type of the internal integers.
  * @param other1 The first rational.
  * @param other2 The second rational to compare to the first.
- * @return true if the parameters are not considered equivalent.
+ * @returns true if the parameters are not considered equivalent.
  */
 template<typename T>
 XS_FUNCTION bool operator!=(const Rational<T>& other1, const Rational<T>& other2) noexcept;

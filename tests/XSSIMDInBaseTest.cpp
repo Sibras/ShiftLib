@@ -15,12 +15,12 @@
  */
 
 #ifndef XSTESTMAIN
-#    include "XSCompilerOptions.h"
+#    include "../XSCompilerOptions.h"
 
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMDInBase)
-#    include "XSTypes.hpp"
+#    include "XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
@@ -93,10 +93,7 @@ TYPED_TEST2(TESTISA(SIMDInBaseTest), SIMDInBase)
     //  Get Test
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test1, 10.0f);
 
-    //  Set Test
-    TestType test7 = TestType(1.0f);
-    test7.setValue(4000.29f);
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test7, 4000.29f);
+    TestType test7 = TestType(4000.29f);
 
     //  Load/Store Test
     SIMDInBaseData<typename TestFixture::TypeInt> data(
@@ -134,10 +131,16 @@ TYPED_TEST2(TESTISA(SIMDInBaseTest), SIMDInBase)
     TestType test10 = test3 * test1;
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test10, 52.34f);
 
-    TestType test11 = test1.mad(test3, test4);
+    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, test4)), 62.34f);
+
+    TestType test11 = test1.template mad<true>(test3, test4);
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test11, 62.34f);
 
-    TestType test11B = test1.msub(test3, test4);
+    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template msub<false>(test3, test4)), 42.34f);
+
+    TestType test11B = test1.template msub<true>(test3, test4);
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test11B, 42.34f);
 
     TestType test12 = test10 / test1;

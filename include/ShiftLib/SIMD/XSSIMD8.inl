@@ -1425,14 +1425,24 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::negate() const noexcept
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD8& other1, const SIMD8& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        } else {
+            return SIMD8(_mm256_add_ps(_mm256_mul_ps(this->values, other1.values), other2.values));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
-            _mm_fmadd_ps(this->values1, other1.values1, other2.values1));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
+                _mm_fmadd_ps(this->values1, other1.values1, other2.values1));
+        } else {
+            return SIMD8(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1));
+        }
     } else
 #endif
     {
@@ -1448,14 +1458,24 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD8& other1, const SIMD8&
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const BaseDef& other1, const SIMD8& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        } else {
+            return SIMD8(_mm256_add_ps(_mm256_mul_ps(this->values, other1.values), other2.values));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
-            _mm_fmadd_ps(this->values1, other1.values, other2.values1));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
+                _mm_fmadd_ps(this->values1, other1.values, other2.values1));
+        } else {
+            return SIMD8(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
+                _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1));
+        }
     } else
 #endif
     {
@@ -1471,14 +1491,24 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const BaseDef& other1, const SIMD
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD8& other1, const BaseDef& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmadd_ps(this->values, other1.values, other2.values));
+        } else {
+            return SIMD8(_mm256_add_ps(_mm256_mul_ps(this->values, other1.values), other2.values));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmadd_ps(this->values0, other1.values0, other2.values),
-            _mm_fmadd_ps(this->values1, other1.values1, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmadd_ps(this->values0, other1.values0, other2.values),
+                _mm_fmadd_ps(this->values1, other1.values1, other2.values));
+        } else {
+            return SIMD8(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values),
+                _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values));
+        }
     } else
 #endif
     {
@@ -1494,15 +1524,26 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD8& other1, const BaseDe
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD4Def& other1, const SIMD4Def& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmadd_ps(
-            this->values, _mm256_broadcastf128_ps(other1.values), _mm256_broadcastf128_ps(other2.values)));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmadd_ps(
+                this->values, _mm256_broadcastf128_ps(other1.values), _mm256_broadcastf128_ps(other2.values)));
+        } else {
+            return SIMD8(_mm256_add_ps(_mm256_mul_ps(this->values, _mm256_broadcastf128_ps(other1.values)),
+                _mm256_broadcastf128_ps(other2.values)));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values),
-            _mm_fmadd_ps(this->values1, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values),
+                _mm_fmadd_ps(this->values1, other1.values, other2.values));
+        } else {
+            return SIMD8(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values),
+                _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values));
+        }
     } else
 #endif
     {
@@ -1518,14 +1559,25 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD4Def& other1, const SIM
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD4Def& other1, const SIMD8& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmadd_ps(this->values, _mm256_broadcastf128_ps(other1.values), other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmadd_ps(this->values, _mm256_broadcastf128_ps(other1.values), other2.values));
+        } else {
+            return SIMD8(
+                _mm256_add_ps(_mm256_mul_ps(this->values, _mm256_broadcastf128_ps(other1.values)), other2.values));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
-            _mm_fmadd_ps(this->values1, other1.values, other2.values1));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
+                _mm_fmadd_ps(this->values1, other1.values, other2.values1));
+        } else {
+            return SIMD8(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
+                _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1));
+        }
     } else
 #endif
     {
@@ -1541,14 +1593,24 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::mad(const SIMD4Def& other1, const SIM
 }
 
 template<typename T, SIMDWidth Width>
+template<bool EvenIfNotFree>
 XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::msub(const SIMD8& other1, const SIMD8& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD8(_mm256_fmsub_ps(this->values, other1.values, other2.values));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm256_fmsub_ps(this->values, other1.values, other2.values));
+        } else {
+            return SIMD8(_mm256_sub_ps(_mm256_mul_ps(this->values, other1.values), other2.values));
+        }
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD8(_mm_fmsub_ps(this->values0, other1.values0, other2.values0),
-            _mm_fmsub_ps(this->values1, other1.values1, other2.values1));
+        if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+            return SIMD8(_mm_fmsub_ps(this->values0, other1.values0, other2.values0),
+                _mm_fmsub_ps(this->values1, other1.values1, other2.values1));
+        } else {
+            return SIMD8(_mm_sub_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                _mm_sub_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1));
+        }
     } else
 #endif
     {

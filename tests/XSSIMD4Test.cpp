@@ -15,7 +15,7 @@
  */
 
 #ifndef XSTESTMAIN
-#    include "XSCompilerOptions.h"
+#    include "../XSCompilerOptions.h"
 
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
@@ -24,7 +24,7 @@
 #    define XS_TESTING_SIMD3
 #    define XS_TESTING_SIMD4
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD4)
-#    include "XSTypes.hpp"
+#    include "XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
@@ -486,30 +486,51 @@ TYPED_TEST2(TESTISA(SIMD4Test), SIMD4)
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
         (test1 * TestType::SIMD2Def(2.2f, 3.4f)), 22.0f, 13.6f, 15.4f, 17.0f);
 
-    TestType test17 = test1.mad(test3, test13);
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, test13)), 55.374f, 6.98f, -44.4312f, 3.8f);
+
+    TestType test17 = test1.template mad<true>(test3, test13);
     ASSERT_PRED5(
         (assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test17, 55.374f, 6.98f, -44.4312f, 3.8f);
 
-    TestType test18 = test1.mad(TestType::BaseDef(5.2f), test12);
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(TestType::BaseDef(5.2f), test12)), 47.234f, 18.636f, 24.1211f, 22.0f);
+
+    TestType test18 = test1.template mad<true>(TestType::BaseDef(5.2f), test12);
     ASSERT_PRED5(
         (assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test18, 47.234f, 18.636f, 24.1211f, 22.0f);
 
-    TestType test19 = test1.mad(test3, TestType::BaseDef(2.2f));
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template mad<false>(test3, TestType::BaseDef(2.2f))), 54.54f, 9.544f, -34.7523f, 7.2f);
+
+    TestType test19 = test1.template mad<true>(test3, TestType::BaseDef(2.2f));
     ASSERT_PRED5(
         (assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test19, 54.54f, 9.544f, -34.7523f, 7.2f);
 
-    TestType test17B = test1.msub(test3, test13);
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        (test1.template msub<false>(test3, test13)), 49.306f, 7.708f, -29.4734f, 6.2f);
+
+    TestType test17B = test1.template msub<true>(test3, test13);
     ASSERT_PRED5(
         (assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test17B, 49.306f, 7.708f, -29.4734f, 6.2f);
 
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
-        test1.msub(TestType::BaseDef(5.2f), test12), 56.766f, 22.964f, 48.6789f, 30.0f);
+        test1.template msub<false>(TestType::BaseDef(5.2f), test12), 56.766f, 22.964f, 48.6789f, 30.0f);
 
-    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test1.nmad(test3, test13), -49.306f,
-        -7.708f, 29.4734f, -6.2f);
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template msub<true>(TestType::BaseDef(5.2f), test12), 56.766f, 22.964f, 48.6789f, 30.0f);
 
-    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test1.nmsub(test3, test13), -55.374f,
-        -6.98f, 44.4312f, -3.8f);
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template nmad<false>(test3, test13), -49.306f, -7.708f, 29.4734f, -6.2f);
+
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template nmad<true>(test3, test13), -49.306f, -7.708f, 29.4734f, -6.2f);
+
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template nmsub<false>(test3, test13), -55.374f, -6.98f, 44.4312f, -3.8f);
+
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test1.template nmsub<true>(test3, test13), -55.374f, -6.98f, 44.4312f, -3.8f);
 
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), test1.subAdd(test3), 4.766f, 5.836f,
         12.2789f, 6.0f);

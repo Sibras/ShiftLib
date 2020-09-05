@@ -15,11 +15,10 @@
  */
 
 #ifdef XSTESTMAIN
-
 #    include "SIMD/XSSIMDBool.inl"
 
 #    define XS_TESTING_BOOL
-#    include "XSTypes.hpp"
+#    include "XSTypesSIMD.hpp"
 
 using namespace Shift;
 

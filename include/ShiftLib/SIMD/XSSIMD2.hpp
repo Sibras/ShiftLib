@@ -409,35 +409,50 @@ public:
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD2 mad(const SIMD2& other1, const SIMD2& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD2 mad(const BaseDef& other1, const SIMD2<T, Width>& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to add.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD2 mad(const SIMD2<T, Width>& other1, const BaseDef& other2) const noexcept;
 
     /**
      * Multiply this object by another and then subtract another object.
+     * @tparam EvenIfNotFree Perform a fused operation even if it has higher latency the single operations.
      * @param other1 Second object to multiply by.
      * @param other2 Third object to subtract.
      * @returns Result of operation.
      */
+    template<bool EvenIfNotFree = true>
     XS_FUNCTION SIMD2 msub(const SIMD2& other1, const SIMD2& other2) const noexcept;
+
+    /**
+     * Alternately subtract and add 2 objects.
+     * @param other The second object.
+     * @returns The result of the operation.
+     */
+    XS_FUNCTION SIMD2 subAdd(const SIMD2& other) const noexcept;
 
     /**
      * Compare two objects are equal.
