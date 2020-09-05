@@ -167,20 +167,22 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/XSTraitsTest.cpp
         tests/XSBitTest.cpp
         tests/XSRationalTest.cpp
-        tests/XSSIMDTraitsTest.cpp
-        tests/XSSIMDBoolTest.cpp
-        tests/XSSIMDBaseTest.cpp
-        tests/XSSIMDInBaseTest.cpp
-        tests/XSSIMD2Test.cpp
-        tests/XSSIMD3Test.cpp
-        tests/XSSIMD4Test.cpp
-        tests/XSSIMD6Test.cpp
-        tests/XSSIMD3x2Test.cpp
-        tests/XSSIMD8Test.cpp
-        tests/XSSIMD3x3Test.cpp
-        tests/XSSIMD12Test.cpp
-        tests/XSSIMD3x4Test.cpp
-        tests/XSSIMD16Test.cpp
+        
+        tests/SIMD/XSTypesSIMD.hpp
+        tests/SIMD/XSSIMDTraitsTest.cpp
+        tests/SIMD/XSSIMDBoolTest.cpp
+        tests/SIMD/XSSIMDBaseTest.cpp
+        tests/SIMD/XSSIMDInBaseTest.cpp
+        tests/SIMD/XSSIMD2Test.cpp
+        tests/SIMD/XSSIMD3Test.cpp
+        tests/SIMD/XSSIMD4Test.cpp
+        tests/SIMD/XSSIMD6Test.cpp
+        tests/SIMD/XSSIMD3x2Test.cpp
+        tests/SIMD/XSSIMD8Test.cpp
+        tests/SIMD/XSSIMD3x3Test.cpp
+        tests/SIMD/XSSIMD12Test.cpp
+        tests/SIMD/XSSIMD3x4Test.cpp
+        tests/SIMD/XSSIMD16Test.cpp
     )
     
     add_executable(ShiftLibTest)
