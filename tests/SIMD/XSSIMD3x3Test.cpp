@@ -161,20 +161,20 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
         1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
     //  Get Test
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.template getValue3<0>(),
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test1.template getValue3<0>(),
         10.0f, 4.0f, 7.0f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.template getValue3<1>(),
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test1.template getValue3<1>(),
         5.0f, 2.0f, -2.0f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.template getValue3<2>(),
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test1.template getValue3<2>(),
         9.0f, -5.0f, -10.0f);
 
 #    define S3X3_GET3X2_TEST(index0, index1)                                                                 \
         {                                                                                                    \
             TestType::SIMD3Def f30 = test1.template getValue3<index0>();                                     \
             TestType::SIMD3Def f31 = test1.template getValue3<index1>();                                     \
-            ASSERT_PRED7((assertSIMD3x2<typename TestFixture::TypeInt, TestFixture::widthImpl>),             \
+            ASSERT_PRED7((assertSIMD3x2<typename TestFixture::TypeInt, TestType::SIMD3x2Def::width>),        \
                 (test1.template getValue3x2<index0, index1>()), f30.template getValueInBase<0>().getValue(), \
                 f30.template getValueInBase<1>().getValue(), f30.template getValueInBase<2>().getValue(),    \
                 f31.template getValueInBase<0>().getValue(), f31.template getValueInBase<1>().getValue(),    \
@@ -529,15 +529,17 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
     ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestFixture::width>), test7.min(test8), 1.3f, -1.4f,
         -1.3f, -1.4f, -1.3f, 1.4f, 1.5f, -1.5f, -1.5f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.max3(), 1.5f, 1.9f, 1.4f);
+    ASSERT_PRED4(
+        (assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test7.max3(), 1.5f, 1.9f, 1.4f);
 
     ASSERT_PRED4(
-        (assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.min3(), -1.4f, -1.5f, -1.5f);
-
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmax3(), 1.9f, 1.4f, 1.5f);
+        (assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test7.min3(), -1.4f, -1.5f, -1.5f);
 
     ASSERT_PRED4(
-        (assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmin3(), -1.3f, -1.4f, -1.5f);
+        (assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test7.hmax3(), 1.9f, 1.4f, 1.5f);
+
+    ASSERT_PRED4(
+        (assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test7.hmin3(), -1.3f, -1.4f, -1.5f);
 
     //  Support Function Test
     TestType test23 = -test4;
@@ -553,10 +555,10 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
     test20 = TestType(
         3.034f, -0.364f, -7.4789f, -1.2f, 5.0654f, -3.2547f, 6.054f, -2.2f, -7.434f); // reset due to precision errors
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test20.add3(), 7.888f, 2.5014f,
-        -18.1676f);
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test20.add3(), 7.888f,
+        2.5014f, -18.1676f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test20.hadd3(), -4.8089f,
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test20.hadd3(), -4.8089f,
         0.6107f, -3.58f);
 
     ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestFixture::width>), test20.ceil(), 4.0f, 0.0f, -7.0f,
@@ -574,16 +576,16 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
     ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestFixture::width>), test4.abs().rsqrt(), 0.316227766f,
         0.5f, 0.377964473f, 0.4472135955f, 0.7071067812f, 0.7071067812f, 0.333333333333f, 0.4472135955f, 0.316227766f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test18.dot3(test16), 3721.8f,
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test18.dot3(test16), 3721.8f,
         833.249f, 5157.49f);
 
     ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestFixture::width>), test18.cross3(test16), 176.32f,
         -465.02f, 13.3951f, -64.5913f, -17.0222f, -178.5f, -136.084f, 184.257f, -214.604f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test12.lengthSqr3(),
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test12.lengthSqr3(),
         178.1690372f, 44.61802925f, 48.271272f);
 
-    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl>), test12.length3(), 13.3479975f,
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestType::SIMD3Def::width>), test12.length3(), 13.3479975f,
         6.67967284f, 6.947753018f);
 
     ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestFixture::width>), test18.normalize3(), 0.840231f,

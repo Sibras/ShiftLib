@@ -238,6 +238,8 @@ namespace Shift {
             _mm256_mask_mul_ps((m256_0), _cvtu32_mask8(mask), (m256_1), (m256_2))
 #        define _mm256_blend_div_ps(m256_0, mask, m256_1, m256_2) \
             _mm256_mask_div_ps((m256_0), _cvtu32_mask8(mask), (m256_1), (m256_2))
+#        define _mm256_blend_fmadd_ps(m256_0, mask, m256_1, m256_2) \
+            _mm256_mask_fmadd_ps((m256_0), _cvtu32_mask8(mask), (m256_1), (m256_2))
 #        define _mm_blend_add_ps(m128_0, mask, m128_1, m128_2) \
             _mm_mask_add_ps((m128_0), _cvtu32_mask8(mask), (m128_1), (m128_2))
 #        define _mm_blend_sub_ps(m128_0, mask, m128_1, m128_2) \
@@ -246,6 +248,8 @@ namespace Shift {
             _mm_mask_mul_ps((m128_0), _cvtu32_mask8(mask), (m128_1), (m128_2))
 #        define _mm_blend_div_ps(m128_0, mask, m128_1, m128_2) \
             _mm_mask_div_ps((m128_0), _cvtu32_mask8(mask), (m128_1), (m128_2))
+#        define _mm_blend_fmadd_ps(m128_0, mask, m128_1, m128_2) \
+            _mm_mask_fmadd_ps((m128_0), _cvtu32_mask8(mask), (m128_1), (m128_2))
 
 #        define _mm_recip_ss(m128) _mm_rcp14_ss(_mm_undefined_ps(), m128)
 #        define _mm_recip_ps(m128) _mm_rcp14_ps(m128)
@@ -269,6 +273,8 @@ namespace Shift {
             _mm256_blend_ps((m256_0), _mm256_mul_ps((m256_1), (m256_2)), mask)
 #        define _mm256_blend_div_ps(m256_0, mask, m256_1, m256_2) \
             _mm256_blend_ps((m256_0), _mm256_div_ps((m256_1), (m256_2)), mask)
+#        define _mm256_blend_fmadd_ps(m256_0, mask, m256_1, m256_2) \
+            _mm256_blend_ps((m256_0), _mm256_fmadd_ps((m256_0), (m256_1), (m256_2)), mask)
 #        define _mm_blend_add_ps(m128_0, mask, m128_1, m128_2) \
             _mm_blend_ps((m128_0), _mm_add_ps((m128_1), (m128_2)), mask)
 #        define _mm_blend_sub_ps(m128_0, mask, m128_1, m128_2) \
@@ -277,6 +283,8 @@ namespace Shift {
             _mm_blend_ps((m128_0), _mm_mul_ps((m128_1), (m128_2)), mask)
 #        define _mm_blend_div_ps(m128_0, mask, m128_1, m128_2) \
             _mm_blend_ps((m128_0), _mm_div_ps((m128_1), (m128_2)), mask)
+#        define _mm_blend_fmadd_ps(m128_0, mask, m128_1, m128_2) \
+            _mm_blend_ps((m128_0), _mm_fmadd_ps((m128_0), (m128_1), (m128_2)), mask)
 
 #        define _mm_recip_ss(m128) _mm_rcp_ss(m128)
 #        define _mm_recip_ps(m128) _mm_rcp_ps(m128)

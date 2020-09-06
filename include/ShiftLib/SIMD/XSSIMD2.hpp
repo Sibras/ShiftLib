@@ -399,6 +399,15 @@ public:
     XS_FUNCTION void divValue(const InBaseDef& other) noexcept;
 
     /**
+     * Multiply then add to an element of the object by a value.
+     * @tparam Index The index of the element to modify (range is 0-1).
+     * @param other1 The value to multiply by.
+     * @param other2 The value to add.
+     */
+    template<uint32 Index>
+    XS_FUNCTION void madValue(const InBaseDef& other1, const InBaseDef& other2) noexcept;
+
+    /**
      * Negate an element of the object.
      * @tparam Elem0 Boolean indicating if first element should be negated.
      * @tparam Elem1 Boolean indicating if second element should be negated.

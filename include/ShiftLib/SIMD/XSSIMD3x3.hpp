@@ -163,7 +163,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION SIMD3x3(const SIMD3x3& other) = default;
+    XS_FUNCTION SIMD3x3(const SIMD3x3& other) noexcept = default;
 
     /**
      * Constructor.
@@ -176,7 +176,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION SIMD3x3& operator=(const SIMD3x3& other) = default;
+    XS_FUNCTION SIMD3x3& operator=(const SIMD3x3& other) noexcept = default;
 
     /**
      * Move assignment operator.

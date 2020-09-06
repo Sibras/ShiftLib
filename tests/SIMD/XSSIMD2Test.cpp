@@ -105,27 +105,27 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), TestType::One(), 1.0f, 1.0f);
 
     //  Get Test
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>),
+    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>),
         test1.template getValueInBase<0>(), 10.0f);
 
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>),
+    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>),
         test1.template getValueInBase<1>(), 4.0f);
 
     ASSERT_PRED2(
-        (assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.template getValue<0>(), 10.0f);
+        (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test1.template getValue<0>(), 10.0f);
 
     ASSERT_PRED2(
-        (assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.template getValue<1>(), 4.0f);
+        (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test1.template getValue<1>(), 4.0f);
 
     ASSERT_PRED2(
-        (assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.getValueInBase(0), 10.0f);
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test1.getValueInBase(0), 10.0f);
 
     ASSERT_PRED2(
-        (assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.getValueInBase(1), 4.0f);
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test1.getValueInBase(1), 4.0f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.getValue(0), 10.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test1.getValue(0), 10.0f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test1.getValue(1), 4.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test1.getValue(1), 4.0f);
 
     //  Set Test
     TestType test9 = TestType(1.0f);
@@ -173,6 +173,13 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
 
     test9.template divValue<1>(TestType::InBaseDef(5.0f));
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9, 4000.29f, 9.9f);
+
+    TestType test9B(TestType::BaseDef(5.0f));
+    test9B.template madValue<0>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 0.0f);
+
+    test9B.template madValue<1>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f);
 
     //  Load/Store Test
     SIMD2Data<typename TestFixture::TypeInt> data(test9); // uses constructor to avoid needing to allocate aligned mem
@@ -265,7 +272,7 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
     TestType test17B = test1.template msub<true>(test3, test13);
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test17B, 49.306f, 7.708f);
 
-    ASSERT_PRED4((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test1.subAdd(test3), 4.766f, 5.836f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test1.subAdd(test3), 4.766f, 5.836f);
 
     TestType test20 = test15 / test1;
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test20, 5.234f, 1.836f);
@@ -354,22 +361,24 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
 
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test7.min(test8), 1.3f, -5.0f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmax(), 7.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hmax(), 7.0f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmin(), -5.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hmin(), -5.0f);
 
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmaxInBase(), 7.0f);
+    ASSERT_PRED2(
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.hmaxInBase(), 7.0f);
 
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hminInBase(), -5.0f);
+    ASSERT_PRED2(
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.hminInBase(), -5.0f);
 
     uint32_t uindex;
     ASSERT_PRED2(
-        (assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hmaxIndex(uindex), 7.0f);
+        (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hmaxIndex(uindex), 7.0f);
 
     ASSERT_EQ(uindex, 0);
 
     ASSERT_PRED2(
-        (assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hminIndex(uindex), -5.0f);
+        (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hminIndex(uindex), -5.0f);
 
     ASSERT_EQ(uindex, 1);
 
@@ -391,13 +400,15 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
 
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.reciprocal(), 0.1f, 0.25f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hadd(), 2.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hadd(), 2.0f);
 
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.haddInBase(), 2.0f);
+    ASSERT_PRED2(
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.haddInBase(), 2.0f);
 
-    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hsub(), 12.0f);
+    ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hsub(), 12.0f);
 
-    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::widthImpl>), test7.hsubInBase(), 12.0f);
+    ASSERT_PRED2(
+        (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.hsubInBase(), 12.0f);
 
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test20.ceil(), 4.0f, 0.0f);
 
