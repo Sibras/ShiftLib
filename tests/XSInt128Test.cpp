@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#include "XSInt128.inl"
+#ifdef XSTESTMAIN
+#    include "XSInt128.inl"
 
-#include <gtest/gtest.h>
+#    include <gtest/gtest.h>
 
 using namespace Shift;
 
-#ifdef XSTESTMAIN
 TEST(Int128, Constructor)
 {
     ASSERT_EQ(int128(56_ui8), int128(0_i64, 56_ui64));

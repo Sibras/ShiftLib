@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMDTraits.inl"
+#ifndef XSTESTMAIN
+#    include "SIMD/XSSIMDTraits.inl"
 
-#include "../XSCompilerOptions.h"
+#    include "../XSCompilerOptions.h"
 
-#include <gtest/gtest.h>
+#    include <gtest/gtest.h>
 
 using namespace Shift;
 
-#ifndef XSTESTMAIN
 TEST(TESTISA(SIMDTraits), numValues)
 {
     static_assert(numValues<float32, SIMDWidth::Scalar> == 1);

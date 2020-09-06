@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#include "XSMath.inl"
+#ifdef XSTESTMAIN
+#    include "XSMath.inl"
 
-#include <gtest/gtest.h>
+#    include <gtest/gtest.h>
 
 using namespace Shift;
 
-#ifdef XSTESTMAIN
 #    define ASSERT_FLOAT_NEAR(x, y, z) \
         ASSERT_NEAR(static_cast<float32>(x), static_cast<float32>(y), static_cast<float32>(z))
 
