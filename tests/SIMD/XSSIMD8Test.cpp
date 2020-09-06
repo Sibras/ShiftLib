@@ -20,6 +20,7 @@
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_SIMD2
+#    define XS_TESTING_SIMD3
 #    define XS_TESTING_SIMD4
 #    define XS_TESTING_SIMD6
 #    define XS_TESTING_SIMD8
@@ -30,6 +31,8 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 // Instead of testing every possible combination, for speed just test every combination that has a unique code path
+#    define S8_ALL_SIMD6_TESTS 0
+#    define S8_ALL_SIMD3X2_TESTS 0
 #    define S8_ALL_NEGATE_TESTS 0
 #    define S8_ALL_INSERT_TESTS 0
 #    define S8_ALL_BLEND_TESTS 0
@@ -138,6 +141,110 @@ TYPED_TEST2(TESTISA(SIMD8Test), SIMD8)
 
     ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), TestType::One(), 1.0f, 1.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+#    define S6_GET_INDEX0(val) (val).template getValueInBase<0>().getValue()
+#    define S6_GET_INDEX1(val) (val).template getValueInBase<1>().getValue()
+#    define S6_GET_INDEX2(val) (val).template getValueInBase<2>().getValue()
+
+#    define S6_GET_INDEX30(val) (val).template getValueInBase<3>().getValue()
+#    define S6_GET_INDEX31(val) (val).template getValueInBase<4>().getValue()
+#    define S6_GET_INDEX32(val) (val).template getValueInBase<5>().getValue()
+
+    const typename TestType::SIMD6Def test8B = TestType::SIMD6Def(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
+#    define S8_SHUFFLE6_TEST(index0, index1, index2, index3, val)                                                    \
+        {                                                                                                            \
+            TestType temp = TestType::template Shuffle4<index0, index1, index2, index3>(val);                        \
+            typename TestFixture::TypeInt f0 = S6_GET_INDEX##index0(val);                                            \
+            typename TestFixture::TypeInt f1 = S6_GET_INDEX##index1(val);                                            \
+            typename TestFixture::TypeInt f2 = S6_GET_INDEX##index2(val);                                            \
+            typename TestFixture::TypeInt f3 = S6_GET_INDEX##index3(val);                                            \
+            typename TestFixture::TypeInt f4 = S6_GET_INDEX3##index0(val);                                           \
+            typename TestFixture::TypeInt f5 = S6_GET_INDEX3##index1(val);                                           \
+            typename TestFixture::TypeInt f6 = S6_GET_INDEX3##index2(val);                                           \
+            typename TestFixture::TypeInt f7 = S6_GET_INDEX3##index3(val);                                           \
+            ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), temp, f0, f1, f2, f3, f4, \
+                f5, f6, f7);                                                                                         \
+        }
+
+#    if S8_ALL_SIMD6_TESTS
+#        define S8_SHUFFLE6_TESTX(index0, index1, index2, val)   \
+            {                                                    \
+                S8_SHUFFLE6_TEST(index0, index1, index2, 0, val) \
+                S8_SHUFFLE6_TEST(index0, index1, index2, 1, val) \
+                S8_SHUFFLE6_TEST(index0, index1, index2, 2, val) \
+            }
+
+#        define S8_SHUFFLE6_TESTXX(index0, index1, val)   \
+            {                                             \
+                S8_SHUFFLE6_TESTX(index0, index1, 0, val) \
+                S8_SHUFFLE6_TESTX(index0, index1, 1, val) \
+                S8_SHUFFLE6_TESTX(index0, index1, 2, val) \
+            }
+
+#        define S8_SHUFFLE6_TESTXXX(index0, val) \
+            {S8_SHUFFLE6_TESTXX(index0, 0, val) S8_SHUFFLE6_TESTXX(index0, 1, val) S8_SHUFFLE6_TESTXX(index0, 2, val)}
+
+    S8_SHUFFLE6_TESTXXX(0, test8B);
+    S8_SHUFFLE6_TESTXXX(1, test8B);
+    S8_SHUFFLE6_TESTXXX(2, test8B);
+#    else
+    S8_SHUFFLE6_TEST(0, 0, 2, 2, test8B);
+    S8_SHUFFLE6_TEST(0, 0, 1, 1, test8B);
+    S8_SHUFFLE6_TEST(0, 1, 0, 1, test8B);
+    S8_SHUFFLE6_TEST(0, 0, 0, 0, test8B);
+    S8_SHUFFLE6_TEST(2, 2, 1, 0, test8B); //***
+#    endif
+
+#    define S3X2_GET_INDEX300(val) (val).template getValue3<0>().getValueInBase<0>().getValue()
+#    define S3X2_GET_INDEX301(val) (val).template getValue3<0>().getValueInBase<1>().getValue()
+#    define S3X2_GET_INDEX302(val) (val).template getValue3<0>().getValueInBase<2>().getValue()
+#    define S3X2_GET_INDEX310(val) (val).template getValue3<1>().getValueInBase<0>().getValue()
+#    define S3X2_GET_INDEX311(val) (val).template getValue3<1>().getValueInBase<1>().getValue()
+#    define S3X2_GET_INDEX312(val) (val).template getValue3<1>().getValueInBase<2>().getValue()
+
+    const typename TestType::SIMD3x2Def test8C = TestType::SIMD3x2Def(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
+#    define S16_SHUFFLE3X2_TEST(index0, index1, index2, index3, val)                                                 \
+        {                                                                                                            \
+            TestType temp = TestType::template Shuffle4<index0, index1, index2, index3>(val);                        \
+            typename TestFixture::TypeInt f0 = S3X2_GET_INDEX30##index0(val);                                        \
+            typename TestFixture::TypeInt f1 = S3X2_GET_INDEX30##index1(val);                                        \
+            typename TestFixture::TypeInt f2 = S3X2_GET_INDEX30##index2(val);                                        \
+            typename TestFixture::TypeInt f3 = S3X2_GET_INDEX30##index3(val);                                        \
+            typename TestFixture::TypeInt f4 = S3X2_GET_INDEX31##index0(val);                                        \
+            typename TestFixture::TypeInt f5 = S3X2_GET_INDEX31##index1(val);                                        \
+            typename TestFixture::TypeInt f6 = S3X2_GET_INDEX31##index2(val);                                        \
+            typename TestFixture::TypeInt f7 = S3X2_GET_INDEX31##index3(val);                                        \
+            ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>), temp, f0, f1, f2, f3, f4, \
+                f5, f6, f7);                                                                                         \
+        }
+
+#    if S8_ALL_SIMD3X2_TESTS
+#        define S16_SHUFFLE3X2_TESTX(index0, index1, index2, val)   \
+            {                                                       \
+                S16_SHUFFLE3X2_TEST(index0, index1, index2, 0, val) \
+                S16_SHUFFLE3X2_TEST(index0, index1, index2, 1, val) \
+                S16_SHUFFLE3X2_TEST(index0, index1, index2, 2, val) \
+            }
+#        define S16_SHUFFLE3X2_TESTXX(index0, index1, val)   \
+            {                                                \
+                S16_SHUFFLE3X2_TESTX(index0, index1, 0, val) \
+                S16_SHUFFLE3X2_TESTX(index0, index1, 1, val) \
+                S16_SHUFFLE3X2_TESTX(index0, index1, 2, val) \
+            }
+#        define S16_SHUFFLE3X2_TESTXXX(index0, val)                                      \
+            {S16_SHUFFLE3X2_TESTXX(index0, 0, val) S16_SHUFFLE3X2_TESTXX(index0, 1, val) \
+                    S16_SHUFFLE3X2_TESTXX(index0, 2, val)}
+    S16_SHUFFLE3X2_TESTXXX(0, test8C);
+    S16_SHUFFLE3X2_TESTXXX(1, test8C);
+    S16_SHUFFLE3X2_TESTXXX(2, test8C);
+#    else
+    S16_SHUFFLE3X2_TEST(0, 0, 2, 2, test8C);
+    S16_SHUFFLE3X2_TEST(0, 0, 1, 1, test8C);
+    S16_SHUFFLE3X2_TEST(0, 1, 0, 1, test8C);
+    S16_SHUFFLE3X2_TEST(0, 0, 0, 0, test8C);
+    S16_SHUFFLE3X2_TEST(2, 1, 0, 0, test8C); //**
+    S16_SHUFFLE3X2_TEST(1, 1, 0, 2, test8C); //**
+#    endif
 
     //  Get Test
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>),

@@ -145,12 +145,11 @@ public:
     using Data = NoExport::SIMDData<T, 6, 2, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using BaseDef = SIMDBase<T, widthImpl>;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
-    using SIMD2Def = SIMD2<T, widthImpl>;
-    using SIMD3Def = SIMD3<T, widthImpl>;
-    using SIMD6Def = SIMD6<T, widthImpl>;
-    using SIMD8Def = SIMD8<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
+    using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
+    using SIMD3Def = SIMD3<T, SIMD3<T, widthImpl>::widthImpl>;
+    using SIMD6Def = SIMD6<T, SIMD6<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Hex Mask object used to store 6 different masks at once. */
@@ -881,18 +880,6 @@ public:
      */
     template<uint32 Index0, uint32 Index1, uint32 Index2>
     XS_FUNCTION SIMD3x2 shuffle3() const noexcept;
-
-    /**
-     * Shuffles the elements of the object using the same shuffle across each SIMD3.
-     * @note This differs from the normal shuffle3 as it returns 4 elements from each subgroup.
-     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-2).
-     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-2).
-     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-2).
-     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-2).
-     * @returns The result of the operation.
-     */
-    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
-    XS_FUNCTION SIMD8Def shuffle3() const noexcept;
 
     /**
      * Shuffles the elements of the object by shuffling each SIMD3.

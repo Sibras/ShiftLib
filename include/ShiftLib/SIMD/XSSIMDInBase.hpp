@@ -82,7 +82,7 @@ public:
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
     using Data::SIMDData;
-    using BaseDef = SIMDBase<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
 
     /** Default constructor. */
     XS_FUNCTION SIMDInBase() noexcept = default;

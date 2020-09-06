@@ -85,8 +85,8 @@ public:
     using Data = NoExport::SIMDData<T, 2, 0, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using BaseDef = SIMDBase<T, widthImpl>;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Dual Mask object used to store 2 different masks at once. */

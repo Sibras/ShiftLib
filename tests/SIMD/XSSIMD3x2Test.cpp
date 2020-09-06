@@ -32,7 +32,6 @@ using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 // Instead of testing every possible combination, for speed just test every combination that has a unique code path
 #    define S3X2_ALL_NEGATE_TESTS 0
 #    define S3X2_ALL_SHUFFLE3_TESTS 0
-#    define S3X2_ALL_SHUFFLE4_TESTS 0
 
 template<typename T>
 class TESTISA(SIMD3x2Test)
@@ -706,48 +705,6 @@ TYPED_TEST2(TESTISA(SIMD3x2Test), SIMD3x2)
     S3X2_SHUFFLE3_TEST(0, 0, 0, test1);
     S3X2_SHUFFLE3_TEST(2, 1, 0, test1); //**
     S3X2_SHUFFLE3_TEST(2, 1, 2, test1); //**
-#    endif
-
-#    define S3X2_SHUFFLE4_TEST(index0, index1, index2, index3, val)                                           \
-        {                                                                                                     \
-            typename TestFixture::TypeInt f0 = S3X2_GET_INDEX30##index0(val);                                 \
-            typename TestFixture::TypeInt f1 = S3X2_GET_INDEX30##index1(val);                                 \
-            typename TestFixture::TypeInt f2 = S3X2_GET_INDEX30##index2(val);                                 \
-            typename TestFixture::TypeInt f3 = S3X2_GET_INDEX30##index3(val);                                 \
-            typename TestFixture::TypeInt f4 = S3X2_GET_INDEX31##index0(val);                                 \
-            typename TestFixture::TypeInt f5 = S3X2_GET_INDEX31##index1(val);                                 \
-            typename TestFixture::TypeInt f6 = S3X2_GET_INDEX31##index2(val);                                 \
-            typename TestFixture::TypeInt f7 = S3X2_GET_INDEX31##index3(val);                                 \
-            ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestType::SIMD8Def::width>),             \
-                ((val).template shuffle3<index0, index1, index2, index3>()), f0, f1, f2, f3, f4, f5, f6, f7); \
-        }
-
-#    if S3X2_ALL_SHUFFLE4_TESTS
-#        define S3X2_SHUFFLE4_TESTX(index0, index1, index2, val)   \
-            {                                                      \
-                S3X2_SHUFFLE4_TEST(index0, index1, index2, 0, val) \
-                S3X2_SHUFFLE4_TEST(index0, index1, index2, 1, val) \
-                S3X2_SHUFFLE4_TEST(index0, index1, index2, 2, val) \
-            }
-#        define S3X2_SHUFFLE4_TESTXX(index0, index1, val)   \
-            {                                               \
-                S3X2_SHUFFLE4_TESTX(index0, index1, 0, val) \
-                S3X2_SHUFFLE4_TESTX(index0, index1, 1, val) \
-                S3X2_SHUFFLE4_TESTX(index0, index1, 2, val) \
-            }
-#        define S3X2_SHUFFLE4_TESTXXX(index0, val)                                     \
-            {S3X2_SHUFFLE4_TESTXX(index0, 0, val) S3X2_SHUFFLE4_TESTXX(index0, 1, val) \
-                    S3X2_SHUFFLE4_TESTXX(index0, 2, val)}
-    S3X2_SHUFFLE4_TESTXXX(0, test1);
-    S3X2_SHUFFLE4_TESTXXX(1, test1);
-    S3X2_SHUFFLE4_TESTXXX(2, test1);
-#    else
-    S3X2_SHUFFLE4_TEST(0, 0, 2, 2, test1);
-    S3X2_SHUFFLE4_TEST(0, 0, 1, 1, test1);
-    S3X2_SHUFFLE4_TEST(0, 1, 0, 1, test1);
-    S3X2_SHUFFLE4_TEST(0, 0, 0, 0, test1);
-    S3X2_SHUFFLE4_TEST(2, 1, 0, 0, test1); //**
-    S3X2_SHUFFLE4_TEST(1, 1, 0, 2, test1); //**
 #    endif
 
 #    define S3X2_SHUFFLEH3_TEST(index0, index1, val)                                         \

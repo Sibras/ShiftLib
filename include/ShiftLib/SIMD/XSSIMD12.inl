@@ -20,6 +20,15 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
+#include "SIMD/XSSIMD2.hpp"
+#include "SIMD/XSSIMD3.hpp"
+#include "SIMD/XSSIMD3x3.hpp"
+#include "SIMD/XSSIMD3x4.hpp"
+#include "SIMD/XSSIMD4.hpp"
+#include "SIMD/XSSIMD6.hpp"
+#include "SIMD/XSSIMD8.hpp"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 #include "XSMath.inl"
 
 namespace Shift {
@@ -5308,46 +5317,6 @@ XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::shuffle3() const noexcept
             (&this->values0)[Index0 * 4 + 3], (&this->values0)[Index1 * 4], (&this->values0)[Index1 * 4 + 1],
             (&this->values0)[Index1 * 4 + 2], (&this->values0)[Index1 * 4 + 3], (&this->values0)[Index2 * 4],
             (&this->values0)[Index2 * 4 + 1], (&this->values0)[Index2 * 4 + 2], (&this->values0)[Index2 * 4 + 3]);
-    }
-}
-
-template<typename T, SIMDWidth Width>
-template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
-XS_INLINE typename SIMD12<T, Width>::SIMD16Def SIMD12<T, Width>::shuffle3() const noexcept
-{
-    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16Def(_mm512_permutexvar_ps(
-            _mm512_set_epi32(Index3 * 4 + 3, Index2 * 4 + 3, Index1 * 4 + 3, Index0 * 4 + 3, Index3 * 4 + 2,
-                Index2 * 4 + 2, Index1 * 4 + 2, Index0 * 4 + 2, Index3 * 4 + 1, Index2 * 4 + 1, Index1 * 4 + 1,
-                Index0 * 4 + 1, Index3 * 4, Index2 * 4, Index1 * 4, Index0 * 4),
-            this->values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        const __m128 vals[3] = {
-            _mm256_castps256_ps128(this->values0), _mm256_extractf128_ps(this->values0, 1), this->values1};
-        const __m128 val1 = _mm_unpacklo_ps(vals[Index0], vals[Index1]);
-        const __m128 val2 = _mm_unpacklo_ps(vals[Index2], vals[Index3]);
-        const __m128 val3 = _mm_unpackhi_ps(vals[Index0], vals[Index1]);
-        const __m128 val4 = _mm_unpackhi_ps(vals[Index2], vals[Index3]);
-        return SIMD16Def(_mm256_set_m128(_mm_movehl_ps(val2, val1), _mm_movelh_ps(val1, val2)),
-            _mm256_set_m128(_mm_movehl_ps(val4, val3), _mm_movelh_ps(val3, val4)));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        const __m128 val1 = _mm_unpacklo_ps((&this->values0)[Index0], (&this->values0)[Index1]);
-        const __m128 val2 = _mm_unpacklo_ps((&this->values0)[Index2], (&this->values0)[Index3]);
-        const __m128 val3 = _mm_unpackhi_ps((&this->values0)[Index0], (&this->values0)[Index1]);
-        const __m128 val4 = _mm_unpackhi_ps((&this->values0)[Index2], (&this->values0)[Index3]);
-        return SIMD16Def(
-            _mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1), _mm_movelh_ps(val3, val4), _mm_movehl_ps(val4, val3));
-    } else
-#endif
-    {
-        return SIMD16Def((&this->values0)[Index0 * 4], (&this->values0)[Index1 * 4], (&this->values0)[Index2 * 4],
-            (&this->values0)[Index3 * 4], (&this->values0)[Index0 * 4 + 1], (&this->values0)[Index1 * 4 + 1],
-            (&this->values0)[Index2 * 4 + 1], (&this->values0)[Index3 * 4 + 1], (&this->values0)[Index0 * 4 + 2],
-            (&this->values0)[Index1 * 4 + 2], (&this->values0)[Index2 * 4 + 2], (&this->values0)[Index3 * 4 + 2],
-            (&this->values0)[Index0 * 4 + 3], (&this->values0)[Index1 * 4 + 3], (&this->values0)[Index2 * 4 + 3],
-            (&this->values0)[Index3 * 4 + 3]);
     }
 }
 

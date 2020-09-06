@@ -81,7 +81,7 @@ public:
     using Data = NoExport::SIMDData<T, 1, numValues<T, Width> - 1, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Default constructor. */

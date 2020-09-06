@@ -20,6 +20,13 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
+#include "SIMD/XSSIMD12.hpp"
+#include "SIMD/XSSIMD3.hpp"
+#include "SIMD/XSSIMD3x2.hpp"
+#include "SIMD/XSSIMD3x3.hpp"
+#include "SIMD/XSSIMD4.hpp"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 #include "XSMath.inl"
 
 namespace Shift {
@@ -2663,64 +2670,6 @@ XS_INLINE SIMD3x4<T, Width> SIMD3x4<T, Width>::shuffle3() const noexcept
             (&this->values0)[3 + Index0], (&this->values0)[3 + Index1], (&this->values0)[3 + Index2],
             (&this->values0)[6 + Index0], (&this->values0)[6 + Index1], (&this->values0)[6 + Index2],
             (&this->values0)[9 + Index0], (&this->values0)[9 + Index1], (&this->values0)[9 + Index2]);
-    }
-}
-
-template<typename T, SIMDWidth Width>
-template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
-XS_INLINE typename SIMD3x4<T, Width>::SIMD16Def SIMD3x4<T, Width>::shuffle3() const noexcept
-{
-    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
-            return SIMD16Def(_mm512_shuffle2200_ps(this->values));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
-            return SIMD16Def(_mm512_shuffle1100_ps(this->values));
-        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
-            return SIMD16Def(_mm512_shuffle1010_ps(this->values));
-        } else {
-            return SIMD16Def(_mm512_permute_ps(this->values, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
-        }
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
-            return SIMD16Def(_mm256_shuffle2200_ps(this->values0), _mm256_shuffle2200_ps(this->values1));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
-            return SIMD16Def(_mm256_shuffle1100_ps(this->values0), _mm256_shuffle1100_ps(this->values1));
-        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
-            return SIMD16Def(_mm256_shuffle1010_ps(this->values0), _mm256_shuffle1010_ps(this->values1));
-        } else {
-            return SIMD16Def(_mm256_permute_ps(this->values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
-                _mm256_permute_ps(this->values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
-        }
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
-            return SIMD16Def(_mm_shuffle1010_ps(this->values0), _mm_shuffle1010_ps(this->values1),
-                _mm_shuffle1010_ps(this->values2), _mm_shuffle1010_ps(this->values3));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
-            return SIMD16Def(_mm_shuffle1100_ps(this->values0), _mm_shuffle1100_ps(this->values1),
-                _mm_shuffle1100_ps(this->values2), _mm_shuffle1100_ps(this->values3));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
-            return SIMD16Def(_mm_shuffle2200_ps(this->values0), _mm_shuffle2200_ps(this->values1),
-                _mm_shuffle2200_ps(this->values2), _mm_shuffle2200_ps(this->values3));
-        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0 && Index3 == 0) {
-            return SIMD16Def(_mm_shuffle0000_ps(this->values0), _mm_shuffle0000_ps(this->values1),
-                _mm_shuffle0000_ps(this->values2), _mm_shuffle0000_ps(this->values3));
-        } else {
-            return SIMD16Def(_mm_permute_ps(this->values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
-                _mm_permute_ps(this->values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
-                _mm_permute_ps(this->values2, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
-                _mm_permute_ps(this->values3, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
-        }
-    } else
-#endif
-    {
-        return SIMD16Def((&this->values0)[Index0], (&this->values0)[Index1], (&this->values0)[Index2],
-            (&this->values0)[Index3], (&this->values0)[Index0 + 3], (&this->values0)[Index1 + 3],
-            (&this->values0)[Index2 + 3], (&this->values0)[Index3 + 3], (&this->values0)[Index0 + 6],
-            (&this->values0)[Index1 + 6], (&this->values0)[Index2 + 6], (&this->values0)[Index3 + 6],
-            (&this->values0)[Index0 + 9], (&this->values0)[Index1 + 9], (&this->values0)[Index2 + 9],
-            (&this->values0)[Index3 + 9]);
     }
 }
 

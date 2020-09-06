@@ -91,10 +91,10 @@ public:
     using Data = NoExport::SIMDData<T, 4, 0, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using BaseDef = SIMDBase<T, widthImpl>;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
-    using SIMD2Def = SIMD2<T, widthImpl>;
-    using SIMD3Def = SIMD3<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
+    using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
+    using SIMD3Def = SIMD3<T, SIMD3<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Quad Mask object used to store 4 different masks at once. */

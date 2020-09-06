@@ -100,12 +100,12 @@ public:
     using Data = NoExport::SIMDData<T, 8, 0, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using BaseDef = SIMDBase<T, widthImpl>;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
-    using SIMD2Def = SIMD2<T, widthImpl>;
-    using SIMD4Def = SIMD4<T, widthImpl>;
-    using SIMD6Def = SIMD6<T, widthImpl>;
-    using SIMD3x2Def = SIMD3x2<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
+    using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
+    using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
+    using SIMD6Def = SIMD6<T, SIMD6<T, widthImpl>::widthImpl>;
+    using SIMD3x2Def = SIMD3x2<T, SIMD3x2<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Oct Mask object used to store 8 different masks at once. */
@@ -446,6 +446,28 @@ public:
      * @returns Newly constructed object with required attributes.
      */
     XS_FUNCTION static SIMD8 One() noexcept;
+
+    /**
+     * Construct from a SIMD6 by duplicating values within each sub SIMD3.
+     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-2).
+     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-2).
+     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-2).
+     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-2).
+     * @returns Newly constructed object with required attributes.
+     */
+    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+    XS_FUNCTION static SIMD8 Shuffle4(const SIMD6Def& other) noexcept;
+
+    /**
+     * Construct from a SIMD3x2 by duplicating values within each sub SIMD3.
+     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-2).
+     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-2).
+     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-2).
+     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-2).
+     * @returns Newly constructed object with required attributes.
+     */
+    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+    XS_FUNCTION static SIMD8 Shuffle4(const SIMD3x2Def& other) noexcept;
 
     /**
      * Get an element of the object.

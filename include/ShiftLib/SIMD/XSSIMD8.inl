@@ -20,6 +20,12 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
+#include "SIMD/XSSIMD2.hpp"
+#include "SIMD/XSSIMD3x2.hpp"
+#include "SIMD/XSSIMD4.hpp"
+#include "SIMD/XSSIMD6.hpp"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 #include "XSMath.inl"
 
 namespace Shift {
@@ -816,6 +822,82 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::One() noexcept
 #endif
     {
         return SIMD8(T{1});
+    }
+}
+
+template<typename T, SIMDWidth Width>
+template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::Shuffle4(const SIMD6Def& other) noexcept
+{
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD8(_mm256_shuffle2200_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD8(_mm256_shuffle1100_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD8(_mm256_shuffle1010_ps(other.values));
+        } else {
+            return SIMD8(_mm256_permute_ps(other.values, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD8(_mm_shuffle1010_ps(other.values0), _mm_shuffle1010_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD8(_mm_shuffle1100_ps(other.values0), _mm_shuffle1100_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD8(_mm_shuffle2200_ps(other.values0), _mm_shuffle2200_ps(other.values1));
+        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0 && Index3 == 0) {
+            return SIMD8(_mm_shuffle0000_ps(other.values0), _mm_shuffle0000_ps(other.values1));
+        } else {
+            return SIMD8(_mm_permute_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm_permute_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else
+#endif
+    {
+        return SIMD8((&other.values0)[Index0], (&other.values0)[Index1], (&other.values0)[Index2],
+            (&other.values0)[Index3], (&other.values0)[Index0 + 4], (&other.values0)[Index1 + 4],
+            (&other.values0)[Index2 + 4], (&other.values0)[Index3 + 4]);
+    }
+}
+
+template<typename T, SIMDWidth Width>
+template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::Shuffle4(const SIMD3x2Def& other) noexcept
+{
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD8(_mm256_shuffle2200_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD8(_mm256_shuffle1100_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD8(_mm256_shuffle1010_ps(other.values));
+        } else {
+            return SIMD8(_mm256_permute_ps(other.values, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD8(_mm_shuffle1010_ps(other.values0), _mm_shuffle1010_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD8(_mm_shuffle1100_ps(other.values0), _mm_shuffle1100_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD8(_mm_shuffle2200_ps(other.values0), _mm_shuffle2200_ps(other.values1));
+        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0 && Index3 == 0) {
+            return SIMD8(_mm_shuffle0000_ps(other.values0), _mm_shuffle0000_ps(other.values1));
+        } else {
+            return SIMD8(_mm_permute_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm_permute_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else
+#endif
+    {
+        return SIMD8((&other.values0)[Index0], (&other.values0)[Index1], (&other.values0)[Index2],
+            (&other.values0)[Index3], (&other.values0)[Index0 + 3], (&other.values0)[Index1 + 3],
+            (&other.values0)[Index2 + 3], (&other.values0)[Index3 + 3]);
     }
 }
 

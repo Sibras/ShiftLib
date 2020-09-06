@@ -112,13 +112,13 @@ public:
     using Data = NoExport::SIMDData<T, 16, 0, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
-    using BaseDef = SIMDBase<T, widthImpl>;
-    using InBaseDef = SIMDInBase<T, widthImpl>;
-    using SIMD2Def = SIMD2<T, widthImpl>;
-    using SIMD4Def = SIMD4<T, widthImpl>;
-    using SIMD8Def = SIMD8<T, widthImpl>;
-    using SIMD12Def = SIMD12<T, widthImpl>;
-    using SIMD3x4Def = SIMD3x4<T, widthImpl>;
+    using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
+    using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
+    using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
+    using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
+    using SIMD8Def = SIMD8<T, SIMD8<T, widthImpl>::widthImpl>;
+    using SIMD12Def = SIMD12<T, SIMD12<T, widthImpl>::widthImpl>;
+    using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Default constructor. */
@@ -264,6 +264,32 @@ public:
      * @returns Newly constructed object with required attributes.
      */
     XS_FUNCTION static SIMD16 One() noexcept;
+
+    /**
+     * Construct from a SIMD3x4 by duplicating values within each sub SIMD3 .
+     * @note This differs from the normal shuffle3 as it returns 4 elements from each subgroup.
+     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-2).
+     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-2).
+     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-2).
+     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-2).
+     * @param other The SIMD3x4.
+     * @returns Newly constructed object with required attributes.
+     */
+    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+    XS_FUNCTION static SIMD16 Shuffle4(const SIMD3x4Def& other) noexcept;
+
+    /**
+     * Construct from a SIMD12 by duplicating values within each sub SIMD3 .
+     * @note This differs from the normal shuffle3 as it returns 4 elements from each subgroup.
+     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-2).
+     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-2).
+     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-2).
+     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-2).
+     * @param other The SIMD12.
+     * @returns Newly constructed object with required attributes.
+     */
+    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+    XS_FUNCTION static SIMD16 Shuffle4(const SIMD12Def& other) noexcept;
 
     /**
      * Get an element of the object.

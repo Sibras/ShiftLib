@@ -20,6 +20,13 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
+#include "SIMD/XSSIMD12.hpp"
+#include "SIMD/XSSIMD2.hpp"
+#include "SIMD/XSSIMD3x4.hpp"
+#include "SIMD/XSSIMD4.hpp"
+#include "SIMD/XSSIMD8.hpp"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 #include "XSMath.inl"
 
 namespace Shift {
@@ -609,6 +616,104 @@ XS_INLINE SIMD16<T, Width> SIMD16<T, Width>::One() noexcept
 #endif
     {
         return SIMD16(T{1});
+    }
+}
+
+template<typename T, SIMDWidth Width>
+template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+XS_INLINE SIMD16<T, Width> SIMD16<T, Width>::Shuffle4(const SIMD3x4Def& other) noexcept
+{
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD16(_mm512_shuffle2200_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD16(_mm512_shuffle1100_ps(other.values));
+        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD16(_mm512_shuffle1010_ps(other.values));
+        } else {
+            return SIMD16(_mm512_permute_ps(other.values, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD16(_mm256_shuffle2200_ps(other.values0), _mm256_shuffle2200_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD16(_mm256_shuffle1100_ps(other.values0), _mm256_shuffle1100_ps(other.values1));
+        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD16(_mm256_shuffle1010_ps(other.values0), _mm256_shuffle1010_ps(other.values1));
+        } else {
+            return SIMD16(_mm256_permute_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm256_permute_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
+            return SIMD16(_mm_shuffle1010_ps(other.values0), _mm_shuffle1010_ps(other.values1),
+                _mm_shuffle1010_ps(other.values2), _mm_shuffle1010_ps(other.values3));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
+            return SIMD16(_mm_shuffle1100_ps(other.values0), _mm_shuffle1100_ps(other.values1),
+                _mm_shuffle1100_ps(other.values2), _mm_shuffle1100_ps(other.values3));
+        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
+            return SIMD16(_mm_shuffle2200_ps(other.values0), _mm_shuffle2200_ps(other.values1),
+                _mm_shuffle2200_ps(other.values2), _mm_shuffle2200_ps(other.values3));
+        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0 && Index3 == 0) {
+            return SIMD16(_mm_shuffle0000_ps(other.values0), _mm_shuffle0000_ps(other.values1),
+                _mm_shuffle0000_ps(other.values2), _mm_shuffle0000_ps(other.values3));
+        } else {
+            return SIMD16(_mm_permute_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm_permute_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm_permute_ps(other.values2, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
+                _mm_permute_ps(other.values3, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
+        }
+    } else
+#endif
+    {
+        return SIMD16((&other.values0)[Index0], (&other.values0)[Index1], (&other.values0)[Index2],
+            (&other.values0)[Index3], (&other.values0)[Index0 + 3], (&other.values0)[Index1 + 3],
+            (&other.values0)[Index2 + 3], (&other.values0)[Index3 + 3], (&other.values0)[Index0 + 6],
+            (&other.values0)[Index1 + 6], (&other.values0)[Index2 + 6], (&other.values0)[Index3 + 6],
+            (&other.values0)[Index0 + 9], (&other.values0)[Index1 + 9], (&other.values0)[Index2 + 9],
+            (&other.values0)[Index3 + 9]);
+    }
+}
+
+template<typename T, SIMDWidth Width>
+template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+XS_INLINE SIMD16<T, Width> SIMD16<T, Width>::Shuffle4(const SIMD12Def& other) noexcept
+{
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
+#if XS_ISA == XS_X86
+    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+        return SIMD16(_mm512_permutexvar_ps(
+            _mm512_set_epi32(Index3 * 4 + 3, Index2 * 4 + 3, Index1 * 4 + 3, Index0 * 4 + 3, Index3 * 4 + 2,
+                Index2 * 4 + 2, Index1 * 4 + 2, Index0 * 4 + 2, Index3 * 4 + 1, Index2 * 4 + 1, Index1 * 4 + 1,
+                Index0 * 4 + 1, Index3 * 4, Index2 * 4, Index1 * 4, Index0 * 4),
+            other.values));
+    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+        const __m128 vals[3] = {
+            _mm256_castps256_ps128(other.values0), _mm256_extractf128_ps(other.values0, 1), other.values1};
+        const __m128 val1 = _mm_unpacklo_ps(vals[Index0], vals[Index1]);
+        const __m128 val2 = _mm_unpacklo_ps(vals[Index2], vals[Index3]);
+        const __m128 val3 = _mm_unpackhi_ps(vals[Index0], vals[Index1]);
+        const __m128 val4 = _mm_unpackhi_ps(vals[Index2], vals[Index3]);
+        return SIMD16(_mm256_set_m128(_mm_movehl_ps(val2, val1), _mm_movelh_ps(val1, val2)),
+            _mm256_set_m128(_mm_movehl_ps(val4, val3), _mm_movelh_ps(val3, val4)));
+    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        const __m128 val1 = _mm_unpacklo_ps((&other.values0)[Index0], (&other.values0)[Index1]);
+        const __m128 val2 = _mm_unpacklo_ps((&other.values0)[Index2], (&other.values0)[Index3]);
+        const __m128 val3 = _mm_unpackhi_ps((&other.values0)[Index0], (&other.values0)[Index1]);
+        const __m128 val4 = _mm_unpackhi_ps((&other.values0)[Index2], (&other.values0)[Index3]);
+        return SIMD16(
+            _mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1), _mm_movelh_ps(val3, val4), _mm_movehl_ps(val4, val3));
+    } else
+#endif
+    {
+        return SIMD16((&other.values0)[Index0 * 4], (&other.values0)[Index1 * 4], (&other.values0)[Index2 * 4],
+            (&other.values0)[Index3 * 4], (&other.values0)[Index0 * 4 + 1], (&other.values0)[Index1 * 4 + 1],
+            (&other.values0)[Index2 * 4 + 1], (&other.values0)[Index3 * 4 + 1], (&other.values0)[Index0 * 4 + 2],
+            (&other.values0)[Index1 * 4 + 2], (&other.values0)[Index2 * 4 + 2], (&other.values0)[Index3 * 4 + 2],
+            (&other.values0)[Index0 * 4 + 3], (&other.values0)[Index1 * 4 + 3], (&other.values0)[Index2 * 4 + 3],
+            (&other.values0)[Index3 * 4 + 3]);
     }
 }
 
