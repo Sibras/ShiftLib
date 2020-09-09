@@ -777,10 +777,10 @@ XS_INLINE SIMD6<T, Width>::SIMD6(const SIMD3x2Def& other) noexcept
 #endif
     {
         this->values0 = other.values0;
-        this->values1 = other.values1;
-        this->values2 = other.values2;
-        this->values3 = other.values3;
-        this->values4 = other.values4;
+        this->values1 = other.values3;
+        this->values2 = other.values1;
+        this->values3 = other.values4;
+        this->values4 = other.values2;
         this->values5 = other.values5;
     }
 }
@@ -1323,7 +1323,7 @@ XS_INLINE void SIMD6<T, Width>::madValue(const InBaseDef& other1, const InBaseDe
                 this->values, 1 << Index, _mm256_castps128_ps256(value1), _mm256_castps128_ps256(value2));
         } else if constexpr (Index == 4) {
             this->values = _mm256_blend_fmadd_ps(this->values, 1 << Index, _mm256_broadcastf128_ps(other1.values),
-                _mm256_broadcastf128_ps(other1.values));
+                _mm256_broadcastf128_ps(other2.values));
         } else /*Index == 5*/ {
             const __m128 value1 = _mm_shuffle2200_ps(other1.values);
             const __m128 value2 = _mm_shuffle2200_ps(other2.values);

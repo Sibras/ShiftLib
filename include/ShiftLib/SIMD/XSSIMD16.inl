@@ -1961,9 +1961,9 @@ XS_INLINE SIMD16<T, Width> SIMD16<T, Width>::msub(const SIMD16& other1, const SI
                 _mm_fmsub_ps(this->values3, other1.values3, other2.values3));
         } else {
             return SIMD16(_mm_sub_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
-                _mm_sub_ps((this->values1, other1.values1), other2.values1),
-                _mm_sub_ps((this->values2, other1.values2), other2.values2),
-                _mm_sub_ps((this->values3, other1.values3), other2.values3));
+                _mm_sub_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
+                _mm_sub_ps(_mm_mul_ps(this->values2, other1.values2), other2.values2),
+                _mm_sub_ps(_mm_mul_ps(this->values3, other1.values3), other2.values3));
         }
     } else
 #endif

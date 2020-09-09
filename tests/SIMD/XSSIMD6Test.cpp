@@ -21,6 +21,7 @@
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_SIMD2
 #    define XS_TESTING_SIMD3
+#    define XS_TESTING_SIMD3X2 // only needed for header include
 #    define XS_TESTING_SIMD6
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD6)
 #    include "XSTypesSIMD.hpp"
@@ -127,6 +128,9 @@ TYPED_TEST2(TESTISA(SIMD6Test), SIMD6)
     TestType test8 = TestType(TestType::SIMD3Def(1.3f, 1.5f, 1.9f), TestType::SIMD3Def(-1.4f, 1.6f, -1.1f));
     ASSERT_PRED7(
         (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test8, 1.3f, -1.4f, 1.5f, 1.6f, 1.9f, -1.1f);
+
+    ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>),
+        TestType(TestType::SIMD3x2Def(1.3f, 1.5f, 1.9f, -1.4f, 1.6f, -1.1f)), 1.3f, -1.4f, 1.5f, 1.6f, 1.9f, -1.1f);
 
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>),
         TestType(TestType::SIMD3Def(1.3f, 1.5f, 1.9f)), 1.3f, 1.3f, 1.5f, 1.5f, 1.9f, 1.9f);
@@ -342,26 +346,26 @@ TYPED_TEST2(TESTISA(SIMD6Test), SIMD6)
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9, 4000.29f, 9.9f, -0.0004f,
         21.5f, 35.2f, -9.84f);
 
-    TestType test9B(TestType::BaseDef(5.0f));
+    TestType test9B(5.0f);
     test9B.template madValue<0>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED7(
-        (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f);
 
     test9B.template madValue<1>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED7(
-        (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 5.0f, 5.0f, 5.0f, 5.0f);
 
     test9B.template madValue<2>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
-    ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 35.0f, 0.0f,
-        0.0f, 0.0f);
+    ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 35.0f, 5.0f,
+        5.0f, 5.0f);
 
     test9B.template madValue<3>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 35.0f, 35.0f,
-        0.0f, 0.0f);
+        5.0f, 5.0f);
 
     test9B.template madValue<4>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 35.0f, 35.0f,
-        35.0f, 0.0f);
+        35.0f, 5.0f);
 
     test9B.template madValue<5>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f, 35.0f, 35.0f,

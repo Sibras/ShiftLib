@@ -832,34 +832,22 @@ XS_INLINE SIMD8<T, Width> SIMD8<T, Width>::Shuffle4(const SIMD6Def& other) noexc
     static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3 && Index3 < 3);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
-            return SIMD8(_mm256_shuffle2200_ps(other.values));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
-            return SIMD8(_mm256_shuffle1100_ps(other.values));
-        } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
-            return SIMD8(_mm256_shuffle1010_ps(other.values));
-        } else {
-            return SIMD8(_mm256_permute_ps(other.values, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
-        }
+        const SIMD4Def low(_mm256_castps256_ps128(other.values));
+        const SIMD4Def high(_mm256_extractf128_ps(other.values, 1));
+        return SIMD8(_mm256_set_m128(
+            (low.template combine<(Index0 * 2) + 1, (Index1 * 2) + 1, (Index2 * 2) + 1, (Index3 * 2) + 1>(high).values),
+            (low.template combine<Index0 * 2, Index1 * 2, Index2 * 2, Index3 * 2>(high).values)));
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
-            return SIMD8(_mm_shuffle1010_ps(other.values0), _mm_shuffle1010_ps(other.values1));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1 && Index3 == 1) {
-            return SIMD8(_mm_shuffle1100_ps(other.values0), _mm_shuffle1100_ps(other.values1));
-        } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2 && Index3 == 2) {
-            return SIMD8(_mm_shuffle2200_ps(other.values0), _mm_shuffle2200_ps(other.values1));
-        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0 && Index3 == 0) {
-            return SIMD8(_mm_shuffle0000_ps(other.values0), _mm_shuffle0000_ps(other.values1));
-        } else {
-            return SIMD8(_mm_permute_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
-                _mm_permute_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
-        }
+        const SIMD4Def low(other.values0);
+        const SIMD4Def high(other.values1);
+        return SIMD8(low.template combine<Index0 * 2, Index1 * 2, Index2 * 2, Index3 * 2>(high).values,
+            low.template combine<(Index0 * 2) + 1, (Index1 * 2) + 1, (Index2 * 2) + 1, (Index3 * 2) + 1>(high).values);
     } else
 #endif
     {
-        return SIMD8((&other.values0)[Index0], (&other.values0)[Index1], (&other.values0)[Index2],
-            (&other.values0)[Index3], (&other.values0)[Index0 + 4], (&other.values0)[Index1 + 4],
-            (&other.values0)[Index2 + 4], (&other.values0)[Index3 + 4]);
+        return SIMD8((&other.values0)[(Index0 * 2)], (&other.values0)[(Index1 * 2)], (&other.values0)[(Index2 * 2)],
+            (&other.values0)[(Index3 * 2)], (&other.values0)[((Index0 * 2) + 1)], (&other.values0)[((Index1 * 2) + 1)],
+            (&other.values0)[((Index2 * 2) + 1)], (&other.values0)[((Index3 * 2) + 1)]);
     }
 }
 
@@ -1495,7 +1483,7 @@ XS_INLINE void SIMD8<T, Width>::madValue(const InBaseDef& other1, const InBaseDe
                 this->values, 1 << Index, _mm256_castps128_ps256(value1), _mm256_castps128_ps256(value2));
         } else if constexpr (Index == 4) {
             this->values = _mm256_blend_fmadd_ps(this->values, 1 << Index, _mm256_broadcastf128_ps(other1.values),
-                _mm256_broadcastf128_ps(other1.values));
+                _mm256_broadcastf128_ps(other2.values));
         } else if constexpr (Index == 5) {
             const __m128 value1 = _mm_shuffle2200_ps(other1.values);
             const __m128 value2 = _mm_shuffle2200_ps(other2.values);

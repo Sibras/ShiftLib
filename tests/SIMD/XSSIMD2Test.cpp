@@ -174,9 +174,9 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
     test9.template divValue<1>(TestType::InBaseDef(5.0f));
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9, 4000.29f, 9.9f);
 
-    TestType test9B(TestType::BaseDef(5.0f));
+    TestType test9B(5.0f);
     test9B.template madValue<0>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 0.0f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 5.0f);
 
     test9B.template madValue<1>(TestType::InBaseDef(5.0f), TestType::InBaseDef(10.0f));
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test9B, 35.0f, 35.0f);

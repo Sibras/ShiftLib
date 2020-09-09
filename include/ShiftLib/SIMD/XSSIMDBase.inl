@@ -616,16 +616,16 @@ XS_INLINE SIMDBase<T, Width> SIMDBase<T, Width>::sincos(SIMDBase& cosReturn) con
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         const __m128 sinCos = NoExport::sinf4(
-            _mm_add_ps(_mm512_castps512_ps128(this->values), _mm_set_ps(valPi2<T>, valPi2<T>, 0.0f, 0.0f)));
+            _mm_add_ps(_mm512_castps512_ps128(this->values), _mm_set_ps(0.0f, 0.0f, valPi2<float32>, 0.0f)));
         cosReturn.values = _mm512_broadcastf128_ps(_mm_shuffle1111_ps(sinCos));
         return SIMDBase(_mm512_broadcastss_ps(sinCos));
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         const __m128 sinCos = NoExport::sinf4(
-            _mm_add_ps(_mm256_castps256_ps128(this->values), _mm_set_ps(valPi2<T>, valPi2<T>, 0.0f, 0.0f)));
+            _mm_add_ps(_mm256_castps256_ps128(this->values), _mm_set_ps(0.0f, 0.0f, valPi2<float32>, 0.0f)));
         cosReturn.values = _mm256_broadcastf128_ps(_mm_shuffle1111_ps(sinCos));
         return SIMDBase(_mm256_broadcastss_ps(sinCos));
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        const __m128 sinCos = NoExport::sinf4(_mm_add_ps(this->values, _mm_set_ps(valPi2<T>, valPi2<T>, 0.0f, 0.0f)));
+        const __m128 sinCos = NoExport::sinf4(_mm_add_ps(this->values, _mm_set_ps(0.0f, 0.0f, valPi2<float32>, 0.0f)));
         cosReturn.values = _mm_shuffle1111_ps(sinCos);
         return SIMDBase(_mm_broadcastss_ps(sinCos));
     } else
