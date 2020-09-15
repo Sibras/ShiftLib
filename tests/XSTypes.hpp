@@ -237,3 +237,70 @@ AssertionResult AssertPred17Helper(const char* pred_text, const char* e1, const 
         GTEST_PRED17_(                                                                                      \
             pred, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, GTEST_FATAL_FAILURE_)
 #endif
+
+#ifndef GTEST_PRED25_
+namespace testing {
+template<typename Pred, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7,
+    typename T8, typename T9, typename T10, typename T11, typename T12, typename T13, typename T14, typename T15,
+    typename T16, typename T17, typename T18, typename T19, typename T20, typename T21, typename T22, typename T23,
+    typename T24, typename T25>
+AssertionResult AssertPred25Helper(const char* pred_text, const char* e1, const char* e2, const char* e3,
+    const char* e4, const char* e5, const char* e6, const char* e7, const char* e8, const char* e9, const char* e10,
+    const char* e11, const char* e12, const char* e13, const char* e14, const char* e15, const char* e16,
+    const char* e17, const char* e18, const char* e19, const char* e20, const char* e21, const char* e22,
+    const char* e23, const char* e24, const char* e25, Pred pred, const T1& v1, const T2& v2, const T3& v3,
+    const T4& v4, const T5& v5, const T6& v6, const T7& v7, const T8& v8, const T9& v9, const T10& v10, const T11& v11,
+    const T12& v12, const T13& v13, const T14& v14, const T15& v15, const T16& v16, const T17& v17, const T18& v18,
+    const T19& v19, const T20& v20, const T21& v21, const T22& v22, const T23& v23, const T24& v24, const T25& v25)
+{
+    if (pred(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23,
+            v24, v25))
+        return AssertionSuccess();
+
+    return AssertionFailure() << pred_text << "(" << e1 << ", " << e2 << ", " << e3 << ", " << e4 << ", " << e5 << ", "
+                              << e6 << ", " << e7 << ", " << e8 << ", " << e9 << ", " << e10 << ", " << e11 << ", "
+                              << e12 << ", " << e13 << ", " << e14 << ", " << e15 << ", " << e16 << ", " << e17 << ", "
+                              << e18 << ", " << e19 << ", " << e20 << ", " << e21 << ", " << e22 << ", " << e23 << ", "
+                              << e24 << ", " << e25 << ") evaluates to false, where"
+                              << "\n"
+                              << e1 << " evaluates to " << ::testing::PrintToString(v1) << "\n"
+                              << e2 << " evaluates to " << ::testing::PrintToString(v2) << "\n"
+                              << e3 << " evaluates to " << ::testing::PrintToString(v3) << "\n"
+                              << e4 << " evaluates to " << ::testing::PrintToString(v4) << "\n"
+                              << e5 << " evaluates to " << ::testing::PrintToString(v5) << "\n"
+                              << e6 << " evaluates to " << ::testing::PrintToString(v6) << "\n"
+                              << e7 << " evaluates to " << ::testing::PrintToString(v7) << "\n"
+                              << e8 << " evaluates to " << ::testing::PrintToString(v8) << "\n"
+                              << e9 << " evaluates to " << ::testing::PrintToString(v9) << "\n"
+                              << e10 << " evaluates to " << ::testing::PrintToString(v10) << "\n"
+                              << e11 << " evaluates to " << ::testing::PrintToString(v11) << "\n"
+                              << e12 << " evaluates to " << ::testing::PrintToString(v12) << "\n"
+                              << e13 << " evaluates to " << ::testing::PrintToString(v13) << "\n"
+                              << e14 << " evaluates to " << ::testing::PrintToString(v14) << "\n"
+                              << e15 << " evaluates to " << ::testing::PrintToString(v15) << "\n"
+                              << e16 << " evaluates to " << ::testing::PrintToString(v16) << "\n"
+                              << e17 << " evaluates to " << ::testing::PrintToString(v17) << "\n"
+                              << e18 << " evaluates to " << ::testing::PrintToString(v18) << "\n"
+                              << e19 << " evaluates to " << ::testing::PrintToString(v19) << "\n"
+                              << e20 << " evaluates to " << ::testing::PrintToString(v20) << "\n"
+                              << e21 << " evaluates to " << ::testing::PrintToString(v21) << "\n"
+                              << e22 << " evaluates to " << ::testing::PrintToString(v22) << "\n"
+                              << e23 << " evaluates to " << ::testing::PrintToString(v23) << "\n"
+                              << e24 << " evaluates to " << ::testing::PrintToString(v24) << "\n"
+                              << e25 << " evaluates to " << ::testing::PrintToString(v25);
+}
+} // namespace testing
+#    define GTEST_PRED25_(pred, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, \
+        v20, v21, v22, v23, v24, v25, on_failure)                                                                     \
+        GTEST_ASSERT_(                                                                                                \
+            ::testing::AssertPred25Helper(#pred, #v1, #v2, #v3, #v4, #v5, #v6, #v7, #v8, #v9, #v10, #v11, #v12, #v13, \
+                #v14, #v15, #v16, #v17, #v18, #v19, #v20, #v21, #v22, #v23, #v24, #v25, pred, v1, v2, v3, v4, v5, v6, \
+                v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25),          \
+            on_failure)
+#endif
+#ifndef ASSERT_PRED25
+#    define ASSERT_PRED25(pred, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19,  \
+        v20, v21, v22, v23, v24, v25)                                                                                  \
+        GTEST_PRED25_(pred, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, \
+            v21, v22, v23, v24, v25, GTEST_FATAL_FAILURE_)
+#endif

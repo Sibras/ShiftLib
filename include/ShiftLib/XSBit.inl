@@ -174,8 +174,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
             uint32 res = static_cast<uint32>(param) - ((static_cast<uint32>(param) >> 1_ui8) & 0x55555555_ui32);
             res = (res & 0x33333333_ui32) + ((res >> 2_ui8) & 0x33333333_ui32);
             res = (res + (res >> 4)) & 0x0F0F0F0F_ui32;
-            res = (res * 0x01010101_ui32) >> 24_ui8;
-            return static_cast<uint32>(res);
+            return static_cast<uint32>((res * 0x01010101_ui32) >> 24_ui8);
 #    endif
         }
 #endif
@@ -197,8 +196,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
             uint64 res = static_cast<uint64>(param) - ((static_cast<uint64>(param) >> 1_ui8) & 0x5555555555555555_ui64);
             res = (res & 0x3333333333333333_ui64) + ((res >> 2_ui8) & 0x3333333333333333_ui64);
             res = (res + (res >> 4)) & 0x0F0F0F0F0F0F0F0F_ui64;
-            res = (res * 0x0101010101010101_ui64) >> 56_ui8;
-            return static_cast<uint32>(res);
+            return static_cast<uint32>((res * 0x0101010101010101_ui64) >> 56_ui8);
 #    endif
         }
 #endif

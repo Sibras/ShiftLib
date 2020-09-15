@@ -15,7 +15,7 @@
  */
 
 #ifndef XSTESTMAIN
-#    include "../XSCompilerOptions.h"
+#    include "XSCompilerOptions.h"
 
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE

@@ -21,7 +21,7 @@
 #include "XSArchitecture.hpp"
 #include "XSMath.hpp"
 #if XS_ISA == XS_X86
-#    include "XSSIMDx86.hpp"
+#    include "SIMD/XSSIMDx86.hpp"
 
 namespace NoExport {
 static XS_INLINE __m128 exp2f4(const __m128& other)

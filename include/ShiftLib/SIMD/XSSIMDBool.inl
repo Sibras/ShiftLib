@@ -16,6 +16,7 @@
  */
 
 #include "SIMD/XSSIMDBool.hpp"
+
 #include "XSBit.inl"
 #include "XSMath.inl"
 

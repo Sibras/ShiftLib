@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-#include "XSSIMDData.inl"
-#include "XSSIMDTraits.inl"
+#include "SIMD/XSSIMDData.inl"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>

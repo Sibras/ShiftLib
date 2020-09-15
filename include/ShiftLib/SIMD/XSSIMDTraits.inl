@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "XSSIMDTraits.hpp"
+#include "SIMD/XSSIMDTraits.hpp"
 
 #if XS_ISA == XS_X86
 #    include "SIMD/XSSIMDx86.hpp"
