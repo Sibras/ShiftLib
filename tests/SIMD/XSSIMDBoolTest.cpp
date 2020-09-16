@@ -18,7 +18,7 @@
 #    include "SIMD/XSSIMDBool.inl"
 
 #    define XS_TESTING_BOOL
-#    include "XSTypesSIMD.hpp"
+#    include "SIMD/XSTypesSIMD.hpp"
 
 using namespace Shift;
 

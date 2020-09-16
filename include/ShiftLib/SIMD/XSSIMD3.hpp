@@ -18,6 +18,7 @@
 #include "SIMD/XSSIMDBool.hpp"
 #include "SIMD/XSSIMDData.inl"
 
+// Additional includes
 namespace Shift {
 template<typename T, SIMDWidth Width>
 class SIMDBase;
@@ -26,7 +27,14 @@ class SIMDInBase;
 template<typename T, SIMDWidth Width>
 class SIMD2;
 template<typename T, SIMDWidth Width>
-class SIMD4;
+class SIMD4; // TODO: Remove
+} // namespace Shift
+#include "SIMD/XSSIMD2.hpp"
+#include "SIMD/XSSIMD4.hpp" //TODO: Remove
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
+
+namespace Shift {
 template<typename T, SIMDWidth Width>
 class SIMD3;
 
@@ -136,7 +144,7 @@ public:
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
-    using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
+    using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>; // TODO: Remove
     using Data::SIMDData;
 
     /** Tri Mask object used to store 3 different masks at once. */

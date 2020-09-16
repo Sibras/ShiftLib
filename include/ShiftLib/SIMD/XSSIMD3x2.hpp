@@ -18,6 +18,7 @@
 #include "SIMD/XSSIMDBool.hpp"
 #include "SIMD/XSSIMDData.inl"
 
+// Additional includes
 namespace Shift {
 template<typename T, SIMDWidth Width>
 class SIMDBase;
@@ -29,8 +30,14 @@ template<typename T, SIMDWidth Width>
 class SIMD3;
 template<typename T, SIMDWidth Width>
 class SIMD6;
-template<typename T, SIMDWidth Width>
-class SIMD8;
+} // namespace Shift
+#include "SIMD/XSSIMD2.hpp"
+#include "SIMD/XSSIMD3.hpp"
+#include "SIMD/XSSIMD6.hpp"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
+
+namespace Shift {
 template<typename T, SIMDWidth Width>
 class SIMD3x2;
 

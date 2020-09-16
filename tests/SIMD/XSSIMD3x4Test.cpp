@@ -16,18 +16,16 @@
 
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
-
+#    define XS_TESTING_SIMD3X4
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_SIMD3
 #    define XS_TESTING_SIMD4
 #    define XS_TESTING_SIMD12
-#    define XS_TESTING_SIMD16
 #    define XS_TESTING_SIMD3X2
 #    define XS_TESTING_SIMD3X3
-#    define XS_TESTING_SIMD3X4
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD3x4)
-#    include "XSTypesSIMD.hpp"
+#    include "SIMD/XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

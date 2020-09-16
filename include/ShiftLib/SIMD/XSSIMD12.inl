@@ -20,15 +20,6 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
-#include "SIMD/XSSIMD2.hpp"
-#include "SIMD/XSSIMD3.hpp"
-#include "SIMD/XSSIMD3x3.hpp"
-#include "SIMD/XSSIMD3x4.hpp"
-#include "SIMD/XSSIMD4.hpp"
-#include "SIMD/XSSIMD6.hpp"
-#include "SIMD/XSSIMD8.hpp"
-#include "SIMD/XSSIMDBase.hpp"
-#include "SIMD/XSSIMDInBase.hpp"
 #include "XSMath.inl"
 
 namespace Shift {
