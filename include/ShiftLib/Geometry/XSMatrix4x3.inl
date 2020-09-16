@@ -145,7 +145,7 @@ XS_INLINE Matrix4x3<T, Width> Matrix4x3<T, Width>::UniformScale(const InBaseDef&
 template<typename T, SIMDWidth Width>
 XS_INLINE Matrix4x3<T, Width> Matrix4x3<T, Width>::Scale(const SIMD3Def& scale) noexcept
 {
-    const typename SIMD3Def::SIMD4Def scale4(scale, SIMD3Def::SIMD4Def::BaseDef::Zero());
+    const SIMD4Def scale4(scale, SIMD4Def::BaseDef::Zero());
     return Matrix4x3(scale4.template getValue3<0, 3, 3>(), scale4.template getValue3<3, 1, 3>(),
         scale4.template getValue3<3, 3, 2>(), SIMD3Def::Zero());
 }
@@ -230,7 +230,7 @@ XS_INLINE Matrix4x3<T, Width> Matrix4x3<T, Width>::RotationAxis(
     const SIMD3Def col0(axis.values * axis.values.template getValue<0>() * oneMinusCos);
     const SIMD3Def col1(axis.values * axis.values.template getValue<1>() * oneMinusCos);
     const SIMD3Def col2(axis.values * axis.values.template getValue<2>() * oneMinusCos);
-    const typename SIMD3Def::SIMD4Def mods(axis.values, SIMD3Def::SIMD4Def::BaseDef::One());
+    const SIMD4Def mods(axis.values, SIMD4Def::BaseDef::One());
     const SIMD3Def negSinCosSin(
         SIMD3Def(sinCos, sinCos.template getValueInBase<0>()).template negate<true, false, false>());
     return Matrix4x3(mods.template getValue3<3, 2, 1>().mad(negSinCosSin.template shuffle<1, 2, 0>(), col0),

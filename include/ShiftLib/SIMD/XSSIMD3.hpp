@@ -26,11 +26,8 @@ template<typename T, SIMDWidth Width>
 class SIMDInBase;
 template<typename T, SIMDWidth Width>
 class SIMD2;
-template<typename T, SIMDWidth Width>
-class SIMD4; // TODO: Remove
 } // namespace Shift
 #include "SIMD/XSSIMD2.hpp"
-#include "SIMD/XSSIMD4.hpp" //TODO: Remove
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
 
@@ -144,7 +141,6 @@ public:
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
-    using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>; // TODO: Remove
     using Data::SIMDData;
 
     /** Tri Mask object used to store 3 different masks at once. */
@@ -1091,19 +1087,6 @@ public:
      */
     template<uint32 Index0, uint32 Index1, uint32 Index2>
     XS_FUNCTION SIMD3 combine(const SIMD3& other) const noexcept;
-
-    /**
-     * Shuffles the elements of 2 SIMD3s together to a form a new SIMD4.
-     * @note Any index in range 0-2 is taken from first object. Any index in range 3-5 is taken from second object.
-     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-5).
-     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-5).
-     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-5).
-     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-5).
-     * @param other Second input.
-     * @returns The result of the operation.
-     */
-    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
-    XS_FUNCTION SIMD4Def combine(const SIMD3& other) const noexcept;
 };
 
 /**

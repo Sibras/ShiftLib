@@ -476,6 +476,20 @@ public:
     XS_FUNCTION static SIMD4 One() noexcept;
 
     /**
+     * Shuffles the elements of 2 SIMD3s together to a form a new SIMD4.
+     * @note Any index in range 0-2 is taken from first object. Any index in range 3-5 is taken from second object.
+     * @tparam Index0 The index of the first element to insert into the returned object (range is 0-5).
+     * @tparam Index1 The index of the second element to insert into the returned object (range is 0-5).
+     * @tparam Index2 The index of the third element to insert into the returned object (range is 0-5).
+     * @tparam Index3 The index of the fourth element to insert into the returned object (range is 0-5).
+     * @param other1 First input.
+     * @param other2 Second input.
+     * @returns The result of the operation.
+     */
+    template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
+    XS_FUNCTION static SIMD4 Combine4(const SIMD3Def& other1, const SIMD3Def& other2) noexcept;
+
+    /**
      * Transpose 4 SIMD3s into 3 SIMD4s.
      * @note Returns results in the 3 otherT parameters. The transpose operation results in the first return
      * containing the first element of each of the 4 inputs. The second return contains all the second elements from

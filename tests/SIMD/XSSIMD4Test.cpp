@@ -28,6 +28,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 // Instead of testing every possible combination, for speed just test every combination that has a unique code path
+#    define S4_ALL_COMBINE4_TESTS 0
 #    define S4_ALL_GET2_TESTS 1
 #    define S4_ALL_GET3_TESTS 0
 #    define S4_ALL_NEGATE_TESTS 0
@@ -110,6 +111,79 @@ TYPED_TEST2(TESTISA(SIMD4Test), SIMD4)
 
     ASSERT_PRED5(
         (assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>), TestType::One(), 1.0f, 1.0f, 1.0f, 1.0f);
+
+#    define S3_GET2_INDEX0(val0, val1) (val0).template getValueInBase<0>().getValue()
+#    define S3_GET2_INDEX1(val0, val1) (val0).template getValueInBase<1>().getValue()
+#    define S3_GET2_INDEX2(val0, val1) (val0).template getValueInBase<2>().getValue()
+#    define S3_GET2_INDEX3(val0, val1) (val1).template getValueInBase<0>().getValue()
+#    define S3_GET2_INDEX4(val0, val1) (val1).template getValueInBase<1>().getValue()
+#    define S3_GET2_INDEX5(val0, val1) (val1).template getValueInBase<2>().getValue()
+
+    const typename TestType::SIMD3Def test8B = TestType::SIMD3Def(1.0f, 2.0f, 3.0f);
+    const typename TestType::SIMD3Def test8C = TestType::SIMD3Def(4.0f, 5.0f, 6.0f);
+#    define S4_COMBINE4_TEST(index0, index1, index2, index3, val0, val1)                           \
+        {                                                                                          \
+            typename TestFixture::TypeInt f0 = S3_GET2_INDEX##index0(val0, val1);                  \
+            typename TestFixture::TypeInt f1 = S3_GET2_INDEX##index1(val0, val1);                  \
+            typename TestFixture::TypeInt f2 = S3_GET2_INDEX##index2(val0, val1);                  \
+            typename TestFixture::TypeInt f3 = S3_GET2_INDEX##index3(val0, val1);                  \
+            ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),         \
+                (TestType::Combine4<index0, index1, index2, index3>(val0, val1)), f0, f1, f2, f3); \
+        }
+
+#    if S4_ALL_COMBINE4_TESTS
+#        define S4_COMBINE4_TESTXXX(index0, index1, index2, val0, val1) \
+            S4_COMBINE4_TEST(index0, index1, index2, 0, val0, val1)     \
+            S4_COMBINE4_TEST(index0, index1, index2, 1, val0, val1)     \
+            S4_COMBINE4_TEST(index0, index1, index2, 2, val0, val1)     \
+            S4_COMBINE4_TEST(index0, index1, index2, 3, val0, val1)     \
+            S4_COMBINE4_TEST(index0, index1, index2, 4, val0, val1)     \
+            S4_COMBINE4_TEST(index0, index1, index2, 5, val0, val1)
+
+#        define S4_COMBINE4_TESTXX(index0, index1, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 0, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 1, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 2, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 3, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 4, val0, val1) \
+            S4_COMBINE4_TESTXXX(index0, index1, 5, val0, val1)
+
+#        define S4_COMBINE4_TESTX(index0, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 0, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 1, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 2, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 3, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 4, val0, val1) \
+            S4_COMBINE4_TESTXX(index0, 5, val0, val1)
+
+    S4_COMBINE4_TESTX(0, test8B, test8C);
+    S4_COMBINE4_TESTX(1, test8B, test8C);
+    S4_COMBINE4_TESTX(2, test8B, test8C);
+    S4_COMBINE4_TESTX(3, test8B, test8C);
+    S4_COMBINE4_TESTX(4, test8B, test8C);
+    S4_COMBINE4_TESTX(5, test8B, test8C);
+#    else
+    S4_COMBINE4_TEST(0, 1, 3, 4, test8B, test8C);
+    S4_COMBINE4_TEST(3, 4, 0, 1, test8B, test8C);
+    S4_COMBINE4_TEST(0, 3, 1, 4, test8B, test8C);
+    S4_COMBINE4_TEST(3, 0, 4, 1, test8B, test8C);
+    S4_COMBINE4_TEST(2, 0, 1, 1, test8B, test8C);
+    S4_COMBINE4_TEST(5, 4, 4, 3, test8B, test8C);
+    S4_COMBINE4_TEST(1, 0, 5, 4, test8B, test8C);
+    S4_COMBINE4_TEST(5, 4, 1, 0, test8B, test8C);
+    S4_COMBINE4_TEST(0, 1, 2, 3, test8B, test8C);
+    S4_COMBINE4_TEST(3, 4, 5, 0, test8B, test8C);
+    S4_COMBINE4_TEST(3, 1, 2, 0, test8B, test8C);
+    S4_COMBINE4_TEST(4, 1, 5, 0, test8B, test8C);
+    S4_COMBINE4_TEST(5, 4, 3, 1, test8B, test8C);
+    S4_COMBINE4_TEST(5, 4, 2, 3, test8B, test8C);
+    S4_COMBINE4_TEST(5, 1, 4, 3, test8B, test8C);
+    S4_COMBINE4_TEST(0, 5, 4, 3, test8B, test8C);
+    S4_COMBINE4_TEST(3, 4, 2, 5, test8B, test8C); //***
+    S4_COMBINE4_TEST(2, 1, 4, 0, test8B, test8C); //***
+    S4_COMBINE4_TEST(2, 5, 4, 0, test8B, test8C); //***
+    S4_COMBINE4_TEST(1, 2, 4, 0, test8B, test8C); //***
+#    endif
 
     // Static functions
     SIMD3<typename TestFixture::TypeInt, TestFixture::widthImpl> test1A =

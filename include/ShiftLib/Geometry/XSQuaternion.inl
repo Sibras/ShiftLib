@@ -83,7 +83,7 @@ XS_INLINE Quaternion<T, Width>::Quaternion(const Matrix3x3Def& matrix) noexcept
     using SIMD3Def = typename Matrix3x3Def::SIMD3Def;
     const SIMD3Def col0(matrix.template getColumn<0>());
     const SIMD3Def col1(matrix.template getColumn<1>());
-    SIMD4Def mA(col1.template combine<1, 2, 5, 4>(col0));
+    SIMD4Def mA(SIMD4Def::template Combine4<1, 2, 5, 4>(col1, col0));
     SIMD4Def mB(matrix.template getColumn<2>(), col1.template getValueInBase<0>());
     mB = mB.template shuffle<2, 1, 0, 3>();
 
@@ -203,8 +203,8 @@ XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::Matrix3x3(const Matrix3x3De
     const SIMD3Def col1(matrix.template getColumn<1>());
     const SIMD3Def col2(matrix.template getColumn<2>());
 
-    const SIMD4Def temp1(col1.template combine<2, 1, 3, 5>(col2));
-    const SIMD4Def temp2(col2.template combine<1, 2, 5, 3>(col0));
+    const SIMD4Def temp1(SIMD4Def::template Combine4<2, 1, 3, 5>(col1, col2));
+    const SIMD4Def temp2(SIMD4Def::template Combine4<1, 2, 5, 3>(col2, col0));
     const SIMD4Def mAB12(temp1 - temp2);
     const typename SIMD4Def::SIMD2Def mAB3(col0.template getValue2<1, 0>().subAdd(col1.template getValue2<0, 1>()));
     if constexpr (widthImpl > SIMDWidth::Scalar) {
