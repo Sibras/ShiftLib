@@ -242,9 +242,76 @@
 #        define XS_ARCH_BMI2 0
 #    endif
 #    if defined(__AVX512F__)
+/* Added on SkylakeX/CannonLake */
 #        define XS_ARCH_AVX512F 1
 #    else
 #        define XS_ARCH_AVX512F 0
+#    endif
+#    if defined(__AVX512BW__)
+/* Added on SkylakeX/CannonLake */
+#        define XS_ARCH_AVX512BW 1
+#    else
+#        define XS_ARCH_AVX512BW 0
+#    endif
+#    if defined(__AVX512CD__)
+/* Added on SkylakeX/CannonLake */
+#        define XS_ARCH_AVX512CD 1
+#    else
+#        define XS_ARCH_AVX512CD 0
+#    endif
+#    if defined(__AVX512DQ__)
+/* Added on SkylakeX/CannonLake */
+#        define XS_ARCH_AVX512DQ 1
+#    else
+#        define XS_ARCH_AVX512DQ 0
+#    endif
+#    if defined(__AVX512VL__)
+/* Added on SkylakeX/CannonLake */
+#        define XS_ARCH_AVX512VL 1
+#    else
+#        define XS_ARCH_AVX512VL 0
+#    endif
+#    if defined(__AVX512IFMA__)
+/* Added on CannonLake */
+#        define XS_ARCH_AVX512IFMA 1
+#    else
+#        define XS_ARCH_AVX512IFMA 0
+#    endif
+#    if defined(__AVX512VBMI__)
+/* Added on CannonLake */
+#        define XS_ARCH_AVX512VBMI 1
+#    else
+#        define XS_ARCH_AVX512VBMI 0
+#    endif
+#    if defined(__AVX512VPOPCNTDQ__)
+/* Added on IceLake */
+#        define XS_ARCH_AVX512VPOPCNTDQ 1
+#    else
+#        define XS_ARCH_AVX512VPOPCNTDQ 0
+#    endif
+#    if defined(__AVX512BITALG__)
+/* Added on IceLake */
+#        define XS_ARCH_AVX512BITALG 1
+#    else
+#        define XS_ARCH_AVX512BITALG 0
+#    endif
+#    if defined(__AVX512VBMI2__)
+/* Added on IceLake */
+#        define XS_ARCH_AVX512VBMI2 1
+#    else
+#        define XS_ARCH_AVX512VBMI2 0
+#    endif
+#    if defined(__AVX512VNNI__)
+/* Added on IceLake */
+#        define XS_ARCH_AVX512VNNI 1
+#    else
+#        define XS_ARCH_AVX512VNNI 0
+#    endif
+#    if defined(__AVX512VP2INTERSECT__)
+/* Added on TigerLake */
+#        define XS_ARCH_AVX512VP2INTERSECT 1
+#    else
+#        define XS_ARCH_AVX512VP2INTERSECT 0
 #    endif
 
 /* Fix up for backward propagation */

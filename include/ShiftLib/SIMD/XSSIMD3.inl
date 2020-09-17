@@ -577,7 +577,7 @@ XS_INLINE SIMD3<T, Width>::SIMD3(const SIMD2Def& other0, const InBaseDef& other1
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if (index == 0) {
             const __m128 val = _mm_movelh_ps(other0.values, other1.values);
-            this->values = _mm_permute_ps(val, _MM_SHUFFLE(3, 1, 0, 2));
+            this->values = _mm_shuffle1_ps(val, _MM_SHUFFLE(3, 1, 0, 2));
         } else if (index == 1) {
             this->values = _mm_unpacklo_ps(other0.values, other1.values); //(x,1,0,0)
         } else if (index == 2) {
@@ -635,7 +635,7 @@ XS_INLINE void SIMD3<T, Width>::Transpose(const SIMD3& other0, const SIMD3& othe
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         const __m128 val1 = _mm_unpacklo_ps(other0.values, other1.values);
-        const __m128 val2 = _mm_permute_ps(other2.values, _MM_SHUFFLE(3, 1, 3, 0)); //(0,x,1,x))
+        const __m128 val2 = _mm_shuffle1_ps(other2.values, _MM_SHUFFLE(3, 1, 3, 0)); //(0,x,1,x))
         const __m128 val3 = _mm_unpackhi_ps(other0.values, other1.values);
 
         otherT0.values = _mm_movelh_ps(val1, val2);
@@ -749,9 +749,7 @@ XS_INLINE typename SIMD3<T, Width>::SIMD2Def SIMD3<T, Width>::getValue2() const 
     static_assert(Index0 < 3 && Index1 < 3);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX && Index0 == 0 && Index1 == 0) {
-            return SIMD2Def(_mm_shuffle0000_ps(this->values));
-        } else if constexpr (Index0 == 0 && Index1 == 0) {
+        if constexpr (Index0 == 0 && Index1 == 0) {
             return SIMD2Def(_mm_shuffle2200_ps(this->values));
         } else if constexpr (Index0 == 0 && Index1 == 1) {
             return SIMD2Def(this->values);
@@ -760,7 +758,7 @@ XS_INLINE typename SIMD3<T, Width>::SIMD2Def SIMD3<T, Width>::getValue2() const 
         } else if constexpr (Index0 == 1 && Index1 == 1) {
             return SIMD2Def(_mm_shuffle3311_ps(this->values));
         } else {
-            return SIMD2Def(_mm_permute_ps(this->values, _MM_SHUFFLE(0, 0, Index1, Index0)));
+            return SIMD2Def(_mm_shuffle1_ps(this->values, _MM_SHUFFLE(0, 0, Index1, Index0)));
         }
     } else
 #endif
@@ -861,9 +859,9 @@ XS_INLINE void SIMD3<T, Width>::addValue(const InBaseDef& other) noexcept
             this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, value);
         } else {
             constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-            __m128 val = _mm_permute_ps(this->values, shuffle);
+            __m128 val = _mm_shuffle1_ps(this->values, shuffle);
             val = _mm_add_ss(val, other.values);
-            this->values = _mm_permute_ps(val, shuffle);
+            this->values = _mm_shuffle1_ps(val, shuffle);
         }
     } else
 #endif
@@ -889,9 +887,9 @@ XS_INLINE void SIMD3<T, Width>::subValue(const InBaseDef& other) noexcept
             this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, value);
         } else {
             constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-            __m128 val = _mm_permute_ps(this->values, shuffle);
+            __m128 val = _mm_shuffle1_ps(this->values, shuffle);
             val = _mm_sub_ss(val, other.values);
-            this->values = _mm_permute_ps(val, shuffle);
+            this->values = _mm_shuffle1_ps(val, shuffle);
         }
     } else
 #endif
@@ -917,9 +915,9 @@ XS_INLINE void SIMD3<T, Width>::mulValue(const InBaseDef& other) noexcept
             this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
         } else {
             constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-            __m128 val = _mm_permute_ps(this->values, shuffle);
+            __m128 val = _mm_shuffle1_ps(this->values, shuffle);
             val = _mm_mul_ss(val, other.values);
-            this->values = _mm_permute_ps(val, shuffle);
+            this->values = _mm_shuffle1_ps(val, shuffle);
         }
     } else
 #endif
@@ -945,9 +943,9 @@ XS_INLINE void SIMD3<T, Width>::divValue(const InBaseDef& other) noexcept
             this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, value);
         } else {
             constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-            __m128 val = _mm_permute_ps(this->values, shuffle);
+            __m128 val = _mm_shuffle1_ps(this->values, shuffle);
             val = _mm_div_ss(val, other.values);
-            this->values = _mm_permute_ps(val, shuffle);
+            this->values = _mm_shuffle1_ps(val, shuffle);
         }
     } else
 #endif
@@ -975,9 +973,9 @@ XS_INLINE void SIMD3<T, Width>::madValue(const InBaseDef& other1, const InBaseDe
             this->values = _mm_blend_fmadd_ps(this->values, 1 << Index, value1, value2);
         } else {
             constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-            __m128 value = _mm_permute_ps(this->values, shuffle);
+            __m128 value = _mm_shuffle1_ps(this->values, shuffle);
             value = _mm_fmadd_ss(value, other1.values, other2.values);
-            this->values = _mm_permute_ps(value, shuffle);
+            this->values = _mm_shuffle1_ps(value, shuffle);
         }
     } else
 #endif
@@ -1673,12 +1671,12 @@ XS_INLINE SIMD3<T, Width> SIMD3<T, Width>::cross3(const SIMD3& other) const noex
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        __m128 val1 = _mm_permute_ps(other.values, _MM_SHUFFLE(3, 0, 2, 1));
+        __m128 val1 = _mm_shuffle1_ps(other.values, _MM_SHUFFLE(3, 0, 2, 1));
         val1 = _mm_mul_ps(val1, this->values);
-        __m128 val2 = _mm_permute_ps(this->values, _MM_SHUFFLE(3, 0, 2, 1));
+        __m128 val2 = _mm_shuffle1_ps(this->values, _MM_SHUFFLE(3, 0, 2, 1));
         val2 = _mm_mul_ps(val2, other.values);
         val1 = _mm_sub_ps(val1, val2);
-        return SIMD3(_mm_permute_ps(val1, _MM_SHUFFLE(3, 0, 2, 1)));
+        return SIMD3(_mm_shuffle1_ps(val1, _MM_SHUFFLE(3, 0, 2, 1)));
     } else
 #endif
     {
@@ -2236,10 +2234,8 @@ XS_INLINE SIMD3<T, Width> SIMD3<T, Width>::shuffle() const noexcept
             return SIMD3(_mm_shuffle1100_ps(this->values));
         } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 2) {
             return SIMD3(_mm_shuffle2200_ps(this->values));
-        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index0 == 0 && Index1 == 0 && Index2 == 0) {
-            return SIMD3(_mm_shuffle0000_ps(this->values));
         } else {
-            return SIMD3(_mm_permute_ps(this->values, _MM_SHUFFLE(0, Index2, Index1, Index0)));
+            return SIMD3(_mm_shuffle1_ps(this->values, _MM_SHUFFLE(0, Index2, Index1, Index0)));
         }
     }
 #endif
@@ -2638,8 +2634,8 @@ XS_INLINE bool operator==(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpneq_ps(other1.values, other2.values)) & 0x7);
@@ -2658,8 +2654,8 @@ XS_INLINE bool operator==(const SIMD3<T, Width>& other1, const typename SIMD3<T,
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpneq_ps(other1.values, other2.values)) & 0x7);
@@ -2677,8 +2673,8 @@ XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpnle_ps(other1.values, other2.values)) & 0x7);
@@ -2697,8 +2693,8 @@ XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, const typename SIMD3<T,
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpnle_ps(other1.values, other2.values)) & 0x7);
@@ -2716,8 +2712,8 @@ XS_INLINE bool operator<(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& o
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpnlt_ps(other1.values, other2.values)) & 0x7);
@@ -2736,8 +2732,8 @@ XS_INLINE bool operator<(const SIMD3<T, Width>& other1, const typename SIMD3<T, 
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpnlt_ps(other1.values, other2.values)) & 0x7);
@@ -2755,8 +2751,8 @@ XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpeq_ps(other1.values, other2.values)) & 0x7);
@@ -2775,8 +2771,8 @@ XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, const typename SIMD3<T,
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (defaultSIMD >= SIMD::AVX) {
-            const __m128 val =
-                _mm_permute_ps(_mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ), _MM_SHUFFLE(0, 2, 1, 0));
+            __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
+            val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
             return static_cast<bool>(_mm_testz_ps(val, val));
         } else {
             return !static_cast<bool>(_mm_movemask_ps(_mm_cmpeq_ps(other1.values, other2.values)) & 0x7);

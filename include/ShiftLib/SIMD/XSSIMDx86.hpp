@@ -44,32 +44,80 @@ namespace Shift {
 #    define FROUND_CEIL (_MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC)
 #    define FROUND_TRUNC (_MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC)
 
+/*
+ * _mm_permute_ps should never be used as shufps is faster on iceLake (same for all others) and uses 1B shorter opcode
+ * _mm_broadcastss_ps should never be used as shufps is faster on iceLake (same for all others)
+ * _mm_moveldup_ps/_mm_movehdup_ps should always be used as have same speed as shufps but occupy 1B shorter opcode
+ * _mm_movelh_ps/_mm_movehl_ps/_mm_unpackhi_ps/_mm_unpacklo_ps have no speed advantage over any of above (slower on
+ * icelake) but has 1B shorter opcode when not using VEX encoding
+ * All 128b swizzles are executed on the same port except on IceLake which has extra port used by
+ * shufps/movsldup/movshdup
+ * _mm_move_ss is 2B shorter than blendps but is faster on Conroe/CannonLake+/Zen but slower on
+ * Nehalem/SandyBridge/Haswell/Skylake
+ */
+#    define _mm_shuffle1_ps(m128, iMask) _mm_shuffle_ps(m128, m128, (iMask))
 #    if XS_SIMD < XS_AVX
-#        undef _mm_permute_ps
-#        define _mm_permute_ps(m128, iMask) _mm_shuffle_ps(m128, m128, (iMask))
 #        undef _mm_broadcast_ss
-#        define _mm_broadcast_ss(m128) _mm_permute_ps(_mm_load_ss(m128), _MM_SHUFFLE(0, 0, 0, 0))
+#        define _mm_broadcast_ss(float) _mm_shuffle1_ps(_mm_load_ss(float), _MM_SHUFFLE(0, 0, 0, 0))
 #    endif
 
-#    define _mm_shuffle1111_ps(m128) _mm_permute_ps(m128, _MM_SHUFFLE(1, 1, 1, 1))
-#    define _mm_shuffle2222_ps(m128) _mm_permute_ps(m128, _MM_SHUFFLE(2, 2, 2, 2))
-#    define _mm_shuffle3333_ps(m128) _mm_permute_ps(m128, _MM_SHUFFLE(3, 3, 3, 3))
+#    define _mm_shuffle0000_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(0, 0, 0, 0))
+#    define _mm_shuffle1111_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 1, 1, 1))
+#    define _mm_shuffle2222_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(2, 2, 2, 2))
+#    define _mm_shuffle3333_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 3, 3, 3))
 
-#    define _mm_shuffle1010_ps(m128) _mm_movelh_ps(m128, m128)
-#    define _mm_shuffle3232_ps(m128) _mm_movehl_ps(m128, m128)
 #    define _mm_shuffle2200_ps(m128) _mm_moveldup_ps(m128)
 #    define _mm_shuffle3311_ps(m128) _mm_movehdup_ps(m128)
-#    define _mm_shuffle3322_ps(m128) _mm_unpackhi_ps(m128, m128)
-#    define _mm_shuffle1100_ps(m128) _mm_unpacklo_ps(m128, m128)
-
-#    if XS_SIMD >= XS_AVX2
-#        define _mm_shuffle0000_ps(m128) _mm_broadcastss_ps(m128)
+#    if XS_SIMD >= XS_AVX
+#        define _mm_shuffle1010_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 0, 1, 0))
+#        define _mm_shuffle3232_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 2, 3, 2))
+#        define _mm_shuffle3322_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 3, 2, 2))
+#        define _mm_shuffle1100_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 1, 0, 0))
 #    else
-#        define _mm_shuffle0000_ps(m128) _mm_permute_ps(m128, _MM_SHUFFLE(0, 0, 0, 0))
-#        undef _mm_broadcastss_ps
-#        define _mm_broadcastss_ps(m128) _mm_shuffle0000_ps(m128)
-#        undef _mm256_broadcastss_ps
-#        define _mm256_broadcastss_ps(m128) _mm256_permute_ps(_mm256_set_m128(m128, m128), _MM_SHUFFLE(0, 0, 0, 0))
+#        define _mm_shuffle1010_ps(m128) _mm_movelh_ps(m128, m128)
+#        define _mm_shuffle3232_ps(m128) _mm_movehl_ps(m128, m128)
+#        define _mm_shuffle3322_ps(m128) _mm_unpackhi_ps(m128, m128)
+#        define _mm_shuffle1100_ps(m128) _mm_unpacklo_ps(m128, m128)
+#    endif
+
+/*
+ * _mm256_permute_ps should never be used as shufps is faster on iceLake (same for all others) and uses 1B shorter
+ * opcode.
+ * _mm256_broadcastss_ps should be used as it is 1B shorter than insertps and saves a shuffle
+ * _mm256_moveldup_ps/_mm256_movehdup_ps should always be used as have same speed as shufps but occupy 1B shorter opcode
+ * _mm256_unpackhi_ps/_mm256_unpacklo_ps have no speed advantage over any of above (slower on icelake) but has 1B
+ * shorter opcode.
+ *  _mm256_unpacklo_pd/_mm256_unpackhi_pd have no speed advantage over any of above (slower on icelake)
+ * but has 1B shorter opcode.
+ *  _mm_movedup_pd should never be used. Use _mm256_unpacklo_pd instead.
+ * All 256b swizzles are executed on the same port except on IceLake which has extra port used by
+ * shufps/movsldup/movshdup
+ */
+#    define _mm256_shuffle1_ps(m128, iMask) _mm256_shuffle_ps(m128, m128, (iMask))
+#    define _mm256_shuffle2200_ps(m256) _mm256_moveldup_ps(m256)
+#    define _mm256_shuffle3311_ps(m256) _mm256_movehdup_ps(m256)
+#    if XS_ARCH_AVX512VPOPCNTDQ && XS_ARCH_AVX512BITALG && XS_ARCH_AVX512VBMI2
+// IceLake
+#        define _mm256_shuffle3322_ps(m256) _mm256_shuffle1_ps(m256, _MM_SHUFFLE(3, 3, 2, 2))
+#        define _mm256_shuffle1100_ps(m256) _mm256_shuffle1_ps(m256, _MM_SHUFFLE(1, 1, 0, 0))
+#        define _mm256_shuffle1010_ps(m256) _mm256_shuffle1_ps(m256, _MM_SHUFFLE(1, 0, 1, 0))
+#        define _mm256_shuffle3232_ps(m256) _mm256_shuffle1_ps(m256, _MM_SHUFFLE(3, 2, 3, 2))
+#    else
+#        define _mm256_shuffle3322_ps(m256) _mm256_unpackhi_ps(m256, m256)
+#        define _mm256_shuffle1100_ps(m256) _mm256_unpacklo_ps(m256, m256)
+#        define _mm256_shuffle1010_ps(m256) \
+            _mm256_castpd_ps(_mm256_unpacklo_pd(_mm256_castps_pd(m256), _mm256_castps_pd(m256)))
+#        define _mm256_shuffle3232_ps(m256) \
+            _mm256_castpd_ps(_mm256_unpackhi_pd(_mm256_castps_pd(m256), _mm256_castps_pd(m256)))
+#    endif
+
+#    define _mm256_shuffle32103210_ps(m256) \
+        _mm256_insertf128_ps(m256, _mm256_castps256_ps128(m256), 1) // insertf128 is faster than perm2f128 on amd
+#    define _mm256_shuffle32107654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(0, 1))
+#    define _mm256_shuffle76547654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(1, 1))
+#    if XS_SIMD >= XS_AVX2
+#        define _mm256_shuffle10101010_ps(m256) \
+            _mm256_castpd_ps(_mm256_broadcastsd_pd(_mm_castps_pd(_mm256_castps256_ps128(m256))))
 #    endif
 
 #    define _mm256_broadcastf128_ps(m128) _mm256_set_m128(m128, m128)
@@ -80,35 +128,17 @@ namespace Shift {
 #    else
 #        define _mm256_broadcastf64_ps(m128) _mm256_set_m128(_mm_shuffle1010_ps(m128), _mm_shuffle1010_ps(m128))
 #    endif
-#    define _mm512_broadcastf128_ps(m128) \
-        _mm512_shuffle_f32x4(_mm512_castps128_ps512(m128), _mm512_castps128_ps512(m128), _MM_SHUFFLE(0, 0, 0, 0))
-#    define _mm512_broadcastf64_ps(m128) _mm512_broadcast_f32x2(m128)
-#    define _mm512_broadcastf256_ps(m256) _mm512_insertf32x8(_mm512_castps256_ps512(m256), m256, 1)
+
+/*
+ * _mm512_permute_ps and shufpd are equivalent.
+ * _mm512_moveldup_ps/_mm512_movehdup_ps/_mm512_unpackhi_ps/_mm512_unpacklo_ps/_mm512_unpacklo_pd/_mm512_unpackhi_pd/_mm512_movedup_pd
+ * should always be used as have same speed as shufps but occupy 1B shorter opcode All 512b swizzles are executed on the
+ * same port
+ */
+#    define _mm512_shuffle1_ps(m128, iMask) _mm512_shuffle_ps(m128, m128, (iMask))
 #    define _mm512_set_m128(m128_3, m128_2, m128_1, m128_0) \
         _mm512_insertf32x8(_mm512_castps256_ps512(_mm256_set_m128(m128_1, m128_0)), _mm256_set_m128(m128_3, m128_2), 1)
 #    define _mm512_set_m256(m256_1, m256_0) _mm512_insertf32x8(_mm512_castps256_ps512(m256_0), m256_1, 1)
-
-#    if XS_SIMD >= XS_AVX2
-#        define _mm256_shuffle0000ss_ps(m256) _mm256_broadcastss_ps(_mm256_castps256_ps128(m256))
-#    else
-#        define _mm256_shuffle0000ss_ps(m256) \
-            _mm256_permute_ps(_mm256_insertf128_ps(m256, _mm256_castps256_ps128(m256), 1), _MM_SHUFFLE(0, 0, 0, 0))
-#    endif
-#    define _mm256_shuffle2200_ps(m256) _mm256_moveldup_ps(m256)
-#    define _mm256_shuffle3311_ps(m256) _mm256_movehdup_ps(m256)
-#    define _mm256_shuffle3322_ps(m256) _mm256_unpackhi_ps(m256, m256)
-#    define _mm256_shuffle1100_ps(m256) _mm256_unpacklo_ps(m256, m256)
-#    define _mm256_shuffle1010_ps(m256) _mm256_castpd_ps(_mm256_movedup_pd(_mm256_castps_pd(m256)))
-#    define _mm256_shuffle3232_ps(m256) \
-        _mm256_castpd_ps(_mm256_unpackhi_pd(_mm256_castps_pd(m256), _mm256_castps_pd(m256)))
-#    define _mm256_shuffle32103210_ps(m256) \
-        _mm256_insertf128_ps(m256, _mm256_castps256_ps128(m256), 1) // insertf128 is faster than perm2f128 on amd
-#    define _mm256_shuffle32107654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(0, 1))
-#    define _mm256_shuffle76547654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(1, 1))
-#    if XS_SIMD >= XS_AVX2
-#        define _mm256_shuffle10101010_ps(m256) \
-            _mm256_castpd_ps(_mm256_broadcastsd_pd(_mm_castps_pd(_mm256_castps256_ps128(m256))))
-#    endif
 
 #    define _mm512_shuffle2200_ps(m512) _mm512_moveldup_ps(m512)
 #    define _mm512_shuffle3311_ps(m512) _mm512_movehdup_ps(m512)
@@ -117,6 +147,11 @@ namespace Shift {
 #    define _mm512_shuffle1010_ps(m512) _mm512_castpd_ps(_mm512_movedup_pd(_mm512_castps_pd(m512)))
 #    define _mm512_shuffle3232_ps(m512) \
         _mm512_castpd_ps(_mm512_unpackhi_pd(_mm512_castps_pd(m512), _mm512_castps_pd(m512)))
+
+#    define _mm512_broadcastf128_ps(m128) \
+        _mm512_shuffle_f32x4(_mm512_castps128_ps512(m128), _mm512_castps128_ps512(m128), _MM_SHUFFLE(0, 0, 0, 0))
+#    define _mm512_broadcastf64_ps(m128) _mm512_broadcast_f32x2(m128)
+#    define _mm512_broadcastf256_ps(m256) _mm512_insertf32x8(_mm512_castps256_ps512(m256), m256, 1)
 
 // Macros to determine best combination of shuffle parameters to get ideal shuffle when you don't care
 // about a input element
