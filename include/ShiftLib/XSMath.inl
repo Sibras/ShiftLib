@@ -22,6 +22,9 @@
 #elif (XS_COMPILER != XS_CUDA)
 #    include <cmath>
 #endif
+#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
+#    include <intrin.h>
+#endif
 #ifdef min
 #    undef min
 #endif
@@ -199,17 +202,17 @@ XS_INLINE T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
     } else if constexpr (isSameAny<T, uint16, int16>) {
         uint16 temp;
         auto ret = __builtin_addcs(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else if constexpr (isSameAny<T, uint32, int32>) {
         uint32 temp;
         auto ret = __builtin_addc(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else if constexpr (isSameAny<T, uint64, int64>) {
         uint64 temp;
         auto ret = __builtin_addcll(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else
 #endif
@@ -252,17 +255,17 @@ XS_INLINE T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
     } else if constexpr (isSameAny<T, uint16, int16>) {
         uint16 temp;
         auto ret = __builtin_subcs(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else if constexpr (isSameAny<T, uint32, int32>) {
         uint32 temp;
         auto ret = __builtin_subc(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else if constexpr (isSameAny<T, uint64, int64>) {
         uint64 temp;
         auto ret = __builtin_subcll(param1, param2, carryIn, &temp);
-        carryOut = temp;
+        carryOut = static_cast<uint8>(temp);
         return ret;
     } else
 #endif
