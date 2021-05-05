@@ -362,6 +362,32 @@ XS_INLINE XS_CONSTEVAL bool getIsNative() noexcept
 }
 
 template<typename T>
+XS_INLINE XS_CONSTEVAL bool getIsConst() noexcept
+{
+    return getIsSame<T, const typename NoExport::RemoveQualifiers<T>::type>;
+}
+
+template<typename T>
+XS_INLINE XS_CONSTEVAL bool getIsVolatile() noexcept
+{
+    return getIsSame<T, volatile typename NoExport::RemoveQualifiers<T>::type>;
+}
+
+template<typename T>
+XS_INLINE XS_CONSTEVAL bool getIsCV() noexcept
+{
+    return getIsSame<T, const volatile typename NoExport::RemoveQualifiers<T>::type>;
+}
+
+template<typename T>
+XS_INLINE XS_CONSTEVAL bool getIsCOrV() noexcept
+{
+    return getIsSameAny<T, const typename NoExport::RemoveQualifiers<T>::type,
+        volatile typename NoExport::RemoveQualifiers<T>::type,
+        const volatile typename NoExport::RemoveQualifiers<T>::type>;
+}
+
+template<typename T>
 XS_INLINE XS_CONSTEVAL bool getHasSIMD() noexcept
 {
 #if XS_ISA == XS_X86

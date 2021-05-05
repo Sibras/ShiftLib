@@ -58,7 +58,7 @@ class SIMD12;
 template<typename T>
 class alignas(maxAlignment<T, 4>) SIMD12Data
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T> && !isCOrV<T>);
 
 public:
     T value0, value1, value2, value3;
@@ -116,7 +116,7 @@ public:
 template<typename T>
 class alignas(maxAlignment<T, 16>) SIMD12DataPad
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T> && !isCOrV<T>);
 
 public:
     T value0, value1, value2, value3;
@@ -175,7 +175,7 @@ public:
 template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
 class SIMD12 : public NoExport::SIMDData<T, 12, 0, Width>
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T> && !isCOrV<T>);
 
 public:
     using Type = T;

@@ -214,6 +214,74 @@ using requireNativeFloat = require<isNative<T> && isFloat<T>, Tx>;
 template<typename T, typename Tx = void>
 using requireNativeArithmetic = require<isNative<T> && isArithmetic<T>, Tx>;
 
+/**
+ * Query if a type is constant.
+ * @tparam T Generic type parameter.
+ * @returns True if constant, false if not.
+ */
+template<typename T>
+XS_FUNCTION XS_CONSTEVAL bool getIsConst() noexcept;
+
+template<typename T>
+inline constexpr bool isConst = getIsConst<T>();
+
+template<typename T, typename Tx = void>
+using requireConst = require<isConst<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotConst = require<!isConst<T>, Tx>;
+
+/**
+ * Query if a type is volatile.
+ * @tparam T Generic type parameter.
+ * @returns True if volatile, false if not.
+ */
+template<typename T>
+XS_FUNCTION XS_CONSTEVAL bool getIsVolatile() noexcept;
+
+template<typename T>
+inline constexpr bool isVolatile = getIsVolatile<T>();
+
+template<typename T, typename Tx = void>
+using requireVolatile = require<isVolatile<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotVolatile = require<!isVolatile<T>, Tx>;
+
+/**
+ * Query if a type is constant volatile.
+ * @tparam T Generic type parameter.
+ * @returns True if const and volatile, false if not.
+ */
+template<typename T>
+XS_FUNCTION XS_CONSTEVAL bool getIsCV() noexcept;
+
+template<typename T>
+inline constexpr bool isCV = getIsCV<T>();
+
+template<typename T, typename Tx = void>
+using requireCV = require<isCV<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotCV = require<!isCV<T>, Tx>;
+
+/**
+ * Query if a type is constant or volatile.
+ * @tparam T Generic type parameter.
+ * @returns True if const or volatile or both, false if not.
+ */
+template<typename T>
+XS_FUNCTION XS_CONSTEVAL bool getIsCOrV() noexcept;
+
+template<typename T>
+inline constexpr bool isCOrV = getIsCOrV<T>();
+
+template<typename T, typename Tx = void>
+using requireCOrV = require<isCOrV<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotCOrV = require<!isCOrV<T>, Tx>;
+
 template<typename T, bool = isInteger<T>>
 struct Promote
 {

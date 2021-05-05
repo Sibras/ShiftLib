@@ -31,7 +31,7 @@ class SIMDInBase;
 template<typename T>
 class SIMDInBaseData
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T> && !isCOrV<T>);
 
 public:
     T value;
@@ -78,7 +78,7 @@ using SIMDInBaseDataPad = SIMDInBaseData<T>;
 template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
 class SIMDInBase : public NoExport::SIMDData<T, 1, 0, Width>
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T> && !isCOrV<T>);
 
 public:
     using Type = T;
