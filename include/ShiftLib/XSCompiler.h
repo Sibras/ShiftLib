@@ -40,16 +40,6 @@
 #define XS_ARM 3
 #define XS_GPU 4
 
-#define XS_SCALAR 0 /**< Use standard scalar non-vector operations. */
-#define XS_SSE3 1   /**< Use x86 SSE3 128bit vector operations. */
-#define XS_SSE41 2  /**< Use x86 SSE4.1 128bit vector operations. */
-#define XS_SSE42 3  /**< Use x86 SSE4.2 128bit vector operations. */
-#define XS_AVX 4    /**< Use x86 AVX 256bit vector operations. */
-#define XS_AVX2 6   /**< Use x86 AVX2 256bit vector operations. */
-#define XS_AVX512 8 /**< Use x86 AVX512 512bit vector operations. */
-
-#define XS_SIMD XS_SCALAR
-
 /* Finds the compiler type and version. */
 #if defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #    define XS_COMPILER XS_ICL
@@ -164,154 +154,179 @@
 #endif
 
 /* Check for compilation settings on native compilers */
-#if XS_ISA == XS_X86
-#    if defined(__SSE__) || (_M_IX86_FP == 1)
-#        define XS_ARCH_SSE 1
-#    else
-#        define XS_ARCH_SSE 0
-#    endif
-#    if defined(__SSE2__) || (_M_IX86_FP == 2)
-#        define XS_ARCH_SSE2 1
-#    else
-#        define XS_ARCH_SSE2 0
-#    endif
-#    if defined(__SSE3__)
-#        define XS_ARCH_SSE3 1
-#    else
-#        define XS_ARCH_SSE3 0
-#    endif
-#    if defined(__SSSE3__)
-#        define XS_ARCH_SSSE3 1
-#    else
-#        define XS_ARCH_SSSE3 0
-#    endif
-#    if defined(__SSE4_1__)
-#        define XS_ARCH_SSE4_1 1
-#    else
-#        define XS_ARCH_SSE4_1 0
-#    endif
-#    if defined(__SSE4_2__)
-#        define XS_ARCH_SSE4_2 1
-#    else
-#        define XS_ARCH_SSE4_2 0
-#    endif
-#    if defined(__AVX__)
-#        define XS_ARCH_AVX 1
-#    else
-#        define XS_ARCH_AVX 0
-#    endif
-#    if defined(__AVX2__)
-#        define XS_ARCH_AVX2 1
-#    else
-#        define XS_ARCH_AVX2 0
-#    endif
-#    if defined(__FMA__)
-#        define XS_ARCH_FMA3 1
-#    else
-#        define XS_ARCH_FMA3 0
-#    endif
-#    if defined(__FMA4__)
-#        define XS_ARCH_FMA4 1
-#    else
-#        define XS_ARCH_FMA4 0
-#    endif
-#    if defined(__F16C__)
-#        define XS_ARCH_F16C 1
-#    else
-#        define XS_ARCH_F16C 0
-#    endif
-#    if defined(__ABM__)
-#        define XS_ARCH_ABM 1
-#    else
-#        define XS_ARCH_ABM 0
-#    endif
-#    if defined(__ADX__)
+#if (defined(__SSE__) || (_M_IX86_FP == 1)) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSE 1
+#else
+#    define XS_ARCH_SSE 0
+#endif
+#if (defined(__SSE2__) || (_M_IX86_FP == 2)) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSE2 1
+#else
+#    define XS_ARCH_SSE2 0
+#endif
+#if defined(__SSE3__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSE3 1
+#else
+#    define XS_ARCH_SSE3 0
+#endif
+#if defined(__SSSE3__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSSE3 1
+#else
+#    define XS_ARCH_SSSE3 0
+#endif
+#if defined(__SSE4_1__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSE4_1 1
+#else
+#    define XS_ARCH_SSE4_1 0
+#endif
+#if defined(__SSE4_2__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SSE4_2 1
+#else
+#    define XS_ARCH_SSE4_2 0
+#endif
+#if defined(__AVX__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_AVX 1
+#else
+#    define XS_ARCH_AVX 0
+#endif
+#if defined(__AVX2__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_AVX2 1
+#else
+#    define XS_ARCH_AVX2 0
+#endif
+#if defined(__FMA__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_FMA3 1
+#else
+#    define XS_ARCH_FMA3 0
+#endif
+#if defined(__FMA4__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_FMA4 1
+#else
+#    define XS_ARCH_FMA4 0
+#endif
+#if defined(__F16C__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on IvyLake and Bulldozer */
+#    define XS_ARCH_F16C 1
+#else
+#    define XS_ARCH_F16C 0
+#endif
+#if defined(__ABM__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_ABM 1
+#else
+#    define XS_ARCH_ABM 0
+#endif
+#if defined(__ADX__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on Broadwell and Zen */
-#        define XS_ARCH_ADX 1
-#    else
-#        define XS_ARCH_ADX 0
-#    endif
-#    if defined(__BMI__)
-#        define XS_ARCH_BMI 1
-#    else
-#        define XS_ARCH_BMI 0
-#    endif
-#    if defined(__BMI2__)
-#        define XS_ARCH_BMI2 1
-#    else
-#        define XS_ARCH_BMI2 0
-#    endif
-#    if defined(__AVX512F__)
+#    define XS_ARCH_ADX 1
+#else
+#    define XS_ARCH_ADX 0
+#endif
+#if defined(__BMI__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_BMI 1
+#else
+#    define XS_ARCH_BMI 0
+#endif
+#if defined(__BMI2__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_BMI2 1
+#else
+#    define XS_ARCH_BMI2 0
+#endif
+#if defined(__AVX512F__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
-#        define XS_ARCH_AVX512F 1
-#    else
-#        define XS_ARCH_AVX512F 0
-#    endif
-#    if defined(__AVX512BW__)
+#    define XS_ARCH_AVX512F 1
+#else
+#    define XS_ARCH_AVX512F 0
+#endif
+#if defined(__AVX512BW__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
-#        define XS_ARCH_AVX512BW 1
-#    else
-#        define XS_ARCH_AVX512BW 0
-#    endif
-#    if defined(__AVX512CD__)
+#    define XS_ARCH_AVX512BW 1
+#else
+#    define XS_ARCH_AVX512BW 0
+#endif
+#if defined(__AVX512CD__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
-#        define XS_ARCH_AVX512CD 1
-#    else
-#        define XS_ARCH_AVX512CD 0
-#    endif
-#    if defined(__AVX512DQ__)
+#    define XS_ARCH_AVX512CD 1
+#else
+#    define XS_ARCH_AVX512CD 0
+#endif
+#if defined(__AVX512DQ__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
-#        define XS_ARCH_AVX512DQ 1
-#    else
-#        define XS_ARCH_AVX512DQ 0
-#    endif
-#    if defined(__AVX512VL__)
+#    define XS_ARCH_AVX512DQ 1
+#else
+#    define XS_ARCH_AVX512DQ 0
+#endif
+#if defined(__AVX512VL__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
-#        define XS_ARCH_AVX512VL 1
-#    else
-#        define XS_ARCH_AVX512VL 0
-#    endif
-#    if defined(__AVX512IFMA__)
+#    define XS_ARCH_AVX512VL 1
+#else
+#    define XS_ARCH_AVX512VL 0
+#endif
+#if defined(__AVX512IFMA__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on CannonLake */
-#        define XS_ARCH_AVX512IFMA 1
-#    else
-#        define XS_ARCH_AVX512IFMA 0
-#    endif
-#    if defined(__AVX512VBMI__)
+#    define XS_ARCH_AVX512IFMA 1
+#else
+#    define XS_ARCH_AVX512IFMA 0
+#endif
+#if defined(__AVX512VBMI__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on CannonLake */
-#        define XS_ARCH_AVX512VBMI 1
-#    else
-#        define XS_ARCH_AVX512VBMI 0
-#    endif
-#    if defined(__AVX512VPOPCNTDQ__)
+#    define XS_ARCH_AVX512VBMI 1
+#else
+#    define XS_ARCH_AVX512VBMI 0
+#endif
+#if defined(__AVX512VPOPCNTDQ__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on IceLake */
-#        define XS_ARCH_AVX512VPOPCNTDQ 1
-#    else
-#        define XS_ARCH_AVX512VPOPCNTDQ 0
-#    endif
-#    if defined(__AVX512BITALG__)
+#    define XS_ARCH_AVX512VPOPCNTDQ 1
+#else
+#    define XS_ARCH_AVX512VPOPCNTDQ 0
+#endif
+#if defined(__AVX512BITALG__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on IceLake */
-#        define XS_ARCH_AVX512BITALG 1
-#    else
-#        define XS_ARCH_AVX512BITALG 0
-#    endif
-#    if defined(__AVX512VBMI2__)
+#    define XS_ARCH_AVX512BITALG 1
+#else
+#    define XS_ARCH_AVX512BITALG 0
+#endif
+#if defined(__AVX512VBMI2__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on IceLake */
-#        define XS_ARCH_AVX512VBMI2 1
-#    else
-#        define XS_ARCH_AVX512VBMI2 0
-#    endif
-#    if defined(__AVX512VNNI__)
+#    define XS_ARCH_AVX512VBMI2 1
+#else
+#    define XS_ARCH_AVX512VBMI2 0
+#endif
+#if defined(__AVX512VNNI__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on IceLake */
-#        define XS_ARCH_AVX512VNNI 1
-#    else
-#        define XS_ARCH_AVX512VNNI 0
-#    endif
-#    if defined(__AVX512VP2INTERSECT__)
+#    define XS_ARCH_AVX512VNNI 1
+#else
+#    define XS_ARCH_AVX512VNNI 0
+#endif
+#if defined(__AVX512VP2INTERSECT__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on TigerLake */
-#        define XS_ARCH_AVX512VP2INTERSECT 1
-#    else
-#        define XS_ARCH_AVX512VP2INTERSECT 0
+#    define XS_ARCH_AVX512VP2INTERSECT 1
+#else
+#    define XS_ARCH_AVX512VP2INTERSECT 0
+#endif
+
+#if XS_ISA == XS_X86
+/* MSVC doesnt define subsets */
+#    if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && !defined(XS_IGNORE_ISA_OPT)
+#        if XS_ARCH_AVX512F
+#            undef XS_ARCH_BMI2
+#            define XS_ARCH_BMI2 1
+#            undef XS_ARCH_ADX
+#            define XS_ARCH_ADX 1
+#        endif
+#        if XS_ARCH_AVX2
+#            undef XS_ARCH_FMA3
+#            define XS_ARCH_FMA3 1
+#            undef XS_ARCH_BMI
+#            define XS_ARCH_BMI 1
+#            undef XS_ARCH_ABM
+#            define XS_ARCH_ABM 1
+#            undef XS_ARCH_F16C
+#            define XS_ARCH_F16C 1
+#        endif
+#        if XS_ARCH_SSE2 || (XS_ARCH == XS_ARCH64)
+#            undef XS_ARCH_SSE3
+#            define XS_ARCH_SSE3 1
+#        endif
 #    endif
 
 /* Fix up for backward propagation */
@@ -347,61 +362,18 @@
 #        undef XS_ARCH_SSE
 #        define XS_ARCH_SSE 1
 #    endif
-
-#    if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && XS_ARCH_AVX2
-/* MSVC doesnt define subsets */
-#        undef XS_ARCH_FMA3
-#        define XS_ARCH_FMA3 1
-#        undef XS_ARCH_BMI
-#        define XS_ARCH_BMI 1
-#    elif XS_ARCH_AVX2 && !XS_ARCH_FMA3
-#        error Usage of AVX2 requires FMA3 to also be enabled
-#    elif XS_ARCH_AVX2 && !XS_ARCH_BMI
-#        error Usage of AVX2 requires BMI to also be enabled
-#    endif
-#    if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && XS_ARCH_AVX512F
-#        undef XS_ARCH_BMI2
-#        define XS_ARCH_BMI2 1
-#    elif XS_ARCH_AVX512F && !XS_ARCH_BMI2
-#        error Usage of AVX512 requires BMI2 to also be enabled
-#    endif
-#endif
-
-/* Change base ISA to match compiler settings */
-#if (XS_ISA == XS_X86) && !defined(XS_IGNORE_ISA_OPT)
-#    if XS_ARCH_AVX512F
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX512
-#    elif XS_ARCH_AVX2
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX2
-#    elif XS_ARCH_AVX
-#        undef XS_SIMD
-#        define XS_SIMD XS_AVX
-#    elif XS_ARCH_SSE4_2
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE42
-#    elif XS_ARCH_SSE4_1
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE41
-#    elif XS_ARCH_SSE3 ||                                              \
-        (((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)) && \
-            (defined(XS_ARCH_SSE2) || (XS_ARCH == XS_ARCH64)))
-#        undef XS_SIMD
-#        define XS_SIMD XS_SSE3
-#    endif
 #endif
 
 /* Reset any x86 specific optimisations if building for different architecture */
 #if XS_ISA != XS_X86
-#    if (XS_SIMD != XS_SCALAR)
+#    if XS_ARCH_SSE
 #        error Error: Chosen SIMD optimisation instructions are not valid for current architecture.
 #    endif
 #endif
 
-/* Check minimum SSE version requirements for 64 bit */
-#if (XS_ISA == XS_X86) && (XS_ARCH == XS_ARCH64) && (XS_SIMD == XS_SCALAR) && !defined(XS_IGNORE_ISA_OPT)
-#    error Error: 64bit compilation forces atleast SSE2. The minimum supported version of SSE is SSE3.
+/* Check minimum SSE version requirements */
+#if (XS_ISA == XS_X86) && !XS_ARCH_SSE3 && !defined(XS_IGNORE_ISA_OPT)
+#    error Error: The minimum supported version of SSE is SSE3.
 #endif
 
 /* Setup macro to ignore unreferenced variable warnings */

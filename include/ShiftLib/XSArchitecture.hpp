@@ -39,18 +39,105 @@ enum class ISA
 
 inline constexpr ISA currentISA = static_cast<ISA>(XS_ISA);
 
-enum class SIMD
+enum class ISAFeature
 {
-    Scalar = XS_SCALAR, /**< Use standard scalar non-vector operations. */
-    SSE3 = XS_SSE3,     /**< Use x86 SSE3 128bit vector operations. */
-    SSE41 = XS_SSE41,   /**< Use x86 SSE4.1 128bit vector operations. */
-    SSE42 = XS_SSE42,   /**< Use x86 SSE4.2 128bit vector operations. */
-    AVX = XS_AVX,       /**< Use x86 AVX 256bit vector operations. */
-    AVX2 = XS_AVX2,     /**< Use x86 AVX2 256bit vector operations. */
-    AVX512 = XS_AVX512, /**< Use x86 AVX512 512bit vector operations. */
+    SSE,                /**< x86 SSE vector instructions. */
+    SSE2,               /**< x86 SSE2 vector instructions. */
+    SSE3,               /**< x86 SSE3 vector instructions. */
+    SSSE3,              /**< x86 SSSE3 vector instructions. */
+    SSE41,              /**< x86 SSE4.1 vector instructions. */
+    SSE42,              /**< x86 SSE4.2 vector instructions. */
+    AVX,                /**< x86 AVX 256bit instructions. */
+    AVX2,               /**< x86 AVX2 256bit instructions. */
+    FMA3,               /**< x86 FMA3 vector instructions. */
+    FMA4,               /**< x86 FMA4 vector instructions. */
+    F16C,               /**< x86 half precision float instructions. */
+    ABM,                /**< x86 Advanced Bit Manipulation instructions. */
+    BMI,                /**< x86 Bit Manipulation 1 instructions. */
+    BMI2,               /**< x86 Bit Manipulation 2 instructions. */
+    ADX,                /**< x86 Multi-Precision Add-Carry instructions. */
+    AVX512F,            /**< x86 AVX512 Foundation vector instructions. */
+    AVX512BW,           /**< x86 AVX512 Byte and Word vector instructions. */
+    AVX512CD,           /**< x86 AVX512 Conflict Detection vector instructions. */
+    AVX512DQ,           /**< x86 AVX512 Doubleword and Quadword vector instructions. */
+    AVX512VL,           /**< x86 AVX512 Vector Length Extensions vector instructions. */
+    AVX512IFMA,         /**< x86 AVX512 Integer Fused Multiply Add vector instructions. */
+    AVX512VBMI,         /**< x86 AVX512 Vector Byte Manipulation vector instructions. */
+    AVX512VPOPCNTDQ,    /**< x86 AVX512 population count vector instructions. */
+    AVX512BITALG,       /**< x86 AVX512 Bit Algorithms vector instructions. */
+    AVX512VBMI2,        /**< x86 AVX512 Vector Byte Manipulation 2 vector instructions. */
+    AVX512VNNI,         /**< x86 AVX512 Vector Neural Network vector instructions. */
+    AVX512VP2INTERSECT, /**< x86 AVX512 Vector Pair Intersection to a Pair of Mask Registers vector instructions. */
 };
 
-inline constexpr SIMD defaultSIMD = static_cast<SIMD>(XS_SIMD);
+/**
+ * Query if any instructions are supported.
+ * @tparam T Type to check support for.
+ * @returns True if supported, false if not.
+ */
+template<ISAFeature T>
+XS_INLINE XS_CONSTEVAL bool getHasISAFeature() noexcept
+{
+    if constexpr (T == ISAFeature::SSE && XS_ARCH_SSE) {
+        return true;
+    } else if constexpr (T == ISAFeature::SSE2 && XS_ARCH_SSE2) {
+        return true;
+    } else if constexpr (T == ISAFeature::SSE3 && XS_ARCH_SSE3) {
+        return true;
+    } else if constexpr (T == ISAFeature::SSSE3 && XS_ARCH_SSSE3) {
+        return true;
+    } else if constexpr (T == ISAFeature::SSE41 && XS_ARCH_SSE4_1) {
+        return true;
+    } else if constexpr (T == ISAFeature::SSE42 && XS_ARCH_SSE4_2) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX && XS_ARCH_AVX) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX2 && XS_ARCH_AVX2) {
+        return true;
+    } else if constexpr (T == ISAFeature::FMA3 && XS_ARCH_FMA3) {
+        return true;
+    } else if constexpr (T == ISAFeature::FMA4 && XS_ARCH_FMA4) {
+        return true;
+    } else if constexpr (T == ISAFeature::F16C && XS_ARCH_F16C) {
+        return true;
+    } else if constexpr (T == ISAFeature::ABM && XS_ARCH_ABM) {
+        return true;
+    } else if constexpr (T == ISAFeature::BMI && XS_ARCH_BMI) {
+        return true;
+    } else if constexpr (T == ISAFeature::BMI2 && XS_ARCH_BMI2) {
+        return true;
+    } else if constexpr (T == ISAFeature::ADX && XS_ARCH_ADX) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512F && XS_ARCH_AVX512F) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512BW && XS_ARCH_AVX512BW) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512CD && XS_ARCH_AVX512CD) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512DQ && XS_ARCH_AVX512DQ) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VL && XS_ARCH_AVX512VL) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512IFMA && XS_ARCH_AVX512IFMA) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VBMI && XS_ARCH_AVX512VBMI) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VPOPCNTDQ && XS_ARCH_AVX512VPOPCNTDQ) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512BITALG && XS_ARCH_AVX512BITALG) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VBMI2 && XS_ARCH_AVX512VBMI2) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VNNI && XS_ARCH_AVX512VNNI) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VP2INTERSECT && XS_ARCH_AVX512VP2INTERSECT) {
+        return true;
+    }
+    return false;
+}
+
+template<ISAFeature T>
+inline constexpr bool hasISAFeature = getHasISAFeature<T>();
 
 enum class SIMDWidth
 {

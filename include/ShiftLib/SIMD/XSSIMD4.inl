@@ -75,7 +75,7 @@ XS_INLINE SIMD4<T, Width>::Mask::Mask(const uint32 mask) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             this->values = _cvtu32_mask8(mask);
         } else {
             __m128i values = _mm_shuffle0000_epi32(_mm_cvtsi32_si128(mask));
@@ -99,7 +99,7 @@ XS_INLINE SIMD4<T, Width>::Mask::Mask(const bool bool0, const bool bool1, const 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             this->values = _cvtu32_mask8((static_cast<uint32>(bool3) << 3) | (static_cast<uint32>(bool2) << 2) |
                 (static_cast<uint32>(bool1) << 1) | static_cast<uint32>(bool0));
         } else {
@@ -120,7 +120,7 @@ XS_INLINE typename SIMD4<T, Width>::Mask::Bool SIMD4<T, Width>::Mask::getBool4()
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Bool4<true>(static_cast<uint8>(_cvtmask8_u32(this->values)));
         } else {
             return Bool4<true>(static_cast<uint8>(_mm_movemask_ps(this->values)));
@@ -137,7 +137,7 @@ XS_INLINE bool SIMD4<T, Width>::Mask::getAny() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return static_cast<bool>(_cvtmask8_u32(this->values));
         } else {
             return static_cast<bool>(_mm_movemask_ps(this->values));
@@ -154,7 +154,7 @@ XS_INLINE bool SIMD4<T, Width>::Mask::getAll() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return (_cvtmask8_u32(this->values) == 0xF);
         } else {
             return (_mm_movemask_ps(this->values) == 0xF);
@@ -171,7 +171,7 @@ XS_INLINE bool SIMD4<T, Width>::Mask::getNone() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return (_cvtmask8_u32(this->values) == 0x0);
         } else {
             return (_mm_movemask_ps(this->values) == 0x0);
@@ -193,7 +193,7 @@ XS_INLINE typename SIMD4<T, Width>::SIMD2Def::Mask SIMD4<T, Width>::Mask::getMas
         if constexpr (Index == 0) {
             return SIMD2Def::Mask(this->values);
         } else {
-            if constexpr (defaultSIMD >= SIMD::AVX512) {
+            if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return SIMD2Def::Mask(_kshiftri_mask8(this->values, 2));
             } else {
                 return SIMD2Def::Mask(_mm_shuffle3232_ps(this->values));
@@ -235,7 +235,7 @@ XS_INLINE void SIMD4<T, Width>::Mask::mask4Function(MaskOperator& maskFunc) cons
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         auto value = maskFunc.template expression<SIMD4<T, Width>, SIMDMasker4X86<T, Width>>();
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             value.values = _mm_mask_blend_ps(this->values, _mm_setzero_ps(), value.values);
         } else {
             value.values = _mm_and_ps(value.values, this->values);
@@ -301,7 +301,7 @@ XS_INLINE SIMD4<T, Width>::Shuffle::Shuffle(
     XS_ASSERT(shuff3 < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             this->values = _mm_set_epi32(shuff3, shuff2, shuff1, shuff0);
         } else {
             this->values = _mm_set_epi32((shuff3 * 0x04040404) + 0x03020100, (shuff2 * 0x04040404) + 0x03020100,
@@ -323,7 +323,7 @@ XS_INLINE SIMD4<T, Width>::Shuffle::Shuffle(const uint32 shuffle) noexcept
     XS_ASSERT(shuffle < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             this->values = _mm_set1_epi32(shuffle);
         } else {
             this->values = _mm_set1_epi32((shuffle * 0x04040404) + 0x03020100);
@@ -343,7 +343,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Default() 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Shuffle(_mm_set_epi32(3, 2, 1, 0));
         } else {
             return Shuffle(_mm_set_epi32(0x0F0E0D0C, 0x0B0A0908, 0x07060504, 0x03020100));
@@ -360,7 +360,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Reverse() 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Shuffle(_mm_set_epi32(0, 1, 2, 3));
         } else {
             return Shuffle(_mm_set_epi32(0x03020100, 0x07060504, 0x0B0A0908, 0x0F0E0D0C));
@@ -377,10 +377,10 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Reverse(co
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             return Shuffle(_mm_mask_shuffle_epi32(norm, mask.values, norm, _MM_SHUFFLE(0, 1, 2, 3)));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             __m128i swap = _mm_shuffle3333_epi32(norm);
             swap = _mm_and_si128(swap, _mm_castps_si128(mask.values));
@@ -404,7 +404,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Swap() noe
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Shuffle(_mm_set_epi32(1, 0, 3, 2));
         } else {
             return Shuffle(_mm_set_epi32(0x07060504, 0x03020100, 0x0F0E0D0C, 0x0B0A0908));
@@ -421,10 +421,10 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Swap(const
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             return Shuffle(_mm_mask_shuffle_epi32(norm, mask.values, norm, _MM_SHUFFLE(1, 0, 3, 2)));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             __m128i swap = _mm_shuffle2222_epi32(norm);
             swap = _mm_and_si128(swap, _mm_castps_si128(mask.values));
@@ -448,7 +448,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Swap2() no
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Shuffle(_mm_set_epi32(2, 3, 0, 1));
         } else {
             return Shuffle(_mm_set_epi32(0x0B0A0908, 0x0F0E0D0C, 0x03020100, 0x07060504));
@@ -466,13 +466,13 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::Swap2(
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             uint32 mask2 = _cvtmask8_u32(mask.values);
             mask2 = _pdep_u32(mask2, 0x5);
             mask2 = mask2 | (mask2 << 1);
             return Shuffle(_mm_mask_shuffle_epi32(norm, _cvtu32_mask8(mask2), norm, _MM_SHUFFLE(2, 3, 0, 1)));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
             __m128i swap = _mm_shuffle1111_epi32(norm);
             swap = _mm_and_si128(swap, _mm_castps_si128(_mm_shuffle1100_ps(mask.values)));
@@ -497,7 +497,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::RotateLeft
     XS_ASSERT(rotate < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128i val0 = _mm_set_epi32(3, 2, 1, 0);
             const __m128i val1 = _mm_set1_epi32(rotate);
             const __m128i mask = _mm_shuffle3333_epi32(val0);
@@ -523,7 +523,7 @@ XS_INLINE typename SIMD4<T, Width>::Shuffle SIMD4<T, Width>::Shuffle::RotateRigh
     XS_ASSERT(rotate < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128i val0 = _mm_set_epi32(3, 2, 1, 0);
             const __m128i val1 = _mm_set1_epi32(rotate);
             const __m128i mask = _mm_shuffle3333_epi32(val0);
@@ -650,7 +650,7 @@ XS_INLINE SIMD4<T, Width>::SIMD4(const SIMD3Def& other0, const InBaseDef& other1
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             this->values = _mm_insert_ps(other0.values, other1.values, _MM_MK_INSERTPS_NDX(0, 3, 0));
         } else {
             this->values = _mm_shuffle_ps(other1.values, other0.values, _MM_SHUFFLE(3, 2, 0, 1)); /*(x,2,0,x)*/
@@ -671,7 +671,7 @@ XS_INLINE SIMD4<T, Width>::SIMD4(const SIMD3Def& other0, const BaseDef& other1) 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             this->values = _mm_blend_ps(other0.values, other1.values, _MM_BLEND(1, 0, 0, 0));
         } else {
             this->values = _mm_shuffle_ps(other1.values, other0.values, _MM_SHUFFLE(3, 2, 0, 1)); /*(x,2,0,x)*/
@@ -770,12 +770,12 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::Combine4(const SIMD3Def& other1, cons
         } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 < 3 && Index3 < 3) {
             return SIMD4(
                 _mm_shuffle_ps(other2.values, other1.values, _MM_SHUFFLE(Index3, Index2, Index1 - 3, Index0 - 3)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0 && Index1 == 1 && Index2 == 2) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index1 == 1 && Index2 == 2) {
             return SIMD4(_mm_insert_ps(other1.values, other2.values, _MM_MK_INSERTPS_NDX(Index3 - 3, 3, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 3 && Index1 == 4 && Index2 == 5) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 3 && Index1 == 4 && Index2 == 5) {
             return SIMD4(_mm_insert_ps(other2.values, other1.values, _MM_MK_INSERTPS_NDX(Index3, 3, 0)));
         } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 < 3 && Index3 >= 3) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1 && Index2 == 2) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1 && Index2 == 2) {
                 return SIMD4(_mm_blend_ps(other1.values,
                     SIMD4(other2.values)
                         .shuffle<Index0 - 3, XS_SHUFF128_DONTCARE_1_03(Index0 - 3, Index3 - 3),
@@ -797,7 +797,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::Combine4(const SIMD3Def& other1, cons
                     .values,
                 _MM_SHUFFLE(0, 2, Index1 - 3, Index0 - 3)));
         } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 < 3 && Index3 >= 3) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index2 == 2) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index2 == 2) {
                 return SIMD4(_mm_blend_ps(other1.values,
                     SIMD4(other2.values)
                         .shuffle<Index0 - 3, Index1 - 3,
@@ -813,7 +813,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::Combine4(const SIMD3Def& other1, cons
                     _MM_SHUFFLE(2, 0, Index1 - 3, Index0 - 3)));
             }
         } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3 && Index3 >= 3) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1) {
                 return SIMD4(_mm_blend_ps(other1.values,
                     SIMD4(other2.values)
                         .shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1(Index0 - 3, Index2 - 3, Index3 - 3)) % 3,
@@ -829,7 +829,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::Combine4(const SIMD3Def& other1, cons
                     other2.values, _MM_SHUFFLE(Index3 - 3, Index2 - 3, 0, 2)));
             }
         } else if constexpr (Index0 < 3 && Index1 >= 3 && Index2 >= 3 && Index3 >= 3) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0) {
                 return SIMD4(_mm_blend_ps(other1.values,
                     SIMD4(other2.values)
                         .shuffle<(XS_SHUFF128_DONTCARE_0(Index1 - 3, Index2 - 3, Index3 - 3)) % 3, Index1 - 3,
@@ -980,7 +980,7 @@ XS_INLINE typename SIMD4<T, Width>::InBaseDef SIMD4<T, Width>::getValueInBase(co
     XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return InBaseDef(_mm_permutevar_ps(this->values, _mm_cvtsi32_si128(index)));
         } else {
             __m128i value = _mm_shuffle_epi8(_mm_cvtsi32_si128(index * 4), _mm_setzero_si128());
@@ -1000,7 +1000,7 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::getValue(const uint
     XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return BaseDef(_mm_permutevar_ps(this->values, _mm_shuffle0000_epi32(_mm_cvtsi32_si128(index))));
         } else {
             __m128i value = _mm_shuffle_epi8(_mm_cvtsi32_si128(index * 4), _mm_setzero_si128());
@@ -1096,7 +1096,7 @@ XS_INLINE void SIMD4<T, Width>::setValue(const BaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_move_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             this->values = _mm_blend_ps(this->values, other.values, (1 << Index));
         } else if constexpr (Index == 1) {
             const __m128 val = _mm_movelh_ps(this->values, other.values); /*(x,0,x,0)*/
@@ -1124,7 +1124,7 @@ XS_INLINE void SIMD4<T, Width>::setValue(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_move_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             this->values = _mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(0, Index, 0));
         } else if constexpr (Index == 1) {
             const __m128 value = _mm_movelh_ps(this->values, other.values); /*(x,0,x,0)*/
@@ -1149,11 +1149,11 @@ XS_INLINE void SIMD4<T, Width>::setValue(const uint32 index, const BaseDef& othe
     XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             this->values = _mm_mask_blend_ps(_cvtu32_mask8(1UL << index), this->values, other.values);
         } else {
             const __m128 mask = _mm_castsi128_ps(_mm_cmpeq_epi32(_mm_set1_epi32(index), _mm_set_epi32(3, 2, 1, 0)));
-            if constexpr (defaultSIMD >= SIMD::SSE41) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
                 this->values = _mm_blendv_ps(this->values, other.values, mask);
             } else {
                 const __m128 val0 = _mm_and_ps(other.values, mask);
@@ -1197,10 +1197,10 @@ XS_INLINE void SIMD4<T, Width>::addValue(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_add_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index == 1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
             const __m128 value = _mm_shuffle2200_ps(other.values);
             this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, value);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value = _mm_shuffle0000_ps(other.values);
             this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, value);
         } else {
@@ -1225,10 +1225,10 @@ XS_INLINE void SIMD4<T, Width>::subValue(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_sub_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index == 1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
             const __m128 value = _mm_shuffle2200_ps(other.values);
             this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, value);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value = _mm_shuffle0000_ps(other.values);
             this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, value);
         } else {
@@ -1253,10 +1253,10 @@ XS_INLINE void SIMD4<T, Width>::mulValue(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_mul_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index == 1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
             const __m128 value = _mm_shuffle2200_ps(other.values);
             this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value = _mm_shuffle0000_ps(other.values);
             this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
         } else {
@@ -1281,10 +1281,10 @@ XS_INLINE void SIMD4<T, Width>::divValue(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index == 0) {
             this->values = _mm_div_ss(this->values, other.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index == 1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
             const __m128 value = _mm_shuffle2200_ps(other.values);
             this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, value);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value = _mm_shuffle0000_ps(other.values);
             this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, value);
         } else {
@@ -1309,11 +1309,11 @@ XS_INLINE void SIMD4<T, Width>::madValue(const InBaseDef& other1, const InBaseDe
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index % 4 == 0) {
             this->values = _mm_fmadd_ss(this->values, other1.values, other2.values);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index % 4 == 1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index % 4 == 1) {
             const __m128 value1 = _mm_shuffle2200_ps(other1.values);
             const __m128 value2 = _mm_shuffle2200_ps(other2.values);
             this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), value1, value2);
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value1 = _mm_shuffle0000_ps(other1.values);
             const __m128 value2 = _mm_shuffle0000_ps(other2.values);
             this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), value1, value2);
@@ -1523,9 +1523,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::equalMask(const SIMD4&
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_EQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_EQ_OQ));
         } else {
             return Mask(_mm_cmpeq_ps(this->values, other.values));
@@ -1543,9 +1543,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::lessOrEqualMask(const 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LE_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_LE_OQ));
         } else {
             return Mask(_mm_cmple_ps(this->values, other.values));
@@ -1563,9 +1563,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::lessThanMask(const SIM
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LT_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_LT_OQ));
         } else {
             return Mask(_mm_cmplt_ps(this->values, other.values));
@@ -1583,9 +1583,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::notEqualMask(const SIM
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_NEQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_NEQ_OQ));
         } else {
             return Mask(_mm_cmpneq_ps(this->values, other.values));
@@ -1603,9 +1603,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::equalMask(const BaseDe
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_EQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_EQ_OQ));
         } else {
             return Mask(_mm_cmpeq_ps(this->values, other.values));
@@ -1623,9 +1623,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::lessOrEqualMask(const 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LE_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_LE_OQ));
         } else {
             return Mask(_mm_cmple_ps(this->values, other.values));
@@ -1643,9 +1643,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::lessThanMask(const Bas
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LT_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_LT_OQ));
         } else {
             return Mask(_mm_cmplt_ps(this->values, other.values));
@@ -1663,9 +1663,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::greaterOrEqualMask(con
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_GE_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_GE_OQ));
         } else {
             return Mask(_mm_cmple_ps(other.values, this->values));
@@ -1683,9 +1683,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::greaterThanMask(const 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_GT_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_GT_OQ));
         } else {
             return Mask(_mm_cmplt_ps(other.values, this->values));
@@ -1703,9 +1703,9 @@ XS_INLINE typename SIMD4<T, Width>::Mask SIMD4<T, Width>::notEqualMask(const Bas
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_NEQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return Mask(_mm_cmp_ps(this->values, other.values, _CMP_NEQ_OQ));
         } else {
             return Mask(_mm_cmpneq_ps(this->values, other.values));
@@ -1933,9 +1933,9 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::hmaxIndex(uint32& i
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         __m128 other = _mm_max_ps(_mm_shuffle1_ps(this->values, _MM_SHUFFLE(1, 0, 3, 2)), this->values);
         other = _mm_max_ps(other, _mm_shuffle1_ps(other, _MM_SHUFFLE(2, 3, 0, 1)));
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             index = _cvtmask8_u32(_mm_cmp_ps_mask(this->values, other, _CMP_EQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             index = _mm_movemask_ps(_mm_cmp_ps(this->values, other, _CMP_EQ_OQ));
         } else {
             index = _mm_movemask_ps(_mm_cmpeq_ps(this->values, other));
@@ -1962,9 +1962,9 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::hminIndex(uint32& i
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         __m128 other = _mm_min_ps(_mm_shuffle1_ps(this->values, _MM_SHUFFLE(1, 0, 3, 2)), this->values);
         other = _mm_min_ps(other, _mm_shuffle1_ps(other, _MM_SHUFFLE(2, 3, 0, 1)));
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             index = _cvtmask8_u32(_mm_cmp_ps_mask(this->values, other, _CMP_EQ_OQ));
-        } else if constexpr (defaultSIMD >= SIMD::AVX) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
             index = _mm_movemask_ps(_mm_cmp_ps(this->values, other, _CMP_EQ_OQ));
         } else {
             index = _mm_movemask_ps(_mm_cmpeq_ps(this->values, other));
@@ -2196,7 +2196,7 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::dot4(const SIMD4& o
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return BaseDef(_mm_dp_ps(this->values, other.values, 0xFF));
         } else {
             const __m128 res = _mm_mul_ps(this->values, other.values);
@@ -2223,7 +2223,7 @@ XS_INLINE typename SIMD4<T, Width>::InBaseDef SIMD4<T, Width>::dot4InBase(const 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return InBaseDef(_mm_dp_ps(this->values, other.values, 0xF1));
         } else {
             const __m128 res = _mm_mul_ps(this->values, other.values);
@@ -2244,7 +2244,7 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::lengthSqr() const n
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return BaseDef(_mm_dp_ps(this->values, this->values, 0xFF));
         } else {
             const __m128 res = _mm_mul_ps(this->values, this->values);
@@ -2271,7 +2271,7 @@ XS_INLINE typename SIMD4<T, Width>::BaseDef SIMD4<T, Width>::length() const noex
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return BaseDef(_mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0xFF)));
         } else {
             const __m128 res = _mm_mul_ps(this->values, this->values);
@@ -2292,7 +2292,7 @@ XS_INLINE typename SIMD4<T, Width>::InBaseDef SIMD4<T, Width>::lengthSqrInBase()
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return InBaseDef(_mm_dp_ps(this->values, this->values, 0xF1));
         } else {
             const __m128 res = _mm_mul_ps(this->values, this->values);
@@ -2313,7 +2313,7 @@ XS_INLINE typename SIMD4<T, Width>::InBaseDef SIMD4<T, Width>::lengthInBase() co
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return InBaseDef(_mm_sqrt_ss(_mm_dp_ps(this->values, this->values, 0xF1)));
         } else {
             const __m128 res = _mm_mul_ps(this->values, this->values);
@@ -2335,7 +2335,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::normalize() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 value = _mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0xFF));
             return SIMD4(_mm_div_ps(this->values, value));
         } else {
@@ -2590,9 +2590,9 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::insert(const SIMD4& other) const noex
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         if constexpr (Index0 == 0 && Index1 == 0) {
             return SIMD4(_mm_move_ss(this->values, other.values));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == Index1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == Index1) {
             return SIMD4(_mm_blend_ps(this->values, other.values, 1 << Index0));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD4(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)));
         } else if constexpr (Index0 == 0 && Index1 == 1) {
             return SIMD4(_mm_move_ss(this->values, _mm_shuffle3311_ps(other.values))); //(x,x,x,1)
@@ -2648,7 +2648,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::insert2(const SIMD4& other) const noe
     static_assert(Index0 < 2 && Index1 < 2);
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD4(_mm_blend_ps(this->values, other.values, _MM_BLEND(0, 1, 0, 1)));
             } else if constexpr (Index0 == 1 && Index1 == 1) {
@@ -2695,7 +2695,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::blend(const SIMD4& other) const noexc
             return SIMD4(_mm_move_ss(this->values, other.values));
         } else if constexpr (!Elem0 && Elem1 && Elem2 && Elem3) {
             return SIMD4(_mm_move_ss(other.values, this->values));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD4(_mm_blend_ps(this->values, other.values, _MM_BLEND(Elem3, Elem2, Elem1, Elem0)));
         } else if constexpr (!Elem0 && !Elem1 && !Elem2 && Elem3) {
             const __m128 val = _mm_movehl_ps(this->values, other.values); //(x,a2,b3,x)
@@ -2749,9 +2749,9 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::blendVar(const SIMD4& other, const Ma
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return SIMD4(_mm_mask_blend_ps(mask.values, this->values, other.values));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD4(_mm_blendv_ps(this->values, other.values, mask.values));
         } else {
             const __m128 val0 = _mm_and_ps(other.values, mask.values);
@@ -2787,7 +2787,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::blendSwap(SIMD4& other) const noexcep
             const __m128 backup = other.values;
             other.values = _mm_move_ss(this->values, other.values);
             return SIMD4(_mm_move_ss(backup, this->values));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 backup = other.values;
             other.values = _mm_blend_ps(other.values, this->values, _MM_BLEND(Elem3, Elem2, Elem1, Elem0));
             return SIMD4(_mm_blend_ps(this->values, backup, _MM_BLEND(Elem3, Elem2, Elem1, Elem0)));
@@ -2865,11 +2865,11 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::blendSwapVar(SIMD4& other, const Mask
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             const __m128 backup = other.values;
             other.values = _mm_mask_blend_ps(mask.values, other.values, this->values);
             return SIMD4(_mm_mask_blend_ps(mask.values, this->values, backup));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             const __m128 backup = other.values;
             other.values = _mm_blendv_ps(other.values, this->values, mask.values);
             return SIMD4(_mm_blendv_ps(this->values, backup, mask.values));
@@ -2905,7 +2905,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::blend2(const SIMD4& other) const noex
     }
 #if XS_ISA == XS_X86
     else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD4(_mm_blend_ps(this->values, other.values, _MM_BLEND(Elem1, Elem0, Elem1, Elem0)));
         } else {
             const __m128 val0 = _mm_movelh_ps(other.values, this->values); //(a1,a0,b1,b0)
@@ -2962,7 +2962,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::shuffleVar(const Shuffle& shuffle) co
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             XS_ASSERT(_mm_movemask_epi8(_mm_cmpgt_epi32(shuffle.values, _mm_set1_epi32(3))) == 0);
             return SIMD4(_mm_permutevar_ps(this->values, shuffle.values));
         } else {
@@ -3029,7 +3029,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
             return SIMD4(_mm_movelh_ps(other.values, this->values));
         } else if constexpr (Index0 == 2 && Index1 == 6 && Index2 == 3 && Index3 == 7) {
             return SIMD4(_mm_unpackhi_ps(this->values, other.values));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && (Index0 == 0 || Index0 == 4) &&
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && (Index0 == 0 || Index0 == 4) &&
             (Index1 == 1 || Index1 == 5) && (Index2 == 2 || Index2 == 6) && (Index3 == 3 || Index3 == 7)) {
             return SIMD4(_mm_blend_ps(
                 this->values, other.values, _MM_BLEND(Index3 >= 4, Index2 >= 4, Index1 >= 4, Index0 >= 4)));
@@ -3049,24 +3049,24 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
         } else if constexpr (Index0 >= 4 && Index1 >= 4 && Index2 < 4 && Index3 < 4) {
             return SIMD4(
                 _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(Index3, Index2, Index1 - 4, Index0 - 4)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0 && Index1 == 1 && Index2 == 2) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index1 == 1 && Index2 == 2) {
             return SIMD4(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index3 - 4, 3, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0 && Index1 == 1 && Index3 == 3) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index1 == 1 && Index3 == 3) {
             return SIMD4(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index2 - 4, 2, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0 && Index2 == 2 && Index3 == 3) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index2 == 2 && Index3 == 3) {
             return SIMD4(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index1 - 4, 1, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1 && Index2 == 2 && Index3 == 3) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1 && Index2 == 2 && Index3 == 3) {
             return SIMD4(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index0 - 4, 0, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 4 && Index1 == 5 && Index2 == 6) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 4 && Index1 == 5 && Index2 == 6) {
             return SIMD4(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index3, 3, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 4 && Index1 == 5 && Index3 == 7) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 4 && Index1 == 5 && Index3 == 7) {
             return SIMD4(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index2, 2, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 4 && Index2 == 6 && Index3 == 7) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 4 && Index2 == 6 && Index3 == 7) {
             return SIMD4(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index1, 1, 0)));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 5 && Index2 == 6 && Index3 == 7) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 5 && Index2 == 6 && Index3 == 7) {
             return SIMD4(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index0, 0, 0)));
         } else if constexpr (Index0 >= 4 && Index1 < 4 && Index2 < 4 && Index3 >= 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1 && Index2 == 2) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1 && Index2 == 2) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<Index0 - 4, XS_SHUFF128_DONTCARE_1_03(Index0 - 4, Index3 - 4),
@@ -3078,7 +3078,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
                 return SIMD4(_mm_shuffle1_ps(val, _MM_SHUFFLE(3, 1, 0, 2)));
             }
         } else if constexpr (Index0 >= 4 && Index1 < 4 && Index2 >= 4 && Index3 < 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1 && Index3 == 3) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1 && Index3 == 3) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<Index0 - 4, XS_SHUFF128_DONTCARE_1_02(Index0 - 4, Index2 - 4), Index2 - 4,
@@ -3090,7 +3090,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
                 return SIMD4(_mm_shuffle1_ps(val, _MM_SHUFFLE(1, 3, 0, 2)));
             }
         } else if constexpr (Index0 >= 4 && Index1 >= 4 && Index2 >= 4 && Index3 < 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index3 == 3) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index3 == 3) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<Index0 - 4, Index1 - 4, Index2 - 4,
@@ -3105,7 +3105,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
                     _MM_SHUFFLE(0, 2, Index1 - 4, Index0 - 4)));
             }
         } else if constexpr (Index0 >= 4 && Index1 >= 4 && Index2 < 4 && Index3 >= 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index2 == 2) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index2 == 2) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<Index0 - 4, Index1 - 4, XS_SHUFF128_DONTCARE_2(Index0 - 4, Index1 - 4, Index3 - 4),
@@ -3120,7 +3120,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
                     _MM_SHUFFLE(2, 0, Index1 - 4, Index0 - 4)));
             }
         } else if constexpr (Index0 >= 4 && Index1 < 4 && Index2 >= 4 && Index3 >= 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index1 == 1) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<Index0 - 4, XS_SHUFF128_DONTCARE_1(Index0 - 4, Index2 - 4, Index3 - 4), Index2 - 4,
@@ -3135,7 +3135,7 @@ XS_INLINE SIMD4<T, Width> SIMD4<T, Width>::combine(const SIMD4& other) const noe
                     other.values, _MM_SHUFFLE(Index3 - 4, Index2 - 4, 0, 2)));
             }
         } else if constexpr (Index0 < 4 && Index1 >= 4 && Index2 >= 4 && Index3 >= 4) {
-            if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == 0) {
+            if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0) {
                 return SIMD4(_mm_blend_ps(this->values,
                     other
                         .shuffle<XS_SHUFF128_DONTCARE_0(Index1 - 4, Index2 - 4, Index3 - 4), Index1 - 4, Index2 - 4,
@@ -3596,7 +3596,7 @@ XS_INLINE bool operator==(const SIMD4<T, Width>& other1, const SIMD4<T, Width>& 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_OQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3615,7 +3615,7 @@ XS_INLINE bool operator==(const SIMD4<T, Width>& other1, const typename SIMD4<T,
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3634,7 +3634,7 @@ XS_INLINE bool operator<=(const SIMD4<T, Width>& other1, const SIMD4<T, Width>& 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3653,7 +3653,7 @@ XS_INLINE bool operator<=(const SIMD4<T, Width>& other1, const typename SIMD4<T,
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3672,7 +3672,7 @@ XS_INLINE bool operator<(const SIMD4<T, Width>& other1, const SIMD4<T, Width>& o
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3691,7 +3691,7 @@ XS_INLINE bool operator<(const SIMD4<T, Width>& other1, const typename SIMD4<T, 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3710,7 +3710,7 @@ XS_INLINE bool operator!=(const SIMD4<T, Width>& other1, const SIMD4<T, Width>& 
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3729,7 +3729,7 @@ XS_INLINE bool operator!=(const SIMD4<T, Width>& other1, const typename SIMD4<T,
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             const __m128 value = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
             return static_cast<bool>(_mm_testz_ps(value, value));
         } else {
@@ -3891,7 +3891,7 @@ XS_INLINE typename SIMD4<T, Width>::Mask operator&(
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return SIMD4<T, Width>::Mask(_kand_mask8(mask1.values, mask2.values));
         } else {
             return SIMD4<T, Width>::Mask(_mm_and_ps(mask1.values, mask2.values));
@@ -3910,7 +3910,7 @@ XS_INLINE typename SIMD4<T, Width>::Mask operator|(
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return SIMD4<T, Width>::Mask(_kor_mask8(mask1.values, mask2.values));
         } else {
             return SIMD4<T, Width>::Mask(_mm_or_ps(mask1.values, mask2.values));
@@ -3929,7 +3929,7 @@ XS_INLINE typename SIMD4<T, Width>::Mask operator^(
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return SIMD4<T, Width>::Mask(_kxor_mask8(mask1.values, mask2.values));
         } else {
             return SIMD4<T, Width>::Mask(_mm_xor_ps(mask1.values, mask2.values));
@@ -3947,7 +3947,7 @@ XS_INLINE typename SIMD4<T, Width>::Mask operator~(const typename SIMD4<T, Width
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             return SIMD4<T, Width>::Mask(_knot_mask8(mask.values));
         } else {
             return SIMD4<T, Width>::Mask(_mm_xor_ps(mask.values, _mm_cmpeq_ps(mask.values, mask.values)));

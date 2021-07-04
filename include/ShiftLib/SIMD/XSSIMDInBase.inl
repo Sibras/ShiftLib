@@ -246,7 +246,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::ceil() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMDInBase(_mm_round_ss(this->values, this->values, FROUND_CEIL));
         } else {
             return SIMDInBase(_mm_cvtepi32_ps(_mm_sub_epi32(_mm_setzero_si128(),
@@ -265,7 +265,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::floor() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMDInBase(_mm_round_ss(this->values, this->values, FROUND_FLOOR));
         } else {
             return SIMDInBase(_mm_cvtepi32_ps(_mm_srai_epi32(
@@ -283,7 +283,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::trunc() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMDInBase(_mm_round_ss(this->values, this->values, FROUND_TRUNC));
         } else {
             return SIMDInBase(_mm_cvtepi32_ps(_mm_cvttps_epi32(this->values)));
@@ -332,7 +332,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::exp2() const noexcept
         // get integer component
         __m128 val2;
         __m128i vali1;
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             val2 = _mm_round_ps(this->values, FROUND_TRUNC);
             vali1 = _mm_cvtps_epi32(val2);
         } else {
@@ -604,7 +604,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::sincos(SIMDInBase& cosRetur
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         __m128 ret;
-        if constexpr (defaultSIMD >= SIMD::AVX2) {
+        if constexpr (hasISAFeature<ISAFeature::AVX2>) {
             ret = _mm_shuffle0000_ps(this->values);
         } else {
             ret = _mm_shuffle2200_ps(this->values);
@@ -728,7 +728,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::atan2(const SIMDInBase& oth
         __m128 val3 = _mm_cmple_ss(_mm_setzero_ps(), val0);
         val1 = _mm_add_ps(val1, val4);
 
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMDInBase(_mm_blendv_ps(val1, val4, val3));
         } else {
             const __m128 val00 = _mm_and_ps(val4, val3);

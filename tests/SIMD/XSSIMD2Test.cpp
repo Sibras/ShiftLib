@@ -53,7 +53,7 @@ TYPED_TEST2(TESTISA(SIMD2Test), SIMD2)
     }
 
     // Test that the classes size matches the expected internal representation
-    if constexpr (defaultSIMD > SIMD::Scalar) {
+    if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 2>();
             assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();

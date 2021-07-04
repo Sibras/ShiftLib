@@ -20,7 +20,7 @@
 
 namespace Shift {
 /** Dual Boolean object used to store true/false values for 2 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool2 : public NoExport::SIMDBoolData<2, IsSIMD>
 {
 public:
@@ -164,7 +164,7 @@ public:
 };
 
 /** Tri Boolean object used to store true/false values for 3 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool3 : public NoExport::SIMDBoolData<3, IsSIMD>
 {
 public:
@@ -309,7 +309,7 @@ public:
 };
 
 /** Hex Boolean object used to store true/false values for 2 lots of 3 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool3x2 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
@@ -464,7 +464,7 @@ public:
 };
 
 /** Quad Boolean object used to store true/false values for 4 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool4 : public NoExport::SIMDBoolData<4, IsSIMD>
 {
 public:
@@ -610,7 +610,7 @@ public:
 };
 
 /** Hex Boolean object used to store true/false values for 6 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool6 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
@@ -758,7 +758,7 @@ public:
 };
 
 /** Oct Boolean object used to store true/false values for 8 different booleans at once in a single value. */
-template<bool IsSIMD = (defaultSIMD >= SIMD::Scalar)>
+template<bool IsSIMD = hasSIMD<float32>>
 class Bool8 : public NoExport::SIMDBoolData<8, IsSIMD>
 {
 public:

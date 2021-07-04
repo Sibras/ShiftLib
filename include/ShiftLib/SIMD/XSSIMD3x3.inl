@@ -53,7 +53,7 @@ XS_INLINE void SIMD3x3Data<T>::store(const SIMD3x3<T, Width>& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         _mm512_mask_compressstoreu_ps(&value0, _cvtu32_mask16(0x0777), other.values);
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             const __mmask8 mask = _cvtu32_mask8(0x77);
             _mm256_mask_compressstoreu_ps(&value0, mask, other.values0);
             _mm_mask_compressstoreu_ps(&value6, mask, other.values1);
@@ -67,7 +67,7 @@ XS_INLINE void SIMD3x3Data<T>::store(const SIMD3x3<T, Width>& other) noexcept
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         _mm_storeu_ps(&value0, other.values0);
         _mm_storeu_ps(&value3, other.values1);
-        if constexpr (defaultSIMD >= SIMD::AVX512) {
+        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
             _mm_mask_compressstoreu_ps(&value6, _cvtu32_mask8(0x7), other.values2);
         } else {
             // Need to backup the 4th element to prevent memory corruption by using the 4 element store
@@ -270,7 +270,7 @@ XS_INLINE SIMD3x3<T, Width>::SIMD3x3(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         this->values = _mm512_broadcastss_ps(other.values);
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (defaultSIMD >= SIMD::AVX2) {
+        if constexpr (hasISAFeature<ISAFeature::AVX2>) {
             this->values0 = _mm256_broadcastss_ps(other.values);
         } else {
             const __m128 val = _mm_shuffle0000_ps(other.values);
@@ -466,7 +466,7 @@ XS_INLINE typename SIMD3x3<T, Width>::BaseDef SIMD3x3<T, Width>::getValue() cons
                 _MM_SHUFFLE(Index / 3, Index / 3, Index / 3, Index / 3)));
         }
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (defaultSIMD >= SIMD::AVX2 && Index == 0) {
+        if constexpr (hasISAFeature<ISAFeature::AVX2> && Index == 0) {
             return BaseDef(_mm256_broadcastss_ps(_mm256_castps256_ps128(this->values0)));
         } else if constexpr (Index == 0) {
             const __m128 val = _mm_shuffle0000_ps(_mm256_castps256_ps128(this->values0));
@@ -486,7 +486,7 @@ XS_INLINE typename SIMD3x3<T, Width>::BaseDef SIMD3x3<T, Width>::getValue() cons
         } else if constexpr (Index == 5) {
             const __m256 val = _mm256_shuffle1_ps(this->values0, _MM_SHUFFLE(2, 2, 2, 2));
             return BaseDef(_mm256_shuffle76547654_ps(val));
-        } else if constexpr (defaultSIMD >= SIMD::AVX2 && Index == 6) {
+        } else if constexpr (hasISAFeature<ISAFeature::AVX2> && Index == 6) {
             return BaseDef(_mm256_broadcastss_ps(this->values1));
         } else if constexpr (Index == 6) {
             const __m128 val = _mm_shuffle0000_ps(this->values1);
@@ -1787,7 +1787,7 @@ XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::transpose() const noexcept
         const __m128 val1 = _mm_unpacklo_ps(this->values0, this->values1);
         const __m128 val2 = _mm_shuffle1_ps(this->values2, _MM_SHUFFLE(3, 1, 3, 0)); //(0,x,1,x))
         const __m128 val3 = _mm_unpackhi_ps(this->values0, this->values1);
-        if constexpr (defaultSIMD >= SIMD::SSE41) {
+        if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD3x3(_mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1),
                 _mm_blend_ps(val3, this->values2, _MM_BLEND(1, 1, 0, 0)));
         } else {
@@ -1842,11 +1842,11 @@ XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::insert3(const SIMD3x3& other) con
         if constexpr (Index0 == 0 && Index1 == 0) {
             return SIMD3x3(_mm_move_ss(this->values0, other.values0), _mm_move_ss(this->values1, other.values1),
                 _mm_move_ss(this->values2, other.values2));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41 && Index0 == Index1) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == Index1) {
             return SIMD3x3(_mm_blend_ps(this->values0, other.values0, 1UL << Index0),
                 _mm_blend_ps(this->values1, other.values1, 1UL << Index0),
                 _mm_blend_ps(this->values2, other.values2, 1UL << Index0));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD3x3(_mm_insert_ps(this->values0, other.values0, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)),
                 _mm_insert_ps(this->values1, other.values1, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)),
                 _mm_insert_ps(this->values2, other.values2, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)));
@@ -1943,7 +1943,7 @@ XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::blend3(const SIMD3x3& other) cons
         } else if constexpr (!Elem0 && Elem1 && Elem2) {
             return SIMD3x3(_mm_move_ss(other.values0, this->values0), _mm_move_ss(other.values1, this->values1),
                 _mm_move_ss(other.values2, this->values2));
-        } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+        } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
             return SIMD3x3(_mm_blend_ps(this->values0, other.values0, _MM_BLEND(0, Elem2, Elem1, Elem0)),
                 _mm_blend_ps(this->values1, other.values1, _MM_BLEND(0, Elem2, Elem1, Elem0)),
                 _mm_blend_ps(this->values2, other.values2, _MM_BLEND(0, Elem2, Elem1, Elem0)));

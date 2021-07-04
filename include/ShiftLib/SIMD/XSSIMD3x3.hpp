@@ -147,7 +147,7 @@ public:
     XS_FUNCTION SIMD3x3<T, Width> load() const noexcept;
 };
 
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMD3x3 : public NoExport::SIMDData<T, 9, 3, Width>
 {
     static_assert(isArithmetic<T> && !isCOrV<T>);

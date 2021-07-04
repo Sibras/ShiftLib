@@ -328,7 +328,13 @@ using toSigned = typename ToSigned<T>::type;
  * @returns True if supported, false if not.
  */
 template<typename T>
-XS_FUNCTION XS_CONSTEVAL bool getHasSIMD() noexcept;
+XS_INLINE XS_CONSTEVAL bool getHasSIMD() noexcept
+{
+    if constexpr (hasISAFeature<ISAFeature::SSE>) {
+        return isSameAny<T, float32>;
+    }
+    return false;
+}
 
 template<typename T>
 inline constexpr bool hasSIMD = getHasSIMD<T>();

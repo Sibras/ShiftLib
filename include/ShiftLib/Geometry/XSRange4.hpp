@@ -60,7 +60,7 @@ public:
 };
 
 /** Range4 type used to store minimum and maximum values for four different specific ranges. */
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class Range4
 {
 public:

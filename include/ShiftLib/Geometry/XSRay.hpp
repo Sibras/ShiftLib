@@ -24,7 +24,7 @@ namespace Shift {
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class Ray
 {
 public:

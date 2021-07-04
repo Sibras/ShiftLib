@@ -56,7 +56,7 @@ namespace Shift {
  * Nehalem/SandyBridge/Haswell/Skylake
  */
 #    define _mm_shuffle1_ps(m128, iMask) _mm_shuffle_ps(m128, m128, (iMask))
-#    if XS_SIMD < XS_AVX
+#    if !XS_ARCH_AVX
 #        undef _mm_broadcast_ss
 #        define _mm_broadcast_ss(float) _mm_shuffle1_ps(_mm_load_ss(float), _MM_SHUFFLE(0, 0, 0, 0))
 #    endif
@@ -68,7 +68,7 @@ namespace Shift {
 
 #    define _mm_shuffle2200_ps(m128) _mm_moveldup_ps(m128)
 #    define _mm_shuffle3311_ps(m128) _mm_movehdup_ps(m128)
-#    if XS_SIMD >= XS_AVX
+#    if XS_ARCH_AVX
 #        define _mm_shuffle1010_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 0, 1, 0))
 #        define _mm_shuffle3232_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 2, 3, 2))
 #        define _mm_shuffle3322_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 3, 2, 2))
@@ -115,15 +115,15 @@ namespace Shift {
         _mm256_insertf128_ps(m256, _mm256_castps256_ps128(m256), 1) // insertf128 is faster than perm2f128 on amd
 #    define _mm256_shuffle32107654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(0, 1))
 #    define _mm256_shuffle76547654_ps(m256) _mm256_permute2f128_ps(m256, m256, _MM256_PERMUTE(1, 1))
-#    if XS_SIMD >= XS_AVX2
+#    if XS_ARCH_AVX2
 #        define _mm256_shuffle10101010_ps(m256) \
             _mm256_castpd_ps(_mm256_broadcastsd_pd(_mm_castps_pd(_mm256_castps256_ps128(m256))))
 #    endif
 
 #    define _mm256_broadcastf128_ps(m128) _mm256_set_m128(m128, m128)
-#    if XS_SIMD >= XS_AVX512
+#    if XS_ARCH_AVX512F
 #        define _mm256_broadcastf64_ps(m128) _mm256_broadcast_f32x2(m128)
-#    elif XS_SIMD >= XS_AVX2
+#    elif XS_ARCH_AVX2
 #        define _mm256_broadcastf64_ps(m128) _mm256_castpd_ps(_mm256_broadcastsd_pd(_mm_castps_pd(m128)))
 #    else
 #        define _mm256_broadcastf64_ps(m128) _mm256_set_m128(_mm_shuffle1010_ps(m128), _mm_shuffle1010_ps(m128))
@@ -157,79 +157,98 @@ namespace Shift {
 // about a input element
 #    define CHECK(i1, i2, i3, a, b, c) ((i1) == (a) && (i2) == (b) && (i3) == (c))
 #    define CHECK2(i1, i2, a, b) ((i1) == (a) && (i2) == (b))
-#    define XS_SHUFF128_DONTCARE_0(i1, i2, i3)                                               \
-        (CHECK(i1, i2, i3, 0, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK(i1, i2, i3, 1, 0, 1) || \
-                CHECK(i1, i2, i3, 0, 1, 1) || CHECK(i1, i2, i3, 0, 2, 2) ?                   \
-            0 :                                                                              \
-            CHECK(i1, i2, i3, 1, 1, 3) ? 1 : 2
-#    define XS_SHUFF128_DONTCARE_1(i0, i2, i3)                                               \
-        (CHECK(i0, i2, i3, 0, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK(i0, i2, i3, 0, 1, 1) || \
-                CHECK(i0, i2, i3, 0, 2, 2) ?                                                 \
-            0 :                                                                              \
-            CHECK(i0, i2, i3, 0, 0, 1) || CHECK(i0, i2, i3, 1, 3, 3) ? 1 : CHECK(i0, i2, i3, 2, 3, 3) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_2(i0, i1, i3)                                              \
-        (CHECK(i0, i1, i3, 0, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK(i0, i1, i3, 0, 1, 1) ? \
-            0 :                                                                             \
-            CHECK(i0, i1, i3, 0, 0, 1) ? 1 : CHECK(i0, i1, i3, 2, 3, 3) || CHECK(i0, i1, i3, 0, 0, 2) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_3(i0, i1, i2)                \
-        (CHECK(i0, i1, i2, 0, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                               \
-            CHECK(i0, i1, i2, 0, 1, 0) || CHECK(i0, i1, i2, 0, 0, 1) ? 1 : CHECK(i0, i1, i2, 0, 0, 2) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_0_12(i1, i2)                                   \
-        CHECK2(i1, i2, 1, 0) || (CHECK2(i1, i2, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                                                 \
-            CHECK2(i1, i2, 3, 2) || CHECK2(i1, i2, 2, 3) ? 2 : CHECK2(i1, i2, 0, 1) || CHECK2(i1, i2, 0, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_0_13(i1, i3)                                   \
-        (CHECK2(i1, i3, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK2(i1, i3, 1, 1) ? \
-            0 :                                                                 \
-            CHECK2(i1, i3, 3, 3) || CHECK2(i1, i3, 2, 3) ? 2 : CHECK2(i1, i3, 0, 1) || CHECK2(i1, i3, 0, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_0_23(i2, i3)                                   \
-        (CHECK2(i2, i3, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK2(i2, i3, 0, 1) ? \
-            0 :                                                                 \
-            CHECK2(i2, i3, 2, 3) || CHECK2(i2, i3, 3, 3) ? 2 : CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_1_02(i0, i2) \
-        CHECK2(i0, i2, 0, 0) ?                \
-            (XS_SIMD >= XS_AVX ? 0 : 1) :     \
-            CHECK2(i0, i2, 2, 2) ? 3 : CHECK2(i0, i2, 2, 3) ? 2 : CHECK2(i0, i2, 0, 1) || CHECK2(i0, i2, 0, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_1_03(i0, i3)           \
-        (CHECK2(i0, i3, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                         \
-            CHECK2(i0, i3, 0, 1) ? 1 : CHECK2(i0, i3, 2, 3) ? 3 : CHECK2(i0, i3, 0, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_1_23(i2, i3)           \
-        (CHECK2(i2, i3, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                         \
-            CHECK2(i2, i3, 0, 1) ?                      \
-            1 :                                         \
-            CHECK2(i2, i3, 2, 3) ? 3 : CHECK2(i2, i3, 3, 3) ? 2 : CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : 1
-#    define XS_SHUFF128_DONTCARE_2_01(i0, i1)                                   \
-        (CHECK2(i0, i1, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK2(i0, i1, 0, 1) ? \
+#    define XS_SHUFF128_DONTCARE_0(i1, i2, i3)                                                                     \
+        (CHECK(i1, i2, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i1, i2, i3, 1, 0, 1) || CHECK(i1, i2, i3, 0, 1, 1) || \
+                CHECK(i1, i2, i3, 0, 2, 2) ?                                                                       \
+                                         0 :                                                                       \
+            CHECK(i1, i2, i3, 1, 1, 3) ? 1 :                                                                       \
+                                         2
+#    define XS_SHUFF128_DONTCARE_1(i0, i2, i3)                                                                        \
+        (CHECK(i0, i2, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i0, i2, i3, 0, 1, 1) || CHECK(i0, i2, i3, 0, 2, 2) ? 0 : \
+            CHECK(i0, i2, i3, 0, 0, 1) || CHECK(i0, i2, i3, 1, 3, 3)                                            ? 1 : \
+            CHECK(i0, i2, i3, 2, 3, 3)                                                                          ? 2 : \
+                                                                                                                  3
+#    define XS_SHUFF128_DONTCARE_2(i0, i1, i3)                                          \
+        (CHECK(i0, i1, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i0, i1, i3, 0, 1, 1) ? 0 : \
+            CHECK(i0, i1, i3, 0, 0, 1)                                            ? 1 : \
+            CHECK(i0, i1, i3, 2, 3, 3) || CHECK(i0, i1, i3, 0, 0, 2)              ? 2 : \
+                                                                                    3
+#    define XS_SHUFF128_DONTCARE_3(i0, i1, i2)                             \
+        (CHECK(i0, i1, i2, 0, 0, 0) && XS_ARCH_AVX)                  ? 0 : \
+            CHECK(i0, i1, i2, 0, 1, 0) || CHECK(i0, i1, i2, 0, 0, 1) ? 1 : \
+            CHECK(i0, i1, i2, 0, 0, 2)                               ? 2 : \
+                                                                       3
+#    define XS_SHUFF128_DONTCARE_0_12(i1, i2)                               \
+        CHECK2(i1, i2, 1, 0) || (CHECK2(i1, i2, 0, 0) && XS_ARCH_AVX) ? 0 : \
+            CHECK2(i1, i2, 3, 2) || CHECK2(i1, i2, 2, 3)              ? 2 : \
+            CHECK2(i1, i2, 0, 1) || CHECK2(i1, i2, 0, 2)              ? 0 : \
+                                                                        1
+#    define XS_SHUFF128_DONTCARE_0_13(i1, i3)                               \
+        (CHECK2(i1, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i1, i3, 1, 1) ? 0 : \
+            CHECK2(i1, i3, 3, 3) || CHECK2(i1, i3, 2, 3)              ? 2 : \
+            CHECK2(i1, i3, 0, 1) || CHECK2(i1, i3, 0, 2)              ? 0 : \
+                                                                        1
+#    define XS_SHUFF128_DONTCARE_0_23(i2, i3)                               \
+        (CHECK2(i2, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i2, i3, 0, 1) ? 0 : \
+            CHECK2(i2, i3, 2, 3) || CHECK2(i2, i3, 3, 3)              ? 2 : \
+            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2)              ? 0 : \
+                                                                        1
+#    define XS_SHUFF128_DONTCARE_1_02(i0, i2)                                      \
+        CHECK2(i0, i2, 0, 0)                             ? (XS_ARCH_AVX ? 0 : 1) : \
+            CHECK2(i0, i2, 2, 2)                         ? 3 :                     \
+            CHECK2(i0, i2, 2, 3)                         ? 2 :                     \
+            CHECK2(i0, i2, 0, 1) || CHECK2(i0, i2, 0, 2) ? 0 :                     \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_1_03(i0, i3)       \
+        (CHECK2(i0, i3, 0, 0) && XS_ARCH_AVX) ? 0 : \
+            CHECK2(i0, i3, 0, 1)              ? 1 : \
+            CHECK2(i0, i3, 2, 3)              ? 3 : \
+            CHECK2(i0, i3, 0, 2)              ? 0 : \
+                                                1
+#    define XS_SHUFF128_DONTCARE_1_23(i2, i3)                  \
+        (CHECK2(i2, i3, 0, 0) && XS_ARCH_AVX)            ? 0 : \
+            CHECK2(i2, i3, 0, 1)                         ? 1 : \
+            CHECK2(i2, i3, 2, 3)                         ? 3 : \
+            CHECK2(i2, i3, 3, 3)                         ? 2 : \
+            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_2_01(i0, i1)                            \
+        (CHECK2(i0, i1, 0, 0) && XS_ARCH_AVX)) || CHECK2(i0, i1, 0, 1) ? \
             0 :                                                                 \
             CHECK2(i0, i1, 2, 3) ? 2 : CHECK2(i0, i1, 2, 2) ? 3 : CHECK2(i0, i1, 0, 0) ? 1 : 3
-#    define XS_SHUFF128_DONTCARE_2_03(i0, i3)                                   \
-        (CHECK2(i0, i3, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK2(i0, i3, 0, 1) ? \
-            0 :                                                                 \
-            CHECK2(i0, i3, 2, 3) ? 2 : CHECK2(i0, i3, 0, 2) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_2_13(i1, i3)                                   \
-        (CHECK2(i1, i3, 0, 0) && (XS_SIMD >= XS_AVX)) || CHECK2(i1, i3, 1, 1) ? \
-            0 :                                                                 \
-            CHECK2(i1, i3, 3, 3) ? 2 :                                          \
-                                   CHECK2(i1, i3, 2, 3) ? 3 : CHECK2(i1, i3, 0, 1) ? 1 : CHECK2(i1, i3, 0, 2) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_3_01(i0, i1)           \
-        (CHECK2(i0, i1, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                         \
-            CHECK2(i0, i1, 0, 1) ? 1 : CHECK2(i0, i1, 2, 3) || CHECK2(i0, i1, 2, 2) ? 3 : CHECK2(i0, i1, 0, 0) ? 1 : 3
-#    define XS_SHUFF128_DONTCARE_3_02(i0, i2) \
-        CHECK2(i0, i2, 0, 0) ?                \
-            (XS_SIMD >= XS_AVX ? 0 : 1) :     \
-            CHECK2(i0, i2, 2, 2) || CHECK2(i0, i2, 2, 3) ? 3 : CHECK2(i0, i2, 0, 1) ? 1 : CHECK2(i0, i2, 0, 2) ? 2 : 3
-#    define XS_SHUFF128_DONTCARE_3_12(i1, i2)           \
-        (CHECK2(i1, i2, 0, 0) && (XS_SIMD >= XS_AVX)) ? \
-            0 :                                         \
-            CHECK2(i1, i2, 1, 0) ?                      \
-            1 :                                         \
-            CHECK2(i1, i2, 2, 3) || CHECK2(i1, i2, 3, 2) ? 3 : CHECK2(i1, i2, 0, 1) ? 1 : CHECK2(i1, i2, 0, 2) ? 2 : 3
+#    define XS_SHUFF128_DONTCARE_2_03(i0, i3)                               \
+        (CHECK2(i0, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i0, i3, 0, 1) ? 0 : \
+            CHECK2(i0, i3, 2, 3)                                      ? 2 : \
+            CHECK2(i0, i3, 0, 2)                                      ? 2 : \
+                                                                        3
+#    define XS_SHUFF128_DONTCARE_2_13(i1, i3)                               \
+        (CHECK2(i1, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i1, i3, 1, 1) ? 0 : \
+            CHECK2(i1, i3, 3, 3)                                      ? 2 : \
+            CHECK2(i1, i3, 2, 3)                                      ? 3 : \
+            CHECK2(i1, i3, 0, 1)                                      ? 1 : \
+            CHECK2(i1, i3, 0, 2)                                      ? 2 : \
+                                                                        3
+#    define XS_SHUFF128_DONTCARE_3_01(i0, i1)                  \
+        (CHECK2(i0, i1, 0, 0) && XS_ARCH_AVX)            ? 0 : \
+            CHECK2(i0, i1, 0, 1)                         ? 1 : \
+            CHECK2(i0, i1, 2, 3) || CHECK2(i0, i1, 2, 2) ? 3 : \
+            CHECK2(i0, i1, 0, 0)                         ? 1 : \
+                                                           3
+#    define XS_SHUFF128_DONTCARE_3_02(i0, i2)                                      \
+        CHECK2(i0, i2, 0, 0)                             ? (XS_ARCH_AVX ? 0 : 1) : \
+            CHECK2(i0, i2, 2, 2) || CHECK2(i0, i2, 2, 3) ? 3 :                     \
+            CHECK2(i0, i2, 0, 1)                         ? 1 :                     \
+            CHECK2(i0, i2, 0, 2)                         ? 2 :                     \
+                                                           3
+#    define XS_SHUFF128_DONTCARE_3_12(i1, i2)                  \
+        (CHECK2(i1, i2, 0, 0) && XS_ARCH_AVX)            ? 0 : \
+            CHECK2(i1, i2, 1, 0)                         ? 1 : \
+            CHECK2(i1, i2, 2, 3) || CHECK2(i1, i2, 3, 2) ? 3 : \
+            CHECK2(i1, i2, 0, 1)                         ? 1 : \
+            CHECK2(i1, i2, 0, 2)                         ? 2 : \
+                                                           3
 
-#    if XS_SIMD < XS_AVX2
+#    if !XS_ARCH_AVX2
 #        define _mm_fmadd_ss(m128_0, m128_1, m128_2) _mm_add_ss(_mm_mul_ss(m128_0, m128_1), m128_2)
 #        define _mm_fmadd_ps(m128_0, m128_1, m128_2) _mm_add_ps(_mm_mul_ps(m128_0, m128_1), m128_2)
 #        define _mm256_fmadd_ps(m256_0, m256_1, m256_2) _mm256_add_ps(_mm256_mul_ps(m256_0, m256_1), m256_2)
@@ -247,7 +266,7 @@ namespace Shift {
             _mm256_sub_ps(_mm256_xor_ps(m256_2, _mm256_set1_ps(-0.0f)), _mm256_mul_ps(m256_0, m256_1))
 #    endif
 
-#    if XS_SIMD < XS_SSE41
+#    if !XS_ARCH_SSE4_1
 #        undef _mm_ceil_ps
 #        undef _mm_floor_ps
 #        define _mm_ceil_ps(m128)                              \
@@ -258,7 +277,7 @@ namespace Shift {
 #        define _mm_trunc_ps(m128) _mm_cvtepi32_ps(_mm_cvttps_epi32(m128))
 #    endif
 
-#    if XS_SIMD >= XS_AVX512
+#    if XS_ARCH_AVX512F
 #        define _mm256_blend_insertf128_ps(m256_0, mask, m256_1, m128_0, imm8) \
             _mm256_mask_insertf32x4((m256_0), _cvtu32_mask8(mask), (m256_1), (m128_0), (imm8))
 #        define _mm256_blend_set_m128(m256_0, mask, m128_1, m128_0) \
@@ -329,7 +348,7 @@ namespace Shift {
 #        define _mm256_recipsqrt_ps(m256) _mm256_rsqrt_ps(m256)
 #    endif
 
-#    if XS_SIMD < XS_AVX2
+#    if !XS_ARCH_AVX2
 #        define _mm_broadcastd_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(0, 0, 0, 0))
 #    endif
 

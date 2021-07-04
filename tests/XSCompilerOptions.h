@@ -17,17 +17,17 @@
 
 #include "XSCompiler.h"
 
-#if XS_SIMD == XS_AVX512
+#if XS_ARCH_AVX512F
 #    define XS_COMPILER_ARCH AVX512
-#elif XS_SIMD == XS_AVX2
+#elif XS_ARCH_AVX2
 #    define XS_COMPILER_ARCH AVX2
-#elif XS_SIMD == XS_AVX
+#elif XS_ARCH_AVX
 #    define XS_COMPILER_ARCH AVX
-#elif XS_SIMD == XS_SSE42
+#elif XS_ARCH_SSE4_2
 #    define XS_COMPILER_ARCH SSE42
-#elif XS_SIMD == XS_SSE41
+#elif XS_ARCH_SSE4_1
 #    define XS_COMPILER_ARCH SSE41
-#elif XS_SIMD == XS_SSE3
+#elif XS_ARCH_SSE3
 #    define XS_COMPILER_ARCH SSE3
 #elif XS_ISA == XS_X86
 #    define XS_COMPILER_ARCH IA32

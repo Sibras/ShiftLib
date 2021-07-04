@@ -64,7 +64,7 @@ XS_INLINE SIMDBase<T, Width> SIMDBaseData<T>::load() const noexcept
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMDBase<T, Width>(_mm256_broadcast_ss(&value));
     } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (defaultSIMD >= SIMD::AVX) {
+        if constexpr (hasISAFeature<ISAFeature::AVX>) {
             return SIMDBase<T, Width>(_mm_broadcast_ss(&value));
         } else {
             const __m128 val = _mm_load_ss(&value);
@@ -151,7 +151,7 @@ XS_INLINE SIMDBase<T, Width>::SIMDBase(const InBaseDef& other) noexcept
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         this->values = _mm512_broadcastss_ps(other.values);
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        if constexpr (defaultSIMD >= SIMD::AVX2) {
+        if constexpr (hasISAFeature<ISAFeature::AVX2>) {
             this->values = _mm256_broadcastss_ps(other.values);
         } else {
             const __m128 val = _mm_shuffle0000_ps(other.values);
@@ -627,7 +627,7 @@ XS_INLINE SIMDBase<T, Width> SIMDBase<T, Width>::sincos(SIMDBase& cosReturn) con
         const __m128 sinCos = NoExport::sinf4(
             _mm_add_ps(_mm256_castps256_ps128(this->values), _mm_set_ps(0.0f, 0.0f, valPi2<float32>, 0.0f)));
         cosReturn.values = _mm256_broadcastf128_ps(_mm_shuffle1111_ps(sinCos));
-        if constexpr (defaultSIMD >= SIMD::AVX2) {
+        if constexpr (hasISAFeature<ISAFeature::AVX2>) {
             return SIMDBase(_mm256_broadcastss_ps(sinCos));
         } else {
             const __m128 val = _mm_shuffle0000_ps(sinCos);

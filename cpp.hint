@@ -10,3 +10,4 @@
 #define XS_FUNCTION __declspec(noalias)
 #define XS_FUNCTION XS_IMPORT __declspec(noalias)
 #define XS_FUNCTION
+#define XS_CONSTEVAL

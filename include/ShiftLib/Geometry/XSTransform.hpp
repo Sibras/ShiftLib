@@ -148,7 +148,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>, bool Matrix = false>
+template<typename T, SIMDWidth Width = widthSIMD<T>, bool Matrix = false>
 class Transform
 {
     template<bool IsMatrix>

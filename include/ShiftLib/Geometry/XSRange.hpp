@@ -56,7 +56,7 @@ public:
 };
 
 /** Range type used to store minimum and maximum values for a specific range. */
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class Range
 {
 public:

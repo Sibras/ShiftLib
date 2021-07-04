@@ -45,6 +45,9 @@ TEST(Traits, IsSame)
     static_assert(isSameCV<const volatile int32, int32> == false);
     static_assert(isSameCV<int32, volatile int32> == false);
     static_assert(isSameCV<volatile int32, int32> == false);
+    static_assert(isSameCV<volatile int32, volatile int32> == true);
+    static_assert(isSameCV<const int32, const int32> == true);
+    static_assert(isSameCV<const volatile int32, const volatile int32> == true);
 
     static_assert(isSame<int32, uint32> == false);
     static_assert(isSame<int32, int32> == true);
@@ -84,6 +87,9 @@ TEST(Traits, IsSameAny)
     static_assert(isSameAnyCV<const volatile int32, int32, float32, float64> == false);
     static_assert(isSameAnyCV<int32, volatile int32, float32, float64> == false);
     static_assert(isSameAnyCV<volatile int32, int32, float32, float64> == false);
+    static_assert(isSameAnyCV<volatile int32, float32, float64, volatile int32> == true);
+    static_assert(isSameAnyCV<const int32, float32, float64, const int32> == true);
+    static_assert(isSameAnyCV<const volatile int32, float32, float64, const volatile int32> == true);
 }
 
 TEST(Traits, IsInteger)
@@ -182,6 +188,38 @@ TEST(Traits, IsNative)
     static_assert(isNative<float64> == true);
 }
 
+TEST(Traits, IsConst)
+{
+    static_assert(isConst<int32> == false);
+    static_assert(isConst<volatile int32> == false);
+    static_assert(isConst<const int32> == true);
+    static_assert(isConst<const volatile int32> == true);
+}
+
+TEST(Traits, IsVolatile)
+{
+    static_assert(isVolatile<int32> == false);
+    static_assert(isVolatile<volatile int32> == true);
+    static_assert(isVolatile<const int32> == false);
+    static_assert(isVolatile<const volatile int32> == true);
+}
+
+TEST(Traits, IsCV)
+{
+    static_assert(isCV<int32> == false);
+    static_assert(isCV<volatile int32> == false);
+    static_assert(isCV<const int32> == false);
+    static_assert(isCV<const volatile int32> == true);
+}
+
+TEST(Traits, IsCOrV)
+{
+    static_assert(isCOrV<int32> == false);
+    static_assert(isCOrV<volatile int32> == true);
+    static_assert(isCOrV<const int32> == true);
+    static_assert(isCOrV<const volatile int32> == true);
+}
+
 TEST(Traits, Promote)
 {
     static_assert(isSame<promote<int8>, int16> == true);
@@ -225,22 +263,22 @@ TEST(Traits, Promote)
 #ifndef XSTESTMAIN
 TEST(Traits, TESTISA(hasSIMD))
 {
-    static_assert(hasSIMD<float32> == (defaultSIMD > SIMD::Scalar));
+    static_assert(hasSIMD<float32> == (XS_ARCH_SSE == 1));
     static_assert(hasSIMD<uint32> == false);
     static_assert(hasSIMD<float64> == false);
     static_assert(hasSIMD<Int128> == false);
 
-    static_assert(hasFMA<float32> == (defaultSIMD >= SIMD::AVX2));
+    static_assert(hasFMA<float32> == (XS_ARCH_AVX2 == 1));
     static_assert(hasFMA<uint32> == false);
     static_assert(hasFMA<float64> == false);
     static_assert(hasFMA<Int128> == false);
 
-    static_assert(hasFMS<float32> == (defaultSIMD >= SIMD::AVX2));
+    static_assert(hasFMS<float32> == (XS_ARCH_AVX2 == 1));
     static_assert(hasFMS<uint32> == false);
     static_assert(hasFMS<float64> == false);
     static_assert(hasFMS<Int128> == false);
 
-    static_assert(hasFMAFree<float32> == (defaultSIMD >= SIMD::AVX512));
+    static_assert(hasFMAFree<float32> == (XS_ARCH_AVX512F == 1));
     static_assert(hasFMAFree<uint32> == false);
     static_assert(hasFMAFree<float64> == false);
     static_assert(hasFMAFree<Int128> == false);

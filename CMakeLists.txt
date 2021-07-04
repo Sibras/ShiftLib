@@ -3,8 +3,7 @@
 # Detect vcpkg ports
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     file(TO_CMAKE_PATH "$ENV{VCPKG_ROOT}" ENV_VCPKG_ROOT)
-    set(CMAKE_TOOLCHAIN_FILE "${ENV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-    CACHE STRING "")
+    set(CMAKE_TOOLCHAIN_FILE "${ENV_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -77,7 +76,6 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.inl>"
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.inl>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.inl>"
@@ -273,12 +271,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror>)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /MP>)
+            target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W0 /analyze:external- /std:c++latest /MP>)
         else()
             target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror -wd1011>)
         endif()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /MP>)
+        target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W0 /analyze:external- /std:c++latest /MP>)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
             target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /std:c++latest /MP>)
@@ -338,14 +336,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
             target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibTest_${SHIFTLIBCOMPILE} --no-whole-archive>)
         elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /bigobj /MP>)
+                target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W0 /analyze:external- /std:c++latest /bigobj /MP>)
                 target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibTest_${SHIFTLIBCOMPILE}>)
             else()
                 target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -pedantic -Werror -wd1011>)
                 target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibTest_${SHIFTLIBCOMPILE} --no-whole-archive>)
             endif()
         elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-            target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W3 /std:c++latest /bigobj /MP>)
+            target_compile_options(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/W4 /WX /experimental:external /external:anglebrackets /external:W0 /analyze:external- /std:c++latest /bigobj /MP>)
             target_link_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibTest_${SHIFTLIBCOMPILE}>)
         elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
             if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
@@ -372,24 +370,4 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     gtest_discover_tests(ShiftLibTest
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
-endif()
-
-# Packaging support
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    set(CPACK_PACKAGE_VENDOR "Matt Oliver")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
-    set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-    set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-    set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-    
-    set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
-    set(CPACK_SOURCE_IGNORE_FILES
-        /.git*
-        /dist
-        /.*build.*
-        /\\\\.DS_Store
-    )
-    include(CPack)
 endif()

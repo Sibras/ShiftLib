@@ -112,7 +112,7 @@ public:
 template<typename T>
 using SIMD16DataPad = SIMD16Data<T>;
 
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMD16 : public NoExport::SIMDData<T, 16, 0, Width>
 {
     static_assert(isArithmetic<T> && !isCOrV<T>);

@@ -27,7 +27,7 @@ namespace NoExport {
 static XS_INLINE __m128 exp2f4(const __m128& other)
 {
     // get integer component
-#    if XS_SIMD >= XS_SSE41
+#    if XS_ARCH_SSE4_1
     __m128 m128_2 = _mm_round_ps(other, FROUND_FLOOR);
     const __m128i m128i_1 = _mm_cvtps_epi32(m128_2);
 #    else
@@ -263,7 +263,7 @@ static XS_INLINE __m128 sincosf4(const __m128& other, __m128& cos)
     m128_1 = _mm_or_ps(m128_1, m128_4);     // if odd then pass v1 else pass 1-v1
     m128_1b = _mm_sub_ps(m128_1b, m128_1);  // cos part = 1-sine part (since we have normalized into range pi/2)
 
-    if constexpr (defaultSIMD >= SIMD::AVX) {
+    if constexpr (hasISAFeature<ISAFeature::AVX>) {
         const __m256 m256_6 = _mm256_set_m128(m128_6b, m128_6);
         __m256 m256_1 = _mm256_set_m128(m128_1b, m128_1);
 
@@ -395,7 +395,7 @@ static XS_INLINE __m256 exp2f8(const __m256& other)
     v256_2 = _mm256_sub_ps(other, v256_2);
     // get exponent part
     __m256i v256i_2;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         v256i_2 = _mm256_add_epi32(v256i_1, _mm256_set1_epi32(127));
         v256i_2 = _mm256_slli_epi32(v256i_2, 23);
     } else {
@@ -430,7 +430,7 @@ static XS_INLINE __m256 log2f8(const __m256& other)
 {
     // get exponent part
     __m256i v256i_2;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         v256i_2 = _mm256_and_si256(_mm256_castps_si256(other), _mm256_set1_epi32(0x7F800000));
         v256i_2 = _mm256_srli_epi32(v256i_2, 23);
         v256i_2 = _mm256_sub_epi32(v256i_2, _mm256_set1_epi32(127));
@@ -504,7 +504,7 @@ static XS_INLINE __m256 sinf8(const __m256& other)
     __m256i v256i_6 = _mm256_cvttps_epi32(v256_1);
     const __m256i v256iOne = _mm256_set1_epi32(1);
     __m256 v256_4;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         v256_4 = _mm256_castsi256_ps(_mm256_and_si256(v256iOne, v256i_6));
     } else {
         v256_4 = _mm256_and_ps(_mm256_castsi256_ps(v256iOne), _mm256_castsi256_ps(v256i_6));
@@ -513,7 +513,7 @@ static XS_INLINE __m256 sinf8(const __m256& other)
     const __m256 v256_7 = _mm256_cvtepi32_ps(v256i_6);               // integer component of input
 
     __m256 v256_6;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         const __m256i v256iTwo = _mm256_slli_epi32(v256iOne, 1);
         v256i_6 = _mm256_and_si256(v256i_6, v256iTwo);
         v256_6 = _mm256_castsi256_ps(_mm256_slli_epi32(v256i_6, 30));
@@ -561,7 +561,7 @@ static XS_INLINE __m256 tanf8(const __m256& other)
     __m256i v256i_6 = _mm256_cvttps_epi32(v256_3);
     const __m256i v256iOne = _mm256_set1_epi32(1);
     __m256i v256i_4, v256i_5;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         v256i_4 = _mm256_and_si256(v256iOne, v256i_6);
         v256i_5 = _mm256_and_si256(_mm256_set1_epi32(7), v256i_6);
     } else {
@@ -571,7 +571,7 @@ static XS_INLINE __m256 tanf8(const __m256& other)
     }
 
     __m256i v256iTwo;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         v256i_6 = _mm256_add_epi32(v256i_6, v256i_4);
         v256i_5 = _mm256_add_epi32(v256i_5, v256i_4);
         v256iTwo = _mm256_slli_epi32(v256iOne, 1);
@@ -653,7 +653,7 @@ static XS_INLINE __m256 sincosf8(const __m256& other, __m256& cos)
     __m256i v256i_6 = _mm256_cvttps_epi32(v256_1);
     const __m256i v256iOne = _mm256_set1_epi32(1);
     __m256 v256_4, v256_6, v256_6b, v256_7;
-    if constexpr (defaultSIMD >= SIMD::AVX2) {
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
         const __m256i v256_4i = _mm256_and_si256(v256iOne, v256i_6);
         v256_4 = _mm256_cmp_ps(_mm256_castsi256_ps(v256_4i), _mm256_setzero_ps(), _CMP_EQ_OQ); // is >-1 and <1
         v256_7 = _mm256_cvtepi32_ps(v256i_6); // integer component of input
@@ -1210,7 +1210,7 @@ static XS_INLINE __m128 blend4(const __m128& other0, const __m128& other1)
         return _mm_move_ss(other0, other1);
     } else if constexpr (!Elem0 && Elem1 && Elem2 && Elem3) {
         return _mm_move_ss(other1, other0);
-    } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+    } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
         return _mm_blend_ps(other0, other1, _MM_BLEND(Elem3, Elem2, Elem1, Elem0));
     } else if constexpr (!Elem0 && !Elem1 && !Elem2 && Elem3) {
         const __m128 val = _mm_movehl_ps(other0, other1); //(x,a2,b3,x)
@@ -1273,7 +1273,7 @@ static XS_INLINE __m128 blendSwap4(const __m128& other0, __m128& other1)
         const __m128 backup = other1;
         other1 = _mm_move_ss(other0, other1);
         return _mm_move_ss(backup, other0);
-    } else if constexpr (defaultSIMD >= SIMD::SSE41) {
+    } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
         const __m128 backup = other1;
         other1 = _mm_blend_ps(other1, other0, _MM_BLEND(Elem3, Elem2, Elem1, Elem0));
         return _mm_blend_ps(other0, backup, _MM_BLEND(Elem3, Elem2, Elem1, Elem0));

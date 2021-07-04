@@ -364,72 +364,61 @@ XS_INLINE XS_CONSTEVAL bool getIsNative() noexcept
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getIsConst() noexcept
 {
-    return getIsSame<T, const typename NoExport::RemoveQualifiers<T>::type>;
+    return getIsSameAnyCV<T, const typename NoExport::RemoveQualifiers<T>::type,
+        const volatile typename NoExport::RemoveQualifiers<T>::type>();
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getIsVolatile() noexcept
 {
-    return getIsSame<T, volatile typename NoExport::RemoveQualifiers<T>::type>;
+    return getIsSameAnyCV<T, volatile typename NoExport::RemoveQualifiers<T>::type,
+        const volatile typename NoExport::RemoveQualifiers<T>::type>();
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getIsCV() noexcept
 {
-    return getIsSame<T, const volatile typename NoExport::RemoveQualifiers<T>::type>;
+    return getIsSameCV<T, const volatile typename NoExport::RemoveQualifiers<T>::type>();
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getIsCOrV() noexcept
 {
-    return getIsSameAny<T, const typename NoExport::RemoveQualifiers<T>::type,
+    return getIsSameAnyCV<T, const typename NoExport::RemoveQualifiers<T>::type,
         volatile typename NoExport::RemoveQualifiers<T>::type,
-        const volatile typename NoExport::RemoveQualifiers<T>::type>;
-}
-
-template<typename T>
-XS_INLINE XS_CONSTEVAL bool getHasSIMD() noexcept
-{
-#if XS_ISA == XS_X86
-    return isSameAny<T, float32> && (defaultSIMD > SIMD::Scalar);
-#else
-    return false;
-#endif
+        const volatile typename NoExport::RemoveQualifiers<T>::type>();
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getHasFMA() noexcept
 {
-#if XS_ISA == XS_GPU
-    return true;
-#elif XS_ISA == XS_X86
-    return defaultSIMD >= SIMD::AVX2 ? isSame<T, float32> && getHasSIMD<T>() : false;
-#else
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
+        return isSame<T, float32> && getHasSIMD<T>();
+    } else if constexpr (currentISA == ISA::GPU) {
+        return true;
+    }
     return false;
-#endif
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getHasFMS() noexcept
 {
-#if XS_ISA == XS_X86
-    return defaultSIMD >= SIMD::AVX2 ? isSame<T, float32> && getHasSIMD<T>() : false;
-#else
+    if constexpr (hasISAFeature<ISAFeature::AVX2>) {
+        return isSame<T, float32> && getHasSIMD<T>();
+    }
     return false;
-#endif
 }
 
 template<typename T>
 XS_INLINE XS_CONSTEVAL bool getHasFMAFree() noexcept
 {
-#if XS_ISA == XS_GPU
-    return true;
-#elif XS_ISA == XS_X86
-    // FMA is a free instruction on intel from broadwell onwards. Broadwell was the first to introduce ADX (supported on
-    // Zen onwards). FMA is also free on all AMD supporting CPUs
-    return defaultSIMD >= SIMD::AVX512 ? getHasFMA<T>() : (XS_ARCH_ADX || XS_ARCH_FMA4);
-#else
+    if constexpr (hasISAFeature<ISAFeature::ADX> || hasISAFeature<ISAFeature::FMA4>) {
+        // FMA is a free instruction on intel from broadwell onwards. Broadwell was the first to introduce ADX
+        // (supported on Zen onwards). FMA is also free on all AMD Bulldozer or newer.
+        return getHasFMA<T>();
+    } else if constexpr (currentISA == ISA::GPU) {
+        return true;
+    }
     return false;
-#endif
 }
 } // namespace Shift

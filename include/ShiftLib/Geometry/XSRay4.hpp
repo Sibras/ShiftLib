@@ -35,7 +35,7 @@ class Ray;
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>, bool Packed = false>
+template<typename T, SIMDWidth Width = widthSIMD<T>, bool Packed = false>
 class Ray4
 {
 public:

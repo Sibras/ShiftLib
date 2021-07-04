@@ -62,7 +62,7 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
     }
 
     // Test that the classes size matches the expected internal representation
-    if constexpr (defaultSIMD == SIMD::AVX512) {
+    if constexpr (XS_ARCH_AVX512F) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 9>();
             assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
@@ -70,7 +70,7 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 12>();
             assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
         } else if constexpr (TestFixture::width == SIMDWidth::B32) {
-            if constexpr (isSame<typename TestFixture::TypeInt, float32> || defaultSIMD >= SIMD::AVX2) {
+            if constexpr (isSame<typename TestFixture::TypeInt, float32> || XS_ARCH_AVX2) {
                 assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 16>();
                 assertType<typename TestType::Data::Type, typename TestData256<typename TestFixture::TypeInt>::Type>();
                 assertType<typename TestType::Data::Type2, typename TestData128<typename TestFixture::TypeInt>::Type>();
@@ -82,7 +82,7 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 16>();
             assertType<typename TestType::Data::Type, typename TestData512<typename TestFixture::TypeInt>::Type>();
         }
-    } else if constexpr (defaultSIMD == SIMD::AVX2 || defaultSIMD == SIMD::AVX) {
+    } else if constexpr (XS_ARCH_AVX) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 9>();
             assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
@@ -90,7 +90,7 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 12>();
             assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
         } else {
-            if constexpr (isSame<typename TestFixture::TypeInt, float32> || defaultSIMD >= SIMD::AVX2) {
+            if constexpr (isSame<typename TestFixture::TypeInt, float32> || XS_ARCH_AVX2) {
                 assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 16>();
                 assertType<typename TestType::Data::Type, typename TestData256<typename TestFixture::TypeInt>::Type>();
                 assertType<typename TestType::Data::Type2, typename TestData128<typename TestFixture::TypeInt>::Type>();
@@ -99,7 +99,7 @@ TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
                 assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
             }
         }
-    } else if constexpr (defaultSIMD == SIMD::SSE42 || defaultSIMD == SIMD::SSE41 || defaultSIMD == SIMD::SSE3) {
+    } else if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 9>();
             assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();

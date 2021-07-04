@@ -75,7 +75,7 @@ public:
 template<typename T>
 using SIMDInBaseDataPad = SIMDInBaseData<T>;
 
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMDInBase : public NoExport::SIMDData<T, 1, 0, Width>
 {
     static_assert(isArithmetic<T> && !isCOrV<T>);

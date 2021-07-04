@@ -118,8 +118,7 @@ XS_INLINE uint32 bsr(const T param) noexcept
         if constexpr (currentArch == Architecture::Bit64) {
             _BitScanReverse64(&res, param);
         } else {
-            const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32);
-            if (high) {
+            if (const auto high = static_cast<uint32>(static_cast<uint64>(param) >> 32); high) {
                 _BitScanReverse(&res, high);
                 res += 32;
             } else {
@@ -164,7 +163,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         return __popc(param);
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::SSE42 || XS_ARCH_ABM)) {
+        if constexpr (hasISAFeature<ISAFeature::SSE42> || hasISAFeature<ISAFeature::ABM>) {
             return _mm_popcnt_u32(
                 static_cast<uint32>(param)); // popcnt added to AMD with Barcelona(SSE4a) and Intel with Nehalem(SSE4.2)
         } else {
@@ -182,7 +181,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
 #if XS_COMPILER == XS_CUDA
         return __popcll(param);
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::SSE42 || XS_ARCH_ABM)) {
+        if constexpr (hasISAFeature<ISAFeature::SSE42> || hasISAFeature<ISAFeature::ABM>) {
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_mm_popcnt_u64(static_cast<uint64>(param)));
             } else {
@@ -219,7 +218,7 @@ XS_INLINE uint32 ctz(const T param) noexcept
         // return is 0 if input is zero
         return __ffs(param) - 1;
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI)) {
+        if constexpr (hasISAFeature<ISAFeature::BMI>) {
             // return is 32 if input is zero
             return _tzcnt_u32(param); // tzcnt added to AMD with Piledriver(AVX) and Intel with Haswell(AVX2)
         } else {
@@ -244,7 +243,7 @@ XS_INLINE uint32 ctz(const T param) noexcept
         // return is 0 if input is zero
         return __ffsll(param) - 1;
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI)) {
+        if constexpr (hasISAFeature<ISAFeature::BMI>) {
             // return is 64 if input is zero
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_tzcnt_u64(static_cast<uint64>(param)));
@@ -307,7 +306,7 @@ XS_INLINE uint32 clz(const T param) noexcept
         // return is 32 if input is zero
         return __clz(param);
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI || XS_ARCH_ABM)) {
+        if constexpr (hasISAFeature<ISAFeature::ABM>) {
             // return is 32 if input is zero
             return _lzcnt_u32(param); // lzcnt added to AMD with Barcelona(SSE4a) and Intel with Haswell(AVX2)
         } else {
@@ -332,7 +331,7 @@ XS_INLINE uint32 clz(const T param) noexcept
         // return is 64 if input is zero
         return __clzll(param);
 #else
-        if constexpr (currentISA == ISA::X86 && (defaultSIMD >= SIMD::AVX2 || XS_ARCH_BMI || XS_ARCH_ABM)) {
+        if constexpr (hasISAFeature<ISAFeature::ABM>) {
             if constexpr (currentArch == Architecture::Bit64) {
                 return static_cast<uint32>(_lzcnt_u64(param));
             } else {

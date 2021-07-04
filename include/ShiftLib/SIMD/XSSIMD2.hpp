@@ -80,7 +80,7 @@ public:
 template<typename T>
 using SIMD2DataPad = SIMD2Data<T>;
 
-template<typename T, SIMDWidth Width = widthSIMD<defaultSIMD>>
+template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMD2 : public NoExport::SIMDData<T, 2, 0, Width>
 {
     static_assert(isArithmetic<T> && !isCOrV<T>);
