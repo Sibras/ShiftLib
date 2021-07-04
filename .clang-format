@@ -2,6 +2,7 @@
 Language: Cpp
 AccessModifierOffset: -4
 AlignAfterOpenBracket: DontAlign
+AlignConsecutiveBitFields: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignConsecutiveMacros: false
@@ -35,7 +36,8 @@ BraceWrapping:
   AfterExternBlock: false
   BeforeCatch: false
   BeforeElse: false
-  #BeforeLambdaBody: false
+  BeforeLambdaBody: false
+  BeforeWhile: true
   IndentBraces: false
   SplitEmptyFunction: false
   SplitEmptyRecord: false
@@ -65,8 +67,9 @@ IncludeCategories:
   - Regex:           '^<'
     Priority:        2
 IncludeIsMainSourceRegex: '(.inl)$'
-#IndentCaseBlocks: false
+IndentCaseBlocks: false
 IndentCaseLabels: true
+IndentExternBlock: false
 IndentGotoLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: 4
