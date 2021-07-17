@@ -176,4 +176,55 @@ using float32 = float;
 
 /* Floating point 64-bit typedefs */
 using float64 = double;
+
+XS_INLINE constexpr int8 operator"" _i8(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    // TODO: assert for overflow
+    return static_cast<int8>(v);
+}
+
+XS_INLINE constexpr uint8 operator"" _ui8(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<uint8>(v);
+}
+
+XS_INLINE constexpr int16 operator"" _i16(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<int16>(v);
+}
+
+XS_INLINE constexpr uint16 operator"" _ui16(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<uint16>(v);
+}
+
+XS_INLINE constexpr int32 operator"" _i32(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<int32>(v);
+}
+
+XS_INLINE constexpr uint32 operator"" _ui32(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<uint32>(v);
+}
+
+XS_INLINE constexpr int64 operator"" _i64(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<int64>(v);
+}
+
+XS_INLINE constexpr uint64 operator"" _ui64(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<uint64>(v);
+}
+
+XS_INLINE constexpr float32 operator"" _f32(const long double v)
+{
+    return static_cast<float32>(v);
+}
+
+XS_INLINE constexpr float64 operator"" _f64(const long double v)
+{
+    return static_cast<float64>(v);
+}
 } // namespace Shift

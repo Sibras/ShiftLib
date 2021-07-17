@@ -18,26 +18,6 @@
 #include "XSTraits.hpp"
 
 namespace Shift {
-XS_FUNCTION constexpr int8 operator"" _i8(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr uint8 operator"" _ui8(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr int16 operator"" _i16(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr uint16 operator"" _ui16(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr int32 operator"" _i32(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr uint32 operator"" _ui32(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr int64 operator"" _i64(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr uint64 operator"" _ui64(unsigned long long v); // NOLINT(google-runtime-int)
-
-XS_FUNCTION constexpr float32 operator"" _f32(long double v);
-
-XS_FUNCTION constexpr float64 operator"" _f64(long double v);
-
 /**< The value pi */
 template<typename T>
 XS_REQUIRES(isFloat<T>)

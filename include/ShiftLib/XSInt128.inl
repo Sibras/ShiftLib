@@ -17,7 +17,7 @@
 
 #include "XSInt128.hpp"
 
-#include "XSBit.inl"
+#include "XSBit.hpp"
 #include "XSMath.inl"
 #include "XSUInt128.inl"
 

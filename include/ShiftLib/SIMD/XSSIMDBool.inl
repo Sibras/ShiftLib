@@ -17,8 +17,8 @@
 
 #include "SIMD/XSSIMDBool.hpp"
 
-#include "XSBit.inl"
-#include "XSMath.inl"
+#include "XSBit.hpp"
+#include "XSMath.hpp"
 
 namespace Shift {
 template<bool IsSIMD>

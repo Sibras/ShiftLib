@@ -20,7 +20,7 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #    include "SIMD/XSSIMDx86Functions.hpp"
 #endif
-#include "XSMath.inl"
+#include "XSMath.hpp"
 
 namespace Shift {
 template<typename T>

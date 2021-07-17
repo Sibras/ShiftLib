@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "XSBit.inl"
+#include "XSBit.hpp"
 
 #include "XSCompilerOptions.h"
 
