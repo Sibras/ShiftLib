@@ -469,9 +469,9 @@ XS_INLINE uint8 bitExtract(T param, uint32 bit) noexcept
         return static_cast<uint8>((static_cast<uint32>(param) >> bit) & 0x1_ui32);
 #endif
     } else if constexpr (isSigned<T>) {
-        return static_cast<T>(bitExtract(static_cast<int32>(param), bit));
+        return bitExtract(static_cast<int32>(param), bit);
     } else if constexpr (isUnsigned<T>) {
-        return static_cast<T>(bitExtract(static_cast<uint32>(param), bit));
+        return bitExtract(static_cast<uint32>(param), bit);
     } else {
         return static_cast<uint8>((param >> bit) & 0x1);
     }
@@ -598,25 +598,121 @@ XS_INLINE T bitClear(T param, uint32 bit) noexcept
  * @returns A result.
  */
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> ||
-    ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> && isTriviallyCopyable<T2>))
+XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+    isTriviallyCopyable<T2>))
 XS_INLINE T bitCast(const T2& param) noexcept
 {
-    static_assert(isSame<T, T2> ||
-        ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> &&
-            isTriviallyCopyable<T2>);
-    // TODO: Add specialised SIMD type casting (e.g. _mm_castps_si128)
-#if XS_ISA == XS_CUDA
+    static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
+        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
     if constexpr (isSame<T, T2>) {
         return param;
-    } else if constexpr (isSame<T2, float64> && isSame<T, int64>) {
-        return __double_as_longlong(param);
+    } else if constexpr (isInteger<T> && (isSigned<T> != isSigned<T2>)) {
+        return static_cast<T>(param);
+    } else
+#if XS_ISA == XS_X86 && ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG))
+        if constexpr (isSame<T2, float32> && isSameAny<T, uint32, int32>) {
+        return static_cast<T>(_castf32_u32(param));
+    } else if constexpr (isSame<T2, float64> && isSameAny<T, uint64, int64>) {
+        return static_cast<T>(_castf64_u64(param));
+    } else if constexpr (isSameAny<T2, uint32, int32> && isSame<T, float32>) {
+        return _castu32_f32(static_cast<T>(param));
+    } else if constexpr (isSameAny<T2, uint64, int64> && isSame<T, float64>) {
+        return _castu64_f64(static_cast<T>(param));
+    } else
+#endif
+#if XS_ARCH_SSE
+        if constexpr (isSame<T2, __m128d> && isSame<T, __m128>) {
+        return _mm_castpd_ps(param);
+    } else if constexpr (isSame<T2, __m128d> && isSame<T, __m128i>) {
+        return _mm_castpd_si128(param);
+    } else if constexpr (isSame<T2, __m128> && isSame<T, __m128d>) {
+        return _mm_castps_pd(param);
+    } else if constexpr (isSame<T2, __m128> && isSame<T, __m128i>) {
+        return _mm_castps_si128(param);
+    } else if constexpr (isSame<T2, __m128i> && isSame<T, __m128d>) {
+        return _mm_castsi128_pd(param);
+    } else if constexpr (isSame<T2, __m128i> && isSame<T, __m128>) {
+        return _mm_castsi128_ps(param);
+    } else
+#endif
+#if XS_ARCH_AVX
+        if constexpr (isSame<T2, __m256d> && isSame<T, __m256>) {
+        return _mm256_castpd_ps(param);
+    } else if constexpr (isSame<T2, __m256d> && isSame<T, __m256i>) {
+        return _mm256_castpd_si256(param);
+    } else if constexpr (isSame<T2, __m256> && isSame<T, __m256d>) {
+        return _mm256_castps_pd(param);
+    } else if constexpr (isSame<T2, __m256> && isSame<T, __m256i>) {
+        return _mm256_castps_si256(param);
+    } else if constexpr (isSame<T2, __m256i> && isSame<T, __m256d>) {
+        return _mm256_castsi256_pd(param);
+    } else if constexpr (isSame<T2, __m256i> && isSame<T, __m256>) {
+        return _mm256_castsi256_ps(param);
+    } else
+#endif
+#if XS_ARCH_AVX512F
+        if constexpr (isSame<T2, __m512d> && isSame<T, __m512>) {
+        return _mm512_castpd_ps(param);
+    } else if constexpr (isSame<T2, __m512d> && isSame<T, __m512i>) {
+        return _mm512_castpd_si512(param);
+    } else if constexpr (isSame<T2, __m512> && isSame<T, __m512d>) {
+        return _mm512_castps_pd(param);
+    } else if constexpr (isSame<T2, __m512> && isSame<T, __m512i>) {
+        return _mm512_castps_si512(param);
+    } else if constexpr (isSame<T2, __m512i> && isSame<T, __m512d>) {
+        return _mm512_castsi512_pd(param);
+    } else if constexpr (isSame<T2, __m512i> && isSame<T, __m512>) {
+        return _mm512_castsi512_ps(param);
+    } else
+#endif
+#if XS_ARCH_AVX512FP16
+        if constexpr (isSame<T2, __m128h> && isSame<T, __m128d>) {
+        return _mm_castph_pd(param);
+    } else if constexpr (isSame<T2, __m128h> && isSame<T, __m128>) {
+        return _mm_castph_ps(param);
+    } else if constexpr (isSame<T2, __m128h> && isSame<T, __m128i>) {
+        return _mm_castph_si128(param);
+    } else if constexpr (isSame<T2, __m128> && isSame<T, __m128h>) {
+        return _mm_castph_ps(param);
+    } else if constexpr (isSame<T2, __m128i> && isSame<T, __m128h>) {
+        return _mm_castph_si128(param);
+    } else if constexpr (isSame<T2, __m128d> && isSame<T, __m128h>) {
+        return _mm_castph_pd(param);
+    } else if constexpr (isSame<T2, __m256h> && isSame<T, __m256d>) {
+        return _mm256_castph_pd(param);
+    } else if constexpr (isSame<T2, __m256h> && isSame<T, __m256>) {
+        return _mm256_castph_ps(param);
+    } else if constexpr (isSame<T2, __m256h> && isSame<T, __m256i>) {
+        return _mm256_castph_si128(param);
+    } else if constexpr (isSame<T2, __m256> && isSame<T, __m256h>) {
+        return _mm256_castph_ps(param);
+    } else if constexpr (isSame<T2, __m256i> && isSame<T, __m256h>) {
+        return _mm256_castph_si128(param);
+    } else if constexpr (isSame<T2, __m256d> && isSame<T, __m256h>) {
+        return _mm256_castph_pd(param);
+    } else if constexpr (isSame<T2, __m512h> && isSame<T, __m512d>) {
+        return _mm512_castph_pd(param);
+    } else if constexpr (isSame<T2, __m512h> && isSame<T, __m512>) {
+        return _mm512_castph_ps(param);
+    } else if constexpr (isSame<T2, __m512h> && isSame<T, __m512i>) {
+        return _mm512_castph_si128(param);
+    } else if constexpr (isSame<T2, __m512> && isSame<T, __m512h>) {
+        return _mm512_castph_ps(param);
+    } else if constexpr (isSame<T2, __m512i> && isSame<T, __m512h>) {
+        return _mm512_castph_si128(param);
+    } else if constexpr (isSame<T2, __m512d> && isSame<T, __m512h>) {
+        return _mm512_castph_pd(param);
+    } else
+#endif
+#if XS_ISA == XS_CUDA
+        if constexpr (isSame<T2, float64> && isSameAny<T, int64, uint64>) {
+        return static_cast<T>(__double_as_longlong(param));
     } else if constexpr (isSame<T2, float32> && isSame<T, int32>) {
         return __float_as_int(param);
     } else if constexpr (isSame<T2, float32> && isSame<T, uint32>) {
         return __float_as_uint(param);
-    } else if constexpr (isSame<T2, int64> && isSame<T, float64>) {
-        return __longlong_as_double(param);
+    } else if constexpr (isSameAny<T2, int64, uint64> && isSame<T, float64>) {
+        return __longlong_as_double(static_cast<int64>(param));
     } else if constexpr (isSame<T2, int32> && isSame<T, float32>) {
         return __int_as_float(param);
     } else if constexpr (isSame<T2, uint32> && isSame<T, float32>) {
@@ -644,13 +740,12 @@ XS_INLINE T bitCast(const T2& param) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> ||
-    ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> && isTriviallyCopyable<T2>))
+XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+    isTriviallyCopyable<T2>))
 XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> ||
-        ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> &&
-            isTriviallyCopyable<T2>);
+    static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
+        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 & static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -685,13 +780,12 @@ XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> ||
-    ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> && isTriviallyCopyable<T2>))
+XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+    isTriviallyCopyable<T2>))
 XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> ||
-        ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> &&
-            isTriviallyCopyable<T2>);
+    static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
+        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 | static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -726,13 +820,12 @@ XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> ||
-    ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> && isTriviallyCopyable<T2>))
+XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+    isTriviallyCopyable<T2>))
 XS_INLINE T bitXor(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> ||
-        ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> &&
-            isTriviallyCopyable<T2>);
+    static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
+        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 ^ static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {

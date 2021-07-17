@@ -303,6 +303,36 @@
 #else
 #    define XS_ARCH_AVX512VP2INTERSECT 0
 #endif
+#if defined(__AVX512GFNI__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on TigerLake */
+#    define XS_ARCH_AVX512GFNI 1
+#else
+#    define XS_ARCH_AVX512GFNI 0
+#endif
+#if defined(__AVX512VPCLMULQDQ__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on TigerLake */
+#    define XS_ARCH_AVX512VPCLMULQDQ 1
+#else
+#    define XS_ARCH_AVX512VPCLMULQDQ 0
+#endif
+#if defined(__AVX512VAES__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on TigerLake */
+#    define XS_ARCH_AVX512VAES 1
+#else
+#    define XS_ARCH_AVX512VAES 0
+#endif
+#if defined(__AVX512BF16__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on TigerLake */
+#    define XS_ARCH_AVX512BF16 1
+#else
+#    define XS_ARCH_AVX512BF16 0
+#endif
+#if defined(__AVX512FP16__) && !defined(XS_IGNORE_ISA_OPT)
+/* Added on TigerLake */
+#    define XS_ARCH_AVX512FP16 1
+#else
+#    define XS_ARCH_AVX512FP16 0
+#endif
 
 #if XS_ISA == XS_X86
 /* MSVC doesnt define subsets */

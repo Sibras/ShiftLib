@@ -68,6 +68,11 @@ enum class ISAFeature
     AVX512VBMI2,        /**< x86 AVX512 Vector Byte Manipulation 2 vector instructions. */
     AVX512VNNI,         /**< x86 AVX512 Vector Neural Network vector instructions. */
     AVX512VP2INTERSECT, /**< x86 AVX512 Vector Pair Intersection to a Pair of Mask Registers vector instructions. */
+    AVX512GFNI,         /**< x86 AVX512 Galois field vector instructions. */
+    AVX512VPCLMULQDQ,   /**< x86 AVX512 Carry-less multiplication quadword vector instructions. */
+    AVX512VAES,         /**< x86 AVX512 AES vector instructions. */
+    AVX512BF16,         /**< x86 AVX512 Bfloat16 vector instructions. */
+    AVX512FP16,         /**< x86 AVX512 16bit float vector instructions. */
 };
 
 namespace NoExport {
@@ -127,6 +132,16 @@ XS_INLINE XS_CONSTEVAL bool getHasISAFeature() noexcept
     } else if constexpr (T == ISAFeature::AVX512VNNI && XS_ARCH_AVX512VNNI) {
         return true;
     } else if constexpr (T == ISAFeature::AVX512VP2INTERSECT && XS_ARCH_AVX512VP2INTERSECT) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512GFNI && XS_ARCH_AVX512GFNI) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VPCLMULQDQ && XS_ARCH_AVX512VPCLMULQDQ) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512VAES && XS_ARCH_AVX512VAES) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512BF16 && XS_ARCH_AVX512BF16) {
+        return true;
+    } else if constexpr (T == ISAFeature::AVX512FP16 && XS_ARCH_AVX512FP16) {
         return true;
     }
     return false;
