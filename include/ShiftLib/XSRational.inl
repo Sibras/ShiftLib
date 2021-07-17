@@ -19,20 +19,21 @@
 
 #include "XSMath.inl"
 
+namespace Shift {
 namespace NoExport {
 template<typename T, typename T2 = Shift::promote<T>>
-XS_INLINE Shift::Rational<T> rationalReduceHelper(const T2 numerator, const T2 denominator)
+XS_INLINE Rational<T> rationalReduceHelper(const T2 numerator, const T2 denominator)
 {
-    static_assert(sizeof(T2) >= sizeof(T) || Shift::isSameAny<T, Shift::Int128, Shift::UInt128>);
+    static_assert(sizeof(T2) >= sizeof(T) || isSameAny<T, Int128, UInt128>);
     if (denominator == 0) {
-        return Shift::Rational<T>(static_cast<T>(0), static_cast<T>(0));
+        return Rational<T>(T{0}, T{0});
     }
-    if constexpr (Shift::isSigned<T2>) {
+    if constexpr (isSigned<T2>) {
         bool sign = (numerator < 0);
 
-        auto numerAbs = Shift::abs<T2>(static_cast<T2>(numerator));
+        auto numerAbs = abs<T2>(numerator);
         T2 gcd = numerAbs;
-        T2 denomTemp = static_cast<T2>(denominator);
+        T2 denomTemp = denominator;
         T2 temp;
         do {
             temp = gcd % denomTemp;
@@ -42,25 +43,24 @@ XS_INLINE Shift::Rational<T> rationalReduceHelper(const T2 numerator, const T2 d
 
         // TODO: if either ret.numerator or ret.denominator are bigger than can be held in T then this will fail. Need a
         // way to correctly round to nearest that can be stored in T.
-        Shift::Rational<T> raReturn(static_cast<T>(numerAbs / gcd), static_cast<T>(denominator / gcd));
+        Rational<T> raReturn(static_cast<T>(numerAbs / gcd), static_cast<T>(denominator / gcd));
 
         return sign ? -raReturn : raReturn;
     } else {
-        auto numerProm = static_cast<T2>(numerator);
+        auto numerProm = numerator;
         T2 gcd = numerProm;
-        T2 denomTemp = static_cast<T2>(denominator);
+        T2 denomTemp = denominator;
         T2 temp;
         do {
             temp = gcd % denomTemp;
             gcd = denomTemp;
             denomTemp = temp;
         } while (temp != 0);
-        return Shift::Rational<T>(static_cast<T>(numerProm / gcd), static_cast<T>(denominator / gcd));
+        return Rational<T>(static_cast<T>(numerProm / gcd), static_cast<T>(denominator / gcd));
     }
 }
 } // namespace NoExport
 
-namespace Shift {
 template<typename T>
 XS_INLINE RationalData<T>::RationalData(const Rational<T>& other) noexcept
     : numerator(other.numerator)

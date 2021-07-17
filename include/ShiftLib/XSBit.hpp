@@ -16,7 +16,7 @@
  */
 
 #include "XSArchitecture.hpp"
-#include "XSTraits.inl"
+#include "XSTraits.hpp"
 
 namespace Shift {
 /**

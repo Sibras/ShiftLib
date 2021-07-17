@@ -80,7 +80,7 @@ void assertSize()
 template<typename T, typename T2>
 void assertType()
 {
-    static_assert(Shift::getIsSame<T, T2>(), "Types do not match, check compiler output for actual types");
+    static_assert(Shift::isSame<T, T2>, "Types do not match, check compiler output for actual types");
 }
 
 #if defined(XS_TESTING_BASE) || defined(XS_TESTING_INBASE) || defined(XS_TESTING_SIMD2) ||     \

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-#include "XSTraits.inl"
+#include "XSTraits.hpp"
 
 #include "XSCompilerOptions.h"
-#include "XSInt128.inl"
-#include "XSUInt128.inl"
 
 #include <gtest/gtest.h>
 
@@ -28,6 +26,142 @@ class Test1;
 class Test2;
 
 #ifdef XSTESTMAIN
+TEST(Traits, RemoveConst)
+{
+    static_assert(isSameCV<removeConst<int32>, int32> == true);
+    static_assert(isSameCV<removeConst<const int32>, int32> == true);
+    static_assert(isSameCV<removeConst<const int32>, const int32> == false);
+    static_assert(isSameCV<removeConst<const volatile int32>, volatile int32> == true);
+}
+
+TEST(Traits, AddConst)
+{
+    static_assert(isSameCV<addConst<int32>, int32> == false);
+    static_assert(isSameCV<addConst<const int32>, const int32> == true);
+    static_assert(isSameCV<addConst<int32>, const int32> == true);
+    static_assert(isSameCV<addConst<const int32>, volatile int32> == false);
+    static_assert(isSameCV<addConst<volatile int32>, const volatile int32> == true);
+}
+
+TEST(Traits, RemoveVolatile)
+{
+    static_assert(isSameCV<removeVolatile<int32>, int32> == true);
+    static_assert(isSameCV<removeVolatile<volatile int32>, int32> == true);
+    static_assert(isSameCV<removeVolatile<volatile int32>, volatile int32> == false);
+    static_assert(isSameCV<removeVolatile<const volatile int32>, const int32> == true);
+}
+
+TEST(Traits, AddVolatile)
+{
+    static_assert(isSameCV<addVolatile<int32>, int32> == false);
+    static_assert(isSameCV<addVolatile<volatile int32>, volatile int32> == true);
+    static_assert(isSameCV<addVolatile<int32>, volatile int32> == true);
+    static_assert(isSameCV<addVolatile<volatile int32>, const int32> == false);
+    static_assert(isSameCV<addVolatile<const int32>, const volatile int32> == true);
+}
+
+TEST(Traits, RemoveCV)
+{
+    static_assert(isSameCV<removeCV<int32>, int32> == true);
+    static_assert(isSameCV<removeCV<volatile int32>, int32> == true);
+    static_assert(isSameCV<removeCV<volatile int32>, volatile int32> == false);
+    static_assert(isSameCV<removeCV<const volatile int32>, const int32> == false);
+    static_assert(isSameCV<removeCV<const volatile int32>, volatile int32> == false);
+    static_assert(isSameCV<removeCV<const volatile int32>, int32> == true);
+}
+
+TEST(Traits, AddCV)
+{
+    static_assert(isSameCV<addCV<int32>, int32> == false);
+    static_assert(isSameCV<addCV<volatile int32>, volatile int32> == false);
+    static_assert(isSameCV<addCV<int32>, volatile int32> == false);
+    static_assert(isSameCV<addCV<int32>, const int32> == false);
+    static_assert(isSameCV<addCV<volatile int32>, const int32> == false);
+    static_assert(isSameCV<addCV<const int32>, const volatile int32> == true);
+    static_assert(isSameCV<addCV<volatile int32>, const volatile int32> == true);
+    static_assert(isSameCV<addCV<int32>, const volatile int32> == true);
+}
+
+TEST(Traits, CopyCV)
+{
+    static_assert(isSameCV<copyCV<int32, const int32>, int32> == false);
+    static_assert(isSameCV<copyCV<volatile int32, const int32>, volatile int32> == false);
+    static_assert(isSameCV<copyCV<int32, const int32>, volatile int32> == false);
+    static_assert(isSameCV<copyCV<int32, const int32>, const int32> == true);
+    static_assert(isSameCV<copyCV<volatile int32, const int32>, const int32> == true);
+    static_assert(isSameCV<copyCV<const int32, volatile int32>, const volatile int32> == false);
+    static_assert(isSameCV<copyCV<volatile int32, volatile int32>, volatile int32> == true);
+    static_assert(isSameCV<copyCV<int32, const volatile int32>, const volatile int32> == true);
+}
+
+TEST(Traits, AddLRef)
+{
+    static_assert(isSameCV<addLRef<int32>, int32> == false);
+    static_assert(isSameCV<addLRef<int32&>, int32&> == true);
+    static_assert(isSameCV<addLRef<int32&&>, int32&> == true);
+    static_assert(isSameCV<addLRef<int32>, int32&> == true);
+    static_assert(isSameCV<addLRef<const int32>, const int32&> == true);
+}
+
+TEST(Traits, AddRRef)
+{
+    static_assert(isSameCV<addRRef<int32>, int32> == false);
+    static_assert(isSameCV<addRRef<int32&&>, int32&&> == true);
+    static_assert(isSameCV<addRRef<int32&>, int32&> == true);
+    static_assert(isSameCV<addRRef<int32>, int32&&> == true);
+    static_assert(isSameCV<addRRef<const int32>, const int32&&> == true);
+}
+
+TEST(Traits, RemovePointer)
+{
+    static_assert(isSameCV<removePointer<int32>, int32> == true);
+    static_assert(isSameCV<removePointer<int32*>, int32> == true);
+    static_assert(isSameCV<removePointer<int32**>, int32*> == true);
+    static_assert(isSameCV<removePointer<int32* volatile>, int32> == true);
+    static_assert(isSameCV<removePointer<int32* const>, int32> == true);
+    static_assert(isSameCV<removePointer<int32* const volatile>, int32> == true);
+}
+
+TEST(Traits, AddPointer)
+{
+    static_assert(isSameCV<addPointer<int32>, int32*> == true);
+    static_assert(isSameCV<addPointer<int32*>, int32**> == true);
+    static_assert(isSameCV<addPointer<int32**>, int32***> == true);
+    static_assert(isSameCV<addPointer<int32* volatile>, int32* volatile*> == true);
+}
+
+TEST(Traits, IsConst)
+{
+    static_assert(isConst<int32> == false);
+    static_assert(isConst<volatile int32> == false);
+    static_assert(isConst<const int32> == true);
+    static_assert(isConst<const volatile int32> == true);
+}
+
+TEST(Traits, IsVolatile)
+{
+    static_assert(isVolatile<int32> == false);
+    static_assert(isVolatile<volatile int32> == true);
+    static_assert(isVolatile<const int32> == false);
+    static_assert(isVolatile<const volatile int32> == true);
+}
+
+TEST(Traits, IsCV)
+{
+    static_assert(isCV<int32> == false);
+    static_assert(isCV<volatile int32> == false);
+    static_assert(isCV<const int32> == false);
+    static_assert(isCV<const volatile int32> == true);
+}
+
+TEST(Traits, IsCOrV)
+{
+    static_assert(isCOrV<int32> == false);
+    static_assert(isCOrV<volatile int32> == true);
+    static_assert(isCOrV<const int32> == true);
+    static_assert(isCOrV<const volatile int32> == true);
+}
+
 TEST(Traits, IsSame)
 {
     static_assert(isSame<int32, uint32> == false);
@@ -92,9 +226,71 @@ TEST(Traits, IsSameAny)
     static_assert(isSameAnyCV<const volatile int32, float32, float64, const volatile int32> == true);
 }
 
+TEST(Traits, IsVoid)
+{
+    static_assert(isVoid<void> == true);
+    static_assert(isVoid<const void> == true);
+    static_assert(isVoid<volatile void> == true);
+    static_assert(isVoid<char> == false);
+    static_assert(isVoid<int16> == false);
+}
+
+TEST(Traits, IsNullPtr)
+{
+    static_assert(isNullPtr<decltype(nullptr)> == true);
+    static_assert(isNullPtr<const decltype(nullptr)> == true);
+    static_assert(isNullPtr<volatile decltype(nullptr)> == true);
+    static_assert(isNullPtr<char> == false);
+    static_assert(isNullPtr<int16> == false);
+}
+
+TEST(Traits, IsArray)
+{
+    static_assert(isArray<decltype(nullptr)> == false);
+    static_assert(isArray<const decltype(nullptr)> == false);
+    static_assert(isArray<uint32*> == false);
+    static_assert(isArray<uint32[]> == true);
+    static_assert(isArray<uint32[5]> == true);
+}
+
+TEST(Traits, IsPointer)
+{
+    static_assert(isPointer<decltype(nullptr)> == false);
+    static_assert(isPointer<uint32> == false);
+    static_assert(isPointer<uint32*> == true);
+    static_assert(isPointer<uint32**> == true);
+    static_assert(isPointer<uint32[5]> == false);
+}
+
+TEST(Traits, IsLRef)
+{
+    static_assert(isLRef<int32> == false);
+    static_assert(isLRef<int32&&> == false);
+    static_assert(isLRef<int32&> == true);
+    static_assert(isLRef<int32*> == false);
+}
+
+TEST(Traits, IsRRef)
+{
+    static_assert(isRRef<int32> == false);
+    static_assert(isRRef<int32&&> == true);
+    static_assert(isRRef<int32&> == false);
+    static_assert(isRRef<int32*> == false);
+}
+
+TEST(Traits, IsRef)
+{
+    static_assert(isRef<int32> == false);
+    static_assert(isRef<int32&&> == true);
+    static_assert(isRef<int32&> == true);
+    static_assert(isRef<int32*> == false);
+}
+
 TEST(Traits, IsInteger)
 {
     static_assert(isInteger<int8> == true);
+    static_assert(isInteger<const int8> == true);
+    static_assert(isInteger<volatile int8> == true);
     static_assert(isInteger<uint8> == true);
     static_assert(isInteger<char> == true);
     static_assert(isInteger<int16> == true);
@@ -113,6 +309,8 @@ TEST(Traits, IsInteger)
 TEST(Traits, IsFloat)
 {
     static_assert(isFloat<float32> == true);
+    static_assert(isFloat<const float32> == true);
+    static_assert(isFloat<volatile float32> == true);
     static_assert(isFloat<float64> == true);
     static_assert(isFloat<int32> == false);
     static_assert(isFloat<uint32> == false);
@@ -122,6 +320,8 @@ TEST(Traits, IsFloat)
 TEST(Traits, IsArithmetic)
 {
     static_assert(isArithmetic<int8> == true);
+    static_assert(isArithmetic<const int8> == true);
+    static_assert(isArithmetic<volatile int8> == true);
     static_assert(isArithmetic<uint8> == true);
     static_assert(isArithmetic<char> == true);
     static_assert(isArithmetic<int16> == true);
@@ -140,6 +340,8 @@ TEST(Traits, IsArithmetic)
 TEST(Traits, IsSigned)
 {
     static_assert(isSigned<int8> == true);
+    static_assert(isSigned<const int8> == true);
+    static_assert(isSigned<volatile int8> == true);
     static_assert(isSigned<uint8> == false);
     static_assert(isSigned<int16> == true);
     static_assert(isSigned<uint16> == false);
@@ -157,6 +359,8 @@ TEST(Traits, IsSigned)
 TEST(Traits, IsUnSigned)
 {
     static_assert(isUnsigned<int8> == false);
+    static_assert(isUnsigned<const int8> == false);
+    static_assert(isUnsigned<volatile int8> == false);
     static_assert(isUnsigned<uint8> == true);
     static_assert(isUnsigned<int16> == false);
     static_assert(isUnsigned<uint16> == true);
@@ -174,6 +378,8 @@ TEST(Traits, IsUnSigned)
 TEST(Traits, IsNative)
 {
     static_assert(isNative<int8> == true);
+    static_assert(isNative<const int8> == true);
+    static_assert(isNative<volatile int8> == true);
     static_assert(isNative<uint8> == true);
     static_assert(isNative<int16> == true);
     static_assert(isNative<uint16> == true);
@@ -186,38 +392,6 @@ TEST(Traits, IsNative)
     static_assert(isNative<Test1> == false);
     static_assert(isNative<float32> == true);
     static_assert(isNative<float64> == true);
-}
-
-TEST(Traits, IsConst)
-{
-    static_assert(isConst<int32> == false);
-    static_assert(isConst<volatile int32> == false);
-    static_assert(isConst<const int32> == true);
-    static_assert(isConst<const volatile int32> == true);
-}
-
-TEST(Traits, IsVolatile)
-{
-    static_assert(isVolatile<int32> == false);
-    static_assert(isVolatile<volatile int32> == true);
-    static_assert(isVolatile<const int32> == false);
-    static_assert(isVolatile<const volatile int32> == true);
-}
-
-TEST(Traits, IsCV)
-{
-    static_assert(isCV<int32> == false);
-    static_assert(isCV<volatile int32> == false);
-    static_assert(isCV<const int32> == false);
-    static_assert(isCV<const volatile int32> == true);
-}
-
-TEST(Traits, IsCOrV)
-{
-    static_assert(isCOrV<int32> == false);
-    static_assert(isCOrV<volatile int32> == true);
-    static_assert(isCOrV<const int32> == true);
-    static_assert(isCOrV<const volatile int32> == true);
 }
 
 TEST(Traits, Promote)

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "XSTraits.inl"
+#include "XSTraits.hpp"
 
 namespace Shift {
 XS_FUNCTION constexpr int8 operator"" _i8(unsigned long long v); // NOLINT(google-runtime-int)
