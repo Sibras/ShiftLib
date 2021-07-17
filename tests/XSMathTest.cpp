@@ -15,7 +15,7 @@
  */
 
 #ifdef XSTESTMAIN
-#    include "XSMath.inl"
+#    include "XSMath.hpp"
 
 #    include <gtest/gtest.h>
 

@@ -18,7 +18,7 @@
 #include "XSInt128.hpp"
 
 #include "XSBit.hpp"
-#include "XSMath.inl"
+#include "XSMath.hpp"
 #include "XSUInt128.inl"
 
 namespace Shift {

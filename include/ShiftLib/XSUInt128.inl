@@ -18,7 +18,7 @@
 #include "XSUInt128.hpp"
 
 #include "XSBit.hpp"
-#include "XSMath.inl"
+#include "XSMath.hpp"
 
 namespace Shift {
 XS_INLINE constexpr UInt128::UInt128() noexcept

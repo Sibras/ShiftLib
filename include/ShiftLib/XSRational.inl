@@ -17,7 +17,7 @@
 
 #include "XSRational.hpp"
 
-#include "XSMath.inl"
+#include "XSMath.hpp"
 
 namespace Shift {
 namespace NoExport {
@@ -39,7 +39,8 @@ XS_INLINE Rational<T> rationalReduceHelper(const T2 numerator, const T2 denomina
             temp = gcd % denomTemp;
             gcd = denomTemp;
             denomTemp = temp;
-        } while (temp != 0);
+        }
+        while (temp != 0);
 
         // TODO: if either ret.numerator or ret.denominator are bigger than can be held in T then this will fail. Need a
         // way to correctly round to nearest that can be stored in T.
