@@ -16,7 +16,7 @@
  */
 
 #include "SIMD/XSSIMDBool.hpp"
-#include "SIMD/XSSIMDData.inl"
+#include "SIMD/XSSIMDData.hpp"
 
 // Additional includes
 namespace Shift {

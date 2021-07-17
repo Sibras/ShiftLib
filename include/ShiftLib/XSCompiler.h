@@ -30,7 +30,7 @@
 #define XS_ICC 4
 #define XS_CLANG 5
 #define XS_CLANGWIN 6
-#define XS_CUDA 7
+#define XS_NVCC 7
 
 #define XS_ARCH32 1
 #define XS_ARCH64 2
@@ -38,7 +38,7 @@
 #define XS_X86 1
 #define XS_PPC 2
 #define XS_ARM 3
-#define XS_GPU 4
+#define XS_CUDA 4
 
 /* Finds the compiler type and version. */
 #if defined(__INTEL_COMPILER) && defined(_MSC_VER)
@@ -54,7 +54,7 @@
 #elif defined(__GNUC__)
 #    define XS_COMPILER XS_GNUC
 #elif defined(_NVCC)
-#    define XS_COMPILER XS_CUDA
+#    define XS_COMPILER XS_NVCC
 #else
 #    error Could not detect valid compiler
 #endif
@@ -66,7 +66,7 @@
 #    define XS_PLATFORM XS_MAC
 #elif defined(__unix) || defined(__linux)
 #    define XS_PLATFORM XS_LINUX
-#elif XS_COMPILER == XS_CUDA
+#elif XS_COMPILER == XS_NVCC
 #    define XS_PLATFORM XS_GPGPU
 #else
 #    error Unrecognized platform
@@ -89,7 +89,7 @@
 #elif defined(__arm__) || defined(_M_ARM) || defined(__aarch64__) || defined(_M_ARM64)
 #    define XS_ISA XS_ARM
 #elif XS_PLATFORM == XS_GPGPU
-#    define XS_ISA XS_GPU
+#    define XS_ISA XS_CUDA
 #else
 #    error Unrecognized instruction set
 #endif
@@ -116,7 +116,7 @@
 #    define XS_UNREACHABLE __builtin_unreachable()
 #    define XS_ALIGNMALLOC(size, al) memalign((al), (size))
 #    define XS_ALIGNFREE(loc) free((loc))
-#elif XS_COMPILER == XS_CUDA
+#elif XS_COMPILER == XS_NVCC
 #    define XS_FUNCTION __device__
 #    define XS_INLINE __forceinline__ __device__
 #    define XS_RESTRICT

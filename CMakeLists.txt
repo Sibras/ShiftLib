@@ -74,8 +74,8 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.inl>"
     
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.inl>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBool.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDBase.hpp>"

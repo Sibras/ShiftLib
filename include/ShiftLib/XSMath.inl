@@ -19,7 +19,7 @@
 
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
 #    include <mathimf.h>
-#elif (XS_COMPILER != XS_CUDA)
+#elif (XS_COMPILER != XS_NVCC)
 #    include <cmath>
 #endif
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
@@ -454,7 +454,7 @@ XS_INLINE T rsqrt(T param) noexcept
     } else if constexpr (isSame<T, long double>) {
         return ::invsqrtl(param);
     } else
-#elif XS_COMPILER == XS_CUDA
+#elif XS_COMPILER == XS_NVCC
     if constexpr (isSame<T, float>) {
         return ::rqsrtf(param);
     } else if constexpr (isSame<T, double>) {
@@ -524,7 +524,7 @@ XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE T sincos(T param, T& cosResult) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
-#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CUDA)
+#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_NVCC)
     T retSin;
     if constexpr (isSame<T, float>) {
         ::sincosf(param, &retSin, &cosResult);

@@ -34,7 +34,7 @@ enum class ISA
     X86 = XS_X86,
     Arm = XS_ARM,
     PowerPC = XS_PPC,
-    GPU = XS_GPU,
+    CUDA = XS_CUDA,
 };
 
 inline constexpr ISA currentISA = static_cast<ISA>(XS_ISA);
@@ -70,11 +70,7 @@ enum class ISAFeature
     AVX512VP2INTERSECT, /**< x86 AVX512 Vector Pair Intersection to a Pair of Mask Registers vector instructions. */
 };
 
-/**
- * Query if any instructions are supported.
- * @tparam T Type to check support for.
- * @returns True if supported, false if not.
- */
+namespace NoExport {
 template<ISAFeature T>
 XS_INLINE XS_CONSTEVAL bool getHasISAFeature() noexcept
 {
@@ -135,9 +131,13 @@ XS_INLINE XS_CONSTEVAL bool getHasISAFeature() noexcept
     }
     return false;
 }
+} // namespace NoExport
 
+/**
+ * Query if any instructions are supported.
+ */
 template<ISAFeature T>
-inline constexpr bool hasISAFeature = getHasISAFeature<T>();
+inline constexpr bool hasISAFeature = NoExport::getHasISAFeature<T>();
 
 enum class SIMDWidth
 {

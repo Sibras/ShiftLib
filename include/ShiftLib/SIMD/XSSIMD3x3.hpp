@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMDData.inl"
+#include "SIMD/XSSIMDData.hpp"
 
 // Additional includes
 namespace Shift {

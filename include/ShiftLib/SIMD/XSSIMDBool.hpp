@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMDData.inl"
-#include "SIMD/XSSIMDTraits.inl"
+#include "SIMD/XSSIMDData.hpp"
+#include "SIMD/XSSIMDTraits.hpp"
 
 namespace Shift {
 /** Dual Boolean object used to store true/false values for 2 different booleans at once in a single value. */

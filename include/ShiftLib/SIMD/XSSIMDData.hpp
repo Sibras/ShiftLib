@@ -21,9 +21,7 @@
 #    include "SIMD/XSSIMDx86.hpp"
 #endif
 
-namespace NoExport {
-using namespace Shift;
-
+namespace Shift::NoExport {
 template<typename T, bool Constructor, uint32 Size>
 class SIMDDataType
 {
@@ -355,7 +353,7 @@ public:
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
-class SIMDData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !getHasSIMD<T>()) && (Size == 1)>>
+class SIMDData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !hasSIMD<T>)&&(Size == 1)>>
     : public SIMDDataType1<T, false>
 {
 public:
@@ -367,7 +365,7 @@ public:
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
-class SIMDMaskData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !getHasSIMD<T>()) && (Size == 1)>>
+class SIMDMaskData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !hasSIMD<T>)&&(Size == 1)>>
     : public SIMDDataType1<bool, false>
 {
 public:
@@ -379,7 +377,7 @@ public:
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
-class SIMDShuffleData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !getHasSIMD<T>()) && (Size == 1)>>
+class SIMDShuffleData<T, Size, Pad, Width, require<((Width == SIMDWidth::Scalar) || !hasSIMD<T>)&&(Size == 1)>>
     : public SIMDDataType1<uint32, false>
 {
 public:
@@ -391,9 +389,10 @@ public:
 };
 
 #if XS_ISA == XS_X86
+#    if XS_ARCH_SSE
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
+    require<hasSIMD128<float32> && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
     : public SIMDDataType<__m128, true, 1>
 {
 public:
@@ -406,19 +405,19 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
-#    if XS_ARCH_AVX512F
+    require<hasSIMD128<float32> && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
+#        if XS_ARCH_AVX512F
     : public SIMDDataType<__mmask8, true, 1>
-#    else
+#        else
     : public SIMDDataType<__m128, true, 1>
-#    endif
+#        endif
 {
 public:
-#    if XS_ARCH_AVX512F
+#        if XS_ARCH_AVX512F
     using Type = __mmask8;
-#    else
+#        else
     using Type = __m128;
-#    endif
+#        endif
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4;
     using Data = SIMDDataType<Type, true, size / 4>;
@@ -427,7 +426,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
+    require<hasSIMD128<float32> && (Width >= SIMDWidth::B16) && ((Size + Pad) <= 4)>>
     : public SIMDDataType<__m128i, true, 1>
 {
 public:
@@ -440,9 +439,8 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() &&
-        ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !getHasSIMD256<float32>())) && ((Size + Pad) > 4)>>
-    : public SIMDDataType<__m128, true, ((Size + Pad) + 3) / 4>
+    require<hasSIMD128<float32> && ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !hasSIMD256<float32>)) &&
+        ((Size + Pad) > 4)>> : public SIMDDataType<__m128, true, ((Size + Pad) + 3) / 4>
 {
 public:
     using Type = __m128;
@@ -454,20 +452,20 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() &&
-        ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !getHasSIMD256<float32>())) && ((Size + Pad) > 4)>>
-#    if XS_ARCH_AVX512F
+    require<hasSIMD128<float32> && ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !hasSIMD256<float32>)) &&
+        ((Size + Pad) > 4)>>
+#        if XS_ARCH_AVX512F
     : public SIMDDataType<__mmask8, true, ((Size + Pad) + 3) / 4>
-#    else
+#        else
     : public SIMDDataType<__m128, true, ((Size + Pad) + 3) / 4>
-#    endif
+#        endif
 {
 public:
-#    if XS_ARCH_AVX512F
+#        if XS_ARCH_AVX512F
     using Type = __mmask8;
-#    else
+#        else
     using Type = __m128;
-#    endif
+#        endif
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4 * (((Size + Pad) + 3) / 4);
     using Data = SIMDDataType<Type, true, size / 4>;
@@ -476,9 +474,8 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD128<float32>() &&
-        ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !getHasSIMD256<float32>())) && ((Size + Pad) > 4)>>
-    : public SIMDDataType<__m128i, true, ((Size + Pad) + 3) / 4>
+    require<hasSIMD128<float32> && ((Width == SIMDWidth::B16) || ((Width > SIMDWidth::B16) && !hasSIMD256<float32>)) &&
+        ((Size + Pad) > 4)>> : public SIMDDataType<__m128i, true, ((Size + Pad) + 3) / 4>
 {
 public:
     using Type = __m128i;
@@ -487,11 +484,11 @@ public:
     using Data = SIMDDataType<Type, true, size / 4>;
     using Data::SIMDDataType;
 };
-
+#    endif
 #    if XS_ARCH_AVX
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
+    require<hasSIMD256<float32> && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
     : public SIMDDataType<__m256, true, 1>
 {
 public:
@@ -504,7 +501,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
+    require<hasSIMD256<float32> && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
 #        if XS_ARCH_AVX512F
     : public SIMDDataType<__mmask8, true, 1>
 #        else
@@ -525,7 +522,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
+    require<hasSIMD256<float32> && (Width >= SIMDWidth::B32) && ((Size + Pad) <= 8) && ((Size + Pad) > 4)>>
     : public SIMDDataType<__m256i, true, 1>
 {
 public:
@@ -538,8 +535,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) &&
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
         ((Size + Pad) <= 12) && ((Size + Pad) > 8)>> : public SIMDDataType2<__m256, __m128, true>
 {
 public:
@@ -553,8 +549,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) &&
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
         ((Size + Pad) <= 12) && ((Size + Pad) > 8)>>
 #        if XS_ARCH_AVX512F
     : public SIMDDataType2<__mmask8, __mmask8, true>
@@ -578,8 +573,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) &&
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
         ((Size + Pad) <= 12) && ((Size + Pad) > 8)>> : public SIMDDataType2<__m256i, __m128i, true>
 {
 public:
@@ -593,9 +587,8 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) && ((Size + Pad) > 12)>>
-    : public SIMDDataType<__m256, true, ((Size + Pad) + 7) / 8>
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
+        ((Size + Pad) > 12)>> : public SIMDDataType<__m256, true, ((Size + Pad) + 7) / 8>
 {
 public:
     using Type = __m256;
@@ -607,8 +600,8 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) && ((Size + Pad) > 12)>>
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
+        ((Size + Pad) > 12)>>
 #        if XXS_ARCH_AVX512F
     : public SIMDDataType<__mmask8, true, ((Size + Pad) + 7) / 8>
 #        else
@@ -629,9 +622,8 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD256<float32>() &&
-        ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !getHasSIMD512<float32>())) && ((Size + Pad) > 12)>>
-    : public SIMDDataType<__m256i, true, ((Size + Pad) + 7) / 8>
+    require<hasSIMD256<float32> && ((Width == SIMDWidth::B32) || ((Width > SIMDWidth::B32) && !hasSIMD512<float32>)) &&
+        ((Size + Pad) > 12)>> : public SIMDDataType<__m256i, true, ((Size + Pad) + 7) / 8>
 {
 public:
     using Type = __m256i;
@@ -645,7 +637,7 @@ public:
 #    if XS_ARCH_AVX512F
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
     : public SIMDDataType<__m512, true, 1>
 {
 public:
@@ -658,7 +650,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
     : public SIMDDataType<__mmask16, true, 1>
 {
 public:
@@ -671,7 +663,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) <= 16) && ((Size + Pad) > 8)>>
     : public SIMDDataType<__m512i, true, 1>
 {
 public:
@@ -684,7 +676,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
     : public SIMDDataType<__m512, true, ((Size + Pad) + 15) / 16>
 {
 public:
@@ -697,7 +689,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDMaskData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
     : public SIMDDataType<__mmask16, true, ((Size + Pad) + 15) / 16>
 {
 public:
@@ -710,7 +702,7 @@ public:
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
 class SIMDShuffleData<float32, Size, Pad, Width,
-    require<getHasSIMD512<float32>() && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
+    require<hasSIMD512<float32> && (Width >= SIMDWidth::B64) && ((Size + Pad) > 16)>>
     : public SIMDDataType<__m512i, true, ((Size + Pad) + 15) / 16>
 {
 public:
@@ -732,4 +724,4 @@ public:
     using Data::SIMDDataType;
 };
 #endif
-} // namespace NoExport
+} // namespace Shift::NoExport

@@ -23,7 +23,7 @@
 #if XS_ISA == XS_X86
 #    include "SIMD/XSSIMDx86.hpp"
 
-namespace NoExport {
+namespace Shift::NoExport {
 static XS_INLINE __m128 exp2f4(const __m128& other)
 {
     // get integer component
@@ -1339,5 +1339,5 @@ static XS_INLINE __m128 blendSwap4(const __m128& other0, __m128& other1)
         return _mm_shuffle_ps(backup, val0, _MM_SHUFFLE(3, 0, 1, 0));
     }
 }
-} // namespace NoExport
+} // namespace Shift::NoExport
 #endif

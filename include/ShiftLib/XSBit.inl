@@ -94,7 +94,7 @@ XS_INLINE uint32 bsr(const T param) noexcept
         uint32 res;
         asm("bsr %1,%0" : "=r"(res) : "rm"(param));
         return res;
-#elif XS_COMPILER == XS_CUDA
+#elif XS_COMPILER == XS_NVCC
         // return is -1 if input is zero
         return 31 - __clz(param);
 #else
@@ -143,7 +143,7 @@ XS_INLINE uint32 bsr(const T param) noexcept
             }
             return res;
         }
-#elif XS_COMPILER == XS_CUDA
+#elif XS_COMPILER == XS_NVCC
         // return is -1 if input is zero
         return 63 - __clzll(param);
 #else
@@ -160,7 +160,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
     if constexpr (isSameAny<T, int32, uint32>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         return __popc(param);
 #else
         if constexpr (hasISAFeature<ISAFeature::SSE42> || hasISAFeature<ISAFeature::ABM>) {
@@ -178,7 +178,7 @@ XS_INLINE uint32 popcnt(const T param) noexcept
         }
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         return __popcll(param);
 #else
         if constexpr (hasISAFeature<ISAFeature::SSE42> || hasISAFeature<ISAFeature::ABM>) {
@@ -214,7 +214,7 @@ XS_INLINE uint32 ctz(const T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>);
     if constexpr (isSameAny<T, int32, uint32>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         // return is 0 if input is zero
         return __ffs(param) - 1;
 #else
@@ -239,7 +239,7 @@ XS_INLINE uint32 ctz(const T param) noexcept
         }
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         // return is 0 if input is zero
         return __ffsll(param) - 1;
 #else
@@ -302,7 +302,7 @@ XS_INLINE uint32 clz(const T param) noexcept
 {
     static_assert(isSameAny<T, int32, uint32, int64, uint64>);
     if constexpr (isSameAny<T, int32, uint32>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         // return is 32 if input is zero
         return __clz(param);
 #else
@@ -327,7 +327,7 @@ XS_INLINE uint32 clz(const T param) noexcept
         }
 #endif
     } else if constexpr (isSameAny<T, int64, uint64>) {
-#if XS_COMPILER == XS_CUDA
+#if XS_COMPILER == XS_NVCC
         // return is 64 if input is zero
         return __clzll(param);
 #else
@@ -539,14 +539,32 @@ XS_INLINE T bitClear(const T param, const uint32 bit) noexcept
 }
 
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
+XS_REQUIRES((isSame<T, T2> ||
+    ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)) && isTriviallyCopyable<T> && isTriviallyCopyable<T2>)))
 XS_INLINE T bitCast(const T2& param) noexcept
 {
-    static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
+    static_assert(isSame<T, T2> ||
+        ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))) && isTriviallyCopyable<T> &&
+            isTriviallyCopyable<T2>);
     // TODO: Add specialised SIMD type casting (e.g. _mm_castps_si128)
+#if XS_ISA == XS_CUDA
     if constexpr (isSame<T, T2>) {
         return param;
-    } else {
+    } else if constexpr (isSame<T2, float64> && isSame<T, int64>) {
+        return __double_as_longlong(param);
+    } else if constexpr (isSame<T2, float32> && isSame<T, int32>) {
+        return __float_as_int(param);
+    } else if constexpr (isSame<T2, float32> && isSame<T, uint32>) {
+        return __float_as_uint(param);
+    } else if constexpr (isSame<T2, int64> && isSame<T, float64>) {
+        return __longlong_as_double(param);
+    } else if constexpr (isSame<T2, int32> && isSame<T, float32>) {
+        return __int_as_float(param);
+    } else if constexpr (isSame<T2, uint32> && isSame<T, float32>) {
+        return __uint_as_float(param);
+    } else
+#endif
+    {
         // Reinterpret cast and unions are not usable due to aliasing rules.
 #ifdef __cpp_lib_bit_cast
         return __builtin_bit_cast(T, param);
@@ -559,10 +577,10 @@ XS_INLINE T bitCast(const T2& param) noexcept
 }
 
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
+XS_REQUIRES((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))))
 XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
+    static_assert(isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))));
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 & static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -589,10 +607,10 @@ XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 }
 
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
+XS_REQUIRES((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))))
 XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
+    static_assert(isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))));
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 | static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -619,10 +637,10 @@ XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 }
 
 template<typename T, typename T2>
-XS_REQUIRES((isSame<T, T2> || (sizeof(T) == sizeof(T2))))
+XS_REQUIRES((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))))
 XS_INLINE T bitXor(const T& param1, const T2& param2) noexcept
 {
-    static_assert(isSame<T, T2> || (sizeof(T) == sizeof(T2)));
+    static_assert(isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2))));
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 ^ static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
