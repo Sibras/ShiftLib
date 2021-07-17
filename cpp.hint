@@ -11,3 +11,6 @@
 #define XS_FUNCTION XS_IMPORT __declspec(noalias)
 #define XS_FUNCTION
 #define XS_CONSTEVAL
+#define XS_INLINE __forceinline __declspec(noalias)
+#define XS_INLINE __inline __attribute__((always_inline))
+#define XS_INLINE
