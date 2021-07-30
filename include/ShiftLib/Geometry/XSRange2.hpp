@@ -167,7 +167,7 @@ public:
      * @param min The new minimum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMin(const BaseDef& min);
+    XS_FUNCTION void setMin(BaseDef min);
 
     /**
      * Sets the maximum value.
@@ -175,26 +175,26 @@ public:
      * @param max The new maximum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMax(const BaseDef& max);
+    XS_FUNCTION void setMax(BaseDef max);
 
     /**
      * Sets the minimum value of all range elements.
      * @param min The new minimum.
      */
-    XS_FUNCTION void setMin2(const BaseDef& min);
+    XS_FUNCTION void setMin2(BaseDef min);
 
     /**
      * Sets the maximum value of all range elements.
      * @param max The new maximum.
      */
-    XS_FUNCTION void setMaxDual(const BaseDef& max);
+    XS_FUNCTION void setMaxDual(BaseDef max);
 
     /**
      * Check if a value is within the current range.
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(const BaseDef& value) const;
+    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(BaseDef value) const;
 
     /**
      * Check if a values are within the current range.

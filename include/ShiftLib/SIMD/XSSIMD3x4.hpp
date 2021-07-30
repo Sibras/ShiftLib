@@ -240,13 +240,13 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD3x4(const BaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD3x4(BaseDef other) noexcept;
 
     /**
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD3x4(const InBaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD3x4(InBaseDef other) noexcept;
 
     /**
      * Construct from 4 different SIMD3s.
@@ -401,7 +401,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD3x4 mad(const BaseDef& other1, const SIMD3x4& other2) const noexcept;
+    XS_FUNCTION SIMD3x4 mad(BaseDef other1, const SIMD3x4& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -411,7 +411,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD3x4 mad(const SIMD3x4& other1, const BaseDef& other2) const noexcept;
+    XS_FUNCTION SIMD3x4 mad(const SIMD3x4& other1, BaseDef other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -498,14 +498,14 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_FUNCTION SIMD3x4 max(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x4 max(BaseDef other) const noexcept;
 
     /**
      * Minimum of two objects per element.
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_FUNCTION SIMD3x4 min(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x4 min(BaseDef other) const noexcept;
 
     /**
      * Maximum of each internally stored SIMD3.
@@ -708,7 +708,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator+(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator+(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Add a SIMD3 to each triple of elements in a SIMD3x4.
@@ -747,7 +747,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator-(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator-(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Subtract all elements of a SIMD3x4 from a value.
@@ -757,7 +757,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator-(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator-(
-    const typename SIMD3x4<T, Width>::BaseDef& other1, const SIMD3x4<T, Width>& other2) noexcept;
+    typename SIMD3x4<T, Width>::BaseDef other1, const SIMD3x4<T, Width>& other2) noexcept;
 
 /**
  * Subtract a SIMD3 from each triple of elements in a SIMD3x4.
@@ -796,7 +796,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator*(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator*(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Multiply each triple of elements in a SIMD3x4 by a SIMD3.
@@ -845,7 +845,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator/(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator/(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Divide a scalar by all elements of a SIMD3x4.
@@ -855,7 +855,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator/(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator/(
-    const typename SIMD3x4<T, Width>::BaseDef& other1, const SIMD3x4<T, Width>& other2) noexcept;
+    typename SIMD3x4<T, Width>::BaseDef other1, const SIMD3x4<T, Width>& other2) noexcept;
 
 /**
  * Divide each triple of elements in a SIMD3x2 by a SIMD3.
@@ -912,7 +912,7 @@ XS_FUNCTION SIMD3x4<T, Width>& operator+=(SIMD3x4<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width>& operator+=(
-    SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and addition of a SIMD3 to each triple of elements in a SIMD3x4.
@@ -951,7 +951,7 @@ XS_FUNCTION SIMD3x4<T, Width>& operator-=(SIMD3x4<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width>& operator-=(
-    SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction of a SIMD3 to each triple of elements in a SIMD3x4.
@@ -990,7 +990,7 @@ XS_FUNCTION SIMD3x4<T, Width>& operator*=(SIMD3x4<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width>& operator*=(
-    SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication of a SIMD3 to each triple of elements in a SIMD3x4.
@@ -1039,7 +1039,7 @@ XS_FUNCTION SIMD3x4<T, Width>& operator/=(SIMD3x4<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width>& operator/=(
-    SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and division of each triple of elements in a SIMD3x4 by a SIMD3.
@@ -1092,7 +1092,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator&(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator&(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Or 2 SIMD3x4s.
@@ -1115,7 +1115,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator|(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator|(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Xor 2 SIMD3x4s.
@@ -1138,7 +1138,7 @@ XS_FUNCTION SIMD3x4<T, Width> operator^(const SIMD3x4<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x4<T, Width> operator^(
-    const SIMD3x4<T, Width>& other1, const typename SIMD3x4<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x4<T, Width>& other1, typename SIMD3x4<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Not a SIMD3x4.

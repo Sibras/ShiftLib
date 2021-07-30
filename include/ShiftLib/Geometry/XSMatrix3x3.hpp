@@ -265,7 +265,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix4x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 UniformScale(const InBaseDef& scale) noexcept;
+    XS_FUNCTION static Matrix3x3 UniformScale(InBaseDef scale) noexcept;
 
     /**
      * Constructor to build a 3x3 Matrix with fixed scale.
@@ -279,21 +279,21 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationX(const typename SIMD3Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix3x3 RotationX(typename SIMD3Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 3x3 Matrix with fixed rotation about Y axis.
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationY(const typename SIMD3Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix3x3 RotationY(typename SIMD3Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 3x3 Matrix with fixed rotation about Z axis.
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationZ(const typename SIMD3Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix3x3 RotationZ(typename SIMD3Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 3x3 Matrix with fixed rotation about arbitrary axis.
@@ -301,8 +301,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationAxis(
-        const Vector3DDef& axis, const typename SIMD3Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix3x3 RotationAxis(const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept;
 
     /**
      * Get a column of a Matrix3x3.
@@ -429,42 +428,42 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateX(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 postRotateX(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a rotation around y axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateY(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 postRotateY(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateZ(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around x axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateX(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 preRotateX(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around y axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateY(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 preRotateY(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around z axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateZ(const typename SIMD3Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix3x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a scale (i.e M*scale).
@@ -485,7 +484,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 uniformScale(const BaseDef& scale) const;
+    XS_FUNCTION Matrix3x3 uniformScale(BaseDef scale) const;
 };
 
 /**

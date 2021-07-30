@@ -353,13 +353,13 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD3x2(const BaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD3x2(BaseDef other) noexcept;
 
     /**
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD3x2(const InBaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD3x2(InBaseDef other) noexcept;
 
     /**
      * Construct from 2 identical SIMD2s.
@@ -466,7 +466,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD3x2 mad(const BaseDef& other1, const SIMD3x2& other2) const noexcept;
+    XS_FUNCTION SIMD3x2 mad(BaseDef other1, const SIMD3x2& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -496,7 +496,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD3x2 mad(const SIMD3x2& other1, const BaseDef& other2) const noexcept;
+    XS_FUNCTION SIMD3x2 mad(const SIMD3x2& other1, BaseDef other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -551,42 +551,42 @@ public:
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask equalMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask equalMask(BaseDef other) const noexcept;
 
     /**
      * Compare two objects are less or equal.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask lessOrEqualMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask lessOrEqualMask(BaseDef other) const noexcept;
 
     /**
      * Compare two objects are less than.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask lessThanMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask lessThanMask(BaseDef other) const noexcept;
 
     /**
      * Compare two objects are greater or equal.
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask greaterOrEqualMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask greaterOrEqualMask(BaseDef other) const noexcept;
 
     /**
      * Compare two objects are greater than.
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask greaterThanMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask greaterThanMask(BaseDef other) const noexcept;
 
     /**
      * Compare two objects are not equal.
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_FUNCTION Mask notEqualMask(const BaseDef& other) const noexcept;
+    XS_FUNCTION Mask notEqualMask(BaseDef other) const noexcept;
 
     /**
      * Negate this object based on the sign of another.
@@ -622,14 +622,14 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_FUNCTION SIMD3x2 max(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x2 max(BaseDef other) const noexcept;
 
     /**
      * Minimum of two objects per element.
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_FUNCTION SIMD3x2 min(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x2 min(BaseDef other) const noexcept;
 
     /**
      * Maximum of each internally stored SIMD3.
@@ -788,7 +788,7 @@ public:
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    XS_FUNCTION SIMD3x2 pow(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x2 pow(BaseDef other) const noexcept;
 
     /**
      * Returns object (where all elements must be > 0) to the power of another value.
@@ -796,7 +796,7 @@ public:
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    XS_FUNCTION SIMD3x2 powr(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD3x2 powr(BaseDef other) const noexcept;
 
     /**
      * Returns sine of each element in the object.
@@ -914,7 +914,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator+(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator+(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Add a SIMD3 to each triple of elements in a SIMD3x2.
@@ -943,7 +943,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator-(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator-(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Subtract all elements of a SIMD3x2 from a value.
@@ -953,7 +953,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator-(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator-(
-    const typename SIMD3x2<T, Width>::BaseDef& other1, const SIMD3x2<T, Width>& other2) noexcept;
+    typename SIMD3x2<T, Width>::BaseDef other1, const SIMD3x2<T, Width>& other2) noexcept;
 
 /**
  * Subtract a SIMD3 from each triple of elements in a SIMD3x2.
@@ -982,7 +982,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator*(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator*(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Multiply a SIMD3x2 by a SIMD2 component wise.
@@ -1021,7 +1021,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator/(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator/(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Divide a SIMD3x2 by a SIMD2 component wise.
@@ -1041,7 +1041,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator/(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator/(
-    const typename SIMD3x2<T, Width>::BaseDef& other1, const SIMD3x2<T, Width>& other2) noexcept;
+    typename SIMD3x2<T, Width>::BaseDef other1, const SIMD3x2<T, Width>& other2) noexcept;
 
 /**
  * Divide each triple of elements in a SIMD3x2 by a SIMD3.
@@ -1078,7 +1078,7 @@ XS_FUNCTION SIMD3x2<T, Width>& operator+=(SIMD3x2<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width>& operator+=(
-    SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and addition of a SIMD3 to each triple of elements in a SIMD3x2.
@@ -1107,7 +1107,7 @@ XS_FUNCTION SIMD3x2<T, Width>& operator-=(SIMD3x2<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width>& operator-=(
-    SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction of a SIMD3 from each triple of elements in a SIMD3x2.
@@ -1136,7 +1136,7 @@ XS_FUNCTION SIMD3x2<T, Width>& operator*=(SIMD3x2<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width>& operator*=(
-    SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication by a SIMD2 component wise.
@@ -1175,7 +1175,7 @@ XS_FUNCTION SIMD3x2<T, Width>& operator/=(SIMD3x2<T, Width>& other1, const SIMD3
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width>& operator/=(
-    SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and division by a SIMD2 component wise.
@@ -1240,8 +1240,7 @@ XS_FUNCTION bool operator!=(const SIMD3x2<T, Width>& other1, const SIMD3x2<T, Wi
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator==(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION bool operator==(const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Compare SIMD3x2 is less than or equal to a value.
@@ -1250,8 +1249,7 @@ XS_FUNCTION bool operator==(
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<=(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION bool operator<=(const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Compare SIMD3x2 is less than a value.
@@ -1260,7 +1258,7 @@ XS_FUNCTION bool operator<=(
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<(const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION bool operator<(const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Compare SIMD3x2 is not equal to a value.
@@ -1269,8 +1267,7 @@ XS_FUNCTION bool operator<(const SIMD3x2<T, Width>& other1, const typename SIMD3
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator!=(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION bool operator!=(const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * And 2 SIMD3x2s.
@@ -1293,7 +1290,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator&(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator&(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Or 2 SIMD3x2s.
@@ -1316,7 +1313,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator|(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator|(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Xor 2 SIMD3x2s.
@@ -1339,7 +1336,7 @@ XS_FUNCTION SIMD3x2<T, Width> operator^(const SIMD3x2<T, Width>& other1, const S
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD3x2<T, Width> operator^(
-    const SIMD3x2<T, Width>& other1, const typename SIMD3x2<T, Width>::BaseDef& other2) noexcept;
+    const SIMD3x2<T, Width>& other1, typename SIMD3x2<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Not a SIMD3x2.

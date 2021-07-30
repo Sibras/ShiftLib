@@ -192,13 +192,13 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD16(const BaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD16(BaseDef other) noexcept;
 
     /**
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_FUNCTION explicit SIMD16(const InBaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMD16(InBaseDef other) noexcept;
 
     /**
      * Construct a SIMD16 from 8 different SIMD2s.
@@ -384,7 +384,7 @@ public:
      * @param other The new value.
      */
     template<uint32 Index>
-    XS_FUNCTION void setValue(const InBaseDef& other) noexcept;
+    XS_FUNCTION void setValue(InBaseDef other) noexcept;
 
     /**
      * Set an element of the object.
@@ -392,7 +392,7 @@ public:
      * @param other The new value.
      */
     template<uint32 Index>
-    XS_FUNCTION void setValue(const BaseDef& other) noexcept;
+    XS_FUNCTION void setValue(BaseDef other) noexcept;
 
     /**
      * Set a SIMD2.
@@ -469,7 +469,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD16 mad(const BaseDef& other1, const SIMD16& other2) const noexcept;
+    XS_FUNCTION SIMD16 mad(BaseDef other1, const SIMD16& other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -479,7 +479,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMD16 mad(const SIMD16& other1, const BaseDef& other2) const noexcept;
+    XS_FUNCTION SIMD16 mad(const SIMD16& other1, BaseDef other2) const noexcept;
 
     /**
      * Multiply this object by another and then add another object.
@@ -565,14 +565,14 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_FUNCTION SIMD16 max(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD16 max(BaseDef other) const noexcept;
 
     /**
      * Minimum of two objects per element.
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_FUNCTION SIMD16 min(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD16 min(BaseDef other) const noexcept;
 
     /**
      * Maximum of each internally stored SIMD4.
@@ -806,7 +806,7 @@ public:
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    XS_FUNCTION SIMD16 pow(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD16 pow(BaseDef other) const noexcept;
 
     /**
      * Returns object (where all elements must be > 0) to the power of another value.
@@ -814,7 +814,7 @@ public:
      * @param other The value containing the exponent.
      * @returns Object containing the input values to the power of the second input.
      */
-    XS_FUNCTION SIMD16 powr(const BaseDef& other) const noexcept;
+    XS_FUNCTION SIMD16 powr(BaseDef other) const noexcept;
 
     /**
      * Returns sine of each element in the object.
@@ -1010,7 +1010,7 @@ XS_FUNCTION SIMD16<T, Width> operator+(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator+(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Add a SIMD4 to each 4 elements of a SIMD16.
@@ -1049,7 +1049,7 @@ XS_FUNCTION SIMD16<T, Width> operator-(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator-(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Subtract all elements of a SIMD16 from a value.
@@ -1059,7 +1059,7 @@ XS_FUNCTION SIMD16<T, Width> operator-(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator-(
-    const typename SIMD16<T, Width>::BaseDef& other1, const SIMD16<T, Width>& other2) noexcept;
+    typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept;
 
 /**
  * Subtract a SIMD4 from each 4 elements of a SIMD16.
@@ -1098,7 +1098,7 @@ XS_FUNCTION SIMD16<T, Width> operator*(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator*(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Multiply each 4 elements of a SIMD16 by a SIMD4.
@@ -1137,7 +1137,7 @@ XS_FUNCTION SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator/(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Divide a scalar by all elements of a SIMD16.
@@ -1147,7 +1147,7 @@ XS_FUNCTION SIMD16<T, Width> operator/(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator/(
-    const typename SIMD16<T, Width>::BaseDef& other1, const SIMD16<T, Width>& other2) noexcept;
+    typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept;
 
 /**
  * Divide each 4 elements of a SIMD16 by a SIMD4.
@@ -1193,8 +1193,7 @@ XS_FUNCTION SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, const SIMD16<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMD16<T, Width>& operator+=(
-    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction by a SIMD16.
@@ -1212,8 +1211,7 @@ XS_FUNCTION SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, const SIMD16<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMD16<T, Width>& operator-=(
-    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform SIMD16 compound assignment and multiplication.
@@ -1231,8 +1229,7 @@ XS_FUNCTION SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, const SIMD16<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMD16<T, Width>& operator*=(
-    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Perform compound assignment and division.
@@ -1250,8 +1247,7 @@ XS_FUNCTION SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, const SIMD16<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMD16<T, Width>& operator/=(
-    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+XS_FUNCTION SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * And 2 SIMD16s.
@@ -1274,7 +1270,7 @@ XS_FUNCTION SIMD16<T, Width> operator&(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator&(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Or 2 SIMD16s.
@@ -1297,7 +1293,7 @@ XS_FUNCTION SIMD16<T, Width> operator|(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator|(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Xor 2 SIMD16s.
@@ -1320,7 +1316,7 @@ XS_FUNCTION SIMD16<T, Width> operator^(const SIMD16<T, Width>& other1, const SIM
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION SIMD16<T, Width> operator^(
-    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef& other2) noexcept;
+    const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept;
 
 /**
  * Not a SIMD16.

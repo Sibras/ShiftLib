@@ -357,7 +357,7 @@ XS_FUNCTION Vector3D2<T, Width, Packed> operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D2<T, Width, Packed> operator*(
-    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept;
+    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Multiply a 3-D vector2 by a float2.
@@ -397,7 +397,7 @@ XS_FUNCTION Vector3D2<T, Width, Packed> operator*(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D2<T, Width, Packed> operator/(
-    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept;
+    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Divide a 3-D vector2 by a float2.
@@ -465,7 +465,7 @@ XS_FUNCTION Vector3D2<T, Width, Packed>& operator-=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D2<T, Width, Packed>& operator*=(
-    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept;
+    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and multiplication by a SIMD2Def.
@@ -505,7 +505,7 @@ XS_FUNCTION Vector3D2<T, Width, Packed>& operator*=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D2<T, Width, Packed>& operator/=(
-    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept;
+    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and division by a SIMD2Def.

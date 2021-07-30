@@ -301,7 +301,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix4x3 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 UniformScale(const InBaseDef& scale) noexcept;
+    XS_FUNCTION static Matrix4x4 UniformScale(InBaseDef scale) noexcept;
 
     /**
      * Constructor to build a 4x4 Matrix with fixed scale.
@@ -315,21 +315,21 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationX(const typename SIMD4Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix4x4 RotationX(typename SIMD4Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 4x4 Matrix with fixed rotation about Y axis.
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationY(const typename SIMD4Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix4x4 RotationY(typename SIMD4Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 4x4 Matrix with fixed rotation about Z axis.
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationZ(const typename SIMD4Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix4x4 RotationZ(typename SIMD4Def::BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a 4x4 Matrix with fixed rotation about arbitrary axis.
@@ -337,8 +337,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationAxis(
-        const Vector3DDef& axis, const typename SIMD4Def::BaseDef& rotation) noexcept;
+    XS_FUNCTION static Matrix4x4 RotationAxis(const Vector3DDef& axis, typename SIMD4Def::BaseDef rotation) noexcept;
 
     /**
      * Get the first column of a Matrix4x4.
@@ -549,42 +548,42 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateX(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 postRotateX(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a rotation around y axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateY(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 postRotateY(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateZ(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 postRotateZ(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around x axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateX(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 preRotateX(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around y axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateY(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 preRotateY(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around z axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateZ(const typename SIMD4Def::BaseDef& rotation) const;
+    XS_FUNCTION Matrix4x4 preRotateZ(typename SIMD4Def::BaseDef rotation) const;
 
     /**
      * Fast multiply the matrix by a scale (i.e M*scale).
@@ -605,14 +604,14 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postUniformScale(const BaseDef& scale) const;
+    XS_FUNCTION Matrix4x4 postUniformScale(BaseDef scale) const;
 
     /**
      * Fast multiply the a uniform scale by a matrix (i.e scale*M).
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preUniformScale(const BaseDef& scale) const;
+    XS_FUNCTION Matrix4x4 preUniformScale(BaseDef scale) const;
 
     /**
      * Fast multiply the matrix by a translation (i.e M*translate).

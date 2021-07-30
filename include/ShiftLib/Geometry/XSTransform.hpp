@@ -242,8 +242,7 @@ public:
      * @param translation The new translation component.
      * @param scale       The new scale component.
      */
-    XS_FUNCTION Transform(
-        const QuaternionDef& quaternion, const Vector3DDef& translation, const BaseDef& scale) noexcept;
+    XS_FUNCTION Transform(const QuaternionDef& quaternion, const Vector3DDef& translation, BaseDef scale) noexcept;
 
     /**
      * Constructor to build a Identity Matrix.
@@ -263,28 +262,28 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform UniformScale(const InBaseDef& scale) noexcept;
+    XS_FUNCTION static Transform UniformScale(InBaseDef scale) noexcept;
 
     /**
      * Constructor to build a Transform with fixed rotation about X axis.
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationX(const InBaseDef& rotation) noexcept;
+    XS_FUNCTION static Transform RotationX(InBaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Transform with fixed rotation about Y axis.
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationY(const InBaseDef& rotation) noexcept;
+    XS_FUNCTION static Transform RotationY(InBaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Transform with fixed rotation about Z axis.
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationZ(const InBaseDef& rotation) noexcept;
+    XS_FUNCTION static Transform RotationZ(InBaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Transform with fixed rotation about arbitrary axis.
@@ -292,7 +291,7 @@ public:
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationAxis(const Vector3DDef& axis, const InBaseDef& rotation) noexcept;
+    XS_FUNCTION static Transform RotationAxis(const Vector3DDef& axis, InBaseDef rotation) noexcept;
 
     /**
      * Transform a 3-D point using specified transform.
@@ -351,56 +350,56 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateX(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform postRotateX(InBaseDef rotation) const;
 
     /**
      * Fast multiply the transform by a rotation around y axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateY(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform postRotateY(InBaseDef rotation) const;
 
     /**
      * Fast multiply the transform by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateZ(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform postRotateZ(InBaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around x axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateX(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform preRotateX(InBaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around y axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateY(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform preRotateY(InBaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around z axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateZ(const InBaseDef& rotation) const;
+    XS_FUNCTION Transform preRotateZ(InBaseDef rotation) const;
 
     /**
      * Fast multiply the transform by a uniform scale (i.e M*scale).
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postUniformScale(const BaseDef& scale) const;
+    XS_FUNCTION Transform postUniformScale(BaseDef scale) const;
 
     /**
      * Fast multiply the a uniform scale by a transform (i.e scale*M).
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preUniformScale(const BaseDef& scale) const;
+    XS_FUNCTION Transform preUniformScale(BaseDef scale) const;
 
     /**
      * Fast multiply the transform by a translation (i.e M*translate).

@@ -145,20 +145,20 @@ public:
      * Sets the minimum value.
      * @param min The new minimum.
      */
-    XS_FUNCTION void setMin(const InBaseDef& min);
+    XS_FUNCTION void setMin(InBaseDef min);
 
     /**
      * Sets the maximum value.
      * @param max The new maximum.
      */
-    XS_FUNCTION void setMax(const InBaseDef& max);
+    XS_FUNCTION void setMax(InBaseDef max);
 
     /**
      * Check if a value is within the current range.
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION bool isWithinRange(const BaseDef& value) const;
+    XS_FUNCTION bool isWithinRange(BaseDef value) const;
 
     /**
      * Clips the minimum value to the largest from 2 ranges.

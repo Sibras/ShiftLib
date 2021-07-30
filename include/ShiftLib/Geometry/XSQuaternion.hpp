@@ -179,21 +179,21 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationX(const BaseDef& rotation) noexcept;
+    XS_FUNCTION static Quaternion RotationX(BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Quaternion with fixed rotation about Y axis.
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationY(const BaseDef& rotation) noexcept;
+    XS_FUNCTION static Quaternion RotationY(BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Quaternion with fixed rotation about Z axis.
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationZ(const BaseDef& rotation) noexcept;
+    XS_FUNCTION static Quaternion RotationZ(BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Quaternion with fixed rotation about arbitrary axis.
@@ -201,7 +201,7 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationAxis(const Vector3DDef& axis, const BaseDef& rotation) noexcept;
+    XS_FUNCTION static Quaternion RotationAxis(const Vector3DDef& axis, BaseDef rotation) noexcept;
 
     /**
      * Constructor to build a Quaternion from a Matrix3x3.
@@ -236,7 +236,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const InBaseDef& value) noexcept;
+    XS_FUNCTION void setValue(InBaseDef value) noexcept;
 
     /**
      * Set an element of a Quaternion.
@@ -244,7 +244,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const BaseDef& value) noexcept;
+    XS_FUNCTION void setValue(BaseDef value) noexcept;
 
     /**
      * Multiply a Quaternion by a Quaternion and then add another Quaternion.
@@ -346,42 +346,42 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateX(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion postRotateX(BaseDef rotation) const;
 
     /**
      * Fast multiply the quaternion by a rotation around y axis (i.e Q*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateY(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion postRotateY(BaseDef rotation) const;
 
     /**
      * Fast multiply the quaternion by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateZ(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion postRotateZ(BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around x axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateX(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion preRotateX(BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around y axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateY(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion preRotateY(BaseDef rotation) const;
 
     /**
      * Fast multiply a rotation around z axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateZ(const BaseDef& rotation) const;
+    XS_FUNCTION Quaternion preRotateZ(BaseDef rotation) const;
 };
 
 /**

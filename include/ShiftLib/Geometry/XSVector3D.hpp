@@ -214,7 +214,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const InBaseDef& value) noexcept;
+    XS_FUNCTION void setValue(InBaseDef value) noexcept;
 
     /**
      * Set an element of a 3-D vector.
@@ -222,7 +222,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const BaseDef& value) noexcept;
+    XS_FUNCTION void setValue(BaseDef value) noexcept;
 
     /**
      * Multiply a 3-D vector by a scalar and then add another vector.
@@ -230,7 +230,7 @@ public:
      * @param vector Second vector to add.
      * @returns The result of the operation.
      */
-    XS_FUNCTION Vector3D mad(const BaseDef& value, const Vector3D& vector) const;
+    XS_FUNCTION Vector3D mad(BaseDef value, const Vector3D& vector) const;
 
     /**
      * Compute the dot product of two 3-D vectors.
@@ -319,7 +319,7 @@ XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector1, cons
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width> operator*(
-    const Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef& value) noexcept;
+    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
 
 /**
  * Divide a 3-D vector by a scalar.
@@ -329,7 +329,7 @@ XS_FUNCTION Vector3D<T, Width> operator*(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width> operator/(
-    const Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef& value) noexcept;
+    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
 
 /**
  * Negate all elements of a 3-D vector.
@@ -365,7 +365,7 @@ XS_FUNCTION Vector3D<T, Width>& operator-=(Vector3D<T, Width>& vector1, const Ve
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width>& operator*=(
-    Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef& value) noexcept;
+    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and division by a scalar.
@@ -375,5 +375,5 @@ XS_FUNCTION Vector3D<T, Width>& operator*=(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width>& operator/=(
-    Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef& value) noexcept;
+    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
 } // namespace Shift

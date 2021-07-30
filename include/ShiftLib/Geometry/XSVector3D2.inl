@@ -194,7 +194,7 @@ XS_INLINE Vector3D2<T, Width, Packed> operator-(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> operator*(
-    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept
+    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D2<T, Width, Packed>(vector.vectors * value);
 }
@@ -222,7 +222,7 @@ XS_INLINE Vector3D2<T, Width, Packed> operator*(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> operator/(
-    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept
+    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D2<T, Width, Packed>(vector.vectors / value);
 }
@@ -274,7 +274,7 @@ XS_INLINE Vector3D2<T, Width, Packed>& operator-=(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed>& operator*=(
-    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept
+    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors *= value;
     return vector;
@@ -306,7 +306,7 @@ XS_INLINE Vector3D2<T, Width, Packed>& operator*=(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed>& operator/=(
-    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef& value) noexcept
+    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors /= value;
     return vector;

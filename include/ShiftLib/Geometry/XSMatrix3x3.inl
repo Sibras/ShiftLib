@@ -157,7 +157,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::Identity() noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::UniformScale(const InBaseDef& scale) noexcept
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::UniformScale(InBaseDef scale) noexcept
 {
     SIMD3Def scale3(SIMD3Def::Zero());
     scale3.template setValue<0>(scale);
@@ -174,7 +174,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::Scale(const SIMD3Def& scale) 
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationX(const typename SIMD3Def::BaseDef& rotation) noexcept
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationX(typename SIMD3Def::BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD3Def::SIMD2Def;
     using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -193,7 +193,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationX(const typename SIMD
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationY(const typename SIMD3Def::BaseDef& rotation) noexcept
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationY(typename SIMD3Def::BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD3Def::SIMD2Def;
     using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -212,7 +212,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationY(const typename SIMD
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationZ(const typename SIMD3Def::BaseDef& rotation) noexcept
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationZ(typename SIMD3Def::BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD3Def::SIMD2Def;
     using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -231,7 +231,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationZ(const typename SIMD
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::RotationAxis(
-    const Vector3DDef& axis, const typename SIMD3Def::BaseDef& rotation) noexcept
+    const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept
 {
     // The equivalent matrix for a rotation around an axis can be described by:
     //      xx(1-c)+ s xy(1-c)-zs xz(1-c)+ys
@@ -445,7 +445,7 @@ XS_INLINE typename Matrix3x3<T, Width>::InBaseDef Matrix3x3<T, Width>::determina
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateX(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateX(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -466,7 +466,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateX(const typename SI
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateY(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateY(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -487,7 +487,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateY(const typename SI
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateZ(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateZ(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -508,7 +508,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::postRotateZ(const typename SI
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateX(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateX(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -528,7 +528,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateX(const typename SIM
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateY(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateY(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -548,7 +548,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateY(const typename SIM
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateZ(const typename SIMD3Def::BaseDef& rotation) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preRotateZ(typename SIMD3Def::BaseDef rotation) const
 {
     using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
     using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -580,7 +580,7 @@ XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::preScale(const SIMD3Def& scal
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::uniformScale(const BaseDef& scale) const
+XS_INLINE Matrix3x3<T, Width> Matrix3x3<T, Width>::uniformScale(BaseDef scale) const
 {
     return Matrix3x3(this->columns * scale);
 }

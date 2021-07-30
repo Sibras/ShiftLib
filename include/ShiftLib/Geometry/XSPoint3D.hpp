@@ -216,7 +216,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const InBaseDef& value) noexcept;
+    XS_FUNCTION void setValue(InBaseDef value) noexcept;
 
     /**
      * Set an element of a 3-D point.
@@ -224,7 +224,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(const BaseDef& value) noexcept;
+    XS_FUNCTION void setValue(BaseDef value) noexcept;
 };
 
 /**
@@ -265,7 +265,7 @@ XS_FUNCTION Point3D<T, Width> operator-(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Point3D<T, Width> operator*(
-    const Point3D<T, Width>& point, const typename Point3D<T, Width>::BaseDef& value) noexcept;
+    const Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and addition with a 3-D point.
@@ -294,6 +294,5 @@ XS_FUNCTION Point3D<T, Width>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width>& operator*=(
-    Point3D<T, Width>& point, const typename Point3D<T, Width>::BaseDeff& value) noexcept;
+XS_FUNCTION Point3D<T, Width>& operator*=(Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept;
 } // namespace Shift

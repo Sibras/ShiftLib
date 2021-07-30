@@ -409,7 +409,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
-    const Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::BaseDef& value) noexcept;
+    const Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Multiply a 3-D vector4 by a scalar.
@@ -459,7 +459,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D4<T, Width, Packed> operator/(
-    const Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::BaseDef& value) noexcept;
+    const Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Divide a 3-D vector4 by a scalar.
@@ -547,7 +547,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
-    Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::BaseDef& value) noexcept;
+    Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and multiplication by a scalar.
@@ -597,7 +597,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Vector3D4<T, Width, Packed>& operator/=(
-    Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::BaseDef& value) noexcept;
+    Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept;
 
 /**
  * Perform compound assignment and division by a scalar.

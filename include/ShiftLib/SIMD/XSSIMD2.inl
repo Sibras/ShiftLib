@@ -191,7 +191,7 @@ template<typename T, SIMDWidth Width, uint32 Index>
 class SIMDMasker2
 {
 public:
-    XS_INLINE static typename SIMD2<T, Width>::InBaseDef& ToType(SIMD2<T, Width>& other)
+    XS_INLINE static typename SIMD2<T, Width>::InBaseDef ToType(SIMD2<T, Width>& other)
     {
         return reinterpret_cast<typename SIMD2<T, Width>::InBaseDef*>(other.values)[Index];
     }
@@ -295,7 +295,7 @@ XS_INLINE SIMD2<T, Width>::SIMD2(const SIMD2<T, Width2>& other) noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>::SIMD2(const BaseDef& other) noexcept
+XS_INLINE SIMD2<T, Width>::SIMD2(BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -309,7 +309,7 @@ XS_INLINE SIMD2<T, Width>::SIMD2(const BaseDef& other) noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>::SIMD2(const InBaseDef& other) noexcept
+XS_INLINE SIMD2<T, Width>::SIMD2(InBaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -327,7 +327,7 @@ XS_INLINE SIMD2<T, Width>::SIMD2(const InBaseDef& other) noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>::SIMD2(const InBaseDef& other0, const InBaseDef& other1) noexcept
+XS_INLINE SIMD2<T, Width>::SIMD2(InBaseDef other0, InBaseDef other1) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -341,7 +341,7 @@ XS_INLINE SIMD2<T, Width>::SIMD2(const InBaseDef& other0, const InBaseDef& other
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>::SIMD2(const BaseDef& other0, const BaseDef& other1) noexcept
+XS_INLINE SIMD2<T, Width>::SIMD2(BaseDef other0, BaseDef other1) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -463,7 +463,7 @@ XS_INLINE typename SIMD2<T, Width>::BaseDef SIMD2<T, Width>::getValue(uint32 ind
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::setValue(const InBaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::setValue(InBaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -485,7 +485,7 @@ XS_INLINE void SIMD2<T, Width>::setValue(const InBaseDef& other) noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::setValue(const BaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::setValue(BaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -506,7 +506,7 @@ XS_INLINE void SIMD2<T, Width>::setValue(const BaseDef& other) noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void SIMD2<T, Width>::setValue(uint32 index, const BaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::setValue(uint32 index, BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -532,7 +532,7 @@ XS_INLINE void SIMD2<T, Width>::setValue(uint32 index, const BaseDef& other) noe
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::addValue(const InBaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::addValue(InBaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -556,7 +556,7 @@ XS_INLINE void SIMD2<T, Width>::addValue(const InBaseDef& other) noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::subValue(const InBaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::subValue(InBaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -580,7 +580,7 @@ XS_INLINE void SIMD2<T, Width>::subValue(const InBaseDef& other) noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::mulValue(const InBaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::mulValue(InBaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -604,7 +604,7 @@ XS_INLINE void SIMD2<T, Width>::mulValue(const InBaseDef& other) noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::divValue(const InBaseDef& other) noexcept
+XS_INLINE void SIMD2<T, Width>::divValue(InBaseDef other) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -628,7 +628,7 @@ XS_INLINE void SIMD2<T, Width>::divValue(const InBaseDef& other) noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void SIMD2<T, Width>::madValue(const InBaseDef& other1, const InBaseDef& other2) noexcept
+XS_INLINE void SIMD2<T, Width>::madValue(InBaseDef other1, InBaseDef other2) noexcept
 {
     static_assert(Index < 2);
 #if XS_ISA == XS_X86
@@ -695,7 +695,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(const SIMD2& other1, const SIMD2&
 
 template<typename T, SIMDWidth Width>
 template<bool EvenIfNotFree>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(const BaseDef& other1, const SIMD2& other2) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(BaseDef other1, const SIMD2& other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -714,7 +714,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(const BaseDef& other1, const SIMD
 
 template<typename T, SIMDWidth Width>
 template<bool EvenIfNotFree>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(const SIMD2& other1, const BaseDef& other2) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::mad(const SIMD2& other1, BaseDef other2) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -845,7 +845,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::notEqualMask(const SIM
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::equalMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::equalMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -864,7 +864,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::equalMask(const BaseDe
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessOrEqualMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessOrEqualMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -883,7 +883,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessOrEqualMask(const 
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessThanMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessThanMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -902,7 +902,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::lessThanMask(const Bas
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::notEqualMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::notEqualMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -921,7 +921,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::notEqualMask(const Bas
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::greaterOrEqualMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::greaterOrEqualMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -940,7 +940,7 @@ XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::greaterOrEqualMask(con
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::greaterThanMask(const BaseDef& other) const noexcept
+XS_INLINE typename SIMD2<T, Width>::Mask SIMD2<T, Width>::greaterThanMask(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -973,7 +973,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::sign(const SIMD2& other) const noexce
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::sign(const BaseDef& other) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::sign(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1026,7 +1026,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::min(const SIMD2& other) const noexcep
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::max(const BaseDef& other) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::max(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1039,7 +1039,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::max(const BaseDef& other) const noexc
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::min(const BaseDef& other) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::min(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1370,7 +1370,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::powr(const SIMD2& other) const noexce
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::pow(const BaseDef& other) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::pow(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1383,7 +1383,7 @@ XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::pow(const BaseDef& other) const noexc
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::powr(const BaseDef& other) const noexcept
+XS_INLINE SIMD2<T, Width> SIMD2<T, Width>::powr(BaseDef other) const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1679,8 +1679,7 @@ XS_INLINE SIMD2<T, Width> operator+(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator+(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator+(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1706,8 +1705,7 @@ XS_INLINE SIMD2<T, Width> operator-(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator-(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator-(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1720,8 +1718,7 @@ XS_INLINE SIMD2<T, Width> operator-(
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator-(
-    const typename SIMD2<T, Width>::BaseDef& other1, const SIMD2<T, Width>& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator-(typename SIMD2<T, Width>::BaseDef other1, const SIMD2<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1747,8 +1744,7 @@ XS_INLINE SIMD2<T, Width> operator*(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator*(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator*(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1774,8 +1770,7 @@ XS_INLINE SIMD2<T, Width> operator/(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator/(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator/(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1788,8 +1783,7 @@ XS_INLINE SIMD2<T, Width> operator/(
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator/(
-    const typename SIMD2<T, Width>::BaseDef& other1, const SIMD2<T, Width>& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator/(typename SIMD2<T, Width>::BaseDef other1, const SIMD2<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1830,7 +1824,7 @@ XS_INLINE SIMD2<T, Width>& operator+=(SIMD2<T, Width>& other1, const SIMD2<T, Wi
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>& operator+=(SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width>& operator+=(SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1860,7 +1854,7 @@ XS_INLINE SIMD2<T, Width>& operator-=(SIMD2<T, Width>& other1, const SIMD2<T, Wi
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>& operator-=(SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width>& operator-=(SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1890,7 +1884,7 @@ XS_INLINE SIMD2<T, Width>& operator*=(SIMD2<T, Width>& other1, const SIMD2<T, Wi
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>& operator*=(SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width>& operator*=(SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1920,7 +1914,7 @@ XS_INLINE SIMD2<T, Width>& operator/=(SIMD2<T, Width>& other1, const SIMD2<T, Wi
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width>& operator/=(SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width>& operator/=(SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1954,7 +1948,7 @@ XS_INLINE bool operator==(const SIMD2<T, Width>& other1, const SIMD2<T, Width>& 
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator==(const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE bool operator==(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -1992,7 +1986,7 @@ XS_INLINE bool operator<=(const SIMD2<T, Width>& other1, const SIMD2<T, Width>& 
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator<=(const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE bool operator<=(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -2030,7 +2024,7 @@ XS_INLINE bool operator<(const SIMD2<T, Width>& other1, const SIMD2<T, Width>& o
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator<(const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE bool operator<(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -2068,7 +2062,7 @@ XS_INLINE bool operator!=(const SIMD2<T, Width>& other1, const SIMD2<T, Width>& 
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator!=(const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE bool operator!=(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -2101,8 +2095,7 @@ XS_INLINE SIMD2<T, Width> operator&(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator&(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator&(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -2130,8 +2123,7 @@ XS_INLINE SIMD2<T, Width> operator|(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator|(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator|(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -2159,8 +2151,7 @@ XS_INLINE SIMD2<T, Width> operator^(const SIMD2<T, Width>& other1, const SIMD2<T
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD2<T, Width> operator^(
-    const SIMD2<T, Width>& other1, const typename SIMD2<T, Width>::BaseDef& other2) noexcept
+XS_INLINE SIMD2<T, Width> operator^(const SIMD2<T, Width>& other1, typename SIMD2<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
