@@ -176,8 +176,9 @@ XS_INLINE SIMDBase<T, Width> SIMDBase<T, Width>::Zero() noexcept
         return SIMDBase(_mm256_setzero_ps());
     } else if constexpr (hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         return SIMDBase(_mm_setzero_ps());
-    } else {
+    } else
 #endif
+    {
         return SIMDBase(T{0});
     }
 }
@@ -192,8 +193,9 @@ XS_INLINE SIMDBase<T, Width> SIMDBase<T, Width>::One() noexcept
         return SIMDBase(_mm256_set1_ps(1.0f));
     } else if constexpr (hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         return SIMDBase(_mm_set1_ps(1.0f));
-    } else {
+    } else
 #endif
+    {
         return SIMDBase(T{1});
     }
 }

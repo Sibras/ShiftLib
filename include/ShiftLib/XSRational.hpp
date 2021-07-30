@@ -123,31 +123,31 @@ public:
      * Access the Rational as a normal float.
      * @returns Regular float containing the desired value.
      */
-    XS_FUNCTION float32 getFloat() const;
+    XS_FUNCTION float32 getFloat() const noexcept;
 
     /**
      * Access the Rational as a normal double.
      * @returns Regular double containing the desired value.
      */
-    XS_FUNCTION float64 getDouble() const;
+    XS_FUNCTION float64 getDouble() const noexcept;
 
     /**
      * Access the Rational as a normal integer.
      * @returns Regular int containing the desired value.
      */
-    XS_FUNCTION int32_t getInt() const;
+    XS_FUNCTION int32_t getInt() const noexcept;
 
     /**
      * Access the Rational as a normal integer.
      * @returns Regular int containing the desired value.
      */
-    XS_FUNCTION int64_t getLong() const;
+    XS_FUNCTION int64_t getLong() const noexcept;
 
     /**
      * Reciprocal (1/rational) of rational
      * @returns The result of the operation.
      */
-    XS_FUNCTION Rational reciprocal() const;
+    XS_FUNCTION Rational reciprocal() const noexcept;
 };
 
 /**

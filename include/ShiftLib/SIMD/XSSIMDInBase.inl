@@ -124,7 +124,7 @@ XS_INLINE SIMDInBase<T, Width> SIMDInBase<T, Width>::One() noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE T SIMDInBase<T, Width>::getValue() const
+XS_INLINE T SIMDInBase<T, Width>::getValue() const noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {

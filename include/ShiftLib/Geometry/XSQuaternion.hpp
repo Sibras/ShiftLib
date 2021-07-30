@@ -219,7 +219,7 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const;
+    XS_FUNCTION InBaseDef getValueInBase() const noexcept;
 
     /**
      * Get an element of a Quaternion.
@@ -228,7 +228,7 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const;
+    XS_FUNCTION BaseDef getValue() const noexcept;
 
     /**
      * Set an element of a Quaternion.
@@ -252,31 +252,31 @@ public:
      * @param other2 Second quaternion to add.
      * @returns Result of operation.
      */
-    XS_FUNCTION Quaternion mad(const Quaternion& other1, const Quaternion& other2) const;
+    XS_FUNCTION Quaternion mad(const Quaternion& other1, const Quaternion& other2) const noexcept;
 
     /**
      * Compute the square of the length of a quaternion.
      * @returns Squared length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef lengthSqr() const;
+    XS_FUNCTION BaseDef lengthSqr() const noexcept;
 
     /**
      * Compute the length of a quaternion.
      * @returns Length of quaternion stored in BaseDef.
      */
-    XS_FUNCTION BaseDef length() const;
+    XS_FUNCTION BaseDef length() const noexcept;
 
     /**
      * Compute the square of the length of a quaternion.
      * @returns Squared length of quaternion stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthSqrInBase() const;
+    XS_FUNCTION InBaseDef lengthSqrInBase() const noexcept;
 
     /**
      * Compute the length of a quaternion.
      * @returns Length of quaternion stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthInBase() const;
+    XS_FUNCTION InBaseDef lengthInBase() const noexcept;
 
     /**
      * Normalised the quaternion.
@@ -290,14 +290,14 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const;
+    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept;
 
     /**
      * Transform a 3-D vector using specified quaternion.
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const;
+    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept;
 
     /**
      * Transform two packed 3-D points using specified quaternion.
@@ -306,7 +306,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const;
+    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept;
 
     /**
      * Transform two packed 3-D vectors using specified quaternion.
@@ -315,7 +315,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept;
 
     /**
      * Transform four packed 3-D points using specified quaternion.
@@ -324,7 +324,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const;
+    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept;
 
     /**
      * Transform four packed 3-D vectors using specified quaternion.
@@ -333,55 +333,55 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept;
 
     /**
      * Determine the inverse of a quaternion.
      * @returns A new inverse quaternion.
      */
-    XS_FUNCTION Quaternion inverse() const;
+    XS_FUNCTION Quaternion inverse() const noexcept;
 
     /**
      * Fast multiply the quaternion by a rotation around x axis (i.e Q*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateX(BaseDef rotation) const;
+    XS_FUNCTION Quaternion postRotateX(BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the quaternion by a rotation around y axis (i.e Q*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateY(BaseDef rotation) const;
+    XS_FUNCTION Quaternion postRotateY(BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the quaternion by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateZ(BaseDef rotation) const;
+    XS_FUNCTION Quaternion postRotateZ(BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around x axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateX(BaseDef rotation) const;
+    XS_FUNCTION Quaternion preRotateX(BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around y axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateY(BaseDef rotation) const;
+    XS_FUNCTION Quaternion preRotateY(BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around z axis by the quaternion (i.e rotation*Q).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateZ(BaseDef rotation) const;
+    XS_FUNCTION Quaternion preRotateZ(BaseDef rotation) const noexcept;
 };
 
 /**

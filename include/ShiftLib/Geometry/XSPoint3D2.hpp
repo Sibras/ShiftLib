@@ -257,7 +257,7 @@ public:
      * @returns Point3D containing the desired point.
      */
     template<uint32_t Index>
-    XS_FUNCTION Point3DDef getPoint() const;
+    XS_FUNCTION Point3DDef getPoint() const noexcept;
 
     /**
      * Set a contained 3-D point.

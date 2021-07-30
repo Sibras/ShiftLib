@@ -28,7 +28,7 @@ XS_INLINE Ray<T, Width>::Ray(const Point3DDef& origin, const Vector3DDef& direct
 {}
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Ray<T, Width>::Point3DDef Ray<T, Width>::pointAlongRay(InBaseDef dist) const
+XS_INLINE typename Ray<T, Width>::Point3DDef Ray<T, Width>::pointAlongRay(const InBaseDef dist) const noexcept
 {
     return this->direction.mad(dist, this->origin);
 }

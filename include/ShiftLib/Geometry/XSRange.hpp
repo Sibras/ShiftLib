@@ -115,31 +115,31 @@ public:
      * Returns the ranges minimum value.
      * @returns The minimum value return as a InBaseDef.
      */
-    XS_FUNCTION InBaseDef getMinInBase() const;
+    XS_FUNCTION InBaseDef getMinInBase() const noexcept;
 
     /**
      * Returns the ranges maximum value.
      * @returns The maximum value return as a InBaseDef.
      */
-    XS_FUNCTION InBaseDef getMaxInBase() const;
+    XS_FUNCTION InBaseDef getMaxInBase() const noexcept;
 
     /**
      * Returns the ranges minimum value.
      * @returns The minimum value return as a SIMDBase.
      */
-    XS_FUNCTION BaseDef getMin() const;
+    XS_FUNCTION BaseDef getMin() const noexcept;
 
     /**
      * Returns the ranges maximum value.
      * @returns The maximum value return as a SIMDBase.
      */
-    XS_FUNCTION BaseDef getMax() const;
+    XS_FUNCTION BaseDef getMax() const noexcept;
 
     /**
      * Gets the length of the range.
      * @returns The length.
      */
-    XS_FUNCTION InBaseDef getLength() const;
+    XS_FUNCTION InBaseDef getLength() const noexcept;
 
     /**
      * Sets the minimum value.
@@ -158,7 +158,7 @@ public:
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION bool isWithinRange(BaseDef value) const;
+    XS_FUNCTION bool isWithinRange(BaseDef value) const noexcept;
 
     /**
      * Clips the minimum value to the largest from 2 ranges.

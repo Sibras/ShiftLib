@@ -105,6 +105,6 @@ public:
      * @param dist The number of units to move along each ray.
      * @returns The Point3D2 at the specified distance along each ray.
      */
-    XS_FUNCTION Point3D2Def pointAlongRay(const SIMD2Def& dist) const;
+    XS_FUNCTION Point3D2Def pointAlongRay(const SIMD2Def& dist) const noexcept;
 };
 } // namespace Shift

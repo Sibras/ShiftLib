@@ -103,88 +103,88 @@ XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::One() noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::getValueInBase() const
+XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::getValueInBase() const noexcept
 {
     return this->values.template getValueInBase<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::getValue() const
+XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::getValue() const noexcept
 {
     return this->values.template getValue<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Vector3D<T, Width>::setValue(InBaseDef value) noexcept
+XS_INLINE void Vector3D<T, Width>::setValue(const InBaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Vector3D<T, Width>::setValue(BaseDef value) noexcept
+XS_INLINE void Vector3D<T, Width>::setValue(const BaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::mad(BaseDef value, const Vector3D& vector) const
+XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::mad(const BaseDef value, const Vector3D& vector) const noexcept
 {
     return Vector3D(this->values.mad(value, vector.values));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::dot3(const Vector3D& vector) const
+XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::dot3(const Vector3D& vector) const noexcept
 {
     return this->values.dot3(vector.values);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::dot3InBase(const Vector3D& vector) const
+XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::dot3InBase(const Vector3D& vector) const noexcept
 {
     return this->values.dot3InBase(vector.values);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::cross3(const Vector3D& vector) const
+XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::cross3(const Vector3D& vector) const noexcept
 {
     return Vector3D(this->values.cross3(vector.values));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::component3(const Vector3D& vector) const
+XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::component3(const Vector3D& vector) const noexcept
 {
     return Vector3D(this->values * vector.values);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::lengthSqr() const
+XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::lengthSqr() const noexcept
 {
     return this->values.lengthSqr();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::length() const
+XS_INLINE typename Vector3D<T, Width>::BaseDef Vector3D<T, Width>::length() const noexcept
 {
     return this->values.length();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::lengthSqrInBase() const
+XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::lengthSqrInBase() const noexcept
 {
     return this->values.lengthSqrInBase();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::lengthInBase() const
+XS_INLINE typename Vector3D<T, Width>::InBaseDef Vector3D<T, Width>::lengthInBase() const noexcept
 {
     return this->values.lengthInBase();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::normalize() const
+XS_INLINE Vector3D<T, Width> Vector3D<T, Width>::normalize() const noexcept
 {
     return Vector3D(this->values.normalize());
 }
@@ -203,14 +203,14 @@ XS_INLINE Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector1, const 
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Vector3D<T, Width> operator*(
-    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+    const Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef value) noexcept
 {
     return Vector3D<T, Width>(vector.values * value);
 }
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Vector3D<T, Width> operator/(
-    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+    const Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef value) noexcept
 {
     return Vector3D<T, Width>(vector.values / value);
 }
@@ -237,7 +237,7 @@ XS_INLINE Vector3D<T, Width>& operator-=(Vector3D<T, Width>& vector1, const Vect
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Vector3D<T, Width>& operator*=(
-    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+    Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef value) noexcept
 {
     vector.values *= value;
     return vector;
@@ -245,7 +245,7 @@ XS_INLINE Vector3D<T, Width>& operator*=(
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Vector3D<T, Width>& operator/=(
-    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+    Vector3D<T, Width>& vector, const typename Vector3D<T, Width>::BaseDef value) noexcept
 {
     vector.values /= value;
     return vector;

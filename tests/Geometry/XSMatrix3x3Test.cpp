@@ -62,12 +62,12 @@ TYPED_TEST2(TESTISA(Matrix3x3Test), Matrix3x3)
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f,
         -4.32f, 1.0f, 51.2f, 1.7f, 8.8f, -1.1f);
 
-    typename TestType::Matrix4x4Def mx4Test2 =
+    typename TestType::Matrix4x4Def testB =
         TestType::Matrix4x4Def(TestType::Matrix4x4Def::SIMD4Def(11.1f, -11.1f, 2.3f, 8.0f),
             TestType::Matrix4x4Def::SIMD4Def(0.2f, 3.3f, -4.5f, 9.0f),
             TestType::Matrix4x4Def::SIMD4Def(0.6f, -0.2f, 33.6f, 2.0f),
             TestType::Matrix4x4Def::SIMD4Def(9.1f, 2.8f, -92.1f, 4.0f));
-    TestType test2 = TestType(mx4Test2);
+    TestType test2 = TestType(testB);
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test2, 11.1f, 0.2f, 0.6f,
         -11.1f, 3.3f, -0.2f, 2.3f, -4.5f, 33.6f);
 

@@ -121,7 +121,7 @@ public:
      * @returns The specified range.
      */
     template<uint32_t Index>
-    XS_FUNCTION RangeDef getRange() const;
+    XS_FUNCTION RangeDef getRange() const noexcept;
 
     /**
      * Returns the ranges minimum value.
@@ -129,7 +129,7 @@ public:
      * @returns The minimum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMinInBase() const;
+    XS_FUNCTION InBaseDef getMinInBase() const noexcept;
 
     /**
      * Returns the ranges maximum value.
@@ -137,7 +137,7 @@ public:
      * @returns The maximum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMaxInBase() const;
+    XS_FUNCTION InBaseDef getMaxInBase() const noexcept;
 
     /**
      * Returns the ranges minimum value.
@@ -145,7 +145,7 @@ public:
      * @returns The minimum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMin() const;
+    XS_FUNCTION BaseDef getMin() const noexcept;
 
     /**
      * Returns the ranges maximum value.
@@ -153,13 +153,13 @@ public:
      * @returns The maximum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMax() const;
+    XS_FUNCTION BaseDef getMax() const noexcept;
 
     /**
      * Gets the length of each range.
      * @returns The length.
      */
-    XS_FUNCTION SIMD2Def getLength() const;
+    XS_FUNCTION SIMD2Def getLength() const noexcept;
 
     /**
      * Sets the minimum value.
@@ -194,14 +194,14 @@ public:
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(BaseDef value) const;
+    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(BaseDef value) const noexcept;
 
     /**
      * Check if a values are within the current range.
      * @param values The values to check.
      * @returns If the values are within the range.
      */
-    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(const SIMD2Def& values) const;
+    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(const SIMD2Def& values) const noexcept;
 
     /**
      * Clips the minimum values to the largest from 2 ranges.

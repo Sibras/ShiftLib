@@ -41,7 +41,8 @@ XS_INLINE Ray4<T, Width, Packed>::Ray4(const RayDef& ray) noexcept
 {}
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Ray4<T, Width, Packed>::Point3D4Def Ray4<T, Width, Packed>::pointAlongRay(const SIMD4Def& dist) const
+XS_INLINE typename Ray4<T, Width, Packed>::Point3D4Def Ray4<T, Width, Packed>::pointAlongRay(
+    const SIMD4Def& dist) const noexcept
 {
     return this->directions.mad(dist, this->origins);
 }

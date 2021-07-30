@@ -170,6 +170,6 @@ public:
      * Calculates the Surface Area of a Bounding Box.
      * @returns The surface area of the box in floating point.
      */
-    XS_FUNCTION InBaseDef surfaceArea() const;
+    XS_FUNCTION InBaseDef surfaceArea() const noexcept;
 };
 } // namespace Shift

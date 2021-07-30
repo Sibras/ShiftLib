@@ -120,9 +120,9 @@
 #    define XS_FUNCTION __device__
 #    define XS_INLINE __forceinline__ __device__
 #    define XS_RESTRICT
+#    define XS_UNREACHABLE
 #    define XS_ALIGNMALLOC(size, al)
 #    define XS_ALIGNFREE(loc)
-#    define XS_UNREACHABLE
 #else
 #    error Unrecognized compiler
 #endif

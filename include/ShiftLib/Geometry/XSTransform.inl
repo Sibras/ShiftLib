@@ -110,7 +110,7 @@ XS_INLINE Transform<T, Width, Matrix>::Transform(const Matrix4x3Def& matrix) noe
 
 template<typename T, SIMDWidth Width, bool Matrix>
 XS_INLINE Transform<T, Width, Matrix>::Transform(
-    const QuaternionDef& quaternion, const Vector3DDef& translation, BaseDef scale) noexcept
+    const QuaternionDef& quaternion, const Vector3DDef& translation, const BaseDef scale) noexcept
 {
     if constexpr (Matrix) {
         this->data.matrix = Matrix4x3Def(quaternion, translation).postUniformScale(scale);
@@ -142,7 +142,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::Translation(c
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::UniformScale(InBaseDef scale) noexcept
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::UniformScale(const InBaseDef scale) noexcept
 {
     if constexpr (Matrix) {
         return Transform(Matrix4x3Def::UniformScale(scale));
@@ -152,7 +152,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::UniformScale(
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationX(InBaseDef rotation) noexcept
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationX(const InBaseDef rotation) noexcept
 {
     if constexpr (Matrix) {
         return Transform(Matrix4x3Def::RotationX(rotation));
@@ -162,7 +162,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationX(InB
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationY(InBaseDef rotation) noexcept
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationY(const InBaseDef rotation) noexcept
 {
     if constexpr (Matrix) {
         return Transform(Matrix4x3Def::RotationY(rotation));
@@ -172,7 +172,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationY(InB
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationZ(InBaseDef rotation) noexcept
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationZ(const InBaseDef rotation) noexcept
 {
     if constexpr (Matrix) {
         return Transform(Matrix4x3Def::RotationZ(rotation));
@@ -183,7 +183,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationZ(InB
 
 template<typename T, SIMDWidth Width, bool Matrix>
 XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationAxis(
-    const Vector3DDef& axis, InBaseDef rotation) noexcept
+    const Vector3DDef& axis, const InBaseDef rotation) noexcept
 {
     if constexpr (Matrix) {
         return Transform(Matrix4x3Def::RotationAxis(axis, rotation));
@@ -194,7 +194,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::RotationAxis(
 
 template<typename T, SIMDWidth Width, bool Matrix>
 XS_INLINE typename Transform<T, Width, Matrix>::Point3DDef Transform<T, Width, Matrix>::transform(
-    const Point3DDef& point) const
+    const Point3DDef& point) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(point);
@@ -206,7 +206,7 @@ XS_INLINE typename Transform<T, Width, Matrix>::Point3DDef Transform<T, Width, M
 
 template<typename T, SIMDWidth Width, bool Matrix>
 XS_INLINE typename Transform<T, Width, Matrix>::Vector3DDef Transform<T, Width, Matrix>::transform(
-    const Vector3DDef& vector) const
+    const Vector3DDef& vector) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(vector);
@@ -218,7 +218,7 @@ XS_INLINE typename Transform<T, Width, Matrix>::Vector3DDef Transform<T, Width, 
 template<typename T, SIMDWidth Width, bool Matrix>
 template<bool Packed>
 XS_INLINE Point3D2<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<T, Width, Matrix>::transform(
-    const Point3D2Def<Packed>& point) const
+    const Point3D2Def<Packed>& point) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(point);
@@ -232,7 +232,7 @@ XS_INLINE Point3D2<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<
 template<typename T, SIMDWidth Width, bool Matrix>
 template<bool Packed>
 XS_INLINE Vector3D2<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<T, Width, Matrix>::transform(
-    const Vector3D2Def<Packed>& vector) const
+    const Vector3D2Def<Packed>& vector) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(vector);
@@ -244,7 +244,7 @@ XS_INLINE Vector3D2<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform
 template<typename T, SIMDWidth Width, bool Matrix>
 template<bool Packed>
 XS_INLINE Point3D4<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<T, Width, Matrix>::transform(
-    const Point3D4Def<Packed>& point) const
+    const Point3D4Def<Packed>& point) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(point);
@@ -258,7 +258,7 @@ XS_INLINE Point3D4<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<
 template<typename T, SIMDWidth Width, bool Matrix>
 template<bool Packed>
 XS_INLINE Vector3D4<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform<T, Width, Matrix>::transform(
-    const Vector3D4Def<Packed>& vector) const
+    const Vector3D4Def<Packed>& vector) const noexcept
 {
     if constexpr (Matrix) {
         return this->data.matrix.transform(vector);
@@ -268,7 +268,7 @@ XS_INLINE Vector3D4<T, Transform<T, Width, Matrix>::widthImpl, Packed> Transform
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::inverse() const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::inverse() const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.inverse());
@@ -278,7 +278,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::inverse() con
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateX(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateX(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.postRotateX(rotation));
@@ -288,7 +288,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateX(I
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateY(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateY(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.postRotateY(rotation));
@@ -298,7 +298,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateY(I
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateZ(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateZ(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.postRotateZ(rotation));
@@ -308,7 +308,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postRotateZ(I
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateX(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateX(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.preRotateX(rotation));
@@ -321,7 +321,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateX(In
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateY(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateY(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.preRotateY(rotation));
@@ -334,7 +334,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateY(In
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateZ(InBaseDef rotation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateZ(const InBaseDef rotation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.preRotateZ(rotation));
@@ -347,7 +347,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preRotateZ(In
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postUniformScale(BaseDef scale) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postUniformScale(const BaseDef scale) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.postUniformScale(scale));
@@ -357,7 +357,7 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postUniformSc
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preUniformScale(BaseDef scale) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preUniformScale(const BaseDef scale) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.preUniformScale(scale));
@@ -368,7 +368,8 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preUniformSca
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postTranslate(const SIMD3Def& translation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postTranslate(
+    const SIMD3Def& translation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.postTranslate(translation));
@@ -380,7 +381,8 @@ XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::postTranslate
 }
 
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preTranslate(const SIMD3Def& translation) const
+XS_INLINE Transform<T, Width, Matrix> Transform<T, Width, Matrix>::preTranslate(
+    const SIMD3Def& translation) const noexcept
 {
     if constexpr (Matrix) {
         return Transform(this->data.matrix.preTranslate(translation));

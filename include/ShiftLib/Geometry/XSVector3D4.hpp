@@ -288,7 +288,7 @@ public:
      * @returns Vector3D containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION Vector3DDef getVector() const;
+    XS_FUNCTION Vector3DDef getVector() const noexcept;
 
     /**
      * Set the first 3-D vector.
@@ -304,33 +304,33 @@ public:
      * @param vector Second vector to add.
      * @returns The result of the operation.
      */
-    XS_FUNCTION Vector3D4 mad(const SIMD4Def& value, const Vector3D4& vector) const;
+    XS_FUNCTION Vector3D4 mad(const SIMD4Def& value, const Vector3D4& vector) const noexcept;
 
     /**
      * Compute the square of the length of a 3-D vector4.
      * @returns The result of the operation.
      */
-    XS_FUNCTION SIMD4Def lengthSqr() const;
+    XS_FUNCTION SIMD4Def lengthSqr() const noexcept;
 
     /**
      * Compute the length of a 3-D vector4.
      * @returns The result of the operation.
      */
-    XS_FUNCTION SIMD4Def length() const;
+    XS_FUNCTION SIMD4Def length() const noexcept;
 
     /**
      * Normalise a vector4.
      * @note The result is unpredictable when all elements of vector are at or near zero.
      * @returns A new vector corresponding to the normalised vector.
      */
-    XS_FUNCTION Vector3D4 normalize() const;
+    XS_FUNCTION Vector3D4 normalize() const noexcept;
 
     /**
      * Compute the dot product of two 3-D vector4s.
      * @param vector The second vector3d4.
      * @returns SIMD4Def containing the dot product of each stored vector.
      */
-    XS_FUNCTION SIMD4Def dot3(const Vector3D4& vector) const;
+    XS_FUNCTION SIMD4Def dot3(const Vector3D4& vector) const noexcept;
 
     /**
      * Compute cross product of two 3-D vector4s.
@@ -338,7 +338,7 @@ public:
      * @param vector The second vector3d4.
      * @returns Vector3D4 containing the cross product of each stored vector.
      */
-    XS_FUNCTION Vector3D4 cross3(const Vector3D4& vector) const;
+    XS_FUNCTION Vector3D4 cross3(const Vector3D4& vector) const noexcept;
 };
 
 /**

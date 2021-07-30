@@ -103,28 +103,28 @@ XS_INLINE Point3D<T, Width> Point3D<T, Width>::One() noexcept
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Point3D<T, Width>::InBaseDef Point3D<T, Width>::getValueInBase() const
+XS_INLINE typename Point3D<T, Width>::InBaseDef Point3D<T, Width>::getValueInBase() const noexcept
 {
     return this->values.template getValueInBase<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Point3D<T, Width>::BaseDef Point3D<T, Width>::getValue() const
+XS_INLINE typename Point3D<T, Width>::BaseDef Point3D<T, Width>::getValue() const noexcept
 {
     return this->values.template getValue<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Point3D<T, Width>::setValue(InBaseDef value) noexcept
+XS_INLINE void Point3D<T, Width>::setValue(const InBaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Point3D<T, Width>::setValue(BaseDef value) noexcept
+XS_INLINE void Point3D<T, Width>::setValue(const BaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
@@ -152,7 +152,7 @@ XS_INLINE Point3D<T, Width> operator-(
 
 template<typename T, SIMDWidth Width>
 XS_INLINE Point3D<T, Width> operator*(
-    const Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept
+    const Point3D<T, Width>& point, const typename Point3D<T, Width>::BaseDef value) noexcept
 {
     return Point3D<T, Width>(point.values * value);
 }
@@ -174,7 +174,8 @@ XS_INLINE Point3D<T, Width>& operator-=(
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Point3D<T, Width>& operator*=(Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept
+XS_INLINE Point3D<T, Width>& operator*=(
+    Point3D<T, Width>& point, const typename Point3D<T, Width>::BaseDef value) noexcept
 {
     point.values *= value;
     return point;

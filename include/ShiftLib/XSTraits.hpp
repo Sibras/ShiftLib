@@ -798,13 +798,13 @@ inline constexpr bool isNothrowDestructible = __is_nothrow_destructible(T);
  * @returns The forwarded reference.
  */
 template<typename T>
-XS_INLINE constexpr T&& forward(const removeRef<T>& param) noexcept
+constexpr T&& forward(const removeRef<T>& param) noexcept
 {
     return static_cast<T&&>(param);
 }
 
 template<typename T>
-XS_INLINE constexpr T&& forward(removeRef<T>&& param) noexcept
+constexpr T&& forward(removeRef<T>&& param) noexcept
 {
     static_assert(!isLRef<T>, "invalid use of forward");
     return static_cast<T&&>(param);
@@ -817,7 +817,7 @@ XS_INLINE constexpr T&& forward(removeRef<T>&& param) noexcept
  * @returns An rvalue reference to the moved input object.
  */
 template<typename T>
-XS_INLINE constexpr removeRef<T>&& move(const T&& param) noexcept
+constexpr removeRef<T>&& move(const T&& param) noexcept
 {
     return static_cast<removeRef<T>&&>(param);
 }

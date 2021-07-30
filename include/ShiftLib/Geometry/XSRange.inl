@@ -67,7 +67,7 @@ XS_INLINE Range<T, Width>::Range(T min, T max)
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getMinInBase() const
+XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getMinInBase() const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         return this->minMax.template negate<true, false>().template getValueInBase<0>();
@@ -77,13 +77,13 @@ XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getMinInBase() co
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getMaxInBase() const
+XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getMaxInBase() const noexcept
 {
     return minMax.template getValueInBase<1>();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range<T, Width>::BaseDef Range<T, Width>::getMin() const
+XS_INLINE typename Range<T, Width>::BaseDef Range<T, Width>::getMin() const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         return this->minMax.template negate<true, false>().template getValue<0>();
@@ -93,13 +93,13 @@ XS_INLINE typename Range<T, Width>::BaseDef Range<T, Width>::getMin() const
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range<T, Width>::BaseDef Range<T, Width>::getMax() const
+XS_INLINE typename Range<T, Width>::BaseDef Range<T, Width>::getMax() const noexcept
 {
     return minMax.template getValue<1>();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getLength() const
+XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getLength() const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         return this->minMax.haddInBase();
@@ -109,7 +109,7 @@ XS_INLINE typename Range<T, Width>::InBaseDef Range<T, Width>::getLength() const
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range<T, Width>::setMin(InBaseDef min)
+XS_INLINE void Range<T, Width>::setMin(const InBaseDef min)
 {
     this->minMax.template setValue<0>(min);
     if constexpr (Width > SIMDWidth::Scalar) {
@@ -118,13 +118,13 @@ XS_INLINE void Range<T, Width>::setMin(InBaseDef min)
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range<T, Width>::setMax(InBaseDef max)
+XS_INLINE void Range<T, Width>::setMax(const InBaseDef max)
 {
     this->minMax.template setValue<1>(max);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE bool Range<T, Width>::isWithinRange(BaseDef value) const
+XS_INLINE bool Range<T, Width>::isWithinRange(const BaseDef value) const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         return this->minMax.lessThanMask(SIMD2Def(value).template negate<true, false>()).getNone();

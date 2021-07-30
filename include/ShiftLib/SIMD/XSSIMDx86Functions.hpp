@@ -24,7 +24,7 @@
 #    include "SIMD/XSSIMDx86.hpp"
 
 namespace Shift::NoExport {
-static XS_INLINE __m128 exp2f4(const __m128 other)
+static XS_INLINE __m128 exp2f4(const __m128 other) noexcept
 {
     // get integer component
 #    if XS_ARCH_SSE4_1
@@ -53,14 +53,14 @@ static XS_INLINE __m128 exp2f4(const __m128 other)
     return _mm_mul_ps(m128_3, m128_4);
 }
 
-static XS_INLINE __m128 expf4(const __m128 other)
+static XS_INLINE __m128 expf4(const __m128 other) noexcept
 {
     // e^x = 2^( x * log2(e) )
     const __m128 log2e = _mm_set1_ps(valLog2E<float32>);
     return exp2f4(_mm_mul_ps(other, log2e));
 }
 
-static XS_INLINE __m128 log2f4(const __m128 other)
+static XS_INLINE __m128 log2f4(const __m128 other) noexcept
 {
     // get exponent part
     __m128i m128i_2 = _mm_and_si128(_mm_castps_si128(other), _mm_set1_epi32(0x7F800000));
@@ -85,14 +85,14 @@ static XS_INLINE __m128 log2f4(const __m128 other)
     return _mm_fmadd_ps(m128_5, _mm_sub_ps(m128_4, _mm_set1_ps(1.0f)), m128_3);
 }
 
-static XS_INLINE __m128 logf4(const __m128 other)
+static XS_INLINE __m128 logf4(const __m128 other) noexcept
 {
     // log(x) = log2(x) / log2(e)
     const __m128 log2e = _mm_set1_ps(valLog2E<float32>);
     return _mm_div_ps(log2f4(other), log2e);
 }
 
-static XS_INLINE __m128 powf4(const __m128 other, const __m128 other1)
+static XS_INLINE __m128 powf4(const __m128 other, const __m128 other1) noexcept
 {
     const __m128 m128_0 = exp2f4(_mm_mul_ps(log2f4(other), other1));
     // Need to check if the input was a negative that was to the power of an odd value as in this case
@@ -110,12 +110,12 @@ static XS_INLINE __m128 powf4(const __m128 other, const __m128 other1)
     return _mm_or_ps(m128_0, m128_2);
 }
 
-static XS_INLINE __m128 powrf4(const __m128 other, const __m128 other1)
+static XS_INLINE __m128 powrf4(const __m128 other, const __m128 other1) noexcept
 {
     return exp2f4(_mm_mul_ps(log2f4(other), other1));
 }
 
-static XS_INLINE __m128 sinf4(const __m128 other)
+static XS_INLINE __m128 sinf4(const __m128 other) noexcept
 {
     // Uses an approximation with an average error of 0.0085%
     const __m128 m128_NAbs = _mm_set1_ps(-0.0f);
@@ -151,13 +151,13 @@ static XS_INLINE __m128 sinf4(const __m128 other)
     return m128_2;
 }
 
-static XS_INLINE __m128 cosf4(const __m128 other)
+static XS_INLINE __m128 cosf4(const __m128 other) noexcept
 {
     // cos is just sin( x + pi/2 )
     return sinf4(_mm_add_ps(other, _mm_set1_ps(valPi2<float32>)));
 }
 
-static XS_INLINE __m128 tanf4(const __m128 other)
+static XS_INLINE __m128 tanf4(const __m128 other) noexcept
 {
     // Uses an approximation with an average error of 0.0098%
     const __m128 m128_NAbs = _mm_set1_ps(-0.0f);
@@ -227,7 +227,7 @@ static XS_INLINE __m128 tanf4(const __m128 other)
     }
 }
 
-static XS_INLINE __m128 sincosf4(const __m128 other, __m128& cos)
+static XS_INLINE __m128 sincosf4(const __m128 other, __m128& cos) noexcept
 {
     const __m128 m128_NAbs = _mm_set1_ps(-0.0f);
     __m128 m128_1 = _mm_andnot_ps(m128_NAbs, other);
@@ -300,7 +300,7 @@ static XS_INLINE __m128 sincosf4(const __m128 other, __m128& cos)
     }
 }
 
-static XS_INLINE __m128 atanf4(const __m128 other)
+static XS_INLINE __m128 atanf4(const __m128 other) noexcept
 {
     // Uses an approximation with an average error of 0.00017%
     __m128 m128_1 = _mm_recip_ps(other);
@@ -346,7 +346,7 @@ static XS_INLINE __m128 atanf4(const __m128 other)
     return _mm_or_ps(m128_1, m128_2);
 }
 
-static XS_INLINE __m128 asinf4(const __m128 other)
+static XS_INLINE __m128 asinf4(const __m128 other) noexcept
 {
     // Uses an approximation with an average error of 0.016%
     __m128 m128_1 = _mm_fnmadd_ps(other, other, _mm_set1_ps(1.0f));
@@ -355,7 +355,7 @@ static XS_INLINE __m128 asinf4(const __m128 other)
     return atanf4(m128_1);
 }
 
-static XS_INLINE __m128 acosf4(const __m128 other)
+static XS_INLINE __m128 acosf4(const __m128 other) noexcept
 {
     // Uses an approximation with an average error of 0.013%
     const __m128 m128One = _mm_set1_ps(1.0f);
@@ -368,7 +368,7 @@ static XS_INLINE __m128 acosf4(const __m128 other)
     return _mm_add_ps(m128_1, m128_1);
 }
 
-static XS_INLINE __m128 atan2f4(const __m128 other, const __m128 other1)
+static XS_INLINE __m128 atan2f4(const __m128 other, const __m128 other1) noexcept
 {
     // Uses an approximation with an average error of 0.0062%
     const __m128 m128_0 = _mm_recip_ps(other1);
@@ -386,7 +386,7 @@ static XS_INLINE __m128 atan2f4(const __m128 other, const __m128 other1)
     return _mm_or_ps(m128_14, m128_3);
 }
 
-static XS_INLINE __m256 exp2f8(const __m256 other)
+static XS_INLINE __m256 exp2f8(const __m256 other) noexcept
 {
     // get integer component
     __m256 v256_2 = _mm256_round_ps(other, FROUND_FLOOR);
@@ -419,14 +419,14 @@ static XS_INLINE __m256 exp2f8(const __m256 other)
     return _mm256_mul_ps(v256_3, v256_4);
 }
 
-static XS_INLINE __m256 expf8(const __m256 other)
+static XS_INLINE __m256 expf8(const __m256 other) noexcept
 {
     // e^x = 2^( x * log2(e) )
     const __m256 log2e = _mm256_set1_ps(valLog2E<float32>);
     return exp2f8(_mm256_mul_ps(other, log2e));
 }
 
-static XS_INLINE __m256 log2f8(const __m256 other)
+static XS_INLINE __m256 log2f8(const __m256 other) noexcept
 {
     // get exponent part
     __m256i v256i_2;
@@ -465,14 +465,14 @@ static XS_INLINE __m256 log2f8(const __m256 other)
     return _mm256_fmadd_ps(v256_5, _mm256_sub_ps(v256_4, _mm256_set1_ps(1.0f)), v256_3);
 }
 
-static XS_INLINE __m256 logf8(const __m256 other)
+static XS_INLINE __m256 logf8(const __m256 other) noexcept
 {
     // log(x) = log2(x) / log2(e)
     const __m256 log2e = _mm256_set1_ps(valLog2E<float32>);
     return _mm256_div_ps(log2f8(other), log2e);
 }
 
-static XS_INLINE __m256 powf8(const __m256 other, const __m256 other1)
+static XS_INLINE __m256 powf8(const __m256 other, const __m256 other1) noexcept
 {
     const __m256 v256_0 = exp2f8(_mm256_mul_ps(log2f8(other), other1));
 
@@ -489,12 +489,12 @@ static XS_INLINE __m256 powf8(const __m256 other, const __m256 other1)
     return _mm256_or_ps(v256_0, v256_2);
 }
 
-static XS_INLINE __m256 powrf8(const __m256 other, const __m256 other1)
+static XS_INLINE __m256 powrf8(const __m256 other, const __m256 other1) noexcept
 {
     return exp2f8(_mm256_mul_ps(log2f8(other), other1));
 }
 
-static XS_INLINE __m256 sinf8(const __m256 other)
+static XS_INLINE __m256 sinf8(const __m256 other) noexcept
 {
     const __m256 v256_NAbs = _mm256_set1_ps(-0.0f);
     __m256 v256_1 = _mm256_andnot_ps(v256_NAbs, other);
@@ -545,13 +545,13 @@ static XS_INLINE __m256 sinf8(const __m256 other)
     return _mm256_mul_ps(v256_2, v256_1);
 }
 
-static XS_INLINE __m256 cosf8(const __m256 other)
+static XS_INLINE __m256 cosf8(const __m256 other) noexcept
 {
     // cos is just sin( x + pi/2 )
     return sinf8(_mm256_add_ps(other, _mm256_set1_ps(valPi2<float32>)));
 }
 
-static XS_INLINE __m256 tanf8(const __m256 other)
+static XS_INLINE __m256 tanf8(const __m256 other) noexcept
 {
     const __m256 v256_NAbs = _mm256_set1_ps(-0.0f);
     __m256 v256_1 = _mm256_andnot_ps(v256_NAbs, other);
@@ -642,7 +642,7 @@ static XS_INLINE __m256 tanf8(const __m256 other)
     }
 }
 
-static XS_INLINE __m256 sincosf8(const __m256 other, __m256& cos)
+static XS_INLINE __m256 sincosf8(const __m256 other, __m256& cos) noexcept
 {
     const __m256 v256_NAbs = _mm256_set1_ps(-0.0f);
     __m256 v256_1 = _mm256_andnot_ps(v256_NAbs, other);
@@ -720,7 +720,7 @@ static XS_INLINE __m256 sincosf8(const __m256 other, __m256& cos)
     return v256_2;
 }
 
-static XS_INLINE __m256 atanf8(const __m256 other)
+static XS_INLINE __m256 atanf8(const __m256 other) noexcept
 {
     __m256 v256_1 = _mm256_recip_ps(other);
 
@@ -765,7 +765,7 @@ static XS_INLINE __m256 atanf8(const __m256 other)
     return _mm256_or_ps(v256_1, v256_2);
 }
 
-static XS_INLINE __m256 asinf8(const __m256 other)
+static XS_INLINE __m256 asinf8(const __m256 other) noexcept
 {
     __m256 v256_1 = _mm256_fnmadd_ps(other, other, _mm256_set1_ps(1.0f));
     v256_1 = _mm256_recipsqrt_ps(v256_1);
@@ -774,7 +774,7 @@ static XS_INLINE __m256 asinf8(const __m256 other)
     return atanf8(v256_1);
 }
 
-static XS_INLINE __m256 acosf8(const __m256 other)
+static XS_INLINE __m256 acosf8(const __m256 other) noexcept
 {
     const __m256 v256One = _mm256_set1_ps(1.0f);
     __m256 v256_1 = _mm256_sub_ps(v256One, other);
@@ -787,7 +787,7 @@ static XS_INLINE __m256 acosf8(const __m256 other)
     return _mm256_add_ps(v256_1, v256_1);
 }
 
-static XS_INLINE __m256 atan2f8(const __m256 other, const __m256 other1)
+static XS_INLINE __m256 atan2f8(const __m256 other, const __m256 other1) noexcept
 {
     const __m256 v256_0 = _mm256_recip_ps(other1);
 
@@ -844,7 +844,7 @@ static XS_INLINE __m256 atan2f8(const __m256 other, const __m256 other1)
     return _mm256_or_ps(v256_14, v256_3);
 }
 
-static XS_INLINE __m512 exp2f16(const __m512 other)
+static XS_INLINE __m512 exp2f16(const __m512 other) noexcept
 {
     // get integer component
     __m512 v512_2 = _mm512_roundscale_ps(other, FROUND_FLOOR);
@@ -866,14 +866,14 @@ static XS_INLINE __m512 exp2f16(const __m512 other)
     return _mm512_mul_ps(v512_3, v512_4);
 }
 
-static XS_INLINE __m512 expf16(const __m512 other)
+static XS_INLINE __m512 expf16(const __m512 other) noexcept
 {
     // e^x = 2^( x * log2(e) )
     const __m512 log2e = _mm512_set1_ps(valLog2E<float32>);
     return exp2f16(_mm512_mul_ps(other, log2e));
 }
 
-static XS_INLINE __m512 log2f16(const __m512 other)
+static XS_INLINE __m512 log2f16(const __m512 other) noexcept
 {
     __m512i v512i_2 = _mm512_and_si512(_mm512_castps_si512(other), _mm512_set1_epi32(0x7F800000));
     v512i_2 = _mm512_srli_epi32(v512i_2, 23);
@@ -898,14 +898,14 @@ static XS_INLINE __m512 log2f16(const __m512 other)
     return _mm512_fmadd_ps(v512_5, _mm512_sub_ps(v512_4, _mm512_set1_ps(1.0f)), v512_3);
 }
 
-static XS_INLINE __m512 logf16(const __m512 other)
+static XS_INLINE __m512 logf16(const __m512 other) noexcept
 {
     // log(x) = log2(x) / log2(e)
     const __m512 log2e = _mm512_set1_ps(valLog2E<float32>);
     return _mm512_div_ps(log2f16(other), log2e);
 }
 
-static XS_INLINE __m512 powf16(const __m512 other, const __m512 other1)
+static XS_INLINE __m512 powf16(const __m512 other, const __m512 other1) noexcept
 {
     const __m512 v512_0 = exp2f16(_mm512_mul_ps(log2f16(other), other1));
 
@@ -921,12 +921,12 @@ static XS_INLINE __m512 powf16(const __m512 other, const __m512 other1)
     return _mm512_or_ps(v512_0, _mm512_mask_mov_ps(_mm512_setzero_ps(), v512_3, v512_2));
 }
 
-static XS_INLINE __m512 powrf16(const __m512 other, const __m512 other1)
+static XS_INLINE __m512 powrf16(const __m512 other, const __m512 other1) noexcept
 {
     return exp2f16(_mm512_mul_ps(log2f16(other), other1));
 }
 
-static XS_INLINE __m512 sinf16(const __m512 other)
+static XS_INLINE __m512 sinf16(const __m512 other) noexcept
 {
     const __m512 v512_NAbs = _mm512_set1_ps(-0.0f);
     __m512 v512_1 = _mm512_andnot_ps(v512_NAbs, other);
@@ -959,13 +959,13 @@ static XS_INLINE __m512 sinf16(const __m512 other)
     return _mm512_mul_ps(v512_2, v512_1);
 }
 
-static XS_INLINE __m512 cosf16(const __m512 other)
+static XS_INLINE __m512 cosf16(const __m512 other) noexcept
 {
     // cos is just sin( x + pi/2 )
     return sinf16(_mm512_add_ps(other, _mm512_set1_ps(valPi2<float32>)));
 }
 
-static XS_INLINE __m512 tanf16(const __m512 other)
+static XS_INLINE __m512 tanf16(const __m512 other) noexcept
 {
     const __m512 v512_NAbs = _mm512_set1_ps(-0.0f);
     __m512 v512_1 = _mm512_andnot_ps(v512_NAbs, other);
@@ -1031,7 +1031,7 @@ static XS_INLINE __m512 tanf16(const __m512 other)
     }
 }
 
-static XS_INLINE __m512 sincosf16(const __m512 other, __m512& cos)
+static XS_INLINE __m512 sincosf16(const __m512 other, __m512& cos) noexcept
 {
     const __m512 v512_NAbs = _mm512_set1_ps(-0.0f);
     __m512 v512_1 = _mm512_andnot_ps(v512_NAbs, other);
@@ -1086,7 +1086,7 @@ static XS_INLINE __m512 sincosf16(const __m512 other, __m512& cos)
     return v512_2;
 }
 
-static XS_INLINE __m512 atanf16(const __m512 other)
+static XS_INLINE __m512 atanf16(const __m512 other) noexcept
 {
     __m512 v512_1 = _mm512_rcp14_ps(other);
 
@@ -1127,7 +1127,7 @@ static XS_INLINE __m512 atanf16(const __m512 other)
     return _mm512_mask_mov_ps(v512_6, v512_2b, v512_1);
 }
 
-static XS_INLINE __m512 asinf16(const __m512 other)
+static XS_INLINE __m512 asinf16(const __m512 other) noexcept
 {
     __m512 v512_1 = _mm512_fnmadd_ps(other, other, _mm512_set1_ps(1.0f));
     v512_1 = _mm512_rsqrt14_ps(v512_1);
@@ -1136,7 +1136,7 @@ static XS_INLINE __m512 asinf16(const __m512 other)
     return atanf16(v512_1);
 }
 
-static XS_INLINE __m512 acosf16(const __m512 other)
+static XS_INLINE __m512 acosf16(const __m512 other) noexcept
 {
     const __m512 v512One = _mm512_set1_ps(1.0f);
     __m512 v512_1 = _mm512_sub_ps(v512One, other);
@@ -1149,7 +1149,7 @@ static XS_INLINE __m512 acosf16(const __m512 other)
     return _mm512_add_ps(v512_1, v512_1);
 }
 
-static XS_INLINE __m512 atan2f16(const __m512 other, const __m512 other1)
+static XS_INLINE __m512 atan2f16(const __m512 other, const __m512 other1) noexcept
 {
     const __m512 v512_0 = _mm512_rcp14_ps(other1);
 
@@ -1200,7 +1200,7 @@ static XS_INLINE __m512 atan2f16(const __m512 other, const __m512 other1)
 }
 
 template<bool Elem0, bool Elem1, bool Elem2, bool Elem3>
-static XS_INLINE __m128 blend4(const __m128 other0, const __m128 other1)
+static XS_INLINE __m128 blend4(const __m128 other0, const __m128 other1) noexcept
 {
     if constexpr (Elem0 && Elem1 && Elem2 && Elem3) {
         return other1;
@@ -1257,7 +1257,7 @@ static XS_INLINE __m128 blend4(const __m128 other0, const __m128 other1)
 }
 
 template<bool Elem0, bool Elem1, bool Elem2, bool Elem3>
-static XS_INLINE __m128 blendSwap4(const __m128 other0, __m128& other1)
+static XS_INLINE __m128 blendSwap4(const __m128 other0, __m128& other1) noexcept
 {
     if constexpr (Elem0 && Elem1 && Elem2 && Elem3) {
         const __m128 backup = other1;

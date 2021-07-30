@@ -109,55 +109,56 @@ XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::Identity() noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationX(BaseDef rotation) noexcept
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationX(const BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD4Def::SIMD2Def;
     SIMD2Def sinCos;
-    BaseDef rotation2(rotation * BaseDef(T{0.5}));
+    const BaseDef rotation2(rotation * BaseDef(T{0.5}));
     if constexpr (widthImpl > SIMDWidth::Scalar) {
         sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
     } else {
         BaseDef cos;
-        BaseDef sin(rotation2.sincos(cos));
+        const BaseDef sin(rotation2.sincos(cos));
         sinCos = SIMD2Def(sin, cos);
     }
     return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<0, 2, 3, 1>());
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationY(BaseDef rotation) noexcept
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationY(const BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD4Def::SIMD2Def;
     SIMD2Def sinCos;
-    BaseDef rotation2(rotation * BaseDef(T{0.5}));
+    const BaseDef rotation2(rotation * BaseDef(T{0.5}));
     if constexpr (widthImpl > SIMDWidth::Scalar) {
         sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
     } else {
         BaseDef cos;
-        BaseDef sin(rotation2.sincos(cos));
+        const BaseDef sin(rotation2.sincos(cos));
         sinCos = SIMD2Def(sin, cos);
     }
     return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<3, 0, 2, 1>());
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationZ(BaseDef rotation) noexcept
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationZ(const BaseDef rotation) noexcept
 {
     using SIMD2Def = typename SIMD4Def::SIMD2Def;
     SIMD2Def sinCos;
-    BaseDef rotation2(rotation * BaseDef(T{0.5}));
+    const BaseDef rotation2(rotation * BaseDef(T{0.5}));
     if constexpr (widthImpl > SIMDWidth::Scalar) {
         sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
     } else {
         BaseDef cos;
-        BaseDef sin(rotation2.sincos(cos));
+        const BaseDef sin(rotation2.sincos(cos));
         sinCos = SIMD2Def(sin, cos);
     }
     return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<2, 3, 0, 1>());
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationAxis(const Vector3DDef& axis, BaseDef rotation) noexcept
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::RotationAxis(
+    const Vector3DDef& axis, const BaseDef rotation) noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
@@ -231,34 +232,35 @@ XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::Matrix3x3(const Matrix3x3De
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::getValueInBase() const
+XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::getValueInBase() const noexcept
 {
     return this->values.template getValueInBase<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::getValue() const
+XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::getValue() const noexcept
 {
     return this->values.template getValue<Index>();
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void Quaternion<T, Width>::setValue(InBaseDef value) noexcept
+XS_INLINE void Quaternion<T, Width>::setValue(const InBaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32 Index>
-XS_INLINE void Quaternion<T, Width>::setValue(BaseDef value) noexcept
+XS_INLINE void Quaternion<T, Width>::setValue(const BaseDef value) noexcept
 {
     this->values.template setValue<Index>(value);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::mad(const Quaternion& other1, const Quaternion& other2) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::mad(
+    const Quaternion& other1, const Quaternion& other2) const noexcept
 {
     SIMD4Def ret(
         this->values.template shuffle<2, 0, 1, 2>().msub(other1.values.template shuffle<1, 2, 0, 2>(), other2.values));
@@ -270,25 +272,25 @@ XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::mad(const Quaternion& other
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::lengthSqr() const
+XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::lengthSqr() const noexcept
 {
     return this->values.lengthSqr();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::length() const
+XS_INLINE typename Quaternion<T, Width>::BaseDef Quaternion<T, Width>::length() const noexcept
 {
     return this->values.length();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::lengthSqrInBase() const
+XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::lengthSqrInBase() const noexcept
 {
     return this->values.lengthSqrInBase();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::lengthInBase() const
+XS_INLINE typename Quaternion<T, Width>::InBaseDef Quaternion<T, Width>::lengthInBase() const noexcept
 {
     return this->values.lengthInBase();
 }
@@ -300,7 +302,8 @@ XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::normalize() noexcept
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::Point3DDef Quaternion<T, Width>::transform(const Point3DDef& point) const
+XS_INLINE typename Quaternion<T, Width>::Point3DDef Quaternion<T, Width>::transform(
+    const Point3DDef& point) const noexcept
 {
     // Transforming a point by a quaternion requires converting the quaternion back into a matrix3x3
     // and then performing the transformation using that.
@@ -336,7 +339,8 @@ XS_INLINE typename Quaternion<T, Width>::Point3DDef Quaternion<T, Width>::transf
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Quaternion<T, Width>::Vector3DDef Quaternion<T, Width>::transform(const Vector3DDef& vector) const
+XS_INLINE typename Quaternion<T, Width>::Vector3DDef Quaternion<T, Width>::transform(
+    const Vector3DDef& vector) const noexcept
 {
     // Transforming a vector by a quaternion is the same as transforming a point
     return Vector3DDef(this->transform(Point3DDef(vector.values)).values);
@@ -345,7 +349,7 @@ XS_INLINE typename Quaternion<T, Width>::Vector3DDef Quaternion<T, Width>::trans
 template<typename T, SIMDWidth Width>
 template<bool Packed>
 XS_INLINE typename Quaternion<T, Width>::template Point3D2Def<Packed> Quaternion<T, Width>::transform(
-    const Point3D2Def<Packed>& point) const
+    const Point3D2Def<Packed>& point) const noexcept
 {
     XS_ASSERT(this->lengthInBase().getValue() > 0.999f);
     using SIMD3Def = typename SIMD4Def::SIMD3Def;
@@ -368,7 +372,7 @@ XS_INLINE typename Quaternion<T, Width>::template Point3D2Def<Packed> Quaternion
 template<typename T, SIMDWidth Width>
 template<bool Packed>
 XS_INLINE typename Quaternion<T, Width>::template Vector3D2Def<Packed> Quaternion<T, Width>::transform(
-    const Vector3D2Def<Packed>& vector) const
+    const Vector3D2Def<Packed>& vector) const noexcept
 {
     // Transforming a vector by a quaternion is the same as transforming a point
     return Vector3D2Def<Packed>(this->transform(Point3D2Def<Packed>(vector.vectors)).points);
@@ -377,7 +381,7 @@ XS_INLINE typename Quaternion<T, Width>::template Vector3D2Def<Packed> Quaternio
 template<typename T, SIMDWidth Width>
 template<bool Packed>
 XS_INLINE typename Quaternion<T, Width>::template Point3D4Def<Packed> Quaternion<T, Width>::transform(
-    const Point3D4Def<Packed>& point) const
+    const Point3D4Def<Packed>& point) const noexcept
 {
     XS_ASSERT(this->lengthInBase().getValue() > 0.999f);
     using SIMD3Def = typename SIMD4Def::SIMD3Def;
@@ -400,79 +404,79 @@ XS_INLINE typename Quaternion<T, Width>::template Point3D4Def<Packed> Quaternion
 template<typename T, SIMDWidth Width>
 template<bool Packed>
 XS_INLINE typename Quaternion<T, Width>::template Vector3D4Def<Packed> Quaternion<T, Width>::transform(
-    const Vector3D4Def<Packed>& vector) const
+    const Vector3D4Def<Packed>& vector) const noexcept
 {
     // Transforming a vector by a quaternion is the same as transforming a point
     return Vector3D4Def<Packed>(this->transform(Point3D4Def<Packed>(vector.vectors)).points);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::inverse() const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::inverse() const noexcept
 {
     return Quaternion(this->values.template negate<true, true, true, false>());
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateX(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateX(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<3, 2, 1, 0>().template negate<false, false, true, true>().template mad<false>(
             sin, ret));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateY(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateY(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<2, 3, 0, 1>().template negate<true, false, false, true>().template mad<false>(
             sin, ret));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateZ(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::postRotateZ(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<1, 0, 3, 2>().template negate<false, true, false, true>().template mad<false>(
             sin, ret));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateX(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateX(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<3, 2, 1, 0>().template negate<false, true, false, true>().template mad<false>(
             sin, ret));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateY(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateY(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<2, 3, 0, 1>().template negate<false, false, true, true>().template mad<false>(
             sin, ret));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateZ(BaseDef rotation) const
+XS_INLINE Quaternion<T, Width> Quaternion<T, Width>::preRotateZ(const BaseDef rotation) const noexcept
 {
     BaseDef cos;
     const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
-    SIMD4Def ret(this->values * cos);
+    const SIMD4Def ret(this->values * cos);
     return Quaternion(
         this->values.template shuffle<1, 0, 3, 2>().template negate<true, false, false, true>().template mad<false>(
             sin, ret));

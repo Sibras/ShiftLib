@@ -298,14 +298,14 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const;
+    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept;
 
     /**
      * Transform a 3-D vector using specified transform.
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const;
+    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept;
 
     /**
      * Transform two 3-D points using specified transform.
@@ -313,7 +313,7 @@ public:
      * @returns The new transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const;
+    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept;
 
     /**
      * Transform two 3-D vectors using specified transform.
@@ -321,7 +321,7 @@ public:
      * @returns The new transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept;
 
     /**
      * Transform four 3-D points using specified transform.
@@ -329,7 +329,7 @@ public:
      * @returns The new transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const;
+    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept;
 
     /**
      * Transform four 3-D vectors using specified transform.
@@ -337,83 +337,83 @@ public:
      * @returns The new transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept;
 
     /**
      * Determine the inverse of a transform.
      * @returns A new inverse transform.
      */
-    XS_FUNCTION Transform inverse() const;
+    XS_FUNCTION Transform inverse() const noexcept;
 
     /**
      * Fast multiply the transform by a rotation around x axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateX(InBaseDef rotation) const;
+    XS_FUNCTION Transform postRotateX(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the transform by a rotation around y axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateY(InBaseDef rotation) const;
+    XS_FUNCTION Transform postRotateY(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the transform by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateZ(InBaseDef rotation) const;
+    XS_FUNCTION Transform postRotateZ(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around x axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateX(InBaseDef rotation) const;
+    XS_FUNCTION Transform preRotateX(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around y axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateY(InBaseDef rotation) const;
+    XS_FUNCTION Transform preRotateY(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around z axis by the transform (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateZ(InBaseDef rotation) const;
+    XS_FUNCTION Transform preRotateZ(InBaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the transform by a uniform scale (i.e M*scale).
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postUniformScale(BaseDef scale) const;
+    XS_FUNCTION Transform postUniformScale(BaseDef scale) const noexcept;
 
     /**
      * Fast multiply the a uniform scale by a transform (i.e scale*M).
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preUniformScale(BaseDef scale) const;
+    XS_FUNCTION Transform preUniformScale(BaseDef scale) const noexcept;
 
     /**
      * Fast multiply the transform by a translation (i.e M*translate).
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postTranslate(const SIMD3Def& translation) const;
+    XS_FUNCTION Transform postTranslate(const SIMD3Def& translation) const noexcept;
 
     /**
      * Fast multiply a translation by a transform (i.e translate*M).
      * @param translation The 3 translate values for each axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preTranslate(const SIMD3Def& translation) const;
+    XS_FUNCTION Transform preTranslate(const SIMD3Def& translation) const noexcept;
 };
 
 /**

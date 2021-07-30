@@ -68,7 +68,7 @@ XS_INLINE Range2<T, Width>::Range2(const RangeDef& range)
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range2<T, Width>::RangeDef Range2<T, Width>::getRange() const
+XS_INLINE typename Range2<T, Width>::RangeDef Range2<T, Width>::getRange() const noexcept
 {
     static_assert(Index < 2);
     if constexpr (Width > SIMDWidth::Scalar) {
@@ -84,7 +84,7 @@ XS_INLINE typename Range2<T, Width>::RangeDef Range2<T, Width>::getRange() const
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMinInBase() const
+XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMinInBase() const noexcept
 {
     static_assert(Index < 2);
     if constexpr (Width > SIMDWidth::Scalar) {
@@ -96,7 +96,7 @@ XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMinInBase() 
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMaxInBase() const
+XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMaxInBase() const noexcept
 {
     static_assert(Index < 2);
     return this->minMax.template getValueInBase<Index + 2>();
@@ -104,7 +104,7 @@ XS_INLINE typename Range2<T, Width>::InBaseDef Range2<T, Width>::getMaxInBase() 
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range2<T, Width>::BaseDef Range2<T, Width>::getMin() const
+XS_INLINE typename Range2<T, Width>::BaseDef Range2<T, Width>::getMin() const noexcept
 {
     static_assert(Index < 2);
     if constexpr (Width > SIMDWidth::Scalar) {
@@ -116,14 +116,14 @@ XS_INLINE typename Range2<T, Width>::BaseDef Range2<T, Width>::getMin() const
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range2<T, Width>::BaseDef Range2<T, Width>::getMax() const
+XS_INLINE typename Range2<T, Width>::BaseDef Range2<T, Width>::getMax() const noexcept
 {
     static_assert(Index < 2);
     return this->minMax.template getValue<Index + 2>();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range2<T, Width>::SIMD2Def Range2<T, Width>::getLength() const
+XS_INLINE typename Range2<T, Width>::SIMD2Def Range2<T, Width>::getLength() const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         return this->minMax.template getValue2<1>() + this->minMax.template getValue2<0>();
@@ -134,7 +134,7 @@ XS_INLINE typename Range2<T, Width>::SIMD2Def Range2<T, Width>::getLength() cons
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Range2<T, Width>::setMin(BaseDef min)
+XS_INLINE void Range2<T, Width>::setMin(const BaseDef min)
 {
     static_assert(Index < 2);
     this->minMax.template setValue<Index>(min);
@@ -145,14 +145,14 @@ XS_INLINE void Range2<T, Width>::setMin(BaseDef min)
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Range2<T, Width>::setMax(BaseDef max)
+XS_INLINE void Range2<T, Width>::setMax(const BaseDef max)
 {
     static_assert(Index < 2);
     this->minMax.template setValue<Index + 2>(max);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range2<T, Width>::setMin2(BaseDef min)
+XS_INLINE void Range2<T, Width>::setMin2(const BaseDef min)
 {
     this->minMax.template setDualFloat<0>(XSFloat2(min));
     if constexpr (Width > SIMDWidth::Scalar) {
@@ -161,13 +161,13 @@ XS_INLINE void Range2<T, Width>::setMin2(BaseDef min)
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range2<T, Width>::setMaxDual(BaseDef max)
+XS_INLINE void Range2<T, Width>::setMaxDual(const BaseDef max)
 {
     this->minMax.template setDualFloat<1>(XSFloat2(max));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range2<T, Width>::SIMD2Def::Mask Range2<T, Width>::isWithinRange(BaseDef value) const
+XS_INLINE typename Range2<T, Width>::SIMD2Def::Mask Range2<T, Width>::isWithinRange(const BaseDef value) const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         const typename SIMD4Def::Mask mask4(
@@ -180,7 +180,8 @@ XS_INLINE typename Range2<T, Width>::SIMD2Def::Mask Range2<T, Width>::isWithinRa
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range2<T, Width>::SIMD2Def::Mask Range2<T, Width>::isWithinRange(const SIMD2Def& values) const
+XS_INLINE typename Range2<T, Width>::SIMD2Def::Mask Range2<T, Width>::isWithinRange(
+    const SIMD2Def& values) const noexcept
 {
     if constexpr (Width > SIMDWidth::Scalar) {
         const SIMD4Def data4(values.values); // Avoid constructor duplication v2

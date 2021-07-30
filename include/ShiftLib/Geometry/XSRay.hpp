@@ -79,6 +79,6 @@ public:
      * @param dist The number of units to move along the ray.
      * @returns The 3-D point at the specified distance along the ray.
      */
-    XS_FUNCTION Point3DDef pointAlongRay(InBaseDef dist) const;
+    XS_FUNCTION Point3DDef pointAlongRay(InBaseDef dist) const noexcept;
 };
 } // namespace Shift

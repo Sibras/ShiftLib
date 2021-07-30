@@ -338,7 +338,7 @@ public:
      * @returns SIMD3Defcontaining the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD3Def getColumn() const;
+    XS_FUNCTION SIMD3Def getColumn() const noexcept;
 
     /**
      * Get a row of a Matrix4x3.
@@ -346,7 +346,7 @@ public:
      * @returns SIMD4Def containing the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD4Def getRow() const;
+    XS_FUNCTION SIMD4Def getRow() const noexcept;
 
     /**
      * Set the first column of a Matrix4x3.
@@ -362,14 +362,14 @@ public:
      * @param matrix2 Second matrix to add.
      * @returns Result of the operation.
      */
-    XS_FUNCTION Matrix4x3 mad(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) const;
+    XS_FUNCTION Matrix4x3 mad(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) const noexcept;
 
     /**
      * Transform a 3-D point using specified matrix.
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const;
+    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept;
 
     /**
      * Transform a 3-D vector using specified matrix.
@@ -377,7 +377,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const;
+    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept;
 
     /**
      * Transform two packed 3-D points using specified matrix.
@@ -386,7 +386,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const;
+    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept;
 
     /**
      * Transform two packed 3-D vectors using specified matrix.
@@ -396,7 +396,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept;
 
     /**
      * Transform four packed 3-D points using specified matrix.
@@ -405,7 +405,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const;
+    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept;
 
     /**
      * Transform four packed 3-D vectors using specified matrix.
@@ -415,129 +415,129 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const;
+    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept;
 
     /**
      * Transpose transform a 3-D point using specified matrix.
      * @param point The point to be transformed.
      * @returns A new transpose transformed point.
      */
-    XS_FUNCTION Point3DDef transformTransposed(const Point3DDef& point) const;
+    XS_FUNCTION Point3DDef transformTransposed(const Point3DDef& point) const noexcept;
 
     /**
      * Transpose transform a 3-D vector using specified matrix.
      * @param vector The vector to be transformed.
      * @returns A new transpose transformed vector.
      */
-    XS_FUNCTION Vector3DDef transformTransposed(const Vector3DDef& vector) const;
+    XS_FUNCTION Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept;
 
     /**
      * Determine the transpose of a matrix.
      * @returns A new transposed matrix.
      */
-    XS_FUNCTION Matrix4x4Def transpose() const;
+    XS_FUNCTION Matrix4x4Def transpose() const noexcept;
 
     /**
      * Determine the inverse of a matrix.
      * @returns A new inverse matrix.
      */
-    XS_FUNCTION Matrix4x3 inverse() const;
+    XS_FUNCTION Matrix4x3 inverse() const noexcept;
 
     /**
      * Determine the determinant of an matrix.
      * @returns The determinant in a BaseDef.
      */
-    XS_FUNCTION BaseDef determinant() const;
+    XS_FUNCTION BaseDef determinant() const noexcept;
 
     /**
      * Determine the determinant of an matrix.
      * @returns The determinant in a InBaseDef.
      */
-    XS_FUNCTION InBaseDef determinantInBase() const;
+    XS_FUNCTION InBaseDef determinantInBase() const noexcept;
 
     /**
      * Fast multiply the matrix by a rotation around x axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postRotateX(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 postRotateX(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the matrix by a rotation around y axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postRotateY(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 postRotateY(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the matrix by a rotation around z axis (i.e M*rotation).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around x axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preRotateX(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around y axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preRotateY(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply a rotation around z axis by the matrix (i.e rotation*M).
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const;
+    XS_FUNCTION Matrix4x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept;
 
     /**
      * Fast multiply the matrix by a scale (i.e M*scale).
      * @param scale The amount to scale along X/Y/Z-axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postScale(const SIMD3Def& scale) const;
+    XS_FUNCTION Matrix4x3 postScale(const SIMD3Def& scale) const noexcept;
 
     /**
      * Fast multiply a scale by a matrix (i.e scale*M).
      * @param scale The 3 scale values for each axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preScale(const SIMD3Def& scale) const;
+    XS_FUNCTION Matrix4x3 preScale(const SIMD3Def& scale) const noexcept;
 
     /**
      * Fast multiply the matrix by a uniform scale (i.e M*scale).
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postUniformScale(BaseDef scale) const;
+    XS_FUNCTION Matrix4x3 postUniformScale(BaseDef scale) const noexcept;
 
     /**
      * Fast multiply the a uniform scale by a matrix (i.e scale*M).
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preUniformScale(BaseDef scale) const;
+    XS_FUNCTION Matrix4x3 preUniformScale(BaseDef scale) const noexcept;
 
     /**
      * Fast multiply the matrix by a translation (i.e M*translate).
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 postTranslate(const SIMD3Def& translation) const;
+    XS_FUNCTION Matrix4x3 postTranslate(const SIMD3Def& translation) const noexcept;
 
     /**
      * Fast multiply a translation by a matrix (i.e translate*M).
      * @param translation The 3 translate values for each axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x3 preTranslate(const SIMD3Def& translation) const;
+    XS_FUNCTION Matrix4x3 preTranslate(const SIMD3Def& translation) const noexcept;
 };
 
 /**

@@ -197,7 +197,7 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const;
+    XS_FUNCTION InBaseDef getValueInBase() const noexcept;
 
     /**
      * Get an element of a 3-D vector.
@@ -206,7 +206,7 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const;
+    XS_FUNCTION BaseDef getValue() const noexcept;
 
     /**
      * Set an element of a 3-D vector.
@@ -230,21 +230,21 @@ public:
      * @param vector Second vector to add.
      * @returns The result of the operation.
      */
-    XS_FUNCTION Vector3D mad(BaseDef value, const Vector3D& vector) const;
+    XS_FUNCTION Vector3D mad(BaseDef value, const Vector3D& vector) const noexcept;
 
     /**
      * Compute the dot product of two 3-D vectors.
      * @param vector The second vector.
      * @returns The value of the dot product stored in a floatBase.
      */
-    XS_FUNCTION BaseDef dot3(const Vector3D& vector) const;
+    XS_FUNCTION BaseDef dot3(const Vector3D& vector) const noexcept;
 
     /**
      * Compute the dot product of two 3-D vectors.
      * @param vector The second vector.
      * @returns The value of the dot product stored in a floatInBase.
      */
-    XS_FUNCTION InBaseDef dot3InBase(const Vector3D& vector) const;
+    XS_FUNCTION InBaseDef dot3InBase(const Vector3D& vector) const noexcept;
 
     /**
      * Compute cross product of two 3-D vectors.
@@ -252,45 +252,45 @@ public:
      * @param vector The second vector.
      * @returns A new vector corresponding to the cross product of the inputs.
      */
-    XS_FUNCTION Vector3D cross3(const Vector3D& vector) const;
+    XS_FUNCTION Vector3D cross3(const Vector3D& vector) const noexcept;
 
     /**
      * Compute component product of two 3-D vectors.
      * @param vector The second vector.
      * @returns A new vector corresponding to the component product of the inputs.
      */
-    XS_FUNCTION Vector3D component3(const Vector3D& vector) const;
+    XS_FUNCTION Vector3D component3(const Vector3D& vector) const noexcept;
 
     /**
      * Compute the square of the length of a 3-D vector.
      * @returns Squared length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef lengthSqr() const;
+    XS_FUNCTION BaseDef lengthSqr() const noexcept;
 
     /**
      * Compute the length of a 3-D vector.
      * @returns Length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef length() const;
+    XS_FUNCTION BaseDef length() const noexcept;
 
     /**
      * Compute the square of the length of a 3-D vector.
      * @returns Squared length of vector stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthSqrInBase() const;
+    XS_FUNCTION InBaseDef lengthSqrInBase() const noexcept;
 
     /**
      * Compute the length of a 3-D vector.
      * @returns Length of vector stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthInBase() const;
+    XS_FUNCTION InBaseDef lengthInBase() const noexcept;
 
     /**
      * Normalise a vector.
      * @note The result is unpredictable when all elements of vector are at or near zero.
      * @returns A new vector corresponding to the normalised vector.
      */
-    XS_FUNCTION Vector3D normalize() const;
+    XS_FUNCTION Vector3D normalize() const noexcept;
 };
 
 /**

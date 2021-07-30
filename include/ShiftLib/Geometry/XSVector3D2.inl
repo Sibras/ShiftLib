@@ -113,7 +113,7 @@ XS_INLINE Vector3D2<T, Width, Packed>::Vector3D2(const Vector3DDef& vector) noex
 
 template<typename T, SIMDWidth Width, bool Packed>
 template<uint32_t Index>
-XS_INLINE typename Vector3D2<T, Width, Packed>::Vector3DDef Vector3D2<T, Width, Packed>::getVector() const
+XS_INLINE typename Vector3D2<T, Width, Packed>::Vector3DDef Vector3D2<T, Width, Packed>::getVector() const noexcept
 {
     return Vector3DDef(this->vectors.template getValue3<Index>());
 }
@@ -127,39 +127,39 @@ XS_INLINE void Vector3D2<T, Width, Packed>::setVector(const Vector3DDef& vector)
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> Vector3D2<T, Width, Packed>::mad(
-    const SIMD2Def& value, const Vector3D2<T, Width, Packed>& vector) const
+    const SIMD2Def& value, const Vector3D2<T, Width, Packed>& vector) const noexcept
 {
     return Vector3D2(this->vectors.mad(value, vector.vectors));
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Vector3D2<T, Width, Packed>::SIMD2Def Vector3D2<T, Width, Packed>::lengthSqr() const
+XS_INLINE typename Vector3D2<T, Width, Packed>::SIMD2Def Vector3D2<T, Width, Packed>::lengthSqr() const noexcept
 {
     return this->vectors.lengthSqr3();
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Vector3D2<T, Width, Packed>::SIMD2Def Vector3D2<T, Width, Packed>::length() const
+XS_INLINE typename Vector3D2<T, Width, Packed>::SIMD2Def Vector3D2<T, Width, Packed>::length() const noexcept
 {
     return this->vectors.length3();
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Vector3D2<T, Width, Packed> Vector3D2<T, Width, Packed>::normalize() const
+XS_INLINE Vector3D2<T, Width, Packed> Vector3D2<T, Width, Packed>::normalize() const noexcept
 {
     return Vector3D2(this->vectors.normalize3());
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE typename Vector3D2<T, Width, Packed>::SIMD2Def Vector3D2<T, Width, Packed>::dot3(
-    const Vector3D2<T, Width, Packed>& vector) const
+    const Vector3D2<T, Width, Packed>& vector) const noexcept
 {
     return this->vectors.dot3(vector.vectors);
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> Vector3D2<T, Width, Packed>::cross3(
-    const Vector3D2<T, Width, Packed>& vector) const
+    const Vector3D2<T, Width, Packed>& vector) const noexcept
 {
     return Vector3D2(this->vectors.cross3(vector.vectors));
 }
@@ -194,7 +194,7 @@ XS_INLINE Vector3D2<T, Width, Packed> operator-(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> operator*(
-    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
+    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D2<T, Width, Packed>(vector.vectors * value);
 }
@@ -222,7 +222,7 @@ XS_INLINE Vector3D2<T, Width, Packed> operator*(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed> operator/(
-    const Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
+    const Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D2<T, Width, Packed>(vector.vectors / value);
 }
@@ -274,7 +274,7 @@ XS_INLINE Vector3D2<T, Width, Packed>& operator-=(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed>& operator*=(
-    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
+    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors *= value;
     return vector;
@@ -306,7 +306,7 @@ XS_INLINE Vector3D2<T, Width, Packed>& operator*=(
 
 template<typename T, SIMDWidth Width, bool Packed>
 XS_INLINE Vector3D2<T, Width, Packed>& operator/=(
-    Vector3D2<T, Width, Packed>& vector, typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
+    Vector3D2<T, Width, Packed>& vector, const typename Vector3D2<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors /= value;
     return vector;

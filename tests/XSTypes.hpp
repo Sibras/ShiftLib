@@ -23,7 +23,7 @@
 #define TYPED_TEST2(test_suite_name, test_name) GTEST_TYPED_TEST(test_suite_name, test_name)
 
 template<typename T>
-bool testValue(const T val, const T other)
+bool testValue(const T val, const T other) noexcept
 {
     if constexpr (Shift::isSameAny<T, Shift::float32, Shift::float64>) {
 #define MAXERROR 0.005

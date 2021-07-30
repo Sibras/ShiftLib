@@ -118,31 +118,31 @@ XS_INLINE Rational<T>::Rational(const float64 value) noexcept
 }
 
 template<typename T>
-XS_INLINE float32 Rational<T>::getFloat() const
+XS_INLINE float32 Rational<T>::getFloat() const noexcept
 {
     return static_cast<float32>(this->numerator) / static_cast<float32>(this->denominator);
 }
 
 template<typename T>
-XS_INLINE float64 Rational<T>::getDouble() const
+XS_INLINE float64 Rational<T>::getDouble() const noexcept
 {
     return static_cast<float64>(this->numerator) / static_cast<float64>(this->denominator);
 }
 
 template<typename T>
-XS_INLINE int32_t Rational<T>::getInt() const
+XS_INLINE int32_t Rational<T>::getInt() const noexcept
 {
     return static_cast<int32_t>(this->numerator / this->denominator);
 }
 
 template<typename T>
-XS_INLINE int64_t Rational<T>::getLong() const
+XS_INLINE int64_t Rational<T>::getLong() const noexcept
 {
     return static_cast<int64_t>(this->numerator / this->denominator);
 }
 
 template<typename T>
-XS_INLINE Rational<T> Rational<T>::reciprocal() const
+XS_INLINE Rational<T> Rational<T>::reciprocal() const noexcept
 {
     if constexpr (isSigned<T>) {
         return Rational<T>(sign<T>(this->denominator, this->numerator), abs<T>(this->numerator));

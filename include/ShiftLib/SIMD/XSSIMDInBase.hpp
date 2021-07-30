@@ -153,7 +153,7 @@ public:
      * Access the object as a normal value.
      * @returns The value.
      */
-    XS_FUNCTION T getValue() const;
+    XS_FUNCTION T getValue() const noexcept;
 
     /**
      * Multiply this object by another and then add another object.

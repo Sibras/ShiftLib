@@ -113,7 +113,7 @@ XS_INLINE Point3D2<T, Width, Packed>::Point3D2(const Point3DDef& point) noexcept
 
 template<typename T, SIMDWidth Width, bool Packed>
 template<uint32_t Index>
-XS_INLINE typename Point3D2<T, Width, Packed>::Point3DDef Point3D2<T, Width, Packed>::getPoint() const
+XS_INLINE typename Point3D2<T, Width, Packed>::Point3DDef Point3D2<T, Width, Packed>::getPoint() const noexcept
 {
     return typename Point3D2<T, Width, Packed>::Point3DDef(this->points.template getValue3<Index>());
 }

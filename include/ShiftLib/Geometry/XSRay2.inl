@@ -40,7 +40,8 @@ XS_INLINE Ray2<T, Width, Packed>::Ray2(const RayDef& ray) noexcept
 {}
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Ray2<T, Width, Packed>::Point3D2Def Ray2<T, Width, Packed>::pointAlongRay(const SIMD2Def& dist) const
+XS_INLINE typename Ray2<T, Width, Packed>::Point3D2Def Ray2<T, Width, Packed>::pointAlongRay(
+    const SIMD2Def& dist) const noexcept
 {
     return this->directions.mad(dist, this->origins);
 }

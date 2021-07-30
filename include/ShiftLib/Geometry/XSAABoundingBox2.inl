@@ -106,7 +106,8 @@ XS_INLINE void AABoundingBox2<T, Width, Packed>::extend(const AABoundingBox2& bo
 }
 
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename AABoundingBox2<T, Width, Packed>::SIMD2Def AABoundingBox2<T, Width, Packed>::surfaceArea() const
+XS_INLINE typename AABoundingBox2<T, Width, Packed>::SIMD2Def
+AABoundingBox2<T, Width, Packed>::surfaceArea() const noexcept
 {
     // calculate size of bounding box
     auto size(this->maxPoints.points - this->minPoints.points);

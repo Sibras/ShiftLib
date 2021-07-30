@@ -59,7 +59,7 @@ XS_INLINE Range4<T, Width>::Range4(const RangeDef& range)
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range4<T, Width>::RangeDef Range4<T, Width>::getRange() const
+XS_INLINE typename Range4<T, Width>::RangeDef Range4<T, Width>::getRange() const noexcept
 {
     static_assert(Index < 4);
     return RangeDef(XSFloat2(this->mins.template getValueInBase<0>(), this->maxs.template getValueInBase<0>()));
@@ -67,7 +67,7 @@ XS_INLINE typename Range4<T, Width>::RangeDef Range4<T, Width>::getRange() const
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMinInBase() const
+XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMinInBase() const noexcept
 {
     static_assert(Index < 4);
     return this->mins.template getValueInBase<0>();
@@ -75,7 +75,7 @@ XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMinInBase() 
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMaxInBase() const
+XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMaxInBase() const noexcept
 {
     static_assert(Index < 4);
     return this->maxs.template getValueInBase<0>();
@@ -83,7 +83,7 @@ XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMaxInBase() 
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMin() const
+XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMin() const noexcept
 {
     static_assert(Index < 4);
     return this->mins.template getValue<Index>();
@@ -91,21 +91,21 @@ XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMin() const
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMax() const
+XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMax() const noexcept
 {
     static_assert(Index < 4);
     return this->maxs.template getValue<Index>();
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range4<T, Width>::SIMD4Def Range4<T, Width>::getLength() const
+XS_INLINE typename Range4<T, Width>::SIMD4Def Range4<T, Width>::getLength() const noexcept
 {
     return (this->maxs - this->mins);
 }
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Range4<T, Width>::setMin(BaseDef min)
+XS_INLINE void Range4<T, Width>::setMin(const BaseDef min)
 {
     static_assert(Index < 4);
     this->mins.template setValue<Index>(min);
@@ -113,32 +113,33 @@ XS_INLINE void Range4<T, Width>::setMin(BaseDef min)
 
 template<typename T, SIMDWidth Width>
 template<uint32_t Index>
-XS_INLINE void Range4<T, Width>::setMax(BaseDef max)
+XS_INLINE void Range4<T, Width>::setMax(const BaseDef max)
 {
     static_assert(Index < 4);
     this->maxs.template setValue<Index + 2>(max);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range4<T, Width>::setMin4(BaseDef min)
+XS_INLINE void Range4<T, Width>::setMin4(const BaseDef min)
 {
     this->mins = SIMD4Def(min);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE void Range4<T, Width>::setMaxQuad(BaseDef max)
+XS_INLINE void Range4<T, Width>::setMaxQuad(const BaseDef max)
 {
     this->maxs = SIMD4Def(max);
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range4<T, Width>::SIMD4Def::Mask Range4<T, Width>::isWithinRange(BaseDef value) const
+XS_INLINE typename Range4<T, Width>::SIMD4Def::Mask Range4<T, Width>::isWithinRange(const BaseDef value) const noexcept
 {
     return (this->mins.lessThanMask(value)) & (SIMD4Def(value).lessThanMask(this->maxs));
 }
 
 template<typename T, SIMDWidth Width>
-XS_INLINE typename Range4<T, Width>::SIMD4Def::Mask Range4<T, Width>::isWithinRange(const SIMD4Def& values) const
+XS_INLINE typename Range4<T, Width>::SIMD4Def::Mask Range4<T, Width>::isWithinRange(
+    const SIMD4Def& values) const noexcept
 {
     return (this->mins.lessThanMask(values)) & (SIMD4Def(values).lessThanMask(this->maxs));
 }

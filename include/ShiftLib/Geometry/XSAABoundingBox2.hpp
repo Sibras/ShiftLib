@@ -181,6 +181,6 @@ public:
      * Calculates the Surface Area of a boundingBox2.
      * @returns The surface area of the boxes in floating point.
      */
-    XS_FUNCTION SIMD2Def surfaceArea() const;
+    XS_FUNCTION SIMD2Def surfaceArea() const noexcept;
 };
 } // namespace Shift

@@ -199,7 +199,7 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const;
+    XS_FUNCTION InBaseDef getValueInBase() const noexcept;
 
     /**
      * Get an element of a 3-D point.
@@ -208,7 +208,7 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const;
+    XS_FUNCTION BaseDef getValue() const noexcept;
 
     /**
      * Set an element of a 3-D point.
