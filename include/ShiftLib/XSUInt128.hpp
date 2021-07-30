@@ -79,145 +79,145 @@ public:
 
     XS_FUNCTION UInt128& operator=(float64 other) noexcept;
 
-    XS_FUNCTION constexpr UInt128 operator&(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr UInt128 operator&(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128 operator&(const T& other) const noexcept;
+    XS_FUNCTION constexpr UInt128 operator&(T other) const noexcept;
 
-    XS_FUNCTION constexpr UInt128& operator&=(const UInt128& other) noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128& operator&=(const T& other) noexcept;
-
-    XS_FUNCTION constexpr UInt128 operator|(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr UInt128& operator&=(UInt128 other) noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128 operator|(const T& other) const noexcept;
+    XS_FUNCTION constexpr UInt128& operator&=(T other) noexcept;
 
-    XS_FUNCTION constexpr UInt128& operator|=(const UInt128& other) noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128& operator|=(const T& other) noexcept;
-
-    XS_FUNCTION constexpr UInt128 operator^(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr UInt128 operator|(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128 operator^(const T& other) const noexcept;
+    XS_FUNCTION constexpr UInt128 operator|(T other) const noexcept;
 
-    XS_FUNCTION constexpr UInt128& operator^=(const UInt128& other) noexcept;
+    XS_FUNCTION constexpr UInt128& operator|=(UInt128 other) noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr UInt128& operator^=(const T& other) noexcept;
+    XS_FUNCTION constexpr UInt128& operator|=(T other) noexcept;
+
+    XS_FUNCTION constexpr UInt128 operator^(UInt128 other) const noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION constexpr UInt128 operator^(T other) const noexcept;
+
+    XS_FUNCTION constexpr UInt128& operator^=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION constexpr UInt128& operator^=(T other) noexcept;
 
     XS_FUNCTION constexpr UInt128 operator~() const noexcept;
 
-    XS_FUNCTION UInt128 operator<<(const UInt128& other) const noexcept;
+    XS_FUNCTION UInt128 operator<<(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator<<(const T& other) const noexcept;
+    XS_FUNCTION UInt128 operator<<(T other) const noexcept;
 
-    XS_FUNCTION UInt128& operator<<=(const UInt128& other) noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator<<=(const T& other) noexcept;
-
-    XS_FUNCTION UInt128 operator>>(const UInt128& other) const noexcept;
+    XS_FUNCTION UInt128& operator<<=(UInt128 other) noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator>>(const T& other) const noexcept;
+    XS_FUNCTION UInt128& operator<<=(T other) noexcept;
 
-    XS_FUNCTION UInt128& operator>>=(const UInt128& other) noexcept;
+    XS_FUNCTION UInt128 operator>>(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator>>=(const T& other) noexcept;
+    XS_FUNCTION UInt128 operator>>(T other) const noexcept;
+
+    XS_FUNCTION UInt128& operator>>=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128& operator>>=(T other) noexcept;
 
     XS_FUNCTION constexpr bool operator!() const noexcept;
 
-    XS_FUNCTION constexpr bool operator&&(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr bool operator&&(UInt128 other) const noexcept;
 
-    XS_FUNCTION constexpr bool operator||(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr bool operator||(UInt128 other) const noexcept;
 
-    XS_FUNCTION constexpr bool operator==(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator==(const T& other) const noexcept;
-
-    XS_FUNCTION constexpr bool operator!=(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr bool operator==(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator!=(const T& other) const noexcept;
+    XS_FUNCTION constexpr bool operator==(T other) const noexcept;
 
-    XS_FUNCTION constexpr bool operator>(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator>(const T& other) const noexcept;
-
-    XS_FUNCTION constexpr bool operator<(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr bool operator!=(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator<(const T& other) const noexcept;
+    XS_FUNCTION constexpr bool operator!=(T other) const noexcept;
 
-    XS_FUNCTION constexpr bool operator>=(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator>=(const T& other) const noexcept;
-
-    XS_FUNCTION constexpr bool operator<=(const UInt128& other) const noexcept;
+    XS_FUNCTION constexpr bool operator>(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION constexpr bool operator<=(const T& other) const noexcept;
+    XS_FUNCTION constexpr bool operator>(T other) const noexcept;
 
-    XS_FUNCTION UInt128 operator+(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator+(const T& other) const noexcept;
-
-    XS_FUNCTION UInt128& operator+=(const UInt128& other) noexcept;
+    XS_FUNCTION constexpr bool operator<(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator+=(const T& other) noexcept;
+    XS_FUNCTION constexpr bool operator<(T other) const noexcept;
 
-    XS_FUNCTION UInt128 operator-(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator-(const T& other) const noexcept;
-
-    XS_FUNCTION UInt128& operator-=(const UInt128& other) noexcept;
+    XS_FUNCTION constexpr bool operator>=(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator-=(const T& other) noexcept;
+    XS_FUNCTION constexpr bool operator>=(T other) const noexcept;
 
-    XS_FUNCTION UInt128 operator*(const UInt128& other) const noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator*(const T& other) const noexcept;
-
-    XS_FUNCTION UInt128& operator*=(const UInt128& other) noexcept;
+    XS_FUNCTION constexpr bool operator<=(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator*=(const T& other) noexcept;
+    XS_FUNCTION constexpr bool operator<=(T other) const noexcept;
 
-    XS_FUNCTION UInt128 divide(const UInt128& denom, UInt128& rem) const noexcept;
-
-    XS_FUNCTION UInt128 operator/(const UInt128& other) const noexcept;
+    XS_FUNCTION UInt128 operator+(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator/(const T& other) const noexcept;
+    XS_FUNCTION UInt128 operator+(T other) const noexcept;
 
-    XS_FUNCTION UInt128& operator/=(const UInt128& other) noexcept;
-
-    template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator/=(const T& other) noexcept;
-
-    XS_FUNCTION UInt128 operator%(const UInt128& other) const noexcept;
+    XS_FUNCTION UInt128& operator+=(UInt128 other) noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128 operator%(const T& other) const noexcept;
+    XS_FUNCTION UInt128& operator+=(T other) noexcept;
 
-    XS_FUNCTION UInt128& operator%=(const UInt128& other) noexcept;
+    XS_FUNCTION UInt128 operator-(UInt128 other) const noexcept;
 
     template<typename T, typename = require<isInteger<T>>>
-    XS_FUNCTION UInt128& operator%=(const T& other) noexcept;
+    XS_FUNCTION UInt128 operator-(T other) const noexcept;
+
+    XS_FUNCTION UInt128& operator-=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128& operator-=(T other) noexcept;
+
+    XS_FUNCTION UInt128 operator*(UInt128 other) const noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128 operator*(T other) const noexcept;
+
+    XS_FUNCTION UInt128& operator*=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128& operator*=(T other) noexcept;
+
+    XS_FUNCTION UInt128 divide(UInt128 denom, UInt128& rem) const noexcept;
+
+    XS_FUNCTION UInt128 operator/(UInt128 other) const noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128 operator/(T other) const noexcept;
+
+    XS_FUNCTION UInt128& operator/=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128& operator/=(T other) noexcept;
+
+    XS_FUNCTION UInt128 operator%(UInt128 other) const noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128 operator%(T other) const noexcept;
+
+    XS_FUNCTION UInt128& operator%=(UInt128 other) noexcept;
+
+    template<typename T, typename = require<isInteger<T>>>
+    XS_FUNCTION UInt128& operator%=(T other) noexcept;
 
     XS_FUNCTION UInt128& operator++() noexcept;
 
@@ -231,46 +231,46 @@ public:
 };
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator&(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator&(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator|(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator|(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator^(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator^(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator==(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator==(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator!=(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator!=(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator>(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator>(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator<(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator<(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator>=(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator>=(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr bool operator<=(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr bool operator<=(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator+(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator+(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator-(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator-(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator*(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator*(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator/(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator/(T param1, UInt128 param2) noexcept;
 
 template<typename T, typename = require<isInteger<T>>>
-XS_FUNCTION constexpr UInt128 operator%(const T& param1, const UInt128& param2) noexcept;
+XS_FUNCTION constexpr UInt128 operator%(T param1, UInt128 param2) noexcept;
 
 XS_FUNCTION constexpr UInt128 operator"" _ui128(unsigned long long v); // NOLINT(google-runtime-int)
 

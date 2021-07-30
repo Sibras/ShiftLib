@@ -36,7 +36,7 @@ public:
      * Construct from non-data type.
      * @param other The non-data type to construct from.
      */
-    XS_FUNCTION explicit RationalData(const Rational<T>& other) noexcept;
+    XS_FUNCTION explicit RationalData(Rational<T> other) noexcept;
 
     /**
      * Directly set the contents this object.
@@ -51,7 +51,7 @@ public:
      * Save to memory.
      * @param other The object to store.
      */
-    XS_FUNCTION void store(const Rational<T>& other) noexcept;
+    XS_FUNCTION void store(Rational<T> other) noexcept;
 
     /**
      * Load from memory.
@@ -158,7 +158,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator+(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T> operator+(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Subtract a rational from another rational.
@@ -168,7 +168,7 @@ XS_FUNCTION Rational<T> operator+(const Rational<T>& other1, const Rational<T>& 
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator-(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T> operator-(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Multiply two rational's.
@@ -178,7 +178,7 @@ XS_FUNCTION Rational<T> operator-(const Rational<T>& other1, const Rational<T>& 
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator*(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T> operator*(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Divide two rational's.
@@ -188,7 +188,7 @@ XS_FUNCTION Rational<T> operator*(const Rational<T>& other1, const Rational<T>& 
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator/(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T> operator/(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Negate a rational.
@@ -197,7 +197,7 @@ XS_FUNCTION Rational<T> operator/(const Rational<T>& other1, const Rational<T>& 
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator-(const Rational<T>& other) noexcept;
+XS_FUNCTION Rational<T> operator-(Rational<T> other) noexcept;
 
 /**
  * Perform compound assignment and addition with a rational.
@@ -207,7 +207,7 @@ XS_FUNCTION Rational<T> operator-(const Rational<T>& other) noexcept;
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, Rational<T> other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction by a rational.
@@ -217,7 +217,7 @@ XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, const Rational<T>& othe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, Rational<T> other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication with a rational.
@@ -227,7 +227,7 @@ XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, const Rational<T>& othe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, Rational<T> other2) noexcept;
 
 /**
  * Perform compound assignment and division by a rational.
@@ -237,7 +237,7 @@ XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, const Rational<T>& othe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, Rational<T> other2) noexcept;
 
 /**
  * Compare two rational's are equal.
@@ -247,7 +247,7 @@ XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, const Rational<T>& othe
  * @returns true if the parameters are considered equivalent.
  */
 template<typename T>
-XS_FUNCTION bool operator==(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION bool operator==(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Compare two rational's are less or equal.
@@ -257,7 +257,7 @@ XS_FUNCTION bool operator==(const Rational<T>& other1, const Rational<T>& other2
  * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T>
-XS_FUNCTION bool operator<=(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION bool operator<=(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Compare two rational's are less than.
@@ -267,7 +267,7 @@ XS_FUNCTION bool operator<=(const Rational<T>& other1, const Rational<T>& other2
  * @returns true if the first parameter is less than the second.
  */
 template<typename T>
-XS_FUNCTION bool operator<(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION bool operator<(Rational<T> other1, Rational<T> other2) noexcept;
 
 /**
  * Compare two rational's are equal.
@@ -277,5 +277,5 @@ XS_FUNCTION bool operator<(const Rational<T>& other1, const Rational<T>& other2)
  * @returns true if the parameters are not considered equivalent.
  */
 template<typename T>
-XS_FUNCTION bool operator!=(const Rational<T>& other1, const Rational<T>& other2) noexcept;
+XS_FUNCTION bool operator!=(Rational<T> other1, Rational<T> other2) noexcept;
 } // namespace Shift

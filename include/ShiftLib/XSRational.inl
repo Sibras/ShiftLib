@@ -39,8 +39,7 @@ XS_INLINE Rational<T> rationalReduceHelper(const T2 numerator, const T2 denomina
             temp = gcd % denomTemp;
             gcd = denomTemp;
             denomTemp = temp;
-        }
-        while (temp != 0);
+        } while (temp != 0);
 
         // TODO: if either ret.numerator or ret.denominator are bigger than can be held in T then this will fail. Need a
         // way to correctly round to nearest that can be stored in T.
@@ -63,7 +62,7 @@ XS_INLINE Rational<T> rationalReduceHelper(const T2 numerator, const T2 denomina
 } // namespace NoExport
 
 template<typename T>
-XS_INLINE RationalData<T>::RationalData(const Rational<T>& other) noexcept
+XS_INLINE RationalData<T>::RationalData(Rational<T> other) noexcept
     : numerator(other.numerator)
     , denominator(other.denominator)
 {}
@@ -76,7 +75,7 @@ XS_INLINE void RationalData<T>::setData(T value1, T value2) noexcept
 }
 
 template<typename T>
-XS_INLINE void RationalData<T>::store(const Rational<T>& other) noexcept
+XS_INLINE void RationalData<T>::store(Rational<T> other) noexcept
 {
     this->numerator = other.numerator;
     this->denominator = other.denominator;
@@ -105,7 +104,7 @@ XS_INLINE Rational<T>::Rational(const float32 value) noexcept
     XS_UNUSED(frexpf(value, &exponent));
     exponent = (exponent > 1) ? exponent - 1 : 0;
     const int64 den = 1LL << (61 - exponent);
-    *this = NoExport::rationalReduceHelper<T, int64>(llrintf(value * den + 0.5f), den);
+    *this = NoExport::rationalReduceHelper<T, int64>(llrintf(value * static_cast<float32>(den) + 0.5f), den);
 }
 
 template<typename T>
@@ -115,7 +114,7 @@ XS_INLINE Rational<T>::Rational(const float64 value) noexcept
     XS_UNUSED(frexp(value, &exponent));
     exponent = (exponent > 1) ? exponent - 1 : 0;
     const int64 den = 1LL << (61 - exponent);
-    *this = NoExport::rationalReduceHelper<T, int64>(llrint(value * den + 0.5), den);
+    *this = NoExport::rationalReduceHelper<T, int64>(llrint(value * static_cast<float64>(den) + 0.5), den);
 }
 
 template<typename T>
@@ -153,7 +152,7 @@ XS_INLINE Rational<T> Rational<T>::reciprocal() const
 }
 
 template<typename T>
-XS_INLINE Rational<T> operator+(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T> operator+(Rational<T> other1, Rational<T> other2) noexcept
 {
     return NoExport::rationalReduceHelper<T, promote<T>>(
         mul<T>(other1.numerator, other2.denominator) + mul<T>(other2.numerator, other1.denominator),
@@ -161,7 +160,7 @@ XS_INLINE Rational<T> operator+(const Rational<T>& other1, const Rational<T>& ot
 }
 
 template<typename T>
-XS_INLINE Rational<T> operator-(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T> operator-(Rational<T> other1, Rational<T> other2) noexcept
 {
     return NoExport::rationalReduceHelper<T, toSigned<promote<T>>>(
         static_cast<toSigned<promote<T>>>(
@@ -170,73 +169,73 @@ XS_INLINE Rational<T> operator-(const Rational<T>& other1, const Rational<T>& ot
 }
 
 template<typename T>
-XS_INLINE Rational<T> operator*(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T> operator*(Rational<T> other1, Rational<T> other2) noexcept
 {
     return NoExport::rationalReduceHelper<T, promote<T>>(
         mul<T>(other1.numerator, other2.numerator), mul<T>(other1.denominator, other2.denominator));
 }
 
 template<typename T>
-XS_INLINE Rational<T> operator/(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T> operator/(Rational<T> other1, Rational<T> other2) noexcept
 {
     return other1 * other2.reciprocal();
 }
 
 template<typename T>
-XS_INLINE Rational<T> operator-(const Rational<T>& other) noexcept
+XS_INLINE Rational<T> operator-(Rational<T> other) noexcept
 {
     // Unary minus is allowed to make it possible to define uint max as -1
     return Rational<T>(static_cast<T>(-static_cast<toSigned<T>>(other.numerator)), other.denominator);
 }
 
 template<typename T>
-XS_INLINE Rational<T>& operator+=(Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T>& operator+=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 + other2;
     return other1;
 }
 
 template<typename T>
-XS_INLINE Rational<T>& operator-=(Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T>& operator-=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 - other2;
     return other1;
 }
 
 template<typename T>
-XS_INLINE Rational<T>& operator*=(Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T>& operator*=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 * other2;
     return other1;
 }
 
 template<typename T>
-XS_INLINE Rational<T>& operator/=(Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE Rational<T>& operator/=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 / other2;
     return other1;
 }
 
 template<typename T>
-XS_INLINE bool operator==(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE bool operator==(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (other1.numerator == other2.numerator) & (other1.denominator == other2.denominator);
 }
 
 template<typename T>
-XS_INLINE bool operator<=(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE bool operator<=(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (mul<T>(other1.numerator, other2.denominator) <= mul<T>(other1.denominator, other2.numerator));
 }
 
 template<typename T>
-XS_INLINE bool operator<(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE bool operator<(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (mul<T>(other1.numerator, other2.denominator) < mul<T>(other1.denominator, other2.numerator));
 }
 
 template<typename T>
-XS_INLINE bool operator!=(const Rational<T>& other1, const Rational<T>& other2) noexcept
+XS_INLINE bool operator!=(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (other1.numerator != other2.numerator) | (other1.denominator != other2.denominator);
 }

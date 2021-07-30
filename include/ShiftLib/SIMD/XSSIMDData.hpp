@@ -31,7 +31,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE explicit SIMDDataType(const T& v0) noexcept
+    XS_INLINE explicit SIMDDataType(T v0) noexcept
         : values(v0)
     {}
 };
@@ -45,7 +45,7 @@ public:
     XS_INLINE SIMDDataType1() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE explicit SIMDDataType1(const T& v0) noexcept
+    XS_INLINE explicit SIMDDataType1(T v0) noexcept
         : value(v0)
     {}
 };
@@ -60,7 +60,7 @@ public:
     XS_INLINE SIMDDataType2() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType2(const T& v0, const T2& v1) noexcept
+    XS_INLINE SIMDDataType2(T v0, T2 v1) noexcept
         : values0(v0)
         , values1(v1)
     {}
@@ -76,7 +76,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1) noexcept
         : values0(v0)
         , values1(v1)
     {}
@@ -93,7 +93,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -112,7 +112,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -133,7 +133,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3, const T& v4) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -156,7 +156,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3, const T& v4, const T& v5) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -182,8 +182,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(
-        const T& v0, const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, const T& v6, const T& v7) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -212,8 +211,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, const T& v6,
-        const T& v7, const T& v8) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -246,8 +244,7 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, const T& v6,
-        const T& v7, const T& v8, const T& v9, const T& v10, const T& v11) noexcept
+    XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)
@@ -287,9 +284,8 @@ public:
     XS_INLINE SIMDDataType() = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
-    XS_INLINE SIMDDataType(const T& v0, const T& v1, const T& v2, const T& v3, const T& v4, const T& v5, const T& v6,
-        const T& v7, const T& v8, const T& v9, const T& v10, const T& v11, const T& v12, const T& v13, const T& v14,
-        const T& v15) noexcept
+    XS_INLINE SIMDDataType(
+        T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12, T v13, T v14, T v15) noexcept
         : values0(v0)
         , values1(v1)
         , values2(v2)

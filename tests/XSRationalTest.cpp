@@ -25,7 +25,7 @@ using namespace Shift;
 
 namespace Shift {
 template<typename T>
-void PrintTo(const Rational<T>& param, std::ostream* os)
+void PrintTo(Rational<T> param, std::ostream* os)
 {
     if constexpr (isSameAny<T, UInt128, Int128>) {
         if constexpr (isSigned<T>) {
@@ -40,7 +40,7 @@ void PrintTo(const Rational<T>& param, std::ostream* os)
 } // namespace Shift
 
 template<typename T>
-::testing::AssertionResult assertRational(const Rational<T>& param, T v0, T v1)
+::testing::AssertionResult assertRational(Rational<T> param, T v0, T v1)
 {
     if (testValue(param.numerator, v0) && testValue(param.denominator, v1)) {
         return ::testing::AssertionSuccess();

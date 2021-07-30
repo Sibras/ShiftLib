@@ -600,7 +600,7 @@ XS_INLINE T bitClear(T param, uint32 bit) noexcept
 template<typename T, typename T2>
 XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
-XS_INLINE T bitCast(const T2& param) noexcept
+XS_INLINE T bitCast(T2 param) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
         isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
@@ -609,7 +609,8 @@ XS_INLINE T bitCast(const T2& param) noexcept
     } else if constexpr (isInteger<T> && (isSigned<T> != isSigned<T2>)) {
         return static_cast<T>(param);
     } else
-#if XS_ISA == XS_X86 && ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG))
+#if XS_ISA == XS_X86 && \
+    ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN))
         if constexpr (isSame<T2, float32> && isSameAny<T, uint32, int32>) {
         return static_cast<T>(_castf32_u32(param));
     } else if constexpr (isSame<T2, float64> && isSameAny<T, uint64, int64>) {
@@ -742,7 +743,7 @@ XS_INLINE T bitCast(const T2& param) noexcept
 template<typename T, typename T2>
 XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
-XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
+XS_INLINE T bitAnd(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
         isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
@@ -782,7 +783,7 @@ XS_INLINE T bitAnd(const T& param1, const T2& param2) noexcept
 template<typename T, typename T2>
 XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
-XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
+XS_INLINE T bitOr(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
         isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
@@ -822,7 +823,7 @@ XS_INLINE T bitOr(const T& param1, const T2& param2) noexcept
 template<typename T, typename T2>
 XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
-XS_INLINE T bitXor(const T& param1, const T2& param2) noexcept
+XS_INLINE T bitXor(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
         isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
@@ -858,7 +859,7 @@ XS_INLINE T bitXor(const T& param1, const T2& param2) noexcept
  * @returns The result.
  */
 template<typename T>
-XS_INLINE T bitNot(const T& param) noexcept
+XS_INLINE T bitNot(T param) noexcept
 {
     if constexpr (isInteger<T>) {
         return ~param;

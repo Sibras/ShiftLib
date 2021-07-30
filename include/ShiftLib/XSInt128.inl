@@ -258,18 +258,18 @@ XS_INLINE Int128& Int128::operator=(const float64 other) noexcept
     return *this;
 }
 
-XS_INLINE constexpr Int128 Int128::operator&(const Int128& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator&(const Int128 other) const noexcept
 {
     return Int128(high & other.high, low & other.low);
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 Int128::operator&(const T& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator&(const T other) const noexcept
 {
     return Int128(0_i64, low & static_cast<uint64>(other));
 }
 
-XS_INLINE constexpr Int128& Int128::operator&=(const Int128& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator&=(const Int128 other) noexcept
 {
     high &= other.high;
     low &= other.low;
@@ -277,25 +277,25 @@ XS_INLINE constexpr Int128& Int128::operator&=(const Int128& other) noexcept
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128& Int128::operator&=(const T& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator&=(const T other) noexcept
 {
     high = 0_i64;
     low &= static_cast<uint64>(other);
     return *this;
 }
 
-XS_INLINE constexpr Int128 Int128::operator|(const Int128& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator|(const Int128 other) const noexcept
 {
     return Int128(high | other.high, low | other.low);
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 Int128::operator|(const T& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator|(const T other) const noexcept
 {
     return Int128(0_i64, low | static_cast<uint64>(other));
 }
 
-XS_INLINE constexpr Int128& Int128::operator|=(const Int128& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator|=(const Int128 other) noexcept
 {
     high |= other.high;
     low |= other.low;
@@ -303,24 +303,24 @@ XS_INLINE constexpr Int128& Int128::operator|=(const Int128& other) noexcept
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128& Int128::operator|=(const T& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator|=(const T other) noexcept
 {
     low |= static_cast<uint64>(other);
     return *this;
 }
 
-XS_INLINE constexpr Int128 Int128::operator^(const Int128& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator^(const Int128 other) const noexcept
 {
     return Int128(high ^ other.high, low ^ other.low);
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 Int128::operator^(const T& other) const noexcept
+XS_INLINE constexpr Int128 Int128::operator^(const T other) const noexcept
 {
     return Int128(0_i64, low ^ static_cast<uint64>(other));
 }
 
-XS_INLINE constexpr Int128& Int128::operator^=(const Int128& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator^=(const Int128 other) noexcept
 {
     high ^= other.high;
     low ^= other.low;
@@ -328,7 +328,7 @@ XS_INLINE constexpr Int128& Int128::operator^=(const Int128& other) noexcept
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128& Int128::operator^=(const T& other) noexcept
+XS_INLINE constexpr Int128& Int128::operator^=(const T other) noexcept
 {
     low ^= static_cast<uint64>(other);
     return *this;
@@ -339,13 +339,13 @@ XS_INLINE constexpr Int128 Int128::operator~() const noexcept
     return Int128(~high, ~low);
 }
 
-XS_INLINE Int128 Int128::operator<<(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator<<(const Int128 other) const noexcept
 {
     return *this << static_cast<uint8>(other);
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator<<(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator<<(const T other) const noexcept
 {
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
@@ -361,26 +361,26 @@ XS_INLINE Int128 Int128::operator<<(const T& other) const noexcept
 #endif
 }
 
-XS_INLINE Int128& Int128::operator<<=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator<<=(const Int128 other) noexcept
 {
     *this = *this << other;
     return *this;
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator<<=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator<<=(const T other) noexcept
 {
     *this = *this << other;
     return *this;
 }
 
-XS_INLINE Int128 Int128::operator>>(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator>>(const Int128 other) const noexcept
 {
     return *this >> static_cast<uint8>(other);
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator>>(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator>>(const T other) const noexcept
 {
 #if (XS_ARCH == XS_ARCH64) && \
     ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN))
@@ -395,14 +395,14 @@ XS_INLINE Int128 Int128::operator>>(const T& other) const noexcept
 #endif
 }
 
-XS_INLINE Int128& Int128::operator>>=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator>>=(const Int128 other) noexcept
 {
     *this = *this >> other;
     return *this;
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator>>=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator>>=(const T other) noexcept
 {
     *this = *this >> other;
     return *this;
@@ -413,83 +413,83 @@ XS_INLINE constexpr bool Int128::operator!() const noexcept
     return (static_cast<uint64>(high) | low) == 0_ui64;
 }
 
-XS_INLINE constexpr bool Int128::operator&&(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator&&(const Int128 other) const noexcept
 {
     return static_cast<bool>(*this) && static_cast<bool>(other);
 }
 
-XS_INLINE constexpr bool Int128::operator||(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator||(const Int128 other) const noexcept
 {
     return static_cast<bool>(*this) || static_cast<bool>(other);
 }
 
-XS_INLINE constexpr bool Int128::operator!=(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator!=(const Int128 other) const noexcept
 {
     return (high != other.high) || (low != other.low);
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator!=(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator!=(const T other) const noexcept
 {
     return *this != Int128{other};
 }
 
-XS_INLINE constexpr bool Int128::operator==(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator==(const Int128 other) const noexcept
 {
     return (high == other.high) && (low == other.low);
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator==(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator==(const T other) const noexcept
 {
     return *this == Int128{other};
 }
 
-XS_INLINE constexpr bool Int128::operator>(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator>(const Int128 other) const noexcept
 {
     return (high == other.high) ? low > other.low : high > other.high;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator>(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator>(const T other) const noexcept
 {
     return *this > Int128{other};
 }
 
-XS_INLINE constexpr bool Int128::operator<(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator<(const Int128 other) const noexcept
 {
     return (high == other.high) ? low < other.low : high < other.high;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator<(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator<(const T other) const noexcept
 {
     return *this < Int128{other};
 }
 
-XS_INLINE constexpr bool Int128::operator>=(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator>=(const Int128 other) const noexcept
 {
     return (high == other.high) ? low >= other.low : high >= other.high;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator>=(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator>=(const T other) const noexcept
 {
     return *this >= Int128{other};
 }
 
-XS_INLINE constexpr bool Int128::operator<=(const Int128& other) const noexcept
+XS_INLINE constexpr bool Int128::operator<=(const Int128 other) const noexcept
 {
     return (high == other.high) ? low <= other.low : high <= other.high;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool Int128::operator<=(const T& other) const noexcept
+XS_INLINE constexpr bool Int128::operator<=(const T other) const noexcept
 {
     return *this <= Int128{other};
 }
 
-XS_INLINE Int128 Int128::operator+(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator+(const Int128 other) const noexcept
 {
     uint8 carry;
     const auto newLow = addc<uint64>(low, other.low, 0, carry);
@@ -497,14 +497,14 @@ XS_INLINE Int128 Int128::operator+(const Int128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator+(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator+(const T other) const noexcept
 {
     uint8 carry;
     const auto newLow = addc<uint64>(low, static_cast<uint64>(other), 0, carry);
     return Int128(addc<int64>(high, -int64{other < 0}, carry, carry), newLow);
 }
 
-XS_INLINE Int128& Int128::operator+=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator+=(const Int128 other) noexcept
 {
     uint8 carry;
     low = addc<uint64>(low, other.low, 0, carry);
@@ -513,7 +513,7 @@ XS_INLINE Int128& Int128::operator+=(const Int128& other) noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator+=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator+=(const T other) noexcept
 {
     uint8 carry;
     low = addc<uint64>(low, static_cast<uint64>(other), 0, carry);
@@ -521,7 +521,7 @@ XS_INLINE Int128& Int128::operator+=(const T& other) noexcept
     return *this;
 }
 
-XS_INLINE Int128 Int128::operator-(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator-(const Int128 other) const noexcept
 {
     uint8 carry;
     const auto newLow = subc<uint64>(low, other.low, 0, carry);
@@ -529,14 +529,14 @@ XS_INLINE Int128 Int128::operator-(const Int128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator-(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator-(const T other) const noexcept
 {
     uint8 carry;
     const auto newLow = subc<uint64>(low, static_cast<uint64>(other), 0, carry);
     return Int128(subc<int64>(high, -int64{other < 0}, carry, carry), newLow);
 }
 
-XS_INLINE Int128& Int128::operator-=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator-=(const Int128 other) noexcept
 {
     uint8 carry;
     low = subc<uint64>(low, other.low, 0, carry);
@@ -545,7 +545,7 @@ XS_INLINE Int128& Int128::operator-=(const Int128& other) noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator-=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator-=(const T other) noexcept
 {
     uint8 carry;
     low = subc<uint64>(low, static_cast<uint64>(other), 0, carry);
@@ -553,7 +553,7 @@ XS_INLINE Int128& Int128::operator-=(const T& other) noexcept
     return *this;
 }
 
-XS_INLINE Int128 Int128::operator*(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator*(const Int128 other) const noexcept
 {
     if constexpr (currentArch == Architecture::Bit32) {
         // Split values into 4 32-bit parts
@@ -622,7 +622,7 @@ XS_INLINE Int128 Int128::operator*(const Int128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator*(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator*(const T other) const noexcept
 {
     if constexpr (sizeof(T) <= sizeof(uint64)) {
         const UInt128 bd = mul<uint64>(low, other);
@@ -635,20 +635,20 @@ XS_INLINE Int128 Int128::operator*(const T& other) const noexcept
     }
 }
 
-XS_INLINE Int128& Int128::operator*=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator*=(const Int128 other) noexcept
 {
     *this = *this * other;
     return *this;
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator*=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator*=(const T other) noexcept
 {
     *this = *this * other;
     return *this;
 }
 
-XS_INLINE Int128 Int128::divide(const Int128& denom, Int128& rem) const noexcept
+XS_INLINE Int128 Int128::divide(const Int128 denom, Int128& rem) const noexcept
 {
     Int128 quot(0, 0);
     rem = 0;
@@ -676,32 +676,32 @@ XS_INLINE Int128 Int128::divide(const Int128& denom, Int128& rem) const noexcept
     return quot;
 }
 
-XS_INLINE Int128 Int128::operator/(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator/(const Int128 other) const noexcept
 {
     Int128 rem;
     return divide(other, rem);
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator/(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator/(const T other) const noexcept
 {
     return *this / Int128{other};
 }
 
-XS_INLINE Int128& Int128::operator/=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator/=(const Int128 other) noexcept
 {
     *this = *this / other;
     return *this;
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator/=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator/=(const T other) noexcept
 {
     *this = *this / Int128{other};
     return *this;
 }
 
-XS_INLINE Int128 Int128::operator%(const Int128& other) const noexcept
+XS_INLINE Int128 Int128::operator%(const Int128 other) const noexcept
 {
     Int128 rem;
     divide(other, rem);
@@ -709,19 +709,19 @@ XS_INLINE Int128 Int128::operator%(const Int128& other) const noexcept
 }
 
 template<typename T, typename>
-XS_INLINE Int128 Int128::operator%(const T& other) const noexcept
+XS_INLINE Int128 Int128::operator%(const T other) const noexcept
 {
     return *this % Int128{other};
 }
 
-XS_INLINE Int128& Int128::operator%=(const Int128& other) noexcept
+XS_INLINE Int128& Int128::operator%=(const Int128 other) noexcept
 {
     *this = *this % other;
     return *this;
 }
 
 template<typename T, typename>
-XS_INLINE Int128& Int128::operator%=(const T& other) noexcept
+XS_INLINE Int128& Int128::operator%=(const T other) noexcept
 {
     *this = *this % Int128{other};
     return *this;
@@ -759,85 +759,85 @@ XS_INLINE Int128 Int128::operator-() const noexcept
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator&(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator&(const T param1, Int128 param2) noexcept
 {
     return param2 & param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator|(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator|(const T param1, Int128 param2) noexcept
 {
     return param2 | param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator^(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator^(const T param1, Int128 param2) noexcept
 {
     return param2 ^ param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator==(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator==(const T param1, Int128 param2) noexcept
 {
     return param2 == param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator!=(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator!=(const T param1, Int128 param2) noexcept
 {
     return param2 != param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator>(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator>(const T param1, Int128 param2) noexcept
 {
     return param2 < param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator<(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator<(const T param1, Int128 param2) noexcept
 {
     return param2 > param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator<=(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator<=(const T param1, Int128 param2) noexcept
 {
     return param2 >= param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr bool operator>=(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr bool operator>=(const T param1, Int128 param2) noexcept
 {
     return param2 <= param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator+(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator+(const T param1, Int128 param2) noexcept
 {
     return param2 + param1;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator-(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator-(const T param1, const Int128 param2) noexcept
 {
     return Int128(param1) - param2;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator*(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator*(const T param1, const Int128 param2) noexcept
 {
-    return param2 * param1;
+    return Int128(param1) * param2;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator/(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator/(const T param1, const Int128 param2) noexcept
 {
     return Int128(param1) / param2;
 }
 
 template<typename T, typename>
-XS_INLINE constexpr Int128 operator%(const T& param1, const Int128& param2) noexcept
+XS_INLINE constexpr Int128 operator%(const T param1, const Int128 param2) noexcept
 {
     return Int128(param1) % param2;
 }

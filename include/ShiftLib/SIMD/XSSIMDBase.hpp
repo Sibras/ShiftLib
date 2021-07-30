@@ -45,7 +45,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit SIMDBaseData(const SIMDBase<T, Width>& other) noexcept;
+    XS_FUNCTION explicit SIMDBaseData(SIMDBase<T, Width> other) noexcept;
 
     /**
      * Directly set the contents of this object.
@@ -61,7 +61,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const SIMDBase<T, Width>& other) noexcept;
+    XS_FUNCTION void store(SIMDBase<T, Width> other) noexcept;
 
     /**
      * Load from memory.
@@ -129,13 +129,13 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_FUNCTION explicit SIMDBase(const SIMDBase<T, Width2>& other) noexcept;
+    XS_FUNCTION explicit SIMDBase(SIMDBase<T, Width2> other) noexcept;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION explicit SIMDBase(const InBaseDef& other) noexcept;
+    XS_FUNCTION explicit SIMDBase(InBaseDef other) noexcept;
 
     /**
      * Constructor to build set to 0.
@@ -163,7 +163,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMDBase mad(const SIMDBase& other1, const SIMDBase& other2) const noexcept;
+    XS_FUNCTION SIMDBase mad(SIMDBase other1, SIMDBase other2) const noexcept;
 
     /**
      * Multiply this object by another and then subtract another object.
@@ -173,7 +173,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMDBase msub(const SIMDBase& other1, const SIMDBase& other2) const noexcept;
+    XS_FUNCTION SIMDBase msub(SIMDBase other1, SIMDBase other2) const noexcept;
 
     /**
      * Negate this object based on the sign of another.
@@ -182,7 +182,7 @@ public:
      * @param other The second object whose sign to check.
      * @returns Result of operation.
      */
-    XS_FUNCTION SIMDBase sign(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase sign(SIMDBase other) const noexcept;
 
     /**
      * Compute the absolute value of this object.
@@ -195,13 +195,13 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_FUNCTION SIMDBase max(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase max(SIMDBase other) const noexcept;
 
     /**
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_FUNCTION SIMDBase min(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase min(SIMDBase other) const noexcept;
 
     /**
      * Approximate reciprocal (1/this) of object.
@@ -269,7 +269,7 @@ public:
      * @param other The object containing the exponent.
      * @returns Result of operation.
      */
-    XS_FUNCTION SIMDBase pow(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase pow(SIMDBase other) const noexcept;
 
     /**
      * Returns object to the power of another object.
@@ -277,7 +277,7 @@ public:
      * @param other The object containing the exponent.
      * @returns Result of operation.
      */
-    XS_FUNCTION SIMDBase powr(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase powr(SIMDBase other) const noexcept;
 
     /**
      * Returns sine of a object.
@@ -332,7 +332,7 @@ public:
      * @param other The object containing the second param of the input points.
      * @returns Object containing the angle (result in radians).
      */
-    XS_FUNCTION SIMDBase atan2(const SIMDBase& other) const noexcept;
+    XS_FUNCTION SIMDBase atan2(SIMDBase other) const noexcept;
 };
 
 /**
@@ -374,7 +374,7 @@ XS_FUNCTION SIMDBase<T, Width> operator--(SIMDBase<T, Width>& other, int32) noex
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator+(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator+(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Subtract a object from another object.
@@ -383,7 +383,7 @@ XS_FUNCTION SIMDBase<T, Width> operator+(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator-(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Multiply two objects.
@@ -392,7 +392,7 @@ XS_FUNCTION SIMDBase<T, Width> operator-(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator*(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator*(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Divide two objects.
@@ -401,7 +401,7 @@ XS_FUNCTION SIMDBase<T, Width> operator*(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator/(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator/(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Negate a object.
@@ -409,7 +409,7 @@ XS_FUNCTION SIMDBase<T, Width> operator/(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator-(const SIMDBase<T, Width>& other) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other) noexcept;
 
 /**
  * Perform compound assignment and addition with a object.
@@ -418,7 +418,7 @@ XS_FUNCTION SIMDBase<T, Width> operator-(const SIMDBase<T, Width>& other) noexce
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Perform compound assignment and subtraction by a object.
@@ -427,7 +427,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, const SIM
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Perform compound assignment and multiplication with a object.
@@ -436,7 +436,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, const SIM
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Perform compound assignment and division with a object.
@@ -445,7 +445,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, const SIM
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Compare two objects are equal.
@@ -454,7 +454,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, const SIM
  * @returns true if the parameters are considered equivalent.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator==(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION bool operator==(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Compare two objects are less or equal.
@@ -463,7 +463,7 @@ XS_FUNCTION bool operator==(const SIMDBase<T, Width>& other1, const SIMDBase<T, 
  * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<=(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION bool operator<=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Compare two objects are less than.
@@ -472,7 +472,7 @@ XS_FUNCTION bool operator<=(const SIMDBase<T, Width>& other1, const SIMDBase<T, 
  * @returns true if the first parameter is less than the second.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION bool operator<(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Compare two objects are equal.
@@ -481,7 +481,7 @@ XS_FUNCTION bool operator<(const SIMDBase<T, Width>& other1, const SIMDBase<T, W
  * @returns true if the parameters are not considered equivalent.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator!=(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION bool operator!=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * And 2 objects.
@@ -492,7 +492,7 @@ XS_FUNCTION bool operator!=(const SIMDBase<T, Width>& other1, const SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator&(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator&(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Or 2 objects.
@@ -503,7 +503,7 @@ XS_FUNCTION SIMDBase<T, Width> operator&(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator|(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator|(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Xor 2 objects.
@@ -514,7 +514,7 @@ XS_FUNCTION SIMDBase<T, Width> operator|(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator^(const SIMDBase<T, Width>& other1, const SIMDBase<T, Width>& other2) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator^(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept;
 
 /**
  * Not a object.
@@ -524,5 +524,5 @@ XS_FUNCTION SIMDBase<T, Width> operator^(const SIMDBase<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator~(const SIMDBase<T, Width>& other) noexcept;
+XS_FUNCTION SIMDBase<T, Width> operator~(SIMDBase<T, Width> other) noexcept;
 } // namespace Shift
