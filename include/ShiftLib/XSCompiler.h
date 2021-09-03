@@ -18,12 +18,7 @@
 /* Include configuration settings. */
 #include "XSConfig.h"
 
-/* Initial platform/compiler-related stuff to set. */
-#define XS_WINDOWS 1
-#define XS_LINUX 2
-#define XS_MAC 3
-#define XS_GPGPU 4
-
+/* Finds the compiler type and version. */
 #define XS_MSVC 1
 #define XS_GNUC 2
 #define XS_ICL 3
@@ -32,15 +27,6 @@
 #define XS_CLANGWIN 6
 #define XS_NVCC 7
 
-#define XS_ARCH32 1
-#define XS_ARCH64 2
-
-#define XS_X86 1
-#define XS_PPC 2
-#define XS_ARM 3
-#define XS_CUDA 4
-
-/* Finds the compiler type and version. */
 #if defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #    define XS_COMPILER XS_ICL
 #elif defined(__INTEL_COMPILER)
@@ -60,6 +46,11 @@
 #endif
 
 /* Find the current platform */
+#define XS_WINDOWS 1
+#define XS_LINUX 2
+#define XS_MAC 3
+#define XS_GPGPU 4
+
 #if defined(_WIN32)
 #    define XS_PLATFORM XS_WINDOWS
 #elif defined(macintosh)
@@ -73,6 +64,9 @@
 #endif
 
 /* Find the arch type */
+#define XS_ARCH32 1
+#define XS_ARCH64 2
+
 #if defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || defined(__aarch64__) || \
     defined(_M_ARM64) || defined(__PPC64__) || defined(__powerpc64__) || defined(_ARCH_PPC64)
 #    define XS_ARCH XS_ARCH64
@@ -81,6 +75,11 @@
 #endif
 
 /* Find the instruction set */
+#define XS_X86 1
+#define XS_PPC 2
+#define XS_ARM 3
+#define XS_CUDA 4
+
 #if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(_M_IX86) || \
     defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #    define XS_ISA XS_X86
@@ -107,22 +106,16 @@
 #    define XS_INLINE __forceinline __declspec(noalias)
 #    define XS_RESTRICT __restrict
 #    define XS_UNREACHABLE __assume(0)
-#    define XS_ALIGNMALLOC(size, al) _aligned_malloc((size), (al)) //_mm_malloc
-#    define XS_ALIGNFREE(loc) _aligned_free((loc))                 //_mm_free
 #elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG)
 #    define XS_FUNCTION
 #    define XS_INLINE __inline __attribute__((always_inline))
 #    define XS_RESTRICT __restrict__
 #    define XS_UNREACHABLE __builtin_unreachable()
-#    define XS_ALIGNMALLOC(size, al) memalign((al), (size))
-#    define XS_ALIGNFREE(loc) free((loc))
 #elif XS_COMPILER == XS_NVCC
 #    define XS_FUNCTION __device__
 #    define XS_INLINE __forceinline__ __device__
 #    define XS_RESTRICT
 #    define XS_UNREACHABLE
-#    define XS_ALIGNMALLOC(size, al)
-#    define XS_ALIGNFREE(loc)
 #else
 #    error Unrecognized compiler
 #endif
@@ -132,6 +125,9 @@
 #    if __has_cpp_attribute(likely)
 #        define XS_EXPECT(expr) [[likely]] expr
 #        define XS_UNEXPECT(expr) [[unlikely]] expr
+#    else
+#        define XS_EXPECT(expr) expr
+#        define XS_UNEXPECT(expr) expr
 #    endif
 #elif (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC)
 #    define XS_EXPECT(expr) __builtin_expect((long)(expr), true)

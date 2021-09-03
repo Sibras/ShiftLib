@@ -17,10 +17,32 @@
 
 #include "XSCompiler.h"
 
-#include <cfloat>
 #include <cstdint>
 
 namespace Shift {
+enum class Compiler
+{
+    MSVC = XS_MSVC,
+    GNUC = XS_GNUC,
+    ICL = XS_ICL,
+    ICC = XS_ICC,
+    Clang = XS_CLANG,
+    ClangWin = XS_CLANGWIN,
+    NVCC = XS_NVCC,
+};
+
+inline constexpr Compiler currentCompiler = static_cast<Compiler>(XS_COMPILER);
+
+enum class Platform
+{
+    Windows = XS_WINDOWS,
+    Linux = XS_LINUX,
+    Mac = XS_MAC,
+    GPGPU = XS_GPGPU,
+};
+
+inline constexpr Platform currentPlatform = static_cast<Platform>(XS_PLATFORM);
+
 enum class Architecture
 {
     Bit32 = XS_ARCH32,
@@ -173,14 +195,14 @@ using uint64 = uint64_t;
 
 /* Default int type based on system architecture */
 #if XS_ARCH == XS_ARCH64
-using int0 = int64_t;
-using uint0 = uint64_t;
+using int0 = int64;
+using uint0 = uint64;
 #    define UINT0_MAX UINT64_MAX
 #    define INT0_MAX INT64_MAX
 #    define INT0_MIN INT64_MIN
 #else
-using int0 = int32_t;
-using uint0 = uint32_t;
+using int0 = int32;
+using uint0 = uint32;
 #    define UINT0_MAX UINT32_MAX
 #    define INT0_MAX INT32_MAX
 #    define INT0_MIN INT32_MIN
@@ -231,6 +253,16 @@ constexpr int64 operator"" _i64(const unsigned long long v) // NOLINT(google-run
 constexpr uint64 operator"" _ui64(const unsigned long long v) // NOLINT(google-runtime-int)
 {
     return static_cast<uint64>(v);
+}
+
+constexpr int0 operator"" _i0(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<int0>(v);
+}
+
+constexpr uint0 operator"" _ui0(const unsigned long long v) // NOLINT(google-runtime-int)
+{
+    return static_cast<uint0>(v);
 }
 
 constexpr float32 operator"" _f32(const long double v)
