@@ -17,8 +17,6 @@
 
 #include "XSArchitecture.hpp"
 
-#include <type_traits>
-
 namespace Shift {
 class Int128;
 class UInt128;
@@ -260,6 +258,15 @@ struct AddPointer<T&&>
 template<typename T>
 using addPointer = typename NoExport::AddPointer<T>::type;
 
+/**
+ * Converts any type T to a reference type, making it possible to use member functions in decltype expressions
+ * without the need to go through constructors.
+ * @tparam T Generic type parameter.
+ * @returns Cannot be called and thus never returns a value.
+ */
+template<typename T>
+constexpr addRRef<T> declval() noexcept;
+
 namespace NoExport {
 template<bool, typename = void>
 struct Requires
@@ -342,7 +349,6 @@ struct Disjunction<T, Traits...> : DisjunctionHelper<T::value, T, Traits...>::ty
  */
 template<typename T, typename... Types>
 inline constexpr bool isSameAny = NoExport::Disjunction<NoExport::IsSame<removeCV<T>, removeCV<Types>>...>::value;
-;
 
 template<typename T, typename... Types>
 using requireSameAny = require<isSameAny<T, Types...>>;
@@ -509,7 +515,6 @@ inline constexpr bool isNative =
     isSameAny<removeCV<T>, float, double, long double, unsigned char, signed char, char, // NOLINT(google-runtime-int)
         unsigned short, signed short, unsigned int, signed int, unsigned long,           // NOLINT(google-runtime-int)
         signed long, unsigned long long, signed long long, bool>;                        // NOLINT(google-runtime-int)
-;
 
 template<typename T, typename Tx = void>
 using requireNative = require<isNative<T>, Tx>;
@@ -671,6 +676,7 @@ inline constexpr bool isCopyConstructible = __is_constructible(T, addLRef<const 
  */
 template<typename T>
 inline constexpr bool isDefaultConstructible = __is_constructible(T);
+
 /**
  * Query if a type is move constructible.
  */
@@ -790,6 +796,45 @@ inline constexpr bool isNothrowMoveAssignable = __is_nothrow_assignable(addLRef<
  */
 template<typename T>
 inline constexpr bool isNothrowDestructible = __is_nothrow_destructible(T);
+
+namespace NoExport {
+template<typename T, typename T2, typename = void>
+struct IsSwappableHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T, typename T2>
+struct IsSwappableHelper<T, T2, decltype(swap(declval<T>(), declval<T2>()))>
+{
+    static constexpr bool value = true;
+};
+
+template<typename T, typename T2, typename = void>
+struct IsSwappableMemberHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T, typename T2>
+struct IsSwappableMemberHelper<T, T2, decltype(declval<T>().swap(declval<T2>()))>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
+/**
+ * Query if a type is swappable with another using a global swap function.
+ */
+template<typename T, typename T2 = T>
+inline constexpr bool isSwappable = NoExport::IsSwappableHelper<addLRef<T>, addLRef<T2>>::value&&
+    NoExport::IsSwappableHelper<addLRef<T2>, addLRef<T>>::value;
+
+/**
+ * Query if a type is swappable with another using a member swap function.
+ */
+template<typename T, typename T2 = T>
+inline constexpr bool isSwappableMember = NoExport::IsSwappableMemberHelper<T, addLRef<T2>>::value;
 
 /**
  * Forwards the given parameter on maintaining any rvalue/lvalue state.

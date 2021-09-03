@@ -395,6 +395,23 @@ TEST(Traits, IsNative)
 }
 
 TEST(Traits, Promote)
+inline void swap(int8&, int8&) noexcept
+{}
+
+TEST(Traits, IsSwappable)
+{
+    static_assert(isSwappable<int8> == true);
+    static_assert(isSwappable<int16> == false);
+    class SwapTest
+    {
+    public:
+        void swap(SwapTest&) noexcept
+        {}
+    };
+    static_assert(isSwappableMember<int8> == false);
+    static_assert(isSwappableMember<SwapTest> == true);
+}
+
 {
     static_assert(isSame<promote<int8>, int16> == true);
     static_assert(isSame<promote<uint8>, uint16> == true);
