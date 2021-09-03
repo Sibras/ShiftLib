@@ -606,7 +606,7 @@ XS_INLINE T bitCast(T2 param) noexcept
         isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
     if constexpr (isSame<T, T2>) {
         return param;
-    } else if constexpr (isInteger<T> && (isSigned<T> != isSigned<T2>)) {
+    } else if constexpr (isInteger<T> && isInteger<T2> && (isSigned<T> != isSigned<T2>)) {
         return static_cast<T>(param);
     } else
 #if XS_ISA == XS_X86 && \
