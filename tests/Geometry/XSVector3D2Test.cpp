@@ -17,7 +17,7 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(VECTOR3D2)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Vector3D2Test)
 #    define XS_TESTING_VECTOR3D2
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_SIMD2
@@ -26,7 +26,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(Vector3D2Test)
+class TESTISA(V3D2)
     : public ::testing::Test
 {
 public:
@@ -43,9 +43,9 @@ using Vector3D2TestTypes = ::testing::Types<Vector3D2<float, SIMDWidth::Scalar, 
     Vector3D2<float, SIMDWidth::B32,
         false> /*, Vector3D2<float, SIMDWidth::B64, true>, Vector3D2<float, SIMDWidth::B64, false>*/>;
 
-TYPED_TEST_SUITE(TESTISA(Vector3D2Test), Vector3D2TestTypes);
+TYPED_TEST_SUITE(TESTISA(V3D2), Vector3D2TestTypes);
 
-TYPED_TEST2(TESTISA(Vector3D2Test), Vector3D2)
+TYPED_TEST_NS2(Vector3D2, TESTISA(V3D2), Vector3D2)
 {
     using TestType = typename TestFixture::Type;
     //  Constructor Test

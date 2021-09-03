@@ -35,7 +35,7 @@
 #    define XS_COMPILER_ARCH Scalar
 #endif
 
-#define CONCATTOKENIMPL(foo, bar) foo##bar
+#define CONCATTOKENIMPL(foo, bar) foo##_##bar
 #define CONCATTOKEN(foo, bar) CONCATTOKENIMPL(foo, bar)
 
 #define STRINGIFYVALUE(x) #x

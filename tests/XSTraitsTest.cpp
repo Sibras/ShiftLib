@@ -17,8 +17,7 @@
 #include "XSTraits.hpp"
 
 #include "XSCompilerOptions.h"
-
-#include <gtest/gtest.h>
+#include "XSTypes.hpp"
 
 using namespace Shift;
 
@@ -26,7 +25,7 @@ class Test1;
 class Test2;
 
 #ifdef XSTESTMAIN
-TEST(Traits, RemoveConst)
+TEST_NS(Traits, Traits, RemoveConst)
 {
     static_assert(isSameCV<removeConst<int32>, int32> == true);
     static_assert(isSameCV<removeConst<const int32>, int32> == true);
@@ -34,7 +33,7 @@ TEST(Traits, RemoveConst)
     static_assert(isSameCV<removeConst<const volatile int32>, volatile int32> == true);
 }
 
-TEST(Traits, AddConst)
+TEST_NS(Traits, Traits, AddConst)
 {
     static_assert(isSameCV<addConst<int32>, int32> == false);
     static_assert(isSameCV<addConst<const int32>, const int32> == true);
@@ -43,7 +42,7 @@ TEST(Traits, AddConst)
     static_assert(isSameCV<addConst<volatile int32>, const volatile int32> == true);
 }
 
-TEST(Traits, RemoveVolatile)
+TEST_NS(Traits, Traits, RemoveVolatile)
 {
     static_assert(isSameCV<removeVolatile<int32>, int32> == true);
     static_assert(isSameCV<removeVolatile<volatile int32>, int32> == true);
@@ -51,7 +50,7 @@ TEST(Traits, RemoveVolatile)
     static_assert(isSameCV<removeVolatile<const volatile int32>, const int32> == true);
 }
 
-TEST(Traits, AddVolatile)
+TEST_NS(Traits, Traits, AddVolatile)
 {
     static_assert(isSameCV<addVolatile<int32>, int32> == false);
     static_assert(isSameCV<addVolatile<volatile int32>, volatile int32> == true);
@@ -60,7 +59,7 @@ TEST(Traits, AddVolatile)
     static_assert(isSameCV<addVolatile<const int32>, const volatile int32> == true);
 }
 
-TEST(Traits, RemoveCV)
+TEST_NS(Traits, Traits, RemoveCV)
 {
     static_assert(isSameCV<removeCV<int32>, int32> == true);
     static_assert(isSameCV<removeCV<volatile int32>, int32> == true);
@@ -70,7 +69,7 @@ TEST(Traits, RemoveCV)
     static_assert(isSameCV<removeCV<const volatile int32>, int32> == true);
 }
 
-TEST(Traits, AddCV)
+TEST_NS(Traits, Traits, AddCV)
 {
     static_assert(isSameCV<addCV<int32>, int32> == false);
     static_assert(isSameCV<addCV<volatile int32>, volatile int32> == false);
@@ -82,7 +81,7 @@ TEST(Traits, AddCV)
     static_assert(isSameCV<addCV<int32>, const volatile int32> == true);
 }
 
-TEST(Traits, CopyCV)
+TEST_NS(Traits, Traits, CopyCV)
 {
     static_assert(isSameCV<copyCV<int32, const int32>, int32> == false);
     static_assert(isSameCV<copyCV<volatile int32, const int32>, volatile int32> == false);
@@ -94,7 +93,7 @@ TEST(Traits, CopyCV)
     static_assert(isSameCV<copyCV<int32, const volatile int32>, const volatile int32> == true);
 }
 
-TEST(Traits, AddLRef)
+TEST_NS(Traits, Traits, AddLRef)
 {
     static_assert(isSameCV<addLRef<int32>, int32> == false);
     static_assert(isSameCV<addLRef<int32&>, int32&> == true);
@@ -103,7 +102,7 @@ TEST(Traits, AddLRef)
     static_assert(isSameCV<addLRef<const int32>, const int32&> == true);
 }
 
-TEST(Traits, AddRRef)
+TEST_NS(Traits, Traits, AddRRef)
 {
     static_assert(isSameCV<addRRef<int32>, int32> == false);
     static_assert(isSameCV<addRRef<int32&&>, int32&&> == true);
@@ -112,7 +111,7 @@ TEST(Traits, AddRRef)
     static_assert(isSameCV<addRRef<const int32>, const int32&&> == true);
 }
 
-TEST(Traits, RemovePointer)
+TEST_NS(Traits, Traits, RemovePointer)
 {
     static_assert(isSameCV<removePointer<int32>, int32> == true);
     static_assert(isSameCV<removePointer<int32*>, int32> == true);
@@ -122,7 +121,7 @@ TEST(Traits, RemovePointer)
     static_assert(isSameCV<removePointer<int32* const volatile>, int32> == true);
 }
 
-TEST(Traits, AddPointer)
+TEST_NS(Traits, Traits, AddPointer)
 {
     static_assert(isSameCV<addPointer<int32>, int32*> == true);
     static_assert(isSameCV<addPointer<int32*>, int32**> == true);
@@ -130,7 +129,7 @@ TEST(Traits, AddPointer)
     static_assert(isSameCV<addPointer<int32* volatile>, int32* volatile*> == true);
 }
 
-TEST(Traits, IsConst)
+TEST_NS(Traits, Traits, IsConst)
 {
     static_assert(isConst<int32> == false);
     static_assert(isConst<volatile int32> == false);
@@ -138,7 +137,7 @@ TEST(Traits, IsConst)
     static_assert(isConst<const volatile int32> == true);
 }
 
-TEST(Traits, IsVolatile)
+TEST_NS(Traits, Traits, IsVolatile)
 {
     static_assert(isVolatile<int32> == false);
     static_assert(isVolatile<volatile int32> == true);
@@ -146,7 +145,7 @@ TEST(Traits, IsVolatile)
     static_assert(isVolatile<const volatile int32> == true);
 }
 
-TEST(Traits, IsCV)
+TEST_NS(Traits, Traits, IsCV)
 {
     static_assert(isCV<int32> == false);
     static_assert(isCV<volatile int32> == false);
@@ -154,7 +153,7 @@ TEST(Traits, IsCV)
     static_assert(isCV<const volatile int32> == true);
 }
 
-TEST(Traits, IsCOrV)
+TEST_NS(Traits, Traits, IsCOrV)
 {
     static_assert(isCOrV<int32> == false);
     static_assert(isCOrV<volatile int32> == true);
@@ -162,7 +161,7 @@ TEST(Traits, IsCOrV)
     static_assert(isCOrV<const volatile int32> == true);
 }
 
-TEST(Traits, IsSame)
+TEST_NS(Traits, Traits, IsSame)
 {
     static_assert(isSame<int32, uint32> == false);
     static_assert(isSame<int32, int32> == true);
@@ -200,7 +199,7 @@ TEST(Traits, IsSame)
     static_assert(isSame<volatile int32, int32> == true);
 }
 
-TEST(Traits, IsSameAny)
+TEST_NS(Traits, Traits, IsSameAny)
 {
     static_assert(isSameAny<int32, int32> == true);
     static_assert(isSameAny<int32, float32> == false);
@@ -226,7 +225,7 @@ TEST(Traits, IsSameAny)
     static_assert(isSameAnyCV<const volatile int32, float32, float64, const volatile int32> == true);
 }
 
-TEST(Traits, IsVoid)
+TEST_NS(Traits, Traits, IsVoid)
 {
     static_assert(isVoid<void> == true);
     static_assert(isVoid<const void> == true);
@@ -235,7 +234,7 @@ TEST(Traits, IsVoid)
     static_assert(isVoid<int16> == false);
 }
 
-TEST(Traits, IsNullPtr)
+TEST_NS(Traits, Traits, IsNullPtr)
 {
     static_assert(isNullPtr<decltype(nullptr)> == true);
     static_assert(isNullPtr<const decltype(nullptr)> == true);
@@ -244,7 +243,7 @@ TEST(Traits, IsNullPtr)
     static_assert(isNullPtr<int16> == false);
 }
 
-TEST(Traits, IsArray)
+TEST_NS(Traits, Traits, IsArray)
 {
     static_assert(isArray<decltype(nullptr)> == false);
     static_assert(isArray<const decltype(nullptr)> == false);
@@ -253,7 +252,7 @@ TEST(Traits, IsArray)
     static_assert(isArray<uint32[5]> == true);
 }
 
-TEST(Traits, IsPointer)
+TEST_NS(Traits, Traits, IsPointer)
 {
     static_assert(isPointer<decltype(nullptr)> == false);
     static_assert(isPointer<uint32> == false);
@@ -262,7 +261,7 @@ TEST(Traits, IsPointer)
     static_assert(isPointer<uint32[5]> == false);
 }
 
-TEST(Traits, IsLRef)
+TEST_NS(Traits, Traits, IsLRef)
 {
     static_assert(isLRef<int32> == false);
     static_assert(isLRef<int32&&> == false);
@@ -270,7 +269,7 @@ TEST(Traits, IsLRef)
     static_assert(isLRef<int32*> == false);
 }
 
-TEST(Traits, IsRRef)
+TEST_NS(Traits, Traits, IsRRef)
 {
     static_assert(isRRef<int32> == false);
     static_assert(isRRef<int32&&> == true);
@@ -278,7 +277,7 @@ TEST(Traits, IsRRef)
     static_assert(isRRef<int32*> == false);
 }
 
-TEST(Traits, IsRef)
+TEST_NS(Traits, Traits, IsRef)
 {
     static_assert(isRef<int32> == false);
     static_assert(isRef<int32&&> == true);
@@ -286,7 +285,7 @@ TEST(Traits, IsRef)
     static_assert(isRef<int32*> == false);
 }
 
-TEST(Traits, IsInteger)
+TEST_NS(Traits, Traits, IsInteger)
 {
     static_assert(isInteger<int8> == true);
     static_assert(isInteger<const int8> == true);
@@ -306,7 +305,7 @@ TEST(Traits, IsInteger)
     static_assert(isInteger<Test1> == false);
 }
 
-TEST(Traits, IsFloat)
+TEST_NS(Traits, Traits, IsFloat)
 {
     static_assert(isFloat<float32> == true);
     static_assert(isFloat<const float32> == true);
@@ -317,7 +316,7 @@ TEST(Traits, IsFloat)
     static_assert(isFloat<Test1> == false);
 }
 
-TEST(Traits, IsArithmetic)
+TEST_NS(Traits, Traits, IsArithmetic)
 {
     static_assert(isArithmetic<int8> == true);
     static_assert(isArithmetic<const int8> == true);
@@ -337,7 +336,7 @@ TEST(Traits, IsArithmetic)
     static_assert(isArithmetic<float64> == true);
 }
 
-TEST(Traits, IsSigned)
+TEST_NS(Traits, Traits, IsSigned)
 {
     static_assert(isSigned<int8> == true);
     static_assert(isSigned<const int8> == true);
@@ -356,7 +355,7 @@ TEST(Traits, IsSigned)
     static_assert(isSigned<float64> == true);
 }
 
-TEST(Traits, IsUnSigned)
+TEST_NS(Traits, Traits, IsUnSigned)
 {
     static_assert(isUnsigned<int8> == false);
     static_assert(isUnsigned<const int8> == false);
@@ -375,7 +374,7 @@ TEST(Traits, IsUnSigned)
     static_assert(isUnsigned<float64> == false);
 }
 
-TEST(Traits, IsNative)
+TEST_NS(Traits, Traits, IsNative)
 {
     static_assert(isNative<int8> == true);
     static_assert(isNative<const int8> == true);
@@ -394,11 +393,10 @@ TEST(Traits, IsNative)
     static_assert(isNative<float64> == true);
 }
 
-TEST(Traits, Promote)
 inline void swap(int8&, int8&) noexcept
 {}
 
-TEST(Traits, IsSwappable)
+TEST_NS(Traits, Traits, IsSwappable)
 {
     static_assert(isSwappable<int8> == true);
     static_assert(isSwappable<int16> == false);
@@ -412,6 +410,7 @@ TEST(Traits, IsSwappable)
     static_assert(isSwappableMember<SwapTest> == true);
 }
 
+TEST_NS(Traits, Traits, Promote)
 {
     static_assert(isSame<promote<int8>, int16> == true);
     static_assert(isSame<promote<uint8>, uint16> == true);
@@ -452,10 +451,10 @@ TEST(Traits, IsSwappable)
 #endif
 
 #ifndef XSTESTMAIN
-TEST(Traits, TESTISA(hasSIMD))
+TEST_NS(Traits, Traits, TESTISA(hasSIMD))
 {
     static_assert(hasSIMD<float32> == (XS_ARCH_SSE == 1));
-    static_assert(hasSIMD<uint32> == false);
+    static_assert(hasSIMD<uint32> == (XS_ARCH_SSE2 == 1));
     static_assert(hasSIMD<float64> == false);
     static_assert(hasSIMD<Int128> == false);
 

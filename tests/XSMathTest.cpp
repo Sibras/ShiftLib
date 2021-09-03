@@ -17,14 +17,14 @@
 #ifdef XSTESTMAIN
 #    include "XSMath.hpp"
 
-#    include <gtest/gtest.h>
+#    include "XSTypes.hpp"
 
 using namespace Shift;
 
 #    define ASSERT_FLOAT_NEAR(x, y, z) \
         ASSERT_NEAR(static_cast<float32>(x), static_cast<float32>(y), static_cast<float32>(z))
 
-TEST(Math, Sign)
+TEST_NS(Math, Math, Sign)
 {
     ASSERT_EQ(sign<int8>(64_i8, 1_i8), 64_i8);
     ASSERT_EQ(sign<int8>(64_i8, -1_i8), -64_i8);
@@ -51,7 +51,7 @@ TEST(Math, Sign)
     ASSERT_DOUBLE_EQ(sign<float64>(-64._f64, -1._f64), 64._f64);
 }
 
-TEST(Math, Abs)
+TEST_NS(Math, Math, Abs)
 {
     ASSERT_EQ(abs<int8>(-64_i8), 64_i8);
     ASSERT_EQ(abs<int8>(64_i8), 64_i8);
@@ -84,7 +84,7 @@ TEST(Math, Abs)
     ASSERT_DOUBLE_EQ(abs<float64>(-DBL_MAX), DBL_MAX);
 }
 
-TEST(Math, Mul)
+TEST_NS(Math, Math, Mul)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(mul<int8>(INT8_MAX, -5_i8), INT8_MAX * -5_i16);
@@ -116,7 +116,7 @@ TEST(Math, Mul)
     ASSERT_EQ(mul<uint64>(UINT64_MAX, 5_ui64), uint128(4_ui64, 18446744073709551611_ui64));
 }
 
-TEST(Math, Addc)
+TEST_NS(Math, Math, Addc)
 {
     // Has separate implementations for 32b and 64b
     uint8 carryOut;
@@ -157,7 +157,7 @@ TEST(Math, Addc)
     ASSERT_EQ(carryOut, 1_ui8);
 }
 
-TEST(Math, Subc)
+TEST_NS(Math, Math, Subc)
 {
     // Has separate implementations for 32b and 64b
     uint8 carryOut;
@@ -198,7 +198,7 @@ TEST(Math, Subc)
     ASSERT_EQ(carryOut, 1_ui8);
 }
 
-TEST(Math, Exp)
+TEST_NS(Math, Math, Exp)
 {
     ASSERT_FLOAT_EQ(exp<float32>(10._f32), 22026.465794806716516957900645284_f32);
     ASSERT_FLOAT_EQ(exp<float32>(-10._f32), 4.5399929762484851535591515560551e-5_f32);
@@ -211,7 +211,7 @@ TEST(Math, Exp)
     ASSERT_DOUBLE_EQ(exp<float64>(-0.2_f64), 0.81873075307798185866993550861904_f64);
 }
 
-TEST(Math, Exp2)
+TEST_NS(Math, Math, Exp2)
 {
     ASSERT_FLOAT_EQ(exp2<float32>(10._f32), 1024._f32);
     ASSERT_FLOAT_EQ(exp2<float32>(-10._f32), 0.0009765625_f32);
@@ -220,7 +220,7 @@ TEST(Math, Exp2)
     ASSERT_DOUBLE_EQ(exp2<float64>(-10._f64), 0.0009765625_f64);
 }
 
-TEST(Math, Log)
+TEST_NS(Math, Math, Log)
 {
     ASSERT_FLOAT_EQ(log<float32>(10._f32), 2.3025850929940456840179914546844_f32);
     ASSERT_FLOAT_EQ(log<float32>(0.2_f32), -1.6094379124341003746007593332262_f32);
@@ -229,14 +229,14 @@ TEST(Math, Log)
     ASSERT_DOUBLE_EQ(log<float64>(0.2_f64), -1.6094379124341003746007593364262_f64);
 }
 
-TEST(Math, Log2)
+TEST_NS(Math, Math, Log2)
 {
     ASSERT_FLOAT_EQ(log2<float32>(10._f32), 3.3219280948873623478703194294894_f32);
 
     ASSERT_DOUBLE_EQ(log2<float64>(10._f64), 3.3219280948873623478703194294894_f64);
 }
 
-TEST(Math, Fma)
+TEST_NS(Math, Math, Fma)
 {
     ASSERT_FLOAT_EQ(fma<float32>(10._f32, 7._f32, 3._f32), 73._f32);
     ASSERT_FLOAT_EQ(fma<float32>(10._f32, -7._f32, 3._f32), -67._f32);
@@ -257,7 +257,7 @@ TEST(Math, Fma)
     ASSERT_DOUBLE_EQ(fma<float64>(-10._f64, -7._f64, -3._f64), 67._f64);
 }
 
-TEST(Math, Min)
+TEST_NS(Math, Math, Min)
 {
     ASSERT_FLOAT_EQ(fmin<float32>(10._f32, 7._f32), 7._f32);
     ASSERT_FLOAT_EQ(fmin<float32>(-10._f32, 7._f32), -10._f32);
@@ -270,7 +270,7 @@ TEST(Math, Min)
     ASSERT_DOUBLE_EQ(fmin<float64>(-10._f64, -7._f64), -10._f64);
 }
 
-TEST(Math, Max)
+TEST_NS(Math, Math, Max)
 {
     ASSERT_FLOAT_EQ(fmax<float32>(10._f32, 7._f32), 10._f32);
     ASSERT_FLOAT_EQ(fmax<float32>(-10._f32, 7._f32), 7._f32);
@@ -283,7 +283,7 @@ TEST(Math, Max)
     ASSERT_DOUBLE_EQ(fmax<float64>(-10._f64, -7._f64), -7._f64);
 }
 
-TEST(Math, Copysign)
+TEST_NS(Math, Math, Copysign)
 {
     ASSERT_FLOAT_EQ(copysign<float32>(10._f32, 7._f32), 10._f32);
     ASSERT_FLOAT_EQ(copysign<float32>(10._f32, -7._f32), -10._f32);
@@ -316,7 +316,7 @@ TEST(Math, Copysign)
     ASSERT_EQ(copysign<int64>(-10_i64, -7_i64), -10_i64);
 }
 
-TEST(Math, Sqrt)
+TEST_NS(Math, Math, Sqrt)
 {
     ASSERT_FLOAT_EQ(sqrt<float32>(10._f32), 3.1622776601683793319988935444327_f32);
     ASSERT_FLOAT_EQ(sqrt<float32>(0.2_f32), 0.44721359549995793928183473374626_f32);
@@ -325,7 +325,7 @@ TEST(Math, Sqrt)
     ASSERT_DOUBLE_EQ(sqrt<float64>(0.2_f64), 0.44721359549995793928183473374626_f64);
 }
 
-TEST(Math, Rsqrt)
+TEST_NS(Math, Math, Rsqrt)
 {
     ASSERT_FLOAT_EQ(rsqrt<float32>(10._f32), 0.31622776601683793319988935444327_f32);
     ASSERT_FLOAT_EQ(rsqrt<float32>(0.2_f32), 2.2360679774997896964091736687313_f32);
@@ -334,7 +334,7 @@ TEST(Math, Rsqrt)
     ASSERT_DOUBLE_EQ(rsqrt<float64>(0.2_f64), 2.2360679774997896964091736687313_f64);
 }
 
-TEST(Math, Sin)
+TEST_NS(Math, Math, Sin)
 {
     ASSERT_FLOAT_NEAR(sin<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(sin<float32>(valPi2<float32>), 1._f32, FLT_EPSILON * 2.f);
@@ -347,7 +347,7 @@ TEST(Math, Sin)
     ASSERT_NEAR(sin<float64>(-valPi2<float64>), -1._f64, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Cos)
+TEST_NS(Math, Math, Cos)
 {
     ASSERT_FLOAT_NEAR(cos<float32>(valPi<float32>), -1._f32, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(cos<float32>(valPi2<float32>), 0._f32, FLT_EPSILON * 2.f);
@@ -360,7 +360,7 @@ TEST(Math, Cos)
     ASSERT_NEAR(cos<float64>(-valPi2<float64>), 0._f64, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Tan)
+TEST_NS(Math, Math, Tan)
 {
     ASSERT_FLOAT_NEAR(tan<float32>(valPi<float32>), 0._f32, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(tan<float32>(valPi4<float32>), 1._f32, FLT_EPSILON * 2.f);
@@ -373,7 +373,7 @@ TEST(Math, Tan)
     ASSERT_NEAR(tan<float64>(-valPi4<float64>), -1._f64, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Sincos)
+TEST_NS(Math, Math, Sincos)
 {
     float32 cosRes;
     ASSERT_FLOAT_NEAR(sincos<float32>(valPi<float32>, cosRes), 0._f32, FLT_EPSILON * 2.f);
@@ -396,7 +396,7 @@ TEST(Math, Sincos)
     ASSERT_NEAR(cosRes2, 0._f64, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Asin)
+TEST_NS(Math, Math, Asin)
 {
     ASSERT_FLOAT_NEAR(asin<float32>(0._f32), 0._f32, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(asin<float32>(1._f32), valPi2<float32>, FLT_EPSILON * 2.f);
@@ -407,7 +407,7 @@ TEST(Math, Asin)
     ASSERT_NEAR(asin<float64>(-1._f64), -valPi2<float64>, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Acos)
+TEST_NS(Math, Math, Acos)
 {
     ASSERT_FLOAT_NEAR(acos<float32>(0._f32), valPi2<float32>, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(acos<float32>(1._f32), 0._f32, FLT_EPSILON * 2.f);
@@ -418,7 +418,7 @@ TEST(Math, Acos)
     ASSERT_NEAR(acos<float64>(-1._f64), valPi<float64>, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Atan)
+TEST_NS(Math, Math, Atan)
 {
     ASSERT_FLOAT_NEAR(atan<float32>(0._f32), 0._f32, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(atan<float32>(1._f32), valPi4<float32>, FLT_EPSILON * 2.f);
@@ -429,7 +429,7 @@ TEST(Math, Atan)
     ASSERT_NEAR(atan<float64>(-1._f64), -valPi4<float64>, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Atan2)
+TEST_NS(Math, Math, Atan2)
 {
     ASSERT_FLOAT_NEAR(atan2<float32>(2._f32, 0._f32), valPi2<float32>, FLT_EPSILON * 2.f);
     ASSERT_FLOAT_NEAR(atan2<float32>(-2._f32, 0._f32), -valPi2<float32>, FLT_EPSILON * 2.f);
@@ -442,7 +442,7 @@ TEST(Math, Atan2)
     ASSERT_NEAR(atan2<float64>(1._f64, -1._f64), val3Pi4<float64>, DBL_EPSILON * 2.);
 }
 
-TEST(Math, Pow)
+TEST_NS(Math, Math, Pow)
 {
     ASSERT_FLOAT_EQ(pow<float32>(10._f32, 7._f32), 10000000._f32);
     ASSERT_FLOAT_EQ(pow<float32>(0.2_f32, 7._f32), 0.0000128_f32);
@@ -471,7 +471,7 @@ TEST(Math, Pow)
     ASSERT_DOUBLE_EQ(pow<float64>(-0.2_f64, -6._f64), 15625._f64);
 }
 
-TEST(Math, Powr)
+TEST_NS(Math, Math, Powr)
 {
     ASSERT_FLOAT_EQ(pow<float32>(10._f32, 7._f32), 10000000._f32);
     ASSERT_FLOAT_EQ(pow<float32>(0.2_f32, 7._f32), 0.0000128_f32);
@@ -484,7 +484,7 @@ TEST(Math, Powr)
     ASSERT_DOUBLE_EQ(pow<float64>(0.2_f64, -7._f64), 78125._f64);
 }
 
-TEST(Math, Recip)
+TEST_NS(Math, Math, Recip)
 {
     ASSERT_FLOAT_EQ(recip<float32>(10._f32), 0.1_f32);
     ASSERT_FLOAT_EQ(recip<float32>(0.2_f32), 5._f32);
@@ -493,7 +493,7 @@ TEST(Math, Recip)
     ASSERT_DOUBLE_EQ(recip<float64>(0.2_f64), 5._f64);
 }
 
-TEST(Math, Ceil)
+TEST_NS(Math, Math, Ceil)
 {
     ASSERT_FLOAT_EQ(ceil<float32>(2.5_f32), 3.0_f32);
     ASSERT_FLOAT_EQ(ceil<float32>(2.01_f32), 3.0_f32);
@@ -506,7 +506,7 @@ TEST(Math, Ceil)
     ASSERT_DOUBLE_EQ(ceil<float64>(-2.01_f64), -2.0_f64);
 }
 
-TEST(Math, Floor)
+TEST_NS(Math, Math, Floor)
 {
     ASSERT_FLOAT_EQ(floor<float32>(2.5_f32), 2.0_f32);
     ASSERT_FLOAT_EQ(floor<float32>(2.01_f32), 2.0_f32);
@@ -519,7 +519,7 @@ TEST(Math, Floor)
     ASSERT_DOUBLE_EQ(floor<float64>(-2.01_f64), -3.0_f64);
 }
 
-TEST(Math, Trunc)
+TEST_NS(Math, Math, Trunc)
 {
     ASSERT_FLOAT_EQ(trunc<float32>(2.5_f32), 2.0_f32);
     ASSERT_FLOAT_EQ(trunc<float32>(2.01_f32), 2.0_f32);
@@ -532,7 +532,7 @@ TEST(Math, Trunc)
     ASSERT_DOUBLE_EQ(trunc<float64>(-2.01_f64), -2.0_f64);
 }
 
-TEST(Math, Ldexp)
+TEST_NS(Math, Math, Ldexp)
 {
     ASSERT_FLOAT_EQ(ldexp<float32>(7._f32, -4_i32), 0.4375_f32);
     ASSERT_FLOAT_EQ(ldexp<float32>(4._f32, 3_i32), 32._f32);

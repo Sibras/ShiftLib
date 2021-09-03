@@ -17,9 +17,6 @@
 
 #include "Geometry/XSPoint3D.hpp"
 
-// Additional includes
-#include "SIMD/XSSIMDInBase.hpp"
-
 namespace Shift {
 template<typename T, SIMDWidth Width>
 class AABoundingBox;

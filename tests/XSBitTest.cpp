@@ -17,13 +17,12 @@
 #include "XSBit.hpp"
 
 #include "XSCompilerOptions.h"
-
-#include <gtest/gtest.h>
+#include "XSTypes.hpp"
 
 using namespace Shift;
 
 #ifdef XSTESTMAIN
-TEST(Bit, Bswap)
+TEST_NS(Bit, Bit, Bswap)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(bswap<int16>(0x965A_i16), 0x5A96_i16);
@@ -36,7 +35,7 @@ TEST(Bit, Bswap)
     ASSERT_EQ(bswap<uint64>(0x965AF04B12CDE387_ui64), 0x87E3CD124BF05A96_ui64);
 }
 
-TEST(Bit, Bsr)
+TEST_NS(Bit, Bit, Bsr)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(bsr<int32>(0x00000004_i32), 2_ui32);
@@ -58,7 +57,7 @@ TEST(Bit, Bsr)
 #endif
 
 #if !defined(XSTESTMAIN) || (XS_ISA != XS_X86)
-TEST(Bit, TESTISA(Popcnt))
+TEST_NS(Bit, Bit, TESTISA(Popcnt))
 {
     // Has separate implementations for 32b, 64b and SSE4.2+
     ASSERT_EQ(popcnt<int8>(0x04_i8), 1_ui8);
@@ -90,7 +89,7 @@ TEST(Bit, TESTISA(Popcnt))
     ASSERT_EQ(popcnt<uint64>(0x0FF0000000000000_ui64), 8_ui32);
 }
 
-TEST(Bit, TESTISA(Ctz))
+TEST_NS(Bit, Bit, TESTISA(Ctz))
 {
     // Has separate implementations for 32b, 64b and AVX2
     ASSERT_EQ(ctz<int8>(0x04_i8), 2_ui8);
@@ -122,7 +121,7 @@ TEST(Bit, TESTISA(Ctz))
     ASSERT_EQ(ctz<uint64>(0x0FF0000000000000_ui64), 52_ui32);
 }
 
-TEST(Bit, TESTISA(Clz))
+TEST_NS(Bit, Bit, TESTISA(Clz))
 {
     // Has separate implementations for 32b, 64b and AVX2
     ASSERT_EQ(clz<int32>(0x00000004_i32), 29_ui32);
@@ -144,7 +143,7 @@ TEST(Bit, TESTISA(Clz))
 #endif
 
 #ifdef XSTESTMAIN
-TEST(Bit, BitExtract)
+TEST_NS(Bit, Bit, BitExtract)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(bitExtract<int8>(0x04_i8, 0_ui32), 0_ui8);
@@ -196,7 +195,7 @@ TEST(Bit, BitExtract)
     ASSERT_EQ(bitExtract<uint64>(0x0FF0000000000000_ui64, 58_ui32), 1_ui32);
 }
 
-TEST(Bit, BitSet)
+TEST_NS(Bit, Bit, BitSet)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(bitSet<int8>(0x04_i8, 0_ui32), 0x05_i8);
@@ -248,7 +247,7 @@ TEST(Bit, BitSet)
     ASSERT_EQ(bitSet<uint64>(0x0FF0000000000000_ui64, 58_ui32), 0x0FF0000000000000_ui64);
 }
 
-TEST(Bit, BitClear)
+TEST_NS(Bit, Bit, BitClear)
 {
     // Has separate implementations for 32b and 64b
     ASSERT_EQ(bitClear<int8>(0x04_i8, 0_ui32), 0x04_i8);
@@ -300,7 +299,7 @@ TEST(Bit, BitClear)
     ASSERT_EQ(bitClear<uint64>(0x0FF0000000000000_ui64, 58_ui32), 0x0BF0000000000000_ui64);
 }
 
-TEST(Bit, BitAnd)
+TEST_NS(Bit, Bit, BitAnd)
 {
     ASSERT_EQ(bitAnd(0x7_ui8, 0x4_ui8), 4_ui8);
     ASSERT_EQ(bitAnd(0x7_ui8, 0x4_i8), 4_ui8);
@@ -315,7 +314,7 @@ TEST(Bit, BitAnd)
     ASSERT_EQ(bitAnd(0x7_ui64, bitCast<float64>(0x4_i64)), 4_ui64);
 }
 
-TEST(Bit, BitOr)
+TEST_NS(Bit, Bit, BitOr)
 {
     ASSERT_EQ(bitOr(0x7_ui8, 0x8_ui8), 0xF_ui8);
     ASSERT_EQ(bitOr(0x7_ui8, 0x8_i8), 0xF_ui8);
@@ -330,7 +329,7 @@ TEST(Bit, BitOr)
     ASSERT_EQ(bitOr(0x7_ui64, bitCast<float64>(0x8_i64)), 0xF_ui64);
 }
 
-TEST(Bit, BitXor)
+TEST_NS(Bit, Bit, BitXor)
 {
     ASSERT_EQ(bitXor(0x7_ui8, 0x4_ui8), 3_ui8);
     ASSERT_EQ(bitXor(0x7_ui8, 0x4_i8), 3_ui8);
@@ -345,7 +344,7 @@ TEST(Bit, BitXor)
     ASSERT_EQ(bitXor(0x7_ui64, bitCast<float64>(0x4_i64)), 3_ui64);
 }
 
-TEST(Bit, BitNot)
+TEST_NS(Bit, Bit, BitNot)
 {
     ASSERT_EQ(bitNot(0x7_ui8), 0xF8_ui8);
     ASSERT_EQ(bitNot(0x7_i8), 0xF8_i8);

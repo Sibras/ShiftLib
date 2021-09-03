@@ -17,7 +17,7 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(VECTOR3D)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Vector3DTest)
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_BASE
 #    include "Geometry/XSTypesGeometry.hpp"
@@ -25,7 +25,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(Vector3DTest)
+class TESTISA(V3D)
     : public ::testing::Test
 {
 public:
@@ -38,9 +38,9 @@ public:
 using Vector3DTestTypes = ::testing::Types<Vector3D<float, SIMDWidth::Scalar>, Vector3D<float, SIMDWidth::B16>/*,
     Vector3D<float, SIMDWidth::B32>, Vector3D<float, SIMDWidth::B64>*/>;
 
-TYPED_TEST_SUITE(TESTISA(Vector3DTest), Vector3DTestTypes);
+TYPED_TEST_SUITE(TESTISA(V3D), Vector3DTestTypes);
 
-TYPED_TEST2(TESTISA(Vector3DTest), Vector3D)
+TYPED_TEST_NS2(Vector3D, TESTISA(V3D), Vector3D)
 {
     using TestType = typename TestFixture::Type;
 

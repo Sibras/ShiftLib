@@ -25,7 +25,7 @@
 #    define XS_TESTING_SIMD6
 #    define XS_TESTING_SIMD8
 #    define XS_TESTING_SIMD3X3
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD12)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD12Test)
 #    include "SIMD/XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -37,7 +37,7 @@ using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 #    define S12_ALL_SHUFFLE6_TESTS 0
 
 template<typename T>
-class TESTISA(SIMD12Test)
+class TESTISA(SIMD12)
     : public ::testing::Test
 {
 public:
@@ -49,9 +49,9 @@ public:
 
 using SIMD12TestTypes = ::testing::Types<SIMD12<float, SIMDWidth::Scalar>, SIMD12<float, SIMDWidth::B16>,
     SIMD12<float, SIMDWidth::B32>, SIMD12<float, SIMDWidth::B64>>;
-TYPED_TEST_SUITE(TESTISA(SIMD12Test), SIMD12TestTypes);
+TYPED_TEST_SUITE(TESTISA(SIMD12), SIMD12TestTypes);
 
-TYPED_TEST2(TESTISA(SIMD12Test), SIMD12)
+TYPED_TEST_NS2(SIMD12, TESTISA(SIMD12), SIMD12)
 {
     using TestType = typename TestFixture::Type;
 

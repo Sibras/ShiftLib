@@ -17,14 +17,14 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(AABB)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(AABBTest)
 #    define XS_TESTING_AABB
 #    include "Geometry/XSTypesGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(AABBTest)
+class TESTISA(AABB)
     : public ::testing::Test
 {
 public:
@@ -37,9 +37,9 @@ public:
 using AABBTestTypes = ::testing::Types<AABoundingBox<float, SIMDWidth::Scalar>, AABoundingBox<float, ::Shift::SIMDWidth::B16>/*,
     AABoundingBox<float, SIMDWidth::B32>, AABoundingBox<float, SIMDWidth::B64>*/>;
 
-TYPED_TEST_SUITE(TESTISA(AABBTest), AABBTestTypes);
+TYPED_TEST_SUITE(TESTISA(AABB), AABBTestTypes);
 
-TYPED_TEST2(TESTISA(AABBTest), AABB)
+TYPED_TEST_NS2(AABB, TESTISA(AABB), AABB)
 {
     using TestType = typename TestFixture::Type;
     using TypeInt = typename TestFixture::TypeInt;

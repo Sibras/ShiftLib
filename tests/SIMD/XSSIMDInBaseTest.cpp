@@ -18,13 +18,13 @@
 #    include "XSCompilerOptions.h"
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_BASE // Only needed for header include
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMDInBase)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMDInBaseTest)
 #    include "SIMD/XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(SIMDInBaseTest)
+class TESTISA(SIMDIB)
     : public ::testing::Test
 {
 public:
@@ -36,9 +36,9 @@ public:
 
 using SIMDInBaseTestTypes = ::testing::Types<SIMDInBase<float, SIMDWidth::Scalar>, SIMDInBase<float, SIMDWidth::B16>/*,
     SIMDInBase<float, SIMDWidth::B32>, SIMDInBase<float, SIMDWidth::B64>*/>;
-TYPED_TEST_SUITE(TESTISA(SIMDInBaseTest), SIMDInBaseTestTypes);
+TYPED_TEST_SUITE(TESTISA(SIMDIB), SIMDInBaseTestTypes);
 
-TYPED_TEST2(TESTISA(SIMDInBaseTest), SIMDInBase)
+TYPED_TEST_NS2(SIMDInBase, TESTISA(SIMDIB), SIMDInBase)
 {
     using TestType = typename TestFixture::Type;
 

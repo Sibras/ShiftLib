@@ -17,14 +17,14 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(RAY4)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Ray4Test)
 #    define XS_TESTING_RAY4
 #    include "Geometry/XSTypesGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(Ray4Test)
+class TESTISA(Ray4)
     : public ::testing::Test
 {
 public:
@@ -39,9 +39,9 @@ using Ray4TestTypes = ::testing::Types<Ray4<float, SIMDWidth::Scalar, true>, Ray
     Ray4<float, SIMDWidth::B16, true>, Ray4<float, SIMDWidth::B16, false>, Ray4<float, SIMDWidth::B32, true>,
     Ray4<float, SIMDWidth::B32, false>, Ray4<float, SIMDWidth::B64, true>, Ray4<float, SIMDWidth::B64, false>>;
 
-TYPED_TEST_SUITE(TESTISA(Ray4Test), Ray4TestTypes);
+TYPED_TEST_SUITE(TESTISA(Ray4), Ray4TestTypes);
 
-TYPED_TEST2(TESTISA(Ray4Test), Ray4)
+TYPED_TEST_NS2(Ray4, TESTISA(Ray4), Ray4)
 {
     using TestType = typename TestFixture::Type;
     // TODO:*********

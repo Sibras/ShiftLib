@@ -21,7 +21,7 @@
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_SIMD3
 #    define XS_TESTING_SIMD3X2
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD3x3)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD3x3Test)
 #    include "SIMD/XSTypesSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -31,7 +31,7 @@ using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 #    define S3X3_ALL_SHUFFLE3_TESTS 0
 
 template<typename T>
-class TESTISA(SIMD3x3Test)
+class TESTISA(SIMD3x3)
     : public ::testing::Test
 {
 public:
@@ -43,9 +43,9 @@ public:
 
 using SIMD3x3TestTypes = ::testing::Types<SIMD3x3<float, SIMDWidth::Scalar>, SIMD3x3<float, SIMDWidth::B16>,
     SIMD3x3<float, SIMDWidth::B32>, SIMD3x3<float, SIMDWidth::B64>>;
-TYPED_TEST_SUITE(TESTISA(SIMD3x3Test), SIMD3x3TestTypes);
+TYPED_TEST_SUITE(TESTISA(SIMD3x3), SIMD3x3TestTypes);
 
-TYPED_TEST2(TESTISA(SIMD3x3Test), SIMD3x3)
+TYPED_TEST_NS2(SIMD3x3, TESTISA(SIMD3x3), SIMD3x3)
 {
     using TestType = typename TestFixture::Type;
 

@@ -18,12 +18,11 @@
 #    include "XSUInt128.inl"
 
 #    include "XSInt128.inl"
-
-#    include <gtest/gtest.h>
+#    include "XSTypes.hpp"
 
 using namespace Shift;
 
-TEST(UInt128, Constructor)
+TEST_NS(UInt128, UInt128, Constructor)
 {
     ASSERT_EQ(uint128(56_ui8), uint128(0_ui64, 56_ui64));
     ASSERT_EQ(uint128(56_ui16), uint128(0_ui64, 56_ui64));
@@ -54,7 +53,7 @@ TEST(UInt128, Constructor)
     ASSERT_EQ(test4, test2);
 }
 
-TEST(UInt128, Return)
+TEST_NS(UInt128, UInt128, Return)
 {
     const uint128 test1(37);
     const uint128 test2(10_ui64, 15532563271079952384_ui64);
@@ -80,7 +79,7 @@ TEST(UInt128, Return)
     ASSERT_DOUBLE_EQ(static_cast<float64>(test3), 2.0e20_f64);
 }
 
-TEST(UInt128, Assign)
+TEST_NS(UInt128, UInt128, Assign)
 {
     uint128 test1(352_ui32);
     ASSERT_EQ(test1, uint128(0_ui64, 352_ui64));
@@ -111,12 +110,12 @@ TEST(UInt128, Assign)
     ASSERT_EQ(test1, uint128(10_ui64, 15532559262904483840_ui64));
 }
 
-TEST(UInt128, Bitwise)
+TEST_NS(UInt128, UInt128, Bitwise)
 {
     // TODO
 }
 
-TEST(UInt128, Shift)
+TEST_NS(UInt128, UInt128, Shift)
 {
     uint128 test2 = uint128(256_ui64, 65483245_ui64);
     ASSERT_EQ(test2, uint128(256_ui64, 65483245_ui64));
@@ -263,7 +262,7 @@ TEST(UInt128, Shift)
     ASSERT_EQ(test2, uint128(0_ui64, 65483245_ui64));
 }
 
-TEST(UInt128, Comparison)
+TEST_NS(UInt128, UInt128, Comparison)
 {
     const uint128 test1 = uint128(37);
     const uint128 test2 = uint128(1_ui64, UINT64_MAX);
@@ -580,7 +579,7 @@ TEST(UInt128, Comparison)
     ASSERT_TRUE(test1 <= 37_i64);
 }
 
-TEST(UInt128, Add)
+TEST_NS(UInt128, UInt128, Add)
 {
     const uint128 test1 = uint128(352);
     const uint128 test2 = uint128(1_ui64, UINT64_MAX);
@@ -647,7 +646,7 @@ TEST(UInt128, Add)
     ASSERT_EQ(++test7, uint128(2_ui64, 0_ui64));
 }
 
-TEST(UInt128, Sub)
+TEST_NS(UInt128, UInt128, Sub)
 {
     const uint128 test1 = uint128(352_ui64);
     const uint128 test2 = uint128(2_ui64, 351_ui64);
@@ -704,7 +703,7 @@ TEST(UInt128, Sub)
     ASSERT_EQ(--test7, uint128(2_ui64, 350_ui64));
 }
 
-TEST(UInt128, Mul)
+TEST_NS(UInt128, UInt128, Mul)
 {
     const uint128 test1 = uint128(352_ui64);
     const uint128 test3 = uint128(1_ui64, UINT64_MAX);
@@ -759,7 +758,7 @@ TEST(UInt128, Mul)
     ASSERT_EQ(test7, uint128(0x71_ui64, 0xFFFFFFFFFFFFFFC7_ui64));
 }
 
-TEST(UInt128, Divide)
+TEST_NS(UInt128, UInt128, Divide)
 {
     const uint128 test3 = uint128(1_ui64, UINT64_MAX);
     const uint128 test4 = uint128(703_ui64, 18446744073709551264_ui64);

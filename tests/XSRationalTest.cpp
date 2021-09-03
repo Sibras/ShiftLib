@@ -49,7 +49,7 @@ template<typename T>
 }
 
 template<typename T>
-class RationalTest : public ::testing::Test
+class Rat : public ::testing::Test
 {
 public:
     using Type = T;
@@ -58,9 +58,9 @@ public:
 
 using RationalTestTypes = ::testing::Types<Rational<uint8>, Rational<int8>, Rational<uint16>, Rational<int16>,
     Rational<uint32>, Rational<int32>, Rational<uint64>, Rational<int64>, Rational<UInt128>, Rational<Int128>>;
-TYPED_TEST_SUITE(RationalTest, RationalTestTypes);
+TYPED_TEST_SUITE(Rat, RationalTestTypes);
 
-TYPED_TEST2(RationalTest, Rational)
+TYPED_TEST_NS2(Rational, Rat, Rational)
 {
     using TestType = typename TestFixture::Type;
     using TestTypeInt = typename TestFixture::TypeInt;

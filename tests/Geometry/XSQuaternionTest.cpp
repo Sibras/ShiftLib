@@ -17,7 +17,7 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(QUATERNION)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(QuaternionTest)
 #    define XS_TESTING_QUATERNION
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_VECTOR3D2
@@ -32,7 +32,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(QuaternionTest)
+class TESTISA(Quat)
     : public ::testing::Test
 {
 public:
@@ -45,9 +45,9 @@ public:
 using QuaternionTestTypes = ::testing::Types<Quaternion<float, SIMDWidth::Scalar>, Quaternion<float, SIMDWidth::B16>/*,
     Quaternion<float, SIMDWidth::B32>, Quaternion<float, SIMDWidth::B64>*/>;
 
-TYPED_TEST_SUITE(TESTISA(QuaternionTest), QuaternionTestTypes);
+TYPED_TEST_SUITE(TESTISA(Quat), QuaternionTestTypes);
 
-TYPED_TEST2(TESTISA(QuaternionTest), Quaternion)
+TYPED_TEST_NS2(Quaternion, TESTISA(Quat), Quaternion)
 {
     using TestType = typename TestFixture::Type;
 

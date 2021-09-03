@@ -17,7 +17,7 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(POINT3D)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Point3DTest)
 #    define XS_TESTING_POINT3D
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_BASE
@@ -26,7 +26,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(Point3DTest)
+class TESTISA(P3D)
     : public ::testing::Test
 {
 public:
@@ -39,9 +39,9 @@ public:
 using Point3DTestTypes = ::testing::Types<Point3D<float, SIMDWidth::Scalar>, Point3D<float, SIMDWidth::B16>/*,
     Point3D<float, SIMDWidth::B32>, Point3D<float, SIMDWidth::B64>*/>;
 
-TYPED_TEST_SUITE(TESTISA(Point3DTest), Point3DTestTypes);
+TYPED_TEST_SUITE(TESTISA(P3D), Point3DTestTypes);
 
-TYPED_TEST2(TESTISA(Point3DTest), Point3D)
+TYPED_TEST_NS2(Point3D, TESTISA(P3D), Point3D)
 {
     using TestType = typename TestFixture::Type;
     //  Constructor Test

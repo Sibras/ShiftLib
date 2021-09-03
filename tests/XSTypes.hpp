@@ -21,6 +21,69 @@
 // Need macro indirection to get TESTISA macro to work
 #define GTEST_TYPED_TEST(test_suite_name, test_name) TYPED_TEST(test_suite_name, test_name)
 #define TYPED_TEST2(test_suite_name, test_name) GTEST_TYPED_TEST(test_suite_name, test_name)
+#define GTEST_TYPED_TEST_P(test_suite_name, test_name) TYPED_TEST_P(test_suite_name, test_name)
+#define TYPED_TEST_P2(test_suite_name, test_name) GTEST_TYPED_TEST_P(test_suite_name, test_name)
+
+// A copy of GTEST_TEST_CLASS_NAME_, but with handling for namespace name.
+#define NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_case_name, test_name) \
+    namespace_name##_##test_case_name##_##test_name##_Test
+
+#define TYPED_TEST_NS(NameSpace, CaseName, TestName)                                                              \
+    static_assert(sizeof(GTEST_STRINGIFY_(TestName)) > 1, "test-name must not be empty");                         \
+    template<typename gtest_TypeParam_>                                                                           \
+    class NS_GTEST_TEST_CLASS_NAME_(NameSpace, CaseName, TestName)                                                \
+        : public CaseName<gtest_TypeParam_>                                                                       \
+    {                                                                                                             \
+    private:                                                                                                      \
+        typedef CaseName<gtest_TypeParam_> TestFixture;                                                           \
+        typedef gtest_TypeParam_ TypeParam;                                                                       \
+        void TestBody() override;                                                                                 \
+    };                                                                                                            \
+    static bool gtest_##NameSpace##_##CaseName##_##TestName##_registered_ GTEST_ATTRIBUTE_UNUSED_ =               \
+        ::testing::internal::TypeParameterizedTest<CaseName,                                                      \
+            ::testing::internal::TemplateSel<NS_GTEST_TEST_CLASS_NAME_(NameSpace, CaseName, TestName)>,           \
+            GTEST_TYPE_PARAMS_(CaseName)>::Register("", ::testing::internal::CodeLocation(__FILE__, __LINE__),    \
+            GTEST_STRINGIFY_(NameSpace) "." GTEST_STRINGIFY_(CaseName), GTEST_STRINGIFY_(TestName), 0,            \
+            ::testing::internal::GenerateNames<GTEST_NAME_GENERATOR_(CaseName), GTEST_TYPE_PARAMS_(CaseName)>()); \
+    template<typename gtest_TypeParam_>                                                                           \
+    void NS_GTEST_TEST_CLASS_NAME_(NameSpace, CaseName, TestName)<gtest_TypeParam_>::TestBody()
+
+#define GTEST_TYPED_TEST_NS(NameSpace, CaseName, TestName) TYPED_TEST_NS(NameSpace, CaseName, TestName)
+#define TYPED_TEST_NS2(NameSpace, CaseName, TestName) GTEST_TYPED_TEST_NS(NameSpace, CaseName, TestName)
+
+#define GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_case_name, test_name) \
+    namespace_name##_##test_case_name##_##test_name##_Test
+
+#define GTEST_TEST_NS_(namespace_name, test_suite_name, test_name, parent_class, parent_id)                        \
+    static_assert(sizeof(GTEST_STRINGIFY_(test_suite_name)) > 1, "test_suite_name must not be empty");             \
+    static_assert(sizeof(GTEST_STRINGIFY_(test_name)) > 1, "test_name must not be empty");                         \
+    class GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name)                                    \
+        : public parent_class                                                                                      \
+    {                                                                                                              \
+    public:                                                                                                        \
+        GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name)() = default;                         \
+        ~GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name)() override = default;               \
+        GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name));    \
+        GTEST_DISALLOW_MOVE_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name));    \
+                                                                                                                   \
+    private:                                                                                                       \
+        void TestBody() override;                                                                                  \
+        static ::testing::TestInfo* const test_info_ GTEST_ATTRIBUTE_UNUSED_;                                      \
+    };                                                                                                             \
+                                                                                                                   \
+    ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name)::test_info_ = \
+        ::testing::internal::MakeAndRegisterTestInfo(#namespace_name "." #test_suite_name, #test_name, nullptr,    \
+            nullptr, ::testing::internal::CodeLocation(__FILE__, __LINE__), (parent_id),                           \
+            ::testing::internal::SuiteApiResolver<parent_class>::GetSetUpCaseOrSuite(__FILE__, __LINE__),          \
+            ::testing::internal::SuiteApiResolver<parent_class>::GetTearDownCaseOrSuite(__FILE__, __LINE__),       \
+            new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_NS_(                                    \
+                namespace_name, test_suite_name, test_name)>);                                                     \
+    void GTEST_TEST_CLASS_NAME_NS_(namespace_name, test_suite_name, test_name)::TestBody()
+
+#define GTEST_TEST_NS(namespace_name, test_suite_name, test_name) \
+    GTEST_TEST_NS_(namespace_name, test_suite_name, test_name, ::testing::Test, ::testing::internal::GetTestTypeId())
+
+#define TEST_NS(namespace_name, test_suite_name, test_name) GTEST_TEST_NS(namespace_name, test_suite_name, test_name)
 
 template<typename T>
 bool testValue(const T val, const T other) noexcept

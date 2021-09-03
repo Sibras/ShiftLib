@@ -18,39 +18,43 @@
 #    include "SIMD/XSSIMDTraits.hpp"
 
 #    include "XSCompilerOptions.h"
-
-#    include <gtest/gtest.h>
+#    include "XSTypes.hpp"
 
 using namespace Shift;
 
-TEST(TESTISA(SIMDTraits), numValues)
+TEST_NS(SIMDTraits, TESTISA(SIMDTraits), numValues)
 {
     static_assert(numValues<float32, SIMDWidth::Scalar> == 1);
     static_assert(numValues<uint32, SIMDWidth::Scalar> == 1);
     static_assert(numValues<float64, SIMDWidth::Scalar> == 1);
 
     static_assert(numValues<float32, SIMDWidth::B16> == (XS_ARCH_SSE ? 4 : 1));
-    static_assert(numValues<uint32, SIMDWidth::B16> == 1);
+    static_assert(numValues<uint32, SIMDWidth::B16> == (XS_ARCH_SSE2 ? 4 : 1));
     static_assert(numValues<float64, SIMDWidth::B16> == 1);
 
     static_assert(numValues<float32, SIMDWidth::B32> == (XS_ARCH_AVX ? 8 : (XS_ARCH_SSE ? 4 : 1)));
-    static_assert(numValues<uint32, SIMDWidth::B32> == 1);
+    static_assert(numValues<uint32, SIMDWidth::B32> == (XS_ARCH_AVX2 ? 8 : (XS_ARCH_SSE2 ? 4 : 1)));
     static_assert(numValues<float64, SIMDWidth::B32> == 1);
 
     static_assert(
         numValues<float32, SIMDWidth::B64> == (XS_ARCH_AVX512F ? 16 : (XS_ARCH_AVX ? 8 : (XS_ARCH_SSE ? 4 : 1))));
-    static_assert(numValues<uint32, SIMDWidth::B64> == 1);
+    static_assert(
+        numValues<uint32, SIMDWidth::B64> == (XS_ARCH_AVX512F ? 16 : (XS_ARCH_AVX2 ? 8 : (XS_ARCH_SSE2 ? 4 : 1))));
     static_assert(numValues<float64, SIMDWidth::B64> == 1);
 }
 
-TEST(TESTISA(SIMDTraits), widthSIMD)
+TEST_NS(SIMDTraits, TESTISA(SIMDTraits), widthSIMD)
 {
     static_assert(widthSIMD<float32> ==
         (XS_ARCH_AVX512F ? SIMDWidth::B64 :
                            (XS_ARCH_AVX ? SIMDWidth::B32 : (XS_ARCH_SSE ? SIMDWidth::B16 : SIMDWidth::Scalar))));
+
+    static_assert(widthSIMD<uint32> ==
+        (XS_ARCH_AVX512F ? SIMDWidth::B64 :
+                           (XS_ARCH_AVX2 ? SIMDWidth::B32 : (XS_ARCH_SSE2 ? SIMDWidth::B16 : SIMDWidth::Scalar))));
 }
 
-TEST(TESTISA(SIMDTraits), maxAlignment)
+TEST_NS(SIMDTraits, TESTISA(SIMDTraits), maxAlignment)
 {
     static_assert(maxAlignment<float32, 1> == alignof(float32));
     static_assert(maxAlignment<float32, 2> == (XS_ARCH_SSE ? 8 : 4));
@@ -70,18 +74,18 @@ TEST(TESTISA(SIMDTraits), maxAlignment)
     static_assert(maxAlignment<float32, 16> == (XS_ARCH_AVX512F ? 64 : (XS_ARCH_AVX ? 32 : (XS_ARCH_SSE ? 16 : 4))));
 }
 
-TEST(TESTISA(SIMDTraits), hasSIMD)
+TEST_NS(SIMDTraits, TESTISA(SIMDTraits), hasSIMD)
 {
     static_assert(hasSIMD512<float32> == (XS_ARCH_AVX512F == 1));
-    static_assert(hasSIMD512<uint32> == false);
+    static_assert(hasSIMD512<uint32> == (XS_ARCH_AVX512F == 1));
     static_assert(hasSIMD512<float64> == false);
 
     static_assert(hasSIMD256<float32> == (XS_ARCH_AVX == 1));
-    static_assert(hasSIMD256<uint32> == false);
+    static_assert(hasSIMD256<uint32> == (XS_ARCH_AVX2 == 1));
     static_assert(hasSIMD256<float64> == false);
 
     static_assert(hasSIMD128<float32> == (XS_ARCH_SSE == 1));
-    static_assert(hasSIMD128<uint32> == false);
+    static_assert(hasSIMD128<uint32> == (XS_ARCH_SSE2 == 1));
     static_assert(hasSIMD128<float64> == false);
 }
 

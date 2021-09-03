@@ -17,11 +17,11 @@
 #ifdef XSTESTMAIN
 #    include "XSInt128.inl"
 
-#    include <gtest/gtest.h>
+#    include "XSTypes.hpp"
 
 using namespace Shift;
 
-TEST(Int128, Constructor)
+TEST_NS(Int128, Int128, Constructor)
 {
     ASSERT_EQ(int128(56_ui8), int128(0_i64, 56_ui64));
     ASSERT_EQ(int128(56_ui16), int128(0_i64, 56_ui64));
@@ -66,7 +66,7 @@ TEST(Int128, Constructor)
     ASSERT_EQ(test4, test3);
 }
 
-TEST(Int128, Return)
+TEST_NS(Int128, Int128, Return)
 {
     const int128 test1(37);
     const int128 test1Neg(-37);
@@ -105,7 +105,7 @@ TEST(Int128, Return)
     ASSERT_DOUBLE_EQ(static_cast<float64>(test3Neg), -2.0e20_f64);
 }
 
-TEST(Int128, Assign)
+TEST_NS(Int128, Int128, Assign)
 {
     int128 test1(352_ui32);
     ASSERT_EQ(test1, int128(0_i64, 352_ui64));
@@ -152,12 +152,12 @@ TEST(Int128, Assign)
     ASSERT_EQ(test1, int128(-11_i64, 2914184810805067776_ui64));
 }
 
-TEST(Int128, Bitwise)
+TEST_NS(Int128, Int128, Bitwise)
 {
     // TODO
 }
 
-TEST(Int128, Shift)
+TEST_NS(Int128, Int128, Shift)
 {
     int128 test2 = int128(256_i64, 65483245_ui64);
     ASSERT_EQ(test2, int128(256_i64, 65483245_ui64));
@@ -304,7 +304,7 @@ TEST(Int128, Shift)
     ASSERT_EQ(test2, int128(0_i64, 65483245_ui64));
 }
 
-TEST(Int128, Comparison)
+TEST_NS(Int128, Int128, Comparison)
 {
     const int128 test1 = int128(37);
     const int128 test1Neg = int128(-37);
@@ -1127,7 +1127,7 @@ TEST(Int128, Comparison)
     ASSERT_TRUE(test1Neg <= -37_i64);
 }
 
-TEST(Int128, Add)
+TEST_NS(Int128, Int128, Add)
 {
     const int128 test1 = int128(352);
     const int128 test2 = int128(1_i64, UINT64_MAX);
@@ -1294,7 +1294,7 @@ TEST(Int128, Add)
     ASSERT_EQ(++test7, int128(-2_i64, 2_ui64));
 }
 
-TEST(Int128, Sub)
+TEST_NS(Int128, Int128, Sub)
 {
     const int128 test1 = int128(352_i64);
     const int128 test2 = int128(2_i64, 351_ui64);
@@ -1496,7 +1496,7 @@ TEST(Int128, Sub)
     ASSERT_EQ(-test3Neg, test3);
 }
 
-TEST(Int128, Mul)
+TEST_NS(Int128, Int128, Mul)
 {
     const int128 test1 = int128(352_i64);
     const int128 test3 = int128(1_i64, UINT64_MAX);
@@ -1655,7 +1655,7 @@ TEST(Int128, Mul)
     ASSERT_EQ(test7, int128(0x71_i64, 0xFFFFFFFFFFFFFFC7_ui64));
 }
 
-TEST(Int128, Divide)
+TEST_NS(Int128, Int128, Divide)
 {
     const int128 test3 = int128(1_i64, UINT64_MAX);
     const int128 test4 = int128(703_i64, 18446744073709551264_ui64);

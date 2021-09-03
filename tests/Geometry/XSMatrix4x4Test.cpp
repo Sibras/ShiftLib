@@ -17,7 +17,7 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(MATRIX4X4)
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Matrix4x4Test)
 #    define XS_TESTING_MATRIX4X4
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_VECTOR3D2
@@ -34,7 +34,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(Matrix4x4Test)
+class TESTISA(M4x4)
     : public ::testing::Test
 {
 public:
@@ -47,9 +47,9 @@ public:
 using Matrix4x4TestTypes = ::testing::Types<Matrix4x4<float, SIMDWidth::Scalar>, Matrix4x4<float, SIMDWidth::B16>,
     Matrix4x4<float, SIMDWidth::B32>, Matrix4x4<float, SIMDWidth::B64>>;
 
-TYPED_TEST_SUITE(TESTISA(Matrix4x4Test), Matrix4x4TestTypes);
+TYPED_TEST_SUITE(TESTISA(M4x4), Matrix4x4TestTypes);
 
-TYPED_TEST2(TESTISA(Matrix4x4Test), Matrix4x4)
+TYPED_TEST_NS2(Matrix4x4, TESTISA(M4x4), Matrix4x4)
 {
     using TestType = typename TestFixture::Type;
 

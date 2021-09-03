@@ -23,7 +23,7 @@
 using namespace Shift;
 
 template<typename T>
-class Bool2Test : public ::testing::Test
+class B2 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -31,7 +31,7 @@ public:
 };
 
 template<typename T>
-class Bool3Test : public ::testing::Test
+class B3 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -39,7 +39,7 @@ public:
 };
 
 template<typename T>
-class Bool4Test : public ::testing::Test
+class B4 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -47,7 +47,7 @@ public:
 };
 
 template<typename T>
-class Bool3x2Test : public ::testing::Test
+class B3x2 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -55,7 +55,7 @@ public:
 };
 
 template<typename T>
-class Bool6Test : public ::testing::Test
+class B6 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -63,7 +63,7 @@ public:
 };
 
 template<typename T>
-class Bool8Test : public ::testing::Test
+class B8 : public ::testing::Test
 {
 public:
     using Type = T;
@@ -71,24 +71,24 @@ public:
 };
 
 using Bool2TestTypes = ::testing::Types<Bool2<false>, Bool2<true>>;
-TYPED_TEST_SUITE(Bool2Test, Bool2TestTypes);
+TYPED_TEST_SUITE(B2, Bool2TestTypes);
 
 using Bool3TestTypes = ::testing::Types<Bool3<false>, Bool3<true>>;
-TYPED_TEST_SUITE(Bool3Test, Bool3TestTypes);
+TYPED_TEST_SUITE(B3, Bool3TestTypes);
 
 using Bool4TestTypes = ::testing::Types<Bool4<false>, Bool4<true>>;
-TYPED_TEST_SUITE(Bool4Test, Bool4TestTypes);
+TYPED_TEST_SUITE(B4, Bool4TestTypes);
 
 using Bool3x2TestTypes = ::testing::Types<Bool3x2<false>, Bool3x2<true>>;
-TYPED_TEST_SUITE(Bool3x2Test, Bool3x2TestTypes);
+TYPED_TEST_SUITE(B3x2, Bool3x2TestTypes);
 
 using Bool6TestTypes = ::testing::Types<Bool6<false>, Bool6<true>>;
-TYPED_TEST_SUITE(Bool6Test, Bool6TestTypes);
+TYPED_TEST_SUITE(B6, Bool6TestTypes);
 
 using Bool8TestTypes = ::testing::Types<Bool8<false>, Bool8<true>>;
-TYPED_TEST_SUITE(Bool8Test, Bool8TestTypes);
+TYPED_TEST_SUITE(B8, Bool8TestTypes);
 
-TYPED_TEST(Bool2Test, Bool2)
+TYPED_TEST_NS(Bool, B2, Bool2)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false);
@@ -151,7 +151,7 @@ TYPED_TEST(Bool2Test, Bool2)
     ASSERT_EQ(test4.getAsInteger(), 0x0_ui8);
 }
 
-TYPED_TEST(Bool3Test, Bool3)
+TYPED_TEST_NS(Bool, B3, Bool3)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false, false);
@@ -224,7 +224,7 @@ TYPED_TEST(Bool3Test, Bool3)
     ASSERT_EQ(test4.getAsInteger(), 0x0_ui8);
 }
 
-TYPED_TEST(Bool4Test, Bool4)
+TYPED_TEST_NS(Bool, B4, Bool4)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false, false, true);
@@ -307,7 +307,7 @@ TYPED_TEST(Bool4Test, Bool4)
     ASSERT_EQ(test4.getAsInteger(), 0x0_ui8);
 }
 
-TYPED_TEST(Bool3x2Test, Bool3x2)
+TYPED_TEST_NS(Bool, B3x2, Bool3x2)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false, false, true, false, true);
@@ -402,7 +402,7 @@ TYPED_TEST(Bool3x2Test, Bool3x2)
     ASSERT_EQ(test4.getAsInteger(), 0x00_ui8);
 }
 
-TYPED_TEST(Bool6Test, Bool6)
+TYPED_TEST_NS(Bool, B6, Bool6)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false, false, true, false, true);
@@ -497,7 +497,7 @@ TYPED_TEST(Bool6Test, Bool6)
     ASSERT_EQ(test4.getAsInteger(), 0x00_ui8);
 }
 
-TYPED_TEST(Bool8Test, Bool8)
+TYPED_TEST_NS(Bool, B8, Bool8)
 {
     using TBool = typename TestFixture::Type;
     TBool test1 = TBool(true, false, false, true, false, true, true, false);
