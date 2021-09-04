@@ -14,8 +14,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Sets whether assert checks should always be performed even when not in debug mode. Default: No (0)
- */
-#define XS_ALWAYS_ASSERT 1

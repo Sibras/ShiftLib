@@ -93,13 +93,6 @@
 #    error Unrecognized instruction set
 #endif
 
-/* Fix up current Debug/Not debug state */
-#ifndef _DEBUG
-#    ifndef NDEBUG
-#        define NDEBUG
-#    endif
-#endif
-
 /* Set specific values for compiler specific functionality*/
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
 #    define XS_FUNCTION __declspec(noalias)
@@ -408,7 +401,7 @@
         (void)(var);   \
     }
 
-#if defined(_DEBUG) || XS_ALWAYS_ASSERT
+#if defined(_DEBUG) || !defined(NDEBUG)
 #    if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
 #        include <cassert>
 #        define XS_ASSERT(x) (void)((!!(x)) || (_wassert(_CRT_WIDE(#        x), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0))
@@ -420,4 +413,6 @@
                     __LINE__) &&                                                                                      \
                 abort()))
 #    endif
+#else
+#    define XS_ASSERT(x)
 #endif
