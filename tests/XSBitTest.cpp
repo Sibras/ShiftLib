@@ -17,7 +17,7 @@
 #include "XSBit.hpp"
 
 #include "XSCompilerOptions.h"
-#include "XSTypes.hpp"
+#include "XSGTest.hpp"
 
 using namespace Shift;
 

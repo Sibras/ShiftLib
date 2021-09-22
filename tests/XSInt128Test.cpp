@@ -17,7 +17,7 @@
 #ifdef XSTESTMAIN
 #    include "XSInt128.inl"
 
-#    include "XSTypes.hpp"
+#    include "XSGTest.hpp"
 
 using namespace Shift;
 

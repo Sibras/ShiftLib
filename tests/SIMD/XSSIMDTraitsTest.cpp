@@ -18,7 +18,7 @@
 #    include "SIMD/XSSIMDTraits.hpp"
 
 #    include "XSCompilerOptions.h"
-#    include "XSTypes.hpp"
+#    include "XSGTest.hpp"
 
 using namespace Shift;
 

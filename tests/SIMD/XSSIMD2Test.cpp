@@ -21,7 +21,7 @@
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_BOOL
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD2Test)
-#    include "SIMD/XSTypesSIMD.hpp"
+#    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

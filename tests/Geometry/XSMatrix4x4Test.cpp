@@ -29,7 +29,7 @@
 #    define XS_TESTING_SIMD4
 #    define XS_TESTING_MATRIX3X3 // only needed for header include
 #    define XS_TESTING_MATRIX4X3 // only needed for header include
-#    include "Geometry/XSTypesGeometry.hpp"
+#    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

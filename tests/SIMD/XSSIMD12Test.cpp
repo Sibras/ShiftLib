@@ -26,7 +26,7 @@
 #    define XS_TESTING_SIMD8
 #    define XS_TESTING_SIMD3X3
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD12Test)
-#    include "SIMD/XSTypesSIMD.hpp"
+#    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

@@ -19,7 +19,7 @@
 #    define XS_TESTING_BASE
 #    define XS_TESTING_INBASE // Only needed for header include
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMDBTest)
-#    include "SIMD/XSTypesSIMD.hpp"
+#    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

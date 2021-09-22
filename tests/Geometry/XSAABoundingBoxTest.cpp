@@ -19,7 +19,7 @@
 
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(AABBTest)
 #    define XS_TESTING_AABB
-#    include "Geometry/XSTypesGeometry.hpp"
+#    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

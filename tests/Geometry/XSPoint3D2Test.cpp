@@ -21,7 +21,7 @@
 #    define XS_TESTING_POINT3D2
 #    define XS_TESTING_POINT3D
 #    define XS_TESTING_VECTOR3D2
-#    include "Geometry/XSTypesGeometry.hpp"
+#    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

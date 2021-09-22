@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "XSTypes.hpp"
+#include "XSGTest.hpp"
 
 #ifdef XS_OVERRIDE_SHIFT_NS
 namespace XS_OVERRIDE_SHIFT_NS {

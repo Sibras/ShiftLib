@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "XSTypes.hpp"
+#include "XSGTest.hpp"
 
 #ifdef XS_OVERRIDE_SHIFT_NS
 namespace XS_OVERRIDE_SHIFT_NS {
@@ -416,7 +416,7 @@ void PrintTo(const Vector3D<T, Width>& param, std::ostream* os)
 #    define XS_OVERRIDE_SHIFT_NS
 #endif
 
-#include "SIMD/XSTypesSIMD.hpp"
+#include "SIMD/XSGTestSIMD.hpp"
 
 #ifdef XS_TESTING_AABB
 template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>

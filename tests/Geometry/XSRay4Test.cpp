@@ -19,7 +19,7 @@
 
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(Ray4Test)
 #    define XS_TESTING_RAY4
-#    include "Geometry/XSTypesGeometry.hpp"
+#    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 

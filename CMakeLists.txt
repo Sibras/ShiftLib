@@ -196,7 +196,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     #Source files are included in main executable and in dependent ISA specific static libs
     set(SHIFTLIBTESTFILES
         tests/XSCompilerOptions.h
-        tests/XSTypes.hpp
+        tests/XSGTest.hpp
         tests/XSUInt128Test.cpp
         tests/XSInt128Test.cpp
         tests/XSMathTest.cpp
@@ -204,7 +204,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/XSBitTest.cpp
         tests/XSRationalTest.cpp
         
-        tests/SIMD/XSTypesSIMD.hpp
+        tests/SIMD/XSGTestSIMD.hpp
         tests/SIMD/XSSIMDTraitsTest.cpp
         tests/SIMD/XSSIMDBoolTest.cpp
         tests/SIMD/XSSIMDBaseTest.cpp
@@ -220,7 +220,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/SIMD/XSSIMD3x4Test.cpp
         tests/SIMD/XSSIMD16Test.cpp
         
-        tests/Geometry/XSTypesGeometry.hpp
+        tests/Geometry/XSGTestGeometry.hpp
         tests/Geometry/XSAABoundingBoxTest.cpp
         tests/Geometry/XSAABoundingBox2Test.cpp
         tests/Geometry/XSAABoundingBox4Test.cpp
@@ -323,7 +323,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
 
         target_link_libraries(ShiftLibTest_${SHIFTLIBCOMPILE}
             PRIVATE GTest::GTest
-            PRIVATE GTest::Main
             PRIVATE ShiftLib
         )
     
