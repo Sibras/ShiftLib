@@ -157,7 +157,7 @@ inline constexpr bool hasFastFMALong = false;
  */
 template<typename T>
 XS_REQUIRES(isSigned<T>)
-XS_INLINE T sign(T param1, T param2) noexcept
+XS_INLINE constexpr T sign(T param1, T param2) noexcept
 {
     static_assert(isSigned<T>);
     const T val = static_cast<T>(param2 > T(0)) - static_cast<T>(param2 < T(0));
@@ -172,7 +172,7 @@ XS_INLINE T sign(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES(isSigned<T>)
-XS_INLINE T abs(T param) noexcept
+XS_INLINE constexpr T abs(T param) noexcept
 {
     static_assert(isSigned<T>);
     if constexpr (isSame<T, int>) {
@@ -201,7 +201,7 @@ XS_INLINE T abs(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES(isInteger<T>)
-XS_INLINE auto mul(T param1, T param2) noexcept -> promote<T>
+XS_INLINE constexpr auto mul(T param1, T param2) noexcept -> promote<T>
 {
     static_assert(isInteger<T>);
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
@@ -263,7 +263,7 @@ XS_INLINE auto mul(T param1, T param2) noexcept -> promote<T>
  */
 template<typename T>
 XS_REQUIRES(isInteger<T>)
-XS_INLINE T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
+XS_INLINE constexpr T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>);
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
@@ -326,7 +326,7 @@ XS_INLINE T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
  */
 template<typename T>
 XS_REQUIRES(isInteger<T>)
-XS_INLINE T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
+XS_INLINE constexpr T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>);
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
@@ -386,7 +386,7 @@ XS_INLINE T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T exp(T param) noexcept
+XS_INLINE constexpr T exp(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -409,7 +409,7 @@ XS_INLINE T exp(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T exp2(T param) noexcept
+XS_INLINE constexpr T exp2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -432,7 +432,7 @@ XS_INLINE T exp2(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T log(T param) noexcept
+XS_INLINE constexpr T log(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -455,7 +455,7 @@ XS_INLINE T log(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T log2(T param) noexcept
+XS_INLINE constexpr T log2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -480,7 +480,7 @@ XS_INLINE T log2(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES(isArithmetic<T>)
-XS_INLINE T fma(T param1, T param2, T param3) noexcept
+XS_INLINE constexpr T fma(T param1, T param2, T param3) noexcept
 {
     static_assert(isArithmetic<T>);
     if constexpr (isSame<T, float> && hasFMA<T> && hasFastFMA32) {
@@ -503,7 +503,7 @@ XS_INLINE T fma(T param1, T param2, T param3) noexcept
  */
 template<typename T>
 XS_REQUIRES(isArithmetic<T>)
-XS_INLINE T min(T param1, T param2) noexcept
+XS_INLINE constexpr T min(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>);
     if constexpr (isSame<T, float>) {
@@ -526,7 +526,7 @@ XS_INLINE T min(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES(isArithmetic<T>)
-XS_INLINE T max(T param1, T param2) noexcept
+XS_INLINE constexpr T max(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>);
     if constexpr (isSame<T, float>) {
@@ -549,7 +549,7 @@ XS_INLINE T max(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES(isSigned<T>)
-XS_INLINE T copysign(T param1, T param2) noexcept
+XS_INLINE constexpr T copysign(T param1, T param2) noexcept
 {
     static_assert(isSigned<T>);
     if constexpr (isSame<T, float>) {
@@ -571,7 +571,7 @@ XS_INLINE T copysign(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T sqrt(T param) noexcept
+XS_INLINE constexpr T sqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -595,7 +595,7 @@ XS_INLINE T sqrt(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T rsqrt(T param) noexcept
+XS_INLINE constexpr T rsqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
@@ -628,7 +628,7 @@ XS_INLINE T rsqrt(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T sin(T param) noexcept
+XS_INLINE constexpr T sin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -651,7 +651,7 @@ XS_INLINE T sin(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T cos(T param) noexcept
+XS_INLINE constexpr T cos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -674,7 +674,7 @@ XS_INLINE T cos(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T tan(T param) noexcept
+XS_INLINE constexpr T tan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -698,7 +698,7 @@ XS_INLINE T tan(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T sincos(T param, T& cosResult) noexcept
+XS_INLINE constexpr T sincos(T param, T& cosResult) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_NVCC)
@@ -725,7 +725,7 @@ XS_INLINE T sincos(T param, T& cosResult) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T asin(T param) noexcept
+XS_INLINE constexpr T asin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -748,7 +748,7 @@ XS_INLINE T asin(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T acos(T param) noexcept
+XS_INLINE constexpr T acos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -771,7 +771,7 @@ XS_INLINE T acos(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T atan(T param) noexcept
+XS_INLINE constexpr T atan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -795,7 +795,7 @@ XS_INLINE T atan(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T atan2(T param1, T param2) noexcept
+XS_INLINE constexpr T atan2(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -819,7 +819,7 @@ XS_INLINE T atan2(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T pow(T param1, T param2) noexcept
+XS_INLINE constexpr T pow(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -843,7 +843,7 @@ XS_INLINE T pow(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T powr(T param1, T param2) noexcept
+XS_INLINE constexpr T powr(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     /* Note: there may be a faster way to do this instead of using the full pow version */
@@ -867,7 +867,7 @@ XS_INLINE T powr(T param1, T param2) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T recip(T param) noexcept
+XS_INLINE constexpr T recip(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     return T(1.0) / param;
@@ -881,7 +881,7 @@ XS_INLINE T recip(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T ceil(T param) noexcept
+XS_INLINE constexpr T ceil(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -904,7 +904,7 @@ XS_INLINE T ceil(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T floor(T param) noexcept
+XS_INLINE constexpr T floor(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -927,7 +927,7 @@ XS_INLINE T floor(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T trunc(T param) noexcept
+XS_INLINE constexpr T trunc(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float>) {
@@ -951,7 +951,7 @@ XS_INLINE T trunc(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
-XS_INLINE T ldexp(T param, int32 exp) noexcept
+XS_INLINE constexpr T ldexp(T param, int32 exp) noexcept
 {
     static_assert(isNative<T> && isFloat<T>);
     if constexpr (isSame<T, float32>) {
