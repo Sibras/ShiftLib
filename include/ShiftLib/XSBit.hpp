@@ -316,7 +316,7 @@ XS_INLINE uint32 ctz(T param) noexcept
     } else if constexpr (isUnsigned<T>) {
         return ctz(static_cast<uint32>(param));
     } else {
-        return 0_ui32;
+        return (param > 1) ? 1 + ctz(param >> 1) : 0;
     }
 }
 
