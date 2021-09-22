@@ -51,7 +51,7 @@ inline constexpr bool hasSIMD128 = hasSIMD512<T> || hasSIMD256<T> || hasSIMD<T>;
  * Query the number of values that can be stored in SIMD type.
  */
 template<typename T, SIMDWidth Width>
-inline constexpr uint32 numValues = Width == SIMDWidth::Scalar ?
+inline constexpr uint0 numValues = (Width == SIMDWidth::Scalar) ?
     1 :
     (Width >= SIMDWidth::B64 && hasSIMD512<T> ?
             64 / sizeof(T) :
@@ -71,7 +71,7 @@ inline constexpr SIMDWidth widthSIMD = hasSIMD512<T> ?
  * Gets maximum alignment required to store requested number of elements based on the current available SIMD widths.
  */
 template<typename T, uint32 Size>
-inline constexpr uint32 maxAlignment = (currentISA == ISA::X86 && Size == 1) ?
+inline constexpr uint0 maxAlignment = (currentISA == ISA::X86 && Size == 1) ?
     alignof(T) :
     ((hasSIMD128<T> && (!hasSIMD256<T> || numValues<T, SIMDWidth::B16> >= Size) && (Size == 2)) ?
             8 :
