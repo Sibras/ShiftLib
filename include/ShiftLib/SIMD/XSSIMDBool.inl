@@ -80,7 +80,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 2)
 XS_INLINE bool Bool2<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 2);
+    static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         return bitExtract(this->values, Index);
@@ -96,7 +96,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 2)
 XS_INLINE constexpr void Bool2<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 2);
+    static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values |= (1_ui8 << Index);
@@ -112,7 +112,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 2)
 XS_INLINE constexpr void Bool2<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 2);
+    static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values &= ~(1_ui8 << Index);
@@ -297,7 +297,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 3)
 XS_INLINE bool Bool3<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         return bitExtract(this->values, Index);
@@ -313,7 +313,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 3)
 XS_INLINE constexpr void Bool3<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values |= (1_ui8 << Index);
@@ -329,7 +329,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 3)
 XS_INLINE constexpr void Bool3<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values &= ~(1_ui8 << Index);
@@ -541,7 +541,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE bool Bool3x2<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         constexpr uint32 index2 = (Index >= 3_ui32) ? Index + 1_ui32 : Index;
@@ -558,7 +558,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE constexpr void Bool3x2<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         constexpr uint32 index2 = (Index >= 3_ui32) ? Index + 1_ui32 : Index;
@@ -575,7 +575,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE constexpr void Bool3x2<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         constexpr uint32 index2 = (Index >= 3_ui32) ? Index + 1_ui32 : Index;
@@ -775,7 +775,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 4)
 XS_INLINE bool Bool4<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         return bitExtract(this->values, Index);
@@ -791,7 +791,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 4)
 XS_INLINE constexpr void Bool4<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values |= (1_ui8 << Index);
@@ -807,7 +807,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 4)
 XS_INLINE constexpr void Bool4<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values &= ~(1_ui8 << Index);
@@ -989,7 +989,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE bool Bool6<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         return bitExtract(this->values, Index);
@@ -1005,7 +1005,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE constexpr void Bool6<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values |= (1_ui8 << Index);
@@ -1021,7 +1021,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 6)
 XS_INLINE constexpr void Bool6<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values &= ~(1_ui8 << Index);
@@ -1225,7 +1225,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 8)
 XS_INLINE bool Bool8<IsSIMD>::getBool() const noexcept
 {
-    static_assert(Index < 8);
+    static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         return bitExtract(this->values, Index);
@@ -1241,7 +1241,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 8)
 XS_INLINE constexpr void Bool8<IsSIMD>::setBoolTrue() noexcept
 {
-    static_assert(Index < 8);
+    static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values |= (1_ui8 << Index);
@@ -1257,7 +1257,7 @@ template<uint32 Index>
 XS_REQUIRES(Index < 8)
 XS_INLINE constexpr void Bool8<IsSIMD>::setBoolFalse() noexcept
 {
-    static_assert(Index < 8);
+    static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
     if constexpr (IsSIMD) {
         this->values &= ~(1_ui8 << Index);

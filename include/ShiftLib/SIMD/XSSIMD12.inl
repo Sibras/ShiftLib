@@ -991,7 +991,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD12<T, Width>::InBaseDef SIMD12<T, Width>::getValueInBase() const noexcept
 {
-    static_assert(Index < 12);
+    static_assert(Index < 12, "Invalid Index: Index must be <12");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1064,7 +1064,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD12<T, Width>::SIMD2Def SIMD12<T, Width>::getValue2() const noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1109,7 +1109,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD12<T, Width>::SIMD3Def SIMD12<T, Width>::getValue3() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index / 2 == 0) {
@@ -1152,7 +1152,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD12<T, Width>::SIMD4Def SIMD12<T, Width>::getValue4() const noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1182,7 +1182,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD12<T, Width>::SIMD6Def SIMD12<T, Width>::getValue6() const noexcept
 {
-    static_assert(Index < 2);
+    static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         const __m512 val = _mm512_shuffle_f32x4(this->values, this->values, _MM_SHUFFLE(3, 1, 2, 0));
@@ -1219,7 +1219,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE typename SIMD12<T, Width>::SIMD8Def SIMD12<T, Width>::getValue4x2() const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 1) {
@@ -1256,7 +1256,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue(BaseDef other) noexcept
 {
-    static_assert(Index < 12);
+    static_assert(Index < 12, "Invalid Index: Index must be <12");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         this->values = _mm512_mask_mov_ps(this->values, _cvtu32_mask16(1 << Index), other.values);
@@ -1296,7 +1296,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue(InBaseDef other) noexcept
 {
-    static_assert(Index < 12);
+    static_assert(Index < 12, "Invalid Index: Index must be <12");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1379,7 +1379,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue2(const SIMD2Def& other) noexcept
 {
-    static_assert(Index < 6);
+    static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1434,7 +1434,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue3(const SIMD3Def& other) noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1536,7 +1536,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue4(const SIMD4Def& other) noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1569,7 +1569,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD12<T, Width>::setValue6(const SIMD6Def& other) noexcept
 {
-    static_assert(Index < 2);
+    static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -1633,8 +1633,8 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE void SIMD12<T, Width>::setValue4x2(const SIMD8Def& other) noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
-    static_assert(Index0 != Index1);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
+    static_assert(Index0 != Index1, "Invalid Index: Indexes must both be unique");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 1) {
@@ -4373,7 +4373,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::insert2(const SIMD12& other) const noexcept
 {
-    static_assert(Index0 < 2 && Index1 < 2);
+    static_assert(Index0 < 2 && Index1 < 2, "Invalid Index: Indexes must be <2");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 0) {
@@ -4470,7 +4470,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::insert3(const SIMD12& other) const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 0) {
@@ -4527,7 +4527,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::insert4(const SIMD12& other) const noexcept
 {
-    static_assert(Index0 < 4 && Index1 < 4);
+    static_assert(Index0 < 4 && Index1 < 4, "Invalid Index: Indexes must be <4");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == Index1) {
@@ -4687,7 +4687,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::insert6(const SIMD12& other) const noexcept
 {
-    static_assert(Index0 < 6 && Index1 < 6);
+    static_assert(Index0 < 6 && Index1 < 6, "Invalid Index: Indexes must be <6");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == Index1) {
@@ -5179,7 +5179,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::shuffle2() const noexcept
 {
-    static_assert(Index0 < 4 && Index1 < 4);
+    static_assert(Index0 < 4 && Index1 < 4, "Invalid Index: Indexes must be <4");
     if constexpr (Index0 == 0 && Index1 == 1) {
         return *this;
     }
@@ -5227,7 +5227,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1, uint32 Index2>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::shuffle3() const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3);
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3, "Invalid Index: Indexes must be <3");
     if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2) {
         return *this;
     }
@@ -5320,7 +5320,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::shuffle4() const noexcept
 {
-    static_assert(Index0 < 4 && Index1 < 4 && Index2 < 4 && Index3 < 4);
+    static_assert(Index0 < 4 && Index1 < 4 && Index2 < 4 && Index3 < 4, "Invalid Index: Indexes must be <4");
     if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2 && Index3 == 3) {
         return *this;
     }
@@ -5394,7 +5394,8 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1, uint32 Index2, uint32 Index3, uint32 Index4, uint32 Index5>
 XS_INLINE SIMD12<T, Width> SIMD12<T, Width>::shuffle6() const noexcept
 {
-    static_assert(Index0 < 6 && Index1 < 6 && Index2 < 6 && Index3 < 6 && Index4 < 6 && Index5 < 6);
+    static_assert(Index0 < 6 && Index1 < 6 && Index2 < 6 && Index3 < 6 && Index4 < 6 && Index5 < 6,
+        "Invalid Index: Indexes must be <6");
     if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2 && Index3 == 3 && Index4 == 4 && Index5 == 5) {
         return *this;
     }

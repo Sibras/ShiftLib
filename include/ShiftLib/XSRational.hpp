@@ -63,7 +63,7 @@ public:
 template<typename T = int0>
 class Rational
 {
-    static_assert(isInteger<T>);
+    static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
 
 public:
     using Type = T;

@@ -396,7 +396,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD3x3<T, Width>::InBaseDef SIMD3x3<T, Width>::getValueInBase() const noexcept
 {
-    static_assert(Index < 9);
+    static_assert(Index < 9, "Invalid Index: Index must be <9");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -455,7 +455,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD3x3<T, Width>::BaseDef SIMD3x3<T, Width>::getValue() const noexcept
 {
-    static_assert(Index < 9);
+    static_assert(Index < 9, "Invalid Index: Index must be <9");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -517,7 +517,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename SIMD3x3<T, Width>::SIMD3Def SIMD3x3<T, Width>::getValue3() const noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -546,7 +546,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE typename SIMD3x3<T, Width>::SIMD3x2Def SIMD3x3<T, Width>::getValue3x2() const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 1) {
@@ -583,7 +583,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE void SIMD3x3<T, Width>::setValue3(const SIMD3Def& other) noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index == 0) {
@@ -615,8 +615,8 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE void SIMD3x3<T, Width>::setValue3x2(const SIMD3x2Def& other) noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
-    static_assert(Index0 != Index1);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
+    static_assert(Index0 != Index1, "Invalid Index: Indexes must both be unique");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == 0 && Index1 == 1) {
@@ -1806,7 +1806,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1>
 XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::insert3(const SIMD3x3& other) const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3);
+    static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
         if constexpr (Index0 == Index1) {
@@ -1985,7 +1985,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1, uint32 Index2>
 XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::shuffle3() const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3);
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3, "Invalid Index: Indexes must be <3");
     if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 23) {
         return *this;
     }
@@ -2039,7 +2039,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index0, uint32 Index1, uint32 Index2>
 XS_INLINE SIMD3x3<T, Width> SIMD3x3<T, Width>::shuffleH3() const noexcept
 {
-    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3);
+    static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3, "Invalid Index: Indexes must be <3");
     if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2) {
         return *this;
     }

@@ -31,7 +31,8 @@ class SIMDInBase;
 template<typename T>
 class SIMDInBaseData
 {
-    static_assert(isArithmetic<T> && !isCOrV<T>);
+    static_assert(
+        isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
     T value;
@@ -78,7 +79,8 @@ using SIMDInBaseDataPad = SIMDInBaseData<T>;
 template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMDInBase : public NoExport::SIMDData<T, 1, 0, Width>
 {
-    static_assert(isArithmetic<T> && !isCOrV<T>);
+    static_assert(
+        isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
     using Type = T;

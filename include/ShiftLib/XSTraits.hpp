@@ -702,7 +702,7 @@ template<typename T>
 inline constexpr bool isMoveAssignable = __is_assignable(addLRef<T>, T);
 
 /**
- * Query if a type is move destructible.
+ * Query if a type is destructible.
  */
 template<typename T>
 inline constexpr bool isDestructible = __is_destructible(T);
@@ -760,6 +760,12 @@ inline constexpr bool isTriviallyDestructible = __is_trivially_destructible(T);
  */
 template<typename T, typename... Args>
 inline constexpr bool isNothrowConstructible = __is_nothrow_constructible(T, Args...);
+
+/**
+ * Query if a type is copy constructible without throwing exceptions.
+ */
+template<typename T>
+inline constexpr bool isNothrowCopyConstructible = __is_nothrow_constructible(T, addLRef<const T>);
 
 /**
  * Query if a type is default constructible without throwing exceptions.
@@ -851,7 +857,7 @@ constexpr T&& forward(const removeRef<T>& param) noexcept
 template<typename T>
 constexpr T&& forward(removeRef<T>&& param) noexcept
 {
-    static_assert(!isLRef<T>, "invalid use of forward");
+    static_assert(!isLRef<T>, "Invalid use of forward");
     return static_cast<T&&>(param);
 }
 
@@ -1061,7 +1067,9 @@ using toSigned = typename NoExport::ToSigned<T>::type;
  * Query if any SIMD operations are supported.
  */
 template<typename T>
-inline constexpr bool hasSIMD = hasISAFeature<ISAFeature::SSE> ? isSameAny<T, float32> : false;
+inline constexpr bool hasSIMD = isSameAny<T, uint32, int32, uint64, int64> ?
+    hasISAFeature<ISAFeature::SSE2> :
+    (isSameAny<T, float32> ? hasISAFeature<ISAFeature::SSE> : false);
 
 /**
  * Query if fused multiply add instructions are supported.

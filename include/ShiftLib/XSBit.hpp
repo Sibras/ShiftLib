@@ -37,7 +37,8 @@ template<typename T>
 XS_REQUIRES((isSameAny<T, int16, uint16, int32, uint32, int64, uint64>))
 XS_INLINE T bswap(T param) noexcept
 {
-    static_assert(isSameAny<T, int16, uint16, int32, uint32, int64, uint64>);
+    static_assert(isSameAny<T, int16, uint16, int32, uint32, int64, uint64>,
+        "Invalid Type: Only native 16/32/64bit integers supported");
     if constexpr (isSameAny<T, int16, uint16>) {
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
         return static_cast<T>(_rotr16(static_cast<uint16>(param), 8));
@@ -89,7 +90,7 @@ template<typename T>
 XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 bsr(T param) noexcept
 {
-    static_assert(isSameAny<T, int32, uint32, int64, uint64>);
+    static_assert(isSameAny<T, int32, uint32, int64, uint64>, "Invalid Type: Only native 32/64bit integers supported");
     if constexpr (isSameAny<T, int32, uint32>) {
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
         // return is undefined if input is zero
@@ -175,7 +176,7 @@ template<typename T>
 XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint32 popcnt(T param) noexcept
 {
-    static_assert(isInteger<T> && isNative<T>);
+    static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
     if constexpr (isSameAny<T, int32, uint32>) {
 #if XS_COMPILER == XS_NVCC
         return __popc(param);
@@ -236,7 +237,7 @@ template<typename T>
 XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint32 ctz(T param) noexcept
 {
-    static_assert(isInteger<T> && isNative<T>);
+    static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
     if constexpr (isSameAny<T, int32, uint32>) {
 #if XS_COMPILER == XS_NVCC
         // return is 0 if input is zero
@@ -331,7 +332,7 @@ template<typename T>
 XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 clz(T param) noexcept
 {
-    static_assert(isSameAny<T, int32, uint32, int64, uint64>);
+    static_assert(isSameAny<T, int32, uint32, int64, uint64>, "Invalid Type: Only native 32/64bit integers supported");
     if constexpr (isSameAny<T, int32, uint32>) {
 #if XS_COMPILER == XS_NVCC
         // return is 32 if input is zero
@@ -420,7 +421,7 @@ template<typename T>
 XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE uint8 bitExtract(T param, uint32 bit) noexcept
 {
-    static_assert(isInteger<T> && isNative<T>);
+    static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
     if constexpr (isSameAny<T, int32, uint32>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
     (XS_COMPILER == XS_CLANGWIN)
@@ -488,7 +489,7 @@ template<typename T>
 XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE T bitSet(T param, uint32 bit) noexcept
 {
-    static_assert(isInteger<T> && isNative<T>);
+    static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
     T ret(param);
     if constexpr (isSameAny<T, int32, uint32>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
@@ -544,7 +545,7 @@ template<typename T>
 XS_REQUIRES((isInteger<T> && isNative<T>))
 XS_INLINE T bitClear(T param, uint32 bit) noexcept
 {
-    static_assert(isInteger<T> && isNative<T>);
+    static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
     T ret(param);
     if constexpr (isSameAny<T, int32, uint32>) {
 #if (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANG) || \
@@ -603,7 +604,8 @@ XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alig
 XS_INLINE T bitCast(T2 param) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
-        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
+            isTriviallyCopyable<T> && isTriviallyCopyable<T2>,
+        "Invalid Types: The requested types can not be cast between each other");
     if constexpr (isSame<T, T2>) {
         return param;
     } else if constexpr (isInteger<T> && isInteger<T2> && (isSigned<T> != isSigned<T2>)) {
@@ -746,7 +748,8 @@ XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alig
 XS_INLINE T bitAnd(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
-        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
+            isTriviallyCopyable<T> && isTriviallyCopyable<T2>,
+        "Invalid Types: The requested types can not be cast between each other");
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 & static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -765,7 +768,7 @@ XS_INLINE T bitAnd(T param1, T2 param2) noexcept
         // Reinterpret cast is valid only when casting to char array
         uint8 ret1[sizeof(T)] = reinterpret_cast<uint8*>(&param1); // NOLINT(modernize-avoid-c-arrays)
         uint8 ret2[sizeof(T)] = reinterpret_cast<uint8*>(&param2); // NOLINT(modernize-avoid-c-arrays)
-        for (auto i = 0; i < sizeof(T); ++i) {
+        for (auto i = sizeof(T); i != 0; --i) {
             ret1[i] &= ret2[i];
         }
         return *reinterpret_cast<T*>(ret1);
@@ -786,7 +789,8 @@ XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alig
 XS_INLINE T bitOr(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
-        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
+            isTriviallyCopyable<T> && isTriviallyCopyable<T2>,
+        "Invalid Types: The requested types can not be cast between each other");
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 | static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -805,7 +809,7 @@ XS_INLINE T bitOr(T param1, T2 param2) noexcept
         // Reinterpret cast is valid only when casting to char array
         uint8 ret1[sizeof(T)] = reinterpret_cast<uint8*>(&param1); // NOLINT(modernize-avoid-c-arrays)
         uint8 ret2[sizeof(T)] = reinterpret_cast<uint8*>(&param2); // NOLINT(modernize-avoid-c-arrays)
-        for (auto i = 0; i < sizeof(T); ++i) {
+        for (auto i = sizeof(T); i != 0; --i) {
             ret1[i] |= ret2[i];
         }
         return *reinterpret_cast<T*>(ret1);
@@ -826,7 +830,8 @@ XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alig
 XS_INLINE T bitXor(T param1, T2 param2) noexcept
 {
     static_assert((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) &&
-        isTriviallyCopyable<T> && isTriviallyCopyable<T2>);
+            isTriviallyCopyable<T> && isTriviallyCopyable<T2>,
+        "Invalid Types: The requested types can not be cast between each other");
     if constexpr (isInteger<T> && isInteger<T2>) {
         return param1 ^ static_cast<T>(param2);
     } else if constexpr (isInteger<T>) {
@@ -845,7 +850,7 @@ XS_INLINE T bitXor(T param1, T2 param2) noexcept
         // Reinterpret cast is valid only when casting to char array
         uint8 ret1[sizeof(T)] = reinterpret_cast<uint8*>(&param1); // NOLINT(modernize-avoid-c-arrays)
         uint8 ret2[sizeof(T)] = reinterpret_cast<uint8*>(&param2); // NOLINT(modernize-avoid-c-arrays)
-        for (auto i = 0; i < sizeof(T); ++i) {
+        for (auto i = sizeof(T); i != 0; --i) {
             ret1[i] ^= ret2[i];
         }
         return *reinterpret_cast<T*>(ret1);
@@ -874,7 +879,7 @@ XS_INLINE T bitNot(T param) noexcept
     } else {
         // Reinterpret cast is valid only when casting to char array
         uint8 ret[sizeof(T)] = reinterpret_cast<uint8*>(&param); // NOLINT(modernize-avoid-c-arrays)
-        for (auto i = 0; i < sizeof(T); ++i) {
+        for (auto i = sizeof(T); i != 0; --i) {
             ret[i] = ~ret[i];
         }
         return *reinterpret_cast<T*>(ret);

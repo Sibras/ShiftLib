@@ -656,7 +656,7 @@ XS_INLINE Int128 Int128::divide(const Int128 denom, Int128& rem) const noexcept
     const Int128 absThis = (*this > 0) ? *this : -*this;
     const Int128 absDenom = (denom > 0) ? denom : -denom;
     const auto bits = (absThis.high) ? bsr<int64>(absThis.high) + 65 : bsr<uint64>(absThis.low) + 1;
-    for (auto x = static_cast<uint8>(bits); x > 0_ui8; x--) {
+    for (auto x = static_cast<uint8>(bits); x > 0_ui8; --x) {
         quot <<= 1_ui8;
         rem <<= 1_ui8;
 

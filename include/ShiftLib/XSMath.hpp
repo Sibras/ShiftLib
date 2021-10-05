@@ -159,7 +159,7 @@ template<typename T>
 XS_REQUIRES(isSigned<T>)
 XS_INLINE constexpr T sign(T param1, T param2) noexcept
 {
-    static_assert(isSigned<T>);
+    static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
     const T val = static_cast<T>(param2 > T(0)) - static_cast<T>(param2 < T(0));
     return param1 * val;
 }
@@ -174,7 +174,7 @@ template<typename T>
 XS_REQUIRES(isSigned<T>)
 XS_INLINE constexpr T abs(T param) noexcept
 {
-    static_assert(isSigned<T>);
+    static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
     if constexpr (isSame<T, int>) {
         return ::abs(param);
     } else if constexpr (isSame<T, long>) /*NOLINT(google-runtime-int)*/ {
@@ -203,7 +203,7 @@ template<typename T>
 XS_REQUIRES(isInteger<T>)
 XS_INLINE constexpr auto mul(T param1, T param2) noexcept -> promote<T>
 {
-    static_assert(isInteger<T>);
+    static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
     // TODO: Need gcc intrinsics/asm for optimised mul operations
     if constexpr (isSame<T, int32>) {
@@ -265,7 +265,7 @@ template<typename T>
 XS_REQUIRES(isInteger<T>)
 XS_INLINE constexpr T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
-    static_assert(isInteger<T>);
+    static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
 #    if (XS_COMPILER == XS_MSVC)
     if constexpr (isSameAny<T, uint8, int8>) {
@@ -328,7 +328,7 @@ template<typename T>
 XS_REQUIRES(isInteger<T>)
 XS_INLINE constexpr T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
-    static_assert(isInteger<T>);
+    static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
 #    if (XS_COMPILER == XS_MSVC)
     if constexpr (isSameAny<T, uint8, int8>) {
@@ -388,7 +388,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T exp(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::expf(param);
     } else if constexpr (isSame<T, double>) {
@@ -411,7 +411,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T exp2(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::exp2f(param);
     } else if constexpr (isSame<T, double>) {
@@ -434,7 +434,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T log(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::logf(param);
     } else if constexpr (isSame<T, double>) {
@@ -457,7 +457,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T log2(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::log2f(param);
     } else if constexpr (isSame<T, double>) {
@@ -482,7 +482,7 @@ template<typename T>
 XS_REQUIRES(isArithmetic<T>)
 XS_INLINE constexpr T fma(T param1, T param2, T param3) noexcept
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
     if constexpr (isSame<T, float> && hasFMA<T> && hasFastFMA32) {
         return ::fmaf(param1, param2, param3);
     } else if constexpr (isSame<T, double> && hasFMA<T> && hasFastFMA64) {
@@ -505,7 +505,7 @@ template<typename T>
 XS_REQUIRES(isArithmetic<T>)
 XS_INLINE constexpr T min(T param1, T param2) noexcept
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
     if constexpr (isSame<T, float>) {
         return ::fminf(param1, param2);
     } else if constexpr (isSame<T, double>) {
@@ -528,7 +528,7 @@ template<typename T>
 XS_REQUIRES(isArithmetic<T>)
 XS_INLINE constexpr T max(T param1, T param2) noexcept
 {
-    static_assert(isArithmetic<T>);
+    static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
     if constexpr (isSame<T, float>) {
         return ::fmaxf(param1, param2);
     } else if constexpr (isSame<T, double>) {
@@ -551,7 +551,7 @@ template<typename T>
 XS_REQUIRES(isSigned<T>)
 XS_INLINE constexpr T copysign(T param1, T param2) noexcept
 {
-    static_assert(isSigned<T>);
+    static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
     if constexpr (isSame<T, float>) {
         return ::copysignf(param1, param2);
     } else if constexpr (isSame<T, double>) {
@@ -573,7 +573,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sqrt(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::sqrtf(param);
     } else if constexpr (isSame<T, double>) {
@@ -597,7 +597,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T rsqrt(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
     if constexpr (isSame<T, float>) {
         return ::invsqrtf(param);
@@ -630,7 +630,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sin(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::sinf(param);
     } else if constexpr (isSame<T, double>) {
@@ -653,7 +653,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T cos(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::cosf(param);
     } else if constexpr (isSame<T, double>) {
@@ -676,7 +676,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T tan(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::tanf(param);
     } else if constexpr (isSame<T, double>) {
@@ -700,7 +700,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sincos(T param, T& cosResult) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
 #if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_NVCC)
     T retSin;
     if constexpr (isSame<T, float>) {
@@ -727,7 +727,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T asin(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::asinf(param);
     } else if constexpr (isSame<T, double>) {
@@ -750,7 +750,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T acos(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::acosf(param);
     } else if constexpr (isSame<T, double>) {
@@ -773,7 +773,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T atan(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::atanf(param);
     } else if constexpr (isSame<T, double>) {
@@ -797,7 +797,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T atan2(T param1, T param2) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::atan2f(param1, param2);
     } else if constexpr (isSame<T, double>) {
@@ -821,7 +821,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T pow(T param1, T param2) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::powf(param1, param2);
     } else if constexpr (isSame<T, double>) {
@@ -845,7 +845,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T powr(T param1, T param2) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     /* Note: there may be a faster way to do this instead of using the full pow version */
     if constexpr (isSame<T, float>) {
         return ::powf(param1, param2);
@@ -869,7 +869,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T recip(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     return T(1.0) / param;
 }
 
@@ -883,7 +883,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T ceil(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::ceilf(param);
     } else if constexpr (isSame<T, double>) {
@@ -906,7 +906,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T floor(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::floorf(param);
     } else if constexpr (isSame<T, double>) {
@@ -929,7 +929,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T trunc(T param) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float>) {
         return ::truncf(param);
     } else if constexpr (isSame<T, double>) {
@@ -953,7 +953,7 @@ template<typename T>
 XS_REQUIRES((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T ldexp(T param, int32 exp) noexcept
 {
-    static_assert(isNative<T> && isFloat<T>);
+    static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
     if constexpr (isSame<T, float32>) {
         return ::ldexpf(param, exp);
     } else if constexpr (isSame<T, float64>) {

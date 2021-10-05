@@ -249,7 +249,7 @@ template<typename T, SIMDWidth Width>
 template<uint32 Index>
 XS_INLINE typename Matrix4x3<T, Width>::SIMD4Def Matrix4x3<T, Width>::getRow() const noexcept
 {
-    static_assert(Index < 3);
+    static_assert(Index < 3, "Invalid Index: Index must be <3");
     // Note: this is not well optimised as it is only intended for viewing contents
     return this->transpose().columns.template getValue4<Index>();
 }

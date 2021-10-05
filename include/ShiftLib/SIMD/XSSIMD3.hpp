@@ -38,7 +38,8 @@ class SIMD3;
 template<typename T>
 class SIMD3Data
 {
-    static_assert(isArithmetic<T> && !isCOrV<T>);
+    static_assert(
+        isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
     T value0, value1, value2;
@@ -84,7 +85,8 @@ public:
 template<typename T>
 class alignas(maxAlignment<T, 3>) SIMD3DataPad
 {
-    static_assert(isArithmetic<T> && !isCOrV<T>);
+    static_assert(
+        isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
     T value0, value1, value2;
@@ -131,7 +133,8 @@ public:
 template<typename T, SIMDWidth Width = widthSIMD<T>>
 class SIMD3 : public NoExport::SIMDData<T, 3, 0, Width>
 {
-    static_assert(isArithmetic<T> && !isCOrV<T>);
+    static_assert(
+        isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
     using Type = T;

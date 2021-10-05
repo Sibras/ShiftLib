@@ -61,7 +61,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE typename Range4<T, Width>::RangeDef Range4<T, Width>::getRange() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     return RangeDef(XSFloat2(this->mins.template getValueInBase<0>(), this->maxs.template getValueInBase<0>()));
 }
 
@@ -69,7 +69,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMinInBase() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     return this->mins.template getValueInBase<0>();
 }
 
@@ -77,7 +77,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE typename Range4<T, Width>::InBaseDef Range4<T, Width>::getMaxInBase() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     return this->maxs.template getValueInBase<0>();
 }
 
@@ -85,7 +85,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMin() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     return this->mins.template getValue<Index>();
 }
 
@@ -93,7 +93,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE typename Range4<T, Width>::BaseDef Range4<T, Width>::getMax() const noexcept
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     return this->maxs.template getValue<Index>();
 }
 
@@ -107,7 +107,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE void Range4<T, Width>::setMin(const BaseDef min)
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     this->mins.template setValue<Index>(min);
 }
 
@@ -115,7 +115,7 @@ template<typename T, SIMDWidth Width>
 template<uint32_t Index>
 XS_INLINE void Range4<T, Width>::setMax(const BaseDef max)
 {
-    static_assert(Index < 4);
+    static_assert(Index < 4, "Invalid Index: Index must be <4");
     this->maxs.template setValue<Index + 2>(max);
 }
 
