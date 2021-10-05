@@ -23,6 +23,10 @@
 #define TYPED_TEST2(test_suite_name, test_name) GTEST_TYPED_TEST(test_suite_name, test_name)
 #define GTEST_TYPED_TEST_P(test_suite_name, test_name) TYPED_TEST_P(test_suite_name, test_name)
 #define TYPED_TEST_P2(test_suite_name, test_name) GTEST_TYPED_TEST_P(test_suite_name, test_name)
+#define GTEST_INSTANTIATE_TYPED_TEST_SUITE_P(Prefix, SuiteName, Types, ...) \
+    INSTANTIATE_TYPED_TEST_SUITE_P(Prefix, SuiteName, Types, __VA_ARGS__)
+#define INSTANTIATE_TYPED_TEST_SUITE_P2(Prefix, SuiteName, Types, ...) \
+    GTEST_INSTANTIATE_TYPED_TEST_SUITE_P(Prefix, SuiteName, Types, __VA_ARGS__)
 
 // A copy of GTEST_TEST_CLASS_NAME_, but with handling for namespace name.
 #define NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_case_name, test_name) \

@@ -35,6 +35,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     
     # Setup basic testing parameters
     include(CTest)
+
+    #Setup basic benchmarking parameters
+    if(BUILD_TESTING)
+        option(BUILD_BENCHMARKING "Create benchmarks using CMake" ON)
+    endif()
     
     # Build documentation if available
     find_package(Doxygen)
@@ -143,6 +148,8 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSVector3D4.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSTransform.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSTransform.inl>"
+    
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSMemory.hpp>"
 )
 
 target_compile_features(ShiftLib
@@ -240,6 +247,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/Geometry/XSVector3DTest.cpp
         tests/Geometry/XSVector3D2Test.cpp
         tests/Geometry/XSVector3D4Test.cpp
+        
+        tests/Memory/XSMemoryTest.cpp
     )
     
     add_executable(ShiftLibTest)
@@ -366,4 +375,112 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     gtest_discover_tests(ShiftLibTest
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
+endif()
+
+
+# Add benchmarks
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_BENCHMARKING)
+    find_package(benchmark REQUIRED)
+    
+    #Source files are included in main executable and in dependent ISA specific static libs
+    set(SHIFTLIBBENCHFILES
+        benchmarks/XSBenchConfig.h
+        benchmarks/Memory/XSMemoryBench.cpp
+    )
+    
+    add_executable(ShiftLibBench)
+
+    target_sources(ShiftLibBench PRIVATE ${SHIFTLIBBENCHFILES})
+
+    # XSTESTMAIN is used to signal if in main executable or ISA library
+    target_compile_definitions(ShiftLibBench PRIVATE XSBENCHMAIN)
+    
+    set_target_properties(
+        ShiftLibBench PROPERTIES
+        EXCLUDE_FROM_ALL true
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    target_include_directories(ShiftLibBench PRIVATE "benchmarks/")
+
+    target_link_libraries(ShiftLibBench
+        PRIVATE benchmark::benchmark
+        PRIVATE benchmark::benchmark_main
+        PRIVATE ShiftLib
+    )
+
+    # Create a list of benched compiler options
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBBENCHOPTIONS -march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+        if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
+        else()
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        endif()
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS /arch:IA32 /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+        else()
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        endif()
+    endif()
+
+    #Add an library for each set of compiler options
+    foreach(SHIFTLIBCOMPILE ${SHIFTLIBBENCHOPTIONSTAG})
+        add_library(ShiftLibBench_${SHIFTLIBCOMPILE} STATIC)        
+        
+        target_sources(ShiftLibBench_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIBBENCHFILES})
+
+        set_target_properties(
+            ShiftLibBench_${SHIFTLIBCOMPILE} PROPERTIES
+            EXCLUDE_FROM_ALL true
+            VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+
+        target_include_directories(ShiftLibBench_${SHIFTLIBCOMPILE} PRIVATE "benchmarks/")
+
+        target_link_libraries(ShiftLibBench_${SHIFTLIBCOMPILE}
+            PRIVATE benchmark::benchmark
+            PRIVATE ShiftLib
+        )
+    
+        # Add any extra required linker flags to ensure that the static libs are correctly included in final program
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibBench_${SHIFTLIBCOMPILE} --no-whole-archive>)
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+            if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+                target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibBench_${SHIFTLIBCOMPILE}>)
+            else()
+                target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibBench_${SHIFTLIBCOMPILE} --no-whole-archive>)
+            endif()
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+            target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibBench_${SHIFTLIBCOMPILE}>)
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+            if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+                target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WHOLEARCHIVE:ShiftLibBench_${SHIFTLIBCOMPILE}>)
+            else()
+                target_link_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:--whole-archive ShiftLibBench_${SHIFTLIBCOMPILE} --no-whole-archive>)
+            endif()
+        endif()
+
+        # Add compiler options from list to lib
+        list(GET SHIFTLIBBENCHOPTIONS 0 BENCHOPTIONSTAG)
+        separate_arguments(BENCHOPTIONSTAG)
+        foreach(BENCHOPTIONS ${BENCHOPTIONSTAG})
+            target_compile_options(ShiftLibBench_${SHIFTLIBCOMPILE} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${BENCHOPTIONS}>)
+        endforeach()
+        list(REMOVE_AT SHIFTLIBBENCHOPTIONS 0)        
+        
+        # Add the ISA dependent lib as dependency of main bench program
+        target_link_libraries(ShiftLibBench PRIVATE ShiftLibBench_${SHIFTLIBCOMPILE})
+    endforeach()
 endif()
