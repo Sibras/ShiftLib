@@ -19,8 +19,6 @@
 #    if !(XS_ARCH_AVX && !XS_ARCH_AVX2)
 #        include "XSGTest.hpp"
 
-#        include <gtest/gtest.h>
-
 #        define XS_OVERRIDE_SHIFT_NS TESTISA(MemoryTest)
 
 namespace XS_OVERRIDE_SHIFT_NS {
@@ -204,6 +202,12 @@ TYPED_TEST_NS2(Memory, TESTISA(Memory), MemMove)
 {
     using TestType = typename TestFixture::Type;
 
+    // Check 0 copy
+    const TestType comp2 = TestType(1);
+    TestFixture::output[0] = comp2;
+    memMove<TestType>(TestFixture::output, TestFixture::input, 0);
+    ASSERT_EQ(TestFixture::output[0], comp2);
+
     for (size_t testElements = 1; testElements < testMaxElements; testElements <<= 2) {
         const size_t testSize = testElements * sizeof(TestType);
 
@@ -282,6 +286,12 @@ TYPED_TEST_NS2(Memory, TESTISA(Memory), MemMove)
 TYPED_TEST_NS2(Memory, TESTISA(Memory), MemMoveBack)
 {
     using TestType = typename TestFixture::Type;
+
+    // Check 0 copy
+    const TestType comp2 = TestType(1);
+    TestFixture::output[0] = comp2;
+    memMoveBackwards<TestType>(TestFixture::output, TestFixture::input, 0);
+    ASSERT_EQ(TestFixture::output[0], comp2);
 
     for (size_t testElements = 1; testElements < testMaxElements; testElements <<= 2) {
         const size_t testSize = testElements * sizeof(TestType);

@@ -85,7 +85,7 @@ struct BulkData<T>
 template<typename T, uint0 Size = 1>
 struct BulkHelper
 {
-    using Type = T[Size];
+    using Type = T[Size]; // NOLINT(modernize-avoid-c-arrays)
     static constexpr uint32 data512Size =
         (hasISAFeature<ISAFeature::AVX512F> && (alignof(T) >= 64)) ? sizeof(T) / 64 : 0;
     static constexpr uint32 data256Size =
@@ -137,7 +137,7 @@ XS_CONSTEVAL uint0 log2(const uint0 n)
  * @returns The pointer with appropriate alignment flagged to the compiler.
  */
 template<typename T, uint0 Align>
-[[nodiscard]] XS_INLINE constexpr T* markAligned(const T* const pointer) noexcept
+[[nodiscard]] XS_INLINE constexpr T* markAligned(T* const pointer) noexcept // NOLINT(clang-diagnostic-unused-parameter)
 {
 #if __cplusplus >= 202002L
     if (__builtin_is_constant_evaluated()) {
@@ -146,9 +146,8 @@ template<typename T, uint0 Align>
         return static_cast<T*>(__builtin_assume_aligned(pointer, Align));
     }
 #elif (XS_COMPILER == XS_GNUC) || (XS_COMPILER == XS_CLANG) || (XS_COMPILER == XS_CLANGWIN)
-    return static_cast<T*>(__builtin_assume_aligned(void*, size_t));
+    return static_cast<T*>(__builtin_assume_aligned(pointer, Align));
 #elif (XS_COMPILER == XS_MSVC)
-    __assume(pointer % Align == 0);
     return pointer;
 #elif (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC)
     __assume_aligned(pointer, Align);
@@ -170,21 +169,19 @@ template<typename T, uint0 Align>
  * @param  size   The number of bytes to copy.
  */
 template<typename T /*, typename AllocSource, typename AllocDest*/>
-XS_INLINE void memMove(T* XS_RESTRICT dest, T* XS_RESTRICT source, uint0 size)
+XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 size)
 {
     XS_ASSERT((reinterpret_cast<uint0>(dest) % alignof(T)) == 0);
     XS_ASSERT((reinterpret_cast<uint0>(source) % alignof(T)) == 0);
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     XS_ASSERT(dest < source || dest >= (source + (size / sizeof(T))));
     // Note: sizeof(T) % alignof(T) == 0
     if constexpr (currentISA == ISA::X86) {
-        uint8* XS_RESTRICT dest2 = reinterpret_cast<uint8*>(dest);
-        const uint8* XS_RESTRICT source2 = reinterpret_cast<const uint8*>(source);
+        auto dest2 = reinterpret_cast<uint8*>(dest);
+        auto source2 = reinterpret_cast<const uint8*>(source);
 
         if constexpr (hasISAFeature<ISAFeature::SSE2>) {
-            constexpr auto repMovSize = 8000 * systemAlignment;
-            if (size > repMovSize) {
+            if (constexpr auto repMovSize = 8000 * systemAlignment; size > repMovSize) {
                 // Once the movement size reaches a certain limit then 'rep movs' becomes faster
                 if constexpr (currentArch == Architecture::Bit64 && alignof(T) % 8 == 0) {
                     XS_REPMOVSQ(dest2, source2, size >> 3);
@@ -354,12 +351,10 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, T* XS_RESTRICT source, uint0 size)
                         }
                     }
                 } else {
-                    // Check if the size of the copy is large enough to warrant all the alignment operations needed to
-                    // use a larger register size for copies
-                    constexpr uint32 copyThreshold = (alignof(T) == 1) ?
-                        systemAlignment * 4 :
-                        ((alignof(T) == 2) ? systemAlignment * 2 : systemAlignment);
-                    if (XS_UNEXPECT(size < copyThreshold)) {
+                    if (constexpr uint32 copyThreshold = (alignof(T) == 1) ?
+                            systemAlignment * 4 :
+                            ((alignof(T) == 2) ? systemAlignment * 2 : systemAlignment);
+                        XS_UNEXPECT(size < copyThreshold)) {
                         if (XS_EXPECT(size >= (alignof(T) * 32))) {
                             // rep movs is only generally faster than a normal loop when count>=32
                             if constexpr (alignof(T) == 4) {
@@ -372,12 +367,11 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, T* XS_RESTRICT source, uint0 size)
                         } else {
                             constexpr auto logSize = NoExport::log2(sizeof(T));
                             const auto loops = size >> logSize;
-                            for (auto count = loops - 1; count != 0; --count) {
+                            for (auto count = loops; count != 0; --count) {
                                 *dest = *source;
                                 ++source;
                                 ++dest;
                             }
-                            *dest = *source;
                         }
                         return;
                     }
@@ -781,12 +775,11 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, T* XS_RESTRICT source, uint0 size)
     } else {
         constexpr auto logSize = NoExport::log2(sizeof(T));
         const auto loops = size >> logSize;
-        for (auto count = loops - 1; count != 0; --count) {
+        for (auto count = loops; count != 0; --count) {
             *dest = *source;
             ++source;
             ++dest;
         }
-        *dest = *source;
     }
 }
 
@@ -811,12 +804,11 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
     XS_ASSERT((reinterpret_cast<uint0>(dest) % alignof(T)) == 0);
     XS_ASSERT((reinterpret_cast<uint0>(source) % alignof(T)) == 0);
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     XS_ASSERT(dest > source || source >= (dest + (size / sizeof(T))));
     if constexpr (currentISA == ISA::X86) {
         // Determine the end pointers for backwards traversal
-        uint8* XS_RESTRICT dest2 = reinterpret_cast<uint8*>(dest);
-        const uint8* XS_RESTRICT source2 = reinterpret_cast<const uint8*>(source);
+        auto dest2 = reinterpret_cast<uint8*>(dest);
+        auto source2 = reinterpret_cast<const uint8*>(source);
         dest2 += size;
         source2 += size;
 
@@ -979,10 +971,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                     }
                 }
             } else {
-                // Check if the size of the copy is large enough to warrant all the alignment operations needed to
-                // use a larger register size for copies
-                constexpr uint32 copyThreshold = systemAlignment;
-                if (XS_UNEXPECT(size < copyThreshold)) {
+                if (constexpr uint32 copyThreshold = systemAlignment; XS_UNEXPECT(size < copyThreshold)) {
                     constexpr auto logSize = NoExport::log2(sizeof(T));
                     const auto loops = size >> logSize;
                     for (auto count = loops; count != 0; --count) {
@@ -1415,8 +1404,8 @@ XS_INLINE void memConstruct(T* const XS_RESTRICT pointer) noexcept
  * Construct a single memory address to specific value.
  * @note This can be used to ensure that allocated memory is correctly filled with correct data.
  * @tparam T Generic type parameter.
- * @param  pointer The destination address to construct at.
- * @param  value   The value to construct at address.
+ * @param pointer The destination address to construct at.
+ * @param value   The value to construct at address.
  */
 template<typename T>
 XS_INLINE void memConstruct(T* const XS_RESTRICT pointer, const T& value) noexcept
@@ -1435,11 +1424,11 @@ XS_INLINE void memConstruct(T* const XS_RESTRICT pointer, const T& value) noexce
  * @param  values  The values to construct element at address.
  */
 template<typename T, typename... Args>
-XS_INLINE void memConstruct(T* const XS_RESTRICT pointer, const Args&&... values) noexcept
+XS_INLINE void memConstruct(T* const XS_RESTRICT pointer, Args&&... values) noexcept
 {
-    static_assert(isConstructible<T, values>, "Memory of type 'T' can not be constructed from 'Args'");
-    static_assert(isNothrowConstructible<T, values>, "Only types that do not throw exceptions can be used");
-    new (pointer) T(forward(values)...);
+    static_assert(isConstructible<T, Args...>, "Memory of type 'T' can not be constructed from 'Args'");
+    static_assert(isNothrowConstructible<T, Args...>, "Only types that do not throw exceptions can be used");
+    new (pointer) T(forward<Args>(values)...);
 }
 
 /**
@@ -1466,12 +1455,11 @@ XS_INLINE void memDestruct(T* const XS_RESTRICT pointer) noexcept
  * @param  size    The number of bytes to construct over.
  */
 template<typename T>
-XS_INLINE void memConstructRange(T* const XS_RESTRICT pointer, const int0 size) noexcept
+XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const int0 size) noexcept
 {
     static_assert(isDefaultConstructible<T>, "Memory of type 'T' can not be default constructed");
     static_assert(isNothrowDefaultConstructible<T>, "Only types that do not throw exceptions can be used");
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     if constexpr (!isTriviallyConstructible<T>) {
         // Must loop over all elements in the range and construct as required
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1492,16 +1480,15 @@ XS_INLINE void memConstructRange(T* const XS_RESTRICT pointer, const int0 size) 
  * @param  size    The number of bytes to construct over.
  */
 template<typename T, typename T2>
-XS_INLINE void memConstructRange(
-    T* const XS_RESTRICT pointer, const T2* const XS_RESTRICT values, const uint0 size) noexcept
+XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const T2* const XS_RESTRICT values, const uint0 size) noexcept
 {
-    static_assert(isConstructible<T, T2>, "Memory of type 'T' can not be constructed from 'T2'");
-    static_assert(isNothrowConstructible<T, T2>, "Only types that do not throw exceptions can be used");
+    static_assert(isSame<T, T2> || isConstructible<T, T2>, "Memory of type 'T' can not be constructed from 'T2'");
+    static_assert(
+        isSame<T, T2> || isNothrowConstructible<T, T2>, "Only types that do not throw exceptions can be used");
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove(pointer, values, size);
+        memMove<T>(pointer, reinterpret_cast<const T*>(values), size);
     } else {
         /*Must loop over all elements in the range and construct as required */
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1525,19 +1512,18 @@ XS_INLINE void memConstructRange(
  * @param  constructedSize The number of bytes at destination that have already been constructed.
  */
 template<typename T, typename T2>
-XS_INLINE void memCopyConstructRange(T* const XS_RESTRICT pointer, const T2* const XS_RESTRICT values, const uint0 size,
-    const uint0 constructedSize) noexcept
+XS_INLINE void memCopyConstructRange(
+    T* XS_RESTRICT pointer, const T2* XS_RESTRICT values, const uint0 size, const uint0 constructedSize) noexcept
 {
-    static_assert(isConstructible<T, T2>, "Memory of type 'T' can not be constructed from 'T2'");
-    static_assert(isAssignable<T, T2>, "Memory of type 'T' can not be assigned a type 'T2'");
-    static_assert(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>,
+    static_assert(isSame<T, T2> || isConstructible<T, T2>, "Memory of type 'T' can not be constructed from 'T2'");
+    static_assert(isSame<T, T2> || isAssignable<T, T2>, "Memory of type 'T' can not be assigned a type 'T2'");
+    static_assert(isSame<T, T2> || isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>,
         "Only types that do not throw exceptions can be used");
     XS_ASSERT(size % sizeof(T) == 0);
     XS_ASSERT(constructedSize % sizeof(T) == 0);
-    XS_ASSERT(size > 0 && constructedSize > 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove(pointer, values, constructedSize);
+        memMove<T>(pointer, reinterpret_cast<const T*>(values), size);
     } else {
         /*Copy data over the range that has been constructed already */
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1564,12 +1550,11 @@ XS_INLINE void memCopyConstructRange(T* const XS_RESTRICT pointer, const T2* con
  * @param  size    The number of bytes to destruct over.
  */
 template<typename T>
-XS_INLINE void memDestructRange(T* const XS_RESTRICT pointer, const int0 size) noexcept
+XS_INLINE void memDestructRange(T* XS_RESTRICT pointer, const uint0 size) noexcept
 {
     static_assert(isDestructible<T>, "Memory of type 'T' can not be destructed");
     static_assert(isNothrowDestructible<T>, "Only types that do not throw exceptions can be used");
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     if constexpr (!isTriviallyDestructible<T>) {
         // Must loop over all elements in the range and destruct as required
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1591,15 +1576,14 @@ XS_INLINE void memDestructRange(T* const XS_RESTRICT pointer, const int0 size) n
  * @param  size   The number of bytes to copy.
  */
 template<typename T, typename T2>
-XS_INLINE void memCopy(T* const XS_RESTRICT dest, const T2* const XS_RESTRICT source, const uint0 size) noexcept
+XS_INLINE void memCopy(T* XS_RESTRICT dest, const T2* XS_RESTRICT source, const uint0 size) noexcept
 {
-    static_assert(isAssignable<T, T2>, "Memory of type 'T' can not be assigned a type 'T2'");
-    static_assert(isNothrowAssignable<T, T2>, "Only types that do not throw exceptions can be used");
+    static_assert(isSame<T, T2> || isAssignable<T, T2>, "Memory of type 'T' can not be assigned a type 'T2'");
+    static_assert(isSame<T, T2> || isNothrowAssignable<T, T2>, "Only types that do not throw exceptions can be used");
     XS_ASSERT(size % sizeof(T) == 0);
-    XS_ASSERT(size > 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove(dest, source, size);
+        memMove<T>(dest, reinterpret_cast<const T*>(source), size);
     } else {
         // Cant use memcopy as complex types require an overloaded equals operator
         constexpr auto logSize = NoExport::log2(sizeof(T));
