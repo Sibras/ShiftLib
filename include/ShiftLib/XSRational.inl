@@ -21,7 +21,7 @@
 
 namespace Shift {
 namespace NoExport {
-template<typename T, typename T2 = Shift::promote<T>>
+template<typename T, typename T2 = promote<T>>
 XS_INLINE Rational<T> rationalReduceHelper(const T2 numerator, const T2 denominator)
 {
     static_assert(sizeof(T2) >= sizeof(T) || isSameAny<T, Int128, UInt128>);
@@ -101,7 +101,7 @@ template<typename T>
 XS_INLINE Rational<T>::Rational(const float32 value) noexcept
 {
     int32 exponent;
-    XS_UNUSED(frexpf(value, &exponent));
+    [[maybe_unused]] auto ignore = frexpf(value, &exponent);
     exponent = (exponent > 1) ? exponent - 1 : 0;
     const int64 den = 1LL << (61 - exponent);
     *this = NoExport::rationalReduceHelper<T, int64>(llrintf(value * static_cast<float32>(den) + 0.5f), den);
@@ -111,7 +111,7 @@ template<typename T>
 XS_INLINE Rational<T>::Rational(const float64 value) noexcept
 {
     int32 exponent;
-    XS_UNUSED(frexp(value, &exponent));
+    [[maybe_unused]] auto ignore = frexp(value, &exponent);
     exponent = (exponent > 1) ? exponent - 1 : 0;
     const int64 den = 1LL << (61 - exponent);
     *this = NoExport::rationalReduceHelper<T, int64>(llrint(value * static_cast<float64>(den) + 0.5), den);

@@ -132,8 +132,10 @@
 
 #ifdef __cpp_concepts
 #    define XS_REQUIRES(expr) requires(expr)
+#    define XS_REQUIRES2(expr) requires(expr)
 #else
 #    define XS_REQUIRES(expr)
+#    define XS_REQUIRES2(expr) template<typename = require<expr>>
 #endif
 
 #ifdef __cpp_consteval
@@ -395,16 +397,11 @@
 #    error Error: The minimum supported version of SSE is SSE3.
 #endif
 
-/* Setup macro to ignore unreferenced variable warnings */
-#define XS_UNUSED(var) \
-    {                  \
-        (void)(var);   \
-    }
-
 #if defined(_DEBUG) || !defined(NDEBUG)
 #    if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_CLANGWIN)
 #        include <cassert>
-#        define XS_ASSERT(x) (void)((!!(x)) || (_wassert(_CRT_WIDE(#        x), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0))
+#        define XS_ASSERT(x) \
+            (void)((!!(x)) || (_wassert(_CRT_WIDE(_CRT_STRINGIZE_(x)), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0))
 #    else
 #        include <cstdlib>
 #        define XS_ASSERT(x)                                                                                          \

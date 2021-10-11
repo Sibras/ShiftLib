@@ -849,7 +849,7 @@ inline constexpr bool isSwappableMember = NoExport::IsSwappableMemberHelper<T, a
  * @returns The forwarded reference.
  */
 template<typename T>
-constexpr T&& forward(const removeRef<T>& param) noexcept
+constexpr T&& forward(removeRef<T>& param) noexcept
 {
     return static_cast<T&&>(param);
 }
