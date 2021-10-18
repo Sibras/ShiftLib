@@ -214,6 +214,15 @@ using float32 = float;
 /* Floating point 64-bit typedefs */
 using float64 = double;
 
+/* Character typedefs */
+using char16 = char16_t;
+using char32 = char32_t;
+#if defined(__cpp_char8_t)
+using char8 = char8_t;
+#else
+using char8 = signed char;
+#endif
+
 constexpr int8 operator"" _i8(const unsigned long long v) // NOLINT(google-runtime-int)
 {
     // TODO: assert for overflow

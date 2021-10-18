@@ -76,6 +76,7 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUInt128.inl>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.inl>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUtility.hpp>"
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.hpp>"
@@ -151,12 +152,13 @@ target_sources(ShiftLib INTERFACE
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSAllocatorHeap.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSAllocatorStack.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSMemory.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIterator.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIteratorOffset.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArrayView.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSDArray.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIterator.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIteratorOffset.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSMemory.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSString.hpp>"
 )
 
 target_compile_features(ShiftLib
@@ -255,9 +257,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/Geometry/XSVector3D2Test.cpp
         tests/Geometry/XSVector3D4Test.cpp
         
+        tests/Memory/XSMemoryTest.cpp
         tests/Memory/XSArrayTest.cpp
         tests/Memory/XSDArrayTest.cpp
-        tests/Memory/XSMemoryTest.cpp
+        tests/Memory/XSStringTest.cpp
     )
     
     add_executable(ShiftLibTest)
