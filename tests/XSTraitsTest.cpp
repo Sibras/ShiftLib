@@ -18,6 +18,7 @@
 
 #include "XSCompilerOptions.h"
 #include "XSGTest.hpp"
+#include "XSInt128.hpp"
 
 using namespace Shift;
 
@@ -291,7 +292,7 @@ TEST_NS(Traits, Traits, IsInteger)
     static_assert(isInteger<const int8> == true);
     static_assert(isInteger<volatile int8> == true);
     static_assert(isInteger<uint8> == true);
-    static_assert(isInteger<char> == true);
+    static_assert(isInteger<char> == false);
     static_assert(isInteger<int16> == true);
     static_assert(isInteger<uint16> == true);
     static_assert(isInteger<int32> == true);
@@ -322,7 +323,7 @@ TEST_NS(Traits, Traits, IsArithmetic)
     static_assert(isArithmetic<const int8> == true);
     static_assert(isArithmetic<volatile int8> == true);
     static_assert(isArithmetic<uint8> == true);
-    static_assert(isArithmetic<char> == true);
+    static_assert(isArithmetic<char> == false);
     static_assert(isArithmetic<int16> == true);
     static_assert(isArithmetic<uint16> == true);
     static_assert(isArithmetic<int32> == true);
@@ -408,6 +409,22 @@ TEST_NS(Traits, Traits, IsSwappable)
     };
     static_assert(isSwappableMember<int8> == false);
     static_assert(isSwappableMember<SwapTest> == true);
+}
+
+TEST_NS(Traits, Traits, IsComparable)
+{
+    static_assert(isComparable<int8, int8> == true);
+    static_assert(isComparable<int16, int8> == true);
+    static_assert(isComparable<Int128, Int128> == true);
+    class CompareTest
+    {};
+    static_assert(isComparable<float32, CompareTest> == false);
+}
+
+TEST_NS(Traits, Traits, Conditional)
+{
+    static_assert(isSame<conditional<true, int8, float32>, int8> == true);
+    static_assert(isSame<conditional<false, int8, float32>, float32> == true);
 }
 
 TEST_NS(Traits, Traits, Promote)

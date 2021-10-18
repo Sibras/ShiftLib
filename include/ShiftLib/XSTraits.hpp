@@ -22,6 +22,9 @@ class Int128;
 class UInt128;
 
 namespace NoExport {
+template<class...>
+using Void = void;
+
 template<typename T>
 struct RemoveConst
 {
@@ -445,9 +448,9 @@ using requireNotNullPtr = require<!isNullPtr<T>, Tx>;
  */
 template<typename T>
 inline constexpr bool isInteger =
-    isSameAny<removeCV<T>, unsigned char, signed char, char, unsigned short, signed short, // NOLINT(google-runtime-int)
-        unsigned int, signed int, unsigned long, signed long, unsigned long long,          // NOLINT(google-runtime-int)
-        signed long long, Int128, UInt128>; // NOLINT(google-runtime-int);
+    isSameAny<removeCV<T>, unsigned char, signed char, unsigned short, signed short, // NOLINT(google-runtime-int)
+        unsigned int, signed int, unsigned long, signed long, unsigned long long,    // NOLINT(google-runtime-int)
+        signed long long, Int128, UInt128>;                                          // NOLINT(google-runtime-int);
 
 template<typename T, typename Tx = void>
 using requireInteger = require<isInteger<T>, Tx>;
@@ -512,9 +515,13 @@ using requireNotUnsigned = require<!isUnsigned<T>, Tx>;
  */
 template<typename T>
 inline constexpr bool isNative =
-    isSameAny<removeCV<T>, float, double, long double, unsigned char, signed char, char, // NOLINT(google-runtime-int)
-        unsigned short, signed short, unsigned int, signed int, unsigned long,           // NOLINT(google-runtime-int)
-        signed long, unsigned long long, signed long long, bool>;                        // NOLINT(google-runtime-int)
+    isSameAny<removeCV<T>, float, double, long double, unsigned char, signed char, // NOLINT(google-runtime-int)
+        unsigned short, signed short, unsigned int, signed int, unsigned long,     // NOLINT(google-runtime-int)
+        signed long, unsigned long long, signed long long, bool,                   // NOLINT(google-runtime-int)
+#if defined(__cpp_char8_t)
+        char8_t,
+#endif
+        char16_t, char32_t, char>;
 
 template<typename T, typename Tx = void>
 using requireNative = require<isNative<T>, Tx>;
@@ -811,7 +818,7 @@ struct IsSwappableHelper
 };
 
 template<typename T, typename T2>
-struct IsSwappableHelper<T, T2, decltype(swap(declval<T>(), declval<T2>()))>
+struct IsSwappableHelper<T, T2, Void<decltype(swap(declval<T>(), declval<T2>()))>>
 {
     static constexpr bool value = true;
 };
@@ -823,7 +830,7 @@ struct IsSwappableMemberHelper
 };
 
 template<typename T, typename T2>
-struct IsSwappableMemberHelper<T, T2, decltype(declval<T>().swap(declval<T2>()))>
+struct IsSwappableMemberHelper<T, T2, Void<decltype(declval<T>().swap(declval<T2>()))>>
 {
     static constexpr bool value = true;
 };
@@ -841,6 +848,27 @@ inline constexpr bool isSwappable = NoExport::IsSwappableHelper<addLRef<T>, addL
  */
 template<typename T, typename T2 = T>
 inline constexpr bool isSwappableMember = NoExport::IsSwappableMemberHelper<T, addLRef<T2>>::value;
+
+namespace NoExport {
+template<typename T, typename T2, typename = void>
+struct IsComparableHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T, typename T2>
+struct IsComparableHelper<T, T2, Void<decltype(declval<T>() == declval<T2>())>>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
+/**
+ * Query if a type is comparable with another using a == function.
+ */
+template<typename T, typename T2 = T>
+inline constexpr bool isComparable =
+    NoExport::IsComparableHelper<addLRef<T>, addLRef<T2>>::value || NoExport::IsComparableHelper<T, T2>::value;
 
 /**
  * Forwards the given parameter on maintaining any rvalue/lvalue state.
@@ -868,7 +896,7 @@ constexpr T&& forward(removeRef<T>&& param) noexcept
  * @returns An rvalue reference to the moved input object.
  */
 template<typename T>
-constexpr removeRef<T>&& move(const T&& param) noexcept
+constexpr removeRef<T>&& move(T&& param) noexcept
 {
     return static_cast<removeRef<T>&&>(param);
 }
@@ -1062,6 +1090,26 @@ struct ToSigned<T, true>
  */
 template<typename T>
 using toSigned = typename NoExport::ToSigned<T>::type;
+
+namespace NoExport {
+template<bool B, class T, class T2>
+struct Conditional
+{
+    using type = T;
+};
+
+template<class T, class T2>
+struct Conditional<false, T, T2>
+{
+    using type = T2;
+};
+} // namespace NoExport
+
+/**
+ * Conditional choose a type.
+ */
+template<bool B, class T, class T2>
+using conditional = typename NoExport::Conditional<B, T, T2>::type;
 
 /**
  * Query if any SIMD operations are supported.
