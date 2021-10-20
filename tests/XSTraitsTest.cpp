@@ -433,6 +433,8 @@ TEST_NS(Traits, Traits, Promote)
     static_assert(isSame<promote<uint8>, uint16> == true);
     static_assert(isSame<promote<int16>, int32> == true);
     static_assert(isSame<promote<uint16>, uint32> == true);
+    static_assert(isSame<promote<int32>, int64> == true);
+    static_assert(isSame<promote<uint32>, uint64> == true);
     static_assert(isSame<promote<int64>, Int128> == true);
     static_assert(isSame<promote<uint64>, UInt128> == true);
     static_assert(isSame<promote<UInt128>, UInt128> == true);
@@ -464,6 +466,22 @@ TEST_NS(Traits, Traits, Promote)
     static_assert(isSameCV<promote<Int128>, const Int128> == false);
     static_assert(isSameCV<promote<const Int128>, const Int128> == true);
     static_assert(isSameCV<promote<const Int128>, const UInt128> == false);
+}
+
+TEST_NS(Traits, Traits, Demote)
+{
+    static_assert(isSame<demote<int8>, int8> == true);
+    static_assert(isSame<demote<uint8>, uint8> == true);
+    static_assert(isSame<demote<int16>, int8> == true);
+    static_assert(isSame<demote<uint16>, uint8> == true);
+    static_assert(isSame<demote<int32>, int16> == true);
+    static_assert(isSame<demote<uint32>, uint16> == true);
+    static_assert(isSame<demote<int64>, int32> == true);
+    static_assert(isSame<demote<uint64>, uint32> == true);
+    static_assert(isSame<demote<UInt128>, uint64> == true);
+    static_assert(isSame<demote<Int128>, int64> == true);
+    static_assert(isSame<demote<Int128>, UInt128> == false);
+    static_assert(isSame<demote<uint32>, uint32> == false);
 }
 #endif
 

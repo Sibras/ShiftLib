@@ -906,54 +906,77 @@ template<typename T>
 struct PromoteHelper
 {
     using type = T;
+    using type2 = T;
 };
 
 template<>
 struct PromoteHelper<uint8>
 {
     using type = uint16;
+    using type2 = uint8;
 };
 
 template<>
 struct PromoteHelper<int8>
 {
     using type = int16;
+    using type2 = int8;
 };
 
 template<>
 struct PromoteHelper<uint16>
 {
     using type = uint32;
+    using type2 = uint8;
 };
 
 template<>
 struct PromoteHelper<int16>
 {
     using type = int32;
+    using type2 = int8;
 };
 
 template<>
 struct PromoteHelper<uint32>
 {
     using type = uint64;
+    using type2 = uint16;
 };
 
 template<>
 struct PromoteHelper<int32>
 {
     using type = int64;
+    using type2 = int16;
 };
 
 template<>
 struct PromoteHelper<uint64>
 {
     using type = UInt128;
+    using type2 = uint32;
 };
 
 template<>
 struct PromoteHelper<int64>
 {
     using type = Int128;
+    using type2 = int32;
+};
+
+template<>
+struct PromoteHelper<UInt128>
+{
+    using type = UInt128;
+    using type2 = uint64;
+};
+
+template<>
+struct PromoteHelper<Int128>
+{
+    using type = Int128;
+    using type2 = int64;
 };
 
 template<typename T, bool = isInteger<T>>
@@ -967,6 +990,18 @@ struct Promote<T, true>
 {
     using type = copyCV<typename PromoteHelper<removeCV<T>>::type, T>;
 };
+
+template<typename T, bool = isInteger<T>>
+struct Demote
+{
+    using type = T;
+};
+
+template<typename T>
+struct Demote<T, true>
+{
+    using type = copyCV<typename PromoteHelper<removeCV<T>>::type2, T>;
+};
 } // namespace NoExport
 
 /**
@@ -976,6 +1011,14 @@ struct Promote<T, true>
  */
 template<typename T>
 using promote = typename NoExport::Promote<T>::type;
+
+/**
+ * The demoted type of an integer value. This determines the next smallest type that could be used to hold the current
+ * integer value. For instance a uint32 will demote to a uint16. When no demotions could be found the input type is
+ * returned unchanged.
+ */
+template<typename T>
+using demote = typename NoExport::Demote<T>::type;
 
 namespace NoExport {
 template<typename T>
