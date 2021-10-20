@@ -584,8 +584,8 @@ XS_INLINE UInt128 UInt128::operator*(T other) const noexcept
         } else {
             absv = other;
         }
-        const UInt128 bd = mul<uint64>(low, absv);
-        const uint64 ad = high * absv;
+        const UInt128 bd = mul<uint64>(low, static_cast<uint64>(absv));
+        const uint64 ad = high * static_cast<uint64>(absv);
         const uint64 hi = ad + bd.high;
         return UInt128(hi, bd.low);
     } else {

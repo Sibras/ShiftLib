@@ -201,11 +201,28 @@ XS_INLINE constexpr T abs(T param) noexcept
  */
 template<typename T>
 XS_REQUIRES(isInteger<T>)
-XS_INLINE constexpr auto mul(T param1, T param2) noexcept -> promote<T>
+XS_INLINE constexpr promote<T> mul(T param1, T param2) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
-#if (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_CLANGWIN)
-    // TODO: Need gcc intrinsics/asm for optimised mul operations
+#if ((XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANGWIN)) && (XS_ISA == XS_X86)
+    if constexpr (isSame<T, int32>) {
+        uint32 reth, retl;
+        __asm__("imull %3" : "=a"(reth), "=d"(retl) : "%0"(param1), "rm"(param2));
+        return (static_cast<int64>(reth) << 32) | retl;
+    } else if constexpr (isSame<T, uint32>) {
+        uint32 reth, retl;
+        __asm__("mull %3" : "=a"(reth), "=d"(retl) : "%0"(param1), "rm"(param2));
+        return (static_cast<uint64>(reth) << 32) | retl;
+    } else if constexpr (isSame<T, int64> && currentArch == Architecture::Bit64) {
+        uint128 ret;
+        __asm__("imulq %3" : "=a"(ret.high), "=d"(ret.low) : "%0"(param1), "rm"(param2));
+        return ret;
+    } else if constexpr (isSame<T, uint64> && currentArch == Architecture::Bit64) {
+        uint128 ret;
+        __asm__("mulq %3" : "=a"(ret.high), "=d"(ret.low) : "%0"(param1), "rm"(param2));
+        return ret;
+    } else
+#elif (XS_COMPILER == XS_MSVC) && (XS_ISA == XS_X86)
     if constexpr (isSame<T, int32>) {
         return __emul(param1, param2);
     } else if constexpr (isSame<T, uint32>) {
@@ -266,7 +283,7 @@ XS_REQUIRES(isInteger<T>)
 XS_INLINE constexpr T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
-#if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
+#if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)) && (XS_ISA == XS_X86)
 #    if (XS_COMPILER == XS_MSVC)
     if constexpr (isSameAny<T, uint8, int8>) {
         uint8 res;
@@ -329,7 +346,7 @@ XS_REQUIRES(isInteger<T>)
 XS_INLINE constexpr T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
-#if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)
+#if ((XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL)) && (XS_ISA == XS_X86)
 #    if (XS_COMPILER == XS_MSVC)
     if constexpr (isSameAny<T, uint8, int8>) {
         uint8 res;
