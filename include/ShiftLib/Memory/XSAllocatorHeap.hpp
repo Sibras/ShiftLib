@@ -77,7 +77,7 @@ public:
             } else {
                 pointer = static_cast<T*>(malloc(allocSize));
             }
-            if (XS_EXPECT(pointer != nullptr)) {
+            if (pointer != nullptr) [[likely]] {
                 // Get the aligned pointer
                 void* alignedPointer = static_cast<uint8*>(pointer) + sizeof(void*);
                 if constexpr (defaultAlignment < align) {
@@ -107,7 +107,7 @@ public:
         } else {
             // Check that this is a valid pointer
             // This is a required for fix for initialisation failure where unallocated arrays are freed.
-            if (XS_EXPECT(pointer != nullptr)) {
+            if (pointer != nullptr) [[likely]] {
                 // Get the stored pointer to start of actually allocated memory
                 // NOLINTNEXTLINE(clang-diagnostic-undefined-reinterpret-cast)
                 auto pointer2 = *reinterpret_cast<T* const*>(reinterpret_cast<const uint0*>(pointer) - 1);
@@ -310,7 +310,7 @@ public:
     XS_INLINE bool reallocate(const uint0 size) noexcept
     {
         T* XS_RESTRICT pointer2 = Allocator::reallocate(pointer, size);
-        if (XS_EXPECT(pointer2 != nullptr)) {
+        if (pointer2 != nullptr) [[likely]] {
             pointer = pointer2;
         }
         return (pointer2 != nullptr);
@@ -330,17 +330,17 @@ public:
     XS_INLINE bool reallocate(const uint0 size, const uint0 copySize) noexcept
     {
         // Check if the input pointer is actually valid
-        if (XS_UNEXPECT(pointer == nullptr)) {
+        if (pointer == nullptr) [[unlikely]] {
             pointer = Allocator::Allocate(size);
             return (pointer != nullptr);
         }
         XS_ASSERT(copySize <= getAllocatedSize());
         XS_ASSERT(copySize <= size);
         // Try and determine if we can extend the existing space
-        if (XS_UNEXPECT(!Allocator::Extend(pointer, size))) {
+        if (!Allocator::Extend(pointer, size)) [[unlikely]] {
             // Failed to extend memory so must allocate new memory and then copy
             T* XS_RESTRICT pointer2 = Allocator::Allocate(size);
-            if (XS_EXPECT(pointer2 != nullptr)) {
+            if (pointer2 != nullptr) [[likely]] {
                 // Copy existing contents across
                 struct alignas(systemAlignment) AlignedData
                 {
@@ -376,7 +376,7 @@ public:
     XS_INLINE bool reallocate(const uint0 size, const uint0 copySize, const uint0 minSize) noexcept
     {
         // Check if the input pointer is actually valid
-        if (XS_UNEXPECT(!pointer)) {
+        if (!pointer) [[unlikely]] {
             pointer = Allocator::Allocate(size);
             return (pointer != nullptr);
         }
@@ -384,10 +384,10 @@ public:
         XS_ASSERT(copySize <= size);
         XS_ASSERT(minSize <= size);
         // Try and determine if we can extend the existing space
-        if (XS_UNEXPECT(!Allocator::Extend(pointer, size, minSize))) {
+        if (!Allocator::Extend(pointer, size, minSize)) [[unlikely]] {
             // Failed to extend memory so must allocate new memory and then copy
             T* XS_RESTRICT pointer2 = Allocator::Allocate(size);
-            if (XS_EXPECT(pointer2 != nullptr)) {
+            if (pointer2 != nullptr) [[likely]] {
                 // Copy existing contents across
                 struct alignas(systemAlignment) AlignedData
                 {

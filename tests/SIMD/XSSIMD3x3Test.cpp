@@ -171,8 +171,8 @@ TYPED_TEST_NS2(SIMD3x3, TESTISA(SIMD3x3), SIMD3x3)
 
 #    define S3X3_GET3X2_TEST(index0, index1)                                                                 \
         {                                                                                                    \
-            TestType::SIMD3Def f30 = test1.template getValue3<index0>();                                     \
-            TestType::SIMD3Def f31 = test1.template getValue3<index1>();                                     \
+            typename TestType::SIMD3Def f30 = test1.template getValue3<index0>();                            \
+            typename TestType::SIMD3Def f31 = test1.template getValue3<index1>();                            \
             ASSERT_PRED7((assertSIMD3x2<typename TestFixture::TypeInt, TestType::SIMD3x2Def::width>),        \
                 (test1.template getValue3x2<index0, index1>()), f30.template getValueInBase<0>().getValue(), \
                 f30.template getValueInBase<1>().getValue(), f30.template getValueInBase<2>().getValue(),    \

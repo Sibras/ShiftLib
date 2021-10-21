@@ -255,8 +255,8 @@ TYPED_TEST_NS2(SIMD3x4, TESTISA(SIMD3x4), SIMD3x4)
 
 #    define S3X4_GET3X2_TEST(index0, index1)                                                                 \
         {                                                                                                    \
-            TestType::SIMD3Def f30 = test1.template getValue3<index0>();                                     \
-            TestType::SIMD3Def f31 = test1.template getValue3<index1>();                                     \
+            typename TestType::SIMD3Def f30 = test1.template getValue3<index0>();                            \
+            typename TestType::SIMD3Def f31 = test1.template getValue3<index1>();                            \
             ASSERT_PRED7((assertSIMD3x2<typename TestFixture::TypeInt, TestType::SIMD3x2Def::width>),        \
                 (test1.template getValue3x2<index0, index1>()), f30.template getValueInBase<0>().getValue(), \
                 f30.template getValueInBase<1>().getValue(), f30.template getValueInBase<2>().getValue(),    \
@@ -281,9 +281,9 @@ TYPED_TEST_NS2(SIMD3x4, TESTISA(SIMD3x4), SIMD3x4)
 
 #    define S3X4_GET3X3_TEST(index0, index1, index2, val)                                                         \
         {                                                                                                         \
-            TestType::SIMD3Def temp1 = (val).template getValue3<index0>();                                        \
-            TestType::SIMD3Def temp2 = (val).template getValue3<index1>();                                        \
-            TestType::SIMD3Def temp3 = (val).template getValue3<index2>();                                        \
+            typename TestType::SIMD3Def temp1 = (val).template getValue3<index0>();                               \
+            typename TestType::SIMD3Def temp2 = (val).template getValue3<index1>();                               \
+            typename TestType::SIMD3Def temp3 = (val).template getValue3<index2>();                               \
             ASSERT_PRED10((assertSIMD3x3<typename TestFixture::TypeInt, TestType::SIMD3x3Def::width>),            \
                 ((val).template getValue3x3<index0, index1, index2>()),                                           \
                 (temp1.template getValueInBase<0>().getValue()), (temp1.template getValueInBase<1>()).getValue(), \

@@ -243,18 +243,18 @@ TYPED_TEST_NS2(SIMD16, TESTISA(SIMD16), SIMD16)
     S16_SHUFFLE12_TEST(2, 2, 1, 0, test12B); //***
 #    endif
 
-#    define S3X4_GET_INDEX300(val) (val).template getValue3<0>().getValueInBase<0>().getValue()
-#    define S3X4_GET_INDEX301(val) (val).template getValue3<0>().getValueInBase<1>().getValue()
-#    define S3X4_GET_INDEX302(val) (val).template getValue3<0>().getValueInBase<2>().getValue()
-#    define S3X4_GET_INDEX310(val) (val).template getValue3<1>().getValueInBase<0>().getValue()
-#    define S3X4_GET_INDEX311(val) (val).template getValue3<1>().getValueInBase<1>().getValue()
-#    define S3X4_GET_INDEX312(val) (val).template getValue3<1>().getValueInBase<2>().getValue()
-#    define S3X4_GET_INDEX320(val) (val).template getValue3<2>().getValueInBase<0>().getValue()
-#    define S3X4_GET_INDEX321(val) (val).template getValue3<2>().getValueInBase<1>().getValue()
-#    define S3X4_GET_INDEX322(val) (val).template getValue3<2>().getValueInBase<2>().getValue()
-#    define S3X4_GET_INDEX330(val) (val).template getValue3<3>().getValueInBase<0>().getValue()
-#    define S3X4_GET_INDEX331(val) (val).template getValue3<3>().getValueInBase<1>().getValue()
-#    define S3X4_GET_INDEX332(val) (val).template getValue3<3>().getValueInBase<2>().getValue()
+#    define S3X4_GET_INDEX300(val) (val).template getValue3<0>().template getValueInBase<0>().getValue()
+#    define S3X4_GET_INDEX301(val) (val).template getValue3<0>().template getValueInBase<1>().getValue()
+#    define S3X4_GET_INDEX302(val) (val).template getValue3<0>().template getValueInBase<2>().getValue()
+#    define S3X4_GET_INDEX310(val) (val).template getValue3<1>().template getValueInBase<0>().getValue()
+#    define S3X4_GET_INDEX311(val) (val).template getValue3<1>().template getValueInBase<1>().getValue()
+#    define S3X4_GET_INDEX312(val) (val).template getValue3<1>().template getValueInBase<2>().getValue()
+#    define S3X4_GET_INDEX320(val) (val).template getValue3<2>().template getValueInBase<0>().getValue()
+#    define S3X4_GET_INDEX321(val) (val).template getValue3<2>().template getValueInBase<1>().getValue()
+#    define S3X4_GET_INDEX322(val) (val).template getValue3<2>().template getValueInBase<2>().getValue()
+#    define S3X4_GET_INDEX330(val) (val).template getValue3<3>().template getValueInBase<0>().getValue()
+#    define S3X4_GET_INDEX331(val) (val).template getValue3<3>().template getValueInBase<1>().getValue()
+#    define S3X4_GET_INDEX332(val) (val).template getValue3<3>().template getValueInBase<2>().getValue()
 
     const typename TestType::SIMD3x4Def test12C(
         1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f);
@@ -443,8 +443,8 @@ TYPED_TEST_NS2(SIMD16, TESTISA(SIMD16), SIMD16)
 
 #    define S16_GET4X2_TEST(index0, index1, val)                                                         \
         {                                                                                                \
-            TestType::SIMD4Def temp1 = (val).template getValue4<index0>();                               \
-            TestType::SIMD4Def temp2 = (val).template getValue4<index1>();                               \
+            typename TestType::SIMD4Def temp1 = (val).template getValue4<index0>();                      \
+            typename TestType::SIMD4Def temp2 = (val).template getValue4<index1>();                      \
             ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestType::SIMD8Def::width>),        \
                 ((val).template getValue4x2<index0, index1>()), temp1.template getValue<0>().getValue(), \
                 temp1.template getValue<1>().getValue(), temp1.template getValue<2>().getValue(),        \
@@ -459,9 +459,9 @@ TYPED_TEST_NS2(SIMD16, TESTISA(SIMD16), SIMD16)
 
 #    define S16_GET4X3_TEST(index0, index1, index2, val)                                                         \
         {                                                                                                        \
-            TestType::SIMD4Def temp1 = (val).template getValue4<index0>();                                       \
-            TestType::SIMD4Def temp2 = (val).template getValue4<index1>();                                       \
-            TestType::SIMD4Def temp3 = (val).template getValue4<index2>();                                       \
+            typename TestType::SIMD4Def temp1 = (val).template getValue4<index0>();                              \
+            typename TestType::SIMD4Def temp2 = (val).template getValue4<index1>();                              \
+            typename TestType::SIMD4Def temp3 = (val).template getValue4<index2>();                              \
             ASSERT_PRED13((assertSIMD12<typename TestFixture::TypeInt, TestType::SIMD12Def::width>),             \
                 ((val).template getValue4x3<index0, index1, index2>()), temp1.template getValue<0>().getValue(), \
                 temp1.template getValue<1>().getValue(), temp1.template getValue<2>().getValue(),                \

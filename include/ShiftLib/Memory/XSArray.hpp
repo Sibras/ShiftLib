@@ -51,7 +51,7 @@ public:
      * @param number The number of elements to reserve space for.
      * @param alloc  (Optional) The allocator instance that the array should use.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     explicit XS_INLINE Array(const uint0 number, const Alloc& alloc = Alloc()) noexcept
         : handle(number, alloc)
         , nextElement(handle.pointer)
@@ -1591,7 +1591,7 @@ public:
      * @param number The number of elements to reserve space for.
      * @return Boolean signaling if new memory could be reserved.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     XS_INLINE bool setReservedLength(const uint0 number) noexcept
     {
         static_assert(Handle::isResizable, "Cannot resize an array created using a non-resizable allocator");
@@ -1603,7 +1603,7 @@ public:
      * @param size The amount of memory (In Bytes) to reserve.
      * @return Boolean signaling if new memory could be reserved.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     XS_INLINE bool setReservedSize(uint0 size) noexcept
     {
         static_assert(Handle::isResizable, "Cannot resize an array created using a non-resizable allocator");
@@ -1611,13 +1611,13 @@ public:
         uint0 arraySize =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Destruct object if we are reducing size of array
-        if (XS_UNEXPECT(arraySize > size)) {
+        if (arraySize > size) [[unlikely]] {
             memDestructRange<T>(&handle.pointer[size], arraySize - size);
         }
         // Check if new allocated size is less than we had
         arraySize = size < arraySize ? size : arraySize;
         // Try and extend the currently available memory
-        if (XS_EXPECT(handle.reallocate(size, arraySize))) {
+        if (handle.reallocate(size, arraySize)) [[likely]] {
             // update next pointer in case of memory move
             nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
             return true;
@@ -1684,7 +1684,7 @@ public:
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         const T* XS_RESTRICT i = iterator.pointer;
         while (i < nextElement) {
-            if (XS_UNEXPECT(*i == element)) {
+            if (*i == element) [[unlikely]] {
                 return *i;
             }
             ++i;
@@ -1744,17 +1744,17 @@ public:
             (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer)));
         // Search for first element
         while (i <= end) {
-            if (XS_UNEXPECT(*i == *array.handle.pointer)) {
+            if (*i == *array.handle.pointer) [[unlikely]] {
                 const T* XS_RESTRICT i2 = i;
                 const T2* XS_RESTRICT j = array.handle.pointer;
                 // If first found then look for remainder of search elements in sequence
                 while (++j < array.nextElement) {
-                    if (XS_EXPECT(*++i2 != *j)) {
+                    if (*++i2 != *j) [[likely]] {
                         break;
                     }
                 }
                 // check if actually found elements or just broke early
-                if (XS_UNEXPECT(j == array.nextElement)) {
+                if (j == array.nextElement) [[unlikely]] {
                     return *i;
                 }
             }
@@ -1812,7 +1812,7 @@ public:
 
         const T* XS_RESTRICT i = iterator.pointer;
         while (i > handle.pointer) {
-            if (XS_UNEXPECT(*--i == element)) {
+            if (*--i == element) [[unlikely]] {
                 return *i;
             }
         }
@@ -1874,17 +1874,17 @@ public:
             (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer)));
         // Search for first element
         while (i > handle.pointer) {
-            if (XS_UNEXPECT(*i == *array.handle.pointer)) {
+            if (*i == *array.handle.pointer) [[unlikely]] {
                 const T* XS_RESTRICT i2 = i;
                 const T2* XS_RESTRICT j = array.handle.pointer;
                 // If first found then look for remainder of search elements in sequence
                 while (++j < array.nextElement) {
-                    if (XS_EXPECT(*++i2 != *j)) {
+                    if (*++i2 != *j) [[likely]] {
                         break;
                     }
                 }
                 // check if actually found elements or just broke early
-                if (XS_UNEXPECT(j == array.nextElement)) {
+                if (j == array.nextElement) [[unlikely]] {
                     return *i;
                 }
             }
@@ -1905,7 +1905,7 @@ public:
     XS_INLINE uint0 indexOfFirst(const T2& element) const noexcept
     {
         const T* XS_RESTRICT find = &findFirst<T2>(element);
-        if (XS_EXPECT(find != nullptr)) {
+        if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
         return UINT_MAX;
@@ -1924,7 +1924,7 @@ public:
     XS_INLINE uint0 indexOfFirst(const Array<T2, Alloc2>& array) const noexcept
     {
         const T* XS_RESTRICT find = &findFirst<T2, Alloc2>(array);
-        if (XS_EXPECT(find != nullptr)) {
+        if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
         return UINT_MAX;
@@ -1942,7 +1942,7 @@ public:
     XS_INLINE uint0 indexOfLast(const T2& element) const noexcept
     {
         const T* XS_RESTRICT find = &findLast<T2>(element);
-        if (XS_EXPECT(find != nullptr)) {
+        if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
         return UINT_MAX;
@@ -1961,7 +1961,7 @@ public:
     XS_INLINE uint0 indexOfLast(const Array<T2, Alloc2>& array) const noexcept
     {
         const T* XS_RESTRICT find = &findLast<T2, Alloc2>(array);
-        if (XS_EXPECT(find != nullptr)) {
+        if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
         return UINT_MAX;

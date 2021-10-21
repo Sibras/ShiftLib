@@ -271,8 +271,8 @@ TYPED_TEST_NS2(SIMD12, TESTISA(SIMD12), SIMD12)
 
 #    define S12_GET4X2_TEST(index0, index1)                                                                  \
         {                                                                                                    \
-            TestType::SIMD4Def f40 = test1.template getValue4<index0>();                                     \
-            TestType::SIMD4Def f41 = test1.template getValue4<index1>();                                     \
+            typename TestType::SIMD4Def f40 = test1.template getValue4<index0>();                            \
+            typename TestType::SIMD4Def f41 = test1.template getValue4<index1>();                            \
             ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestType::SIMD8Def::width>),            \
                 (test1.template getValue4x2<index0, index1>()), f40.template getValueInBase<0>().getValue(), \
                 f40.template getValueInBase<1>().getValue(), f40.template getValueInBase<2>().getValue(),    \

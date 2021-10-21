@@ -66,7 +66,7 @@ TYPED_TEST_NS2(SIMD2, TESTISA(SIMD2), SIMD2)
         assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
     }
 
-    static_assert(typename TestType::widthImpl == typename TestType::BaseDef::widthImpl);
+    static_assert(TestType::widthImpl == TestType::BaseDef::widthImpl);
 
     //  Constructor Test
     TestType test0 = TestType();
@@ -208,9 +208,9 @@ TYPED_TEST_NS2(SIMD2, TESTISA(SIMD2), SIMD2)
     //  Mod Test
 #    define S2_NEGATE_TEST(b0, b1)                                                                                   \
         {                                                                                                            \
-            TestFixture::TypeInt f0 =                                                                                \
+            typename TestFixture::TypeInt f0 =                                                                       \
                 (b0) ? -test9.getValueInBase<0>().getValue() : test9.getValueInBase<0>().getValue();                 \
-            TestFixture::TypeInt f1 =                                                                                \
+            typename TestFixture::TypeInt f1 =                                                                       \
                 (b1) ? -test9.getValueInBase<1>().getValue() : test9.getValueInBase<1>().getValue();                 \
             ASSERT_PRED3(                                                                                            \
                 (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (test9.negate<b0, b1>()), f0, f1); \

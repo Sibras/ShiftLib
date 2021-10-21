@@ -49,7 +49,7 @@ public:
      * @param number The number of elements to reserve space for.
      * @param alloc  (Optional) The allocator instance that the array should use.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     XS_INLINE explicit DArray(const uint0 number, const Alloc& alloc = Alloc()) noexcept
         : IArray(number, alloc)
         , endAllocated(
@@ -179,7 +179,7 @@ public:
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
         }
@@ -200,7 +200,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
         }
@@ -216,7 +216,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
         }
@@ -290,8 +290,8 @@ public:
      */
     XS_INLINE bool add(const T& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::add(element);
             return true;
         }
@@ -314,7 +314,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -337,7 +337,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(array);
             return true;
         }
@@ -357,8 +357,8 @@ public:
     XS_REQUIRES((isNothrowConstructible<T, Args...>))
     XS_INLINE bool add(Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::add(forward<Args>(values)...);
             return true;
         }
@@ -374,7 +374,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + number);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(elements, number);
             return true;
         }
@@ -392,8 +392,8 @@ public:
      */
     XS_INLINE bool insert(const uint0 position, const T& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::insert(position, element);
             return true;
         }
@@ -414,8 +414,8 @@ public:
     XS_REQUIRES((isNothrowConstructible<T, Args...>))
     XS_INLINE bool insert(const uint0 position, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::insert(position, forward<Args>(values)...);
             return true;
         }
@@ -439,7 +439,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(position, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -463,7 +463,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(position, array);
             return true;
         }
@@ -482,7 +482,7 @@ public:
     XS_INLINE bool insert(TypeIterator& iterator, const T& element) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, element);
             return true;
         }
@@ -503,8 +503,8 @@ public:
     XS_REQUIRES((isNothrowConstructible<T, Args...>))
     XS_INLINE bool insert(TypeIterator& iterator, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::insert(iterator, forward<Args>(values)...);
             return true;
         }
@@ -528,7 +528,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -552,7 +552,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, array);
             return true;
         }
@@ -570,8 +570,8 @@ public:
      */
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const T& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::insert(iterator, element);
             return true;
         }
@@ -592,8 +592,8 @@ public:
     XS_REQUIRES((isNothrowConstructible<T, Args...>))
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+            [[likely]] {
             this->IArray::insert(iterator, forward<Args>(values)...);
             return true;
         }
@@ -617,7 +617,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -641,7 +641,7 @@ public:
     {
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(iterator, array);
             return true;
         }
@@ -668,7 +668,7 @@ public:
         const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::replace(start, end, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -692,7 +692,7 @@ public:
         const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::replace(start, end, array);
             return true;
         }
@@ -717,7 +717,7 @@ public:
             array.getSize() - (reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
         if (const T* requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved, start, end))) {
+            checkWithinReserved(requiredReserved, start, end)) [[likely]] {
             this->IArray::replace(start, end, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
         }
@@ -742,7 +742,7 @@ public:
             array.getSize() - (reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
         if (const T* requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved, start, end))) {
+            checkWithinReserved(requiredReserved, start, end)) [[likely]] {
             this->IArray::replace(start, end, array);
             return true;
         }
@@ -766,7 +766,7 @@ public:
         const uint0 additionalSize = ((end - start) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
         }
@@ -790,7 +790,7 @@ public:
         const uint0 additionalSize = ((end - start) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(array, start, end);
             return true;
         }
@@ -817,7 +817,7 @@ public:
         const uint0 additionalElements = ((end - start + position) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, *reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
         }
@@ -844,7 +844,7 @@ public:
         const uint0 additionalElements = ((end - start + position) * sizeof(T));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, array, start, end);
             return true;
         }
@@ -872,7 +872,7 @@ public:
             (reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
         }
@@ -900,7 +900,7 @@ public:
             (reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(array, start, end);
             return true;
         }
@@ -930,7 +930,7 @@ public:
         if (const T* XS_RESTRICT requiredReserved = (iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
                     reinterpret_cast<const uint8* const>(start.pointer)));
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
         }
@@ -960,7 +960,7 @@ public:
         if (const T* XS_RESTRICT requiredReserved = (iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
                     reinterpret_cast<const uint8* const>(start.pointer)));
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, array, start, end);
             return true;
         }
@@ -976,7 +976,7 @@ public:
     XS_INLINE bool set(const T* XS_RESTRICT const elements, uint0 number) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = &this->handle.pointer[number];
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(elements, number);
             return true;
         }
@@ -995,7 +995,7 @@ public:
     XS_INLINE bool set(const uint0 position, const T* const XS_RESTRICT elements, const uint0 number) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = &this->handle.pointer[position + number];
-            XS_EXPECT(checkWithinReserved(requiredReserved))) {
+            checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, elements, number);
             return true;
         }
@@ -1015,7 +1015,7 @@ public:
     XS_INLINE bool set(TypeIterator& iterator, const T* const XS_RESTRICT elements, const uint0 number) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = &at(iterator) + number;
-            XS_EXPECT(checkWithinReserved(requiredReserved, iterator))) {
+            checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, elements, number);
             return true;
         }
@@ -1064,10 +1064,10 @@ public:
      * @param number The number of elements to reserve space for.
      * @return Boolean signaling if new memory could be reserved.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     XS_INLINE bool setReservedLength(const uint0 number) noexcept
     {
-        if (XS_EXPECT(this->IArray::setReservedSize(number * sizeof(T)))) {
+        if (this->IArray::setReservedSize(number * sizeof(T))) [[likely]] {
             // Update end allocated
             endAllocated =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
@@ -1081,10 +1081,10 @@ public:
      * @param size The amount of memory (In Bytes) to reserve.
      * @return Boolean signaling if new memory could be reserved.
      */
-    XS_REQUIRES2(Handle::isResizable)
+    template<typename = require<Handle::isResizable>>
     XS_INLINE bool setReservedSize(uint0 size) noexcept
     {
-        if (XS_EXPECT(this->IArray::setReservedSize(size))) {
+        if (this->IArray::setReservedSize(size)) [[likely]] {
             // Update end allocated
             endAllocated =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
@@ -1407,9 +1407,9 @@ private:
         // Try and extend the currently available memory
         const T* XS_RESTRICT oldPointer = this->handle.pointer;
         if (const uint0 arraySize = this->IArray::getSize();
-            XS_EXPECT(this->handle.reallocate(oversize, arraySize, arraySize + requiredAdditional))) {
+            this->handle.reallocate(oversize, arraySize, arraySize + requiredAdditional)) [[likely]] {
             // Update next pointer if memory move
-            if (XS_EXPECT(oldPointer != this->handle.pointer)) {
+            if (oldPointer != this->handle.pointer) [[likely]] {
                 this->nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + arraySize);
             }
             // Update end allocated
@@ -1432,7 +1432,7 @@ private:
      */
     XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated) noexcept
     {
-        if (XS_EXPECT(requiredEndAllocated <= endAllocated)) {
+        if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
         }
         return increaseReservedSize(requiredEndAllocated);
@@ -1440,12 +1440,12 @@ private:
 
     XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator) noexcept
     {
-        if (XS_EXPECT(requiredEndAllocated <= endAllocated)) {
+        if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
         }
         // Backup iterator offset
         const auto backup = reinterpret_cast<uint8*>(iterator.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
-        if (XS_EXPECT(increaseReservedSize(requiredEndAllocated))) {
+        if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
             iterator.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup);
             return true;
@@ -1456,7 +1456,7 @@ private:
     XS_INLINE bool checkWithinReserved(
         const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1, TypeIterator& iterator2) noexcept
     {
-        if (XS_EXPECT(requiredEndAllocated <= endAllocated)) {
+        if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
         }
         // Backup iterator offset
@@ -1464,7 +1464,7 @@ private:
             reinterpret_cast<uint8*>(iterator1.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
         const auto backup2 =
             reinterpret_cast<uint8*>(iterator2.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
-        if (XS_EXPECT(increaseReservedSize(requiredEndAllocated))) {
+        if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
             iterator1.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
             iterator2.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);
@@ -1476,7 +1476,7 @@ private:
     XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1,
         TypeIterator& iterator2, TypeIterator& iterator3) noexcept
     {
-        if (XS_EXPECT(requiredEndAllocated <= endAllocated)) {
+        if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
         }
         // Backup iterator offset
@@ -1486,7 +1486,7 @@ private:
             reinterpret_cast<uint8*>(iterator2.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
         const auto backup3 =
             reinterpret_cast<uint8*>(iterator3.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
-        if (XS_EXPECT(increaseReservedSize(requiredEndAllocated))) {
+        if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
             iterator1.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
             iterator2.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);

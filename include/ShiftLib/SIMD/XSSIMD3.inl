@@ -2310,8 +2310,8 @@ XS_INLINE SIMD3<T, Width> SIMD3<T, Width>::combine(const SIMD3& other) const noe
         } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3) {
             if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1) {
                 return SIMD3(_mm_blend_ps(this->values,
-                    other.shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3, Index2 - 3>()
-                        .values,
+                    (other.shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3, Index2 - 3>()
+                            .values),
                     _MM_BLEND(0, 1, 0, 1)));
             } else {
                 return SIMD3(
@@ -2321,7 +2321,7 @@ XS_INLINE SIMD3<T, Width> SIMD3<T, Width>::combine(const SIMD3& other) const noe
         } else if constexpr (Index0 < 3 && Index1 >= 3 && Index2 >= 3) {
             if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0) {
                 return SIMD3(_mm_blend_ps(this->values,
-                    other.shuffle<XS_SHUFF128_DONTCARE_0_12(Index1 - 3, Index2 - 3), Index1 - 3, Index2 - 3>().values,
+                    (other.shuffle<XS_SHUFF128_DONTCARE_0_12(Index1 - 3, Index2 - 3), Index1 - 3, Index2 - 3>().values),
                     _MM_BLEND(0, 1, 1, 0)));
             } else {
                 return SIMD3(

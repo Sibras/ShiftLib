@@ -1732,8 +1732,8 @@ TYPED_TEST_NS2(SIMD8, TESTISA(SIMD8), SIMD8)
 
 #    define S8_SHUFFLEH4_TEST(index0, index1, val)                                                         \
         {                                                                                                  \
-            TestType::SIMD4Def f40 = (val).template getValue4<index0>();                                   \
-            TestType::SIMD4Def f41 = (val).template getValue4<index1>();                                   \
+            typename TestType::SIMD4Def f40 = (val).template getValue4<index0>();                          \
+            typename TestType::SIMD4Def f41 = (val).template getValue4<index1>();                          \
             ASSERT_PRED9((assertSIMD8<typename TestFixture::TypeInt, TestFixture::width>),                 \
                 ((val).template shuffleH4<index0, index1>()), f40.template getValueInBase<0>().getValue(), \
                 f40.template getValueInBase<1>().getValue(), f40.template getValueInBase<2>().getValue(),  \

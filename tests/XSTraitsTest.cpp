@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Must be included before traits for some reason
+inline void swap(float&, float&) noexcept
+{}
+
 #include "XSTraits.hpp"
 
 #include "XSCompilerOptions.h"
@@ -394,12 +398,9 @@ TEST_NS(Traits, Traits, IsNative)
     static_assert(isNative<float64> == true);
 }
 
-inline void swap(int8&, int8&) noexcept
-{}
-
 TEST_NS(Traits, Traits, IsSwappable)
 {
-    static_assert(isSwappable<int8> == true);
+    static_assert(isSwappable<float> == true);
     static_assert(isSwappable<int16> == false);
     class SwapTest
     {

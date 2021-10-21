@@ -67,7 +67,7 @@ public:
     using Type = T;
     using SIMD4Def = SIMD4<T, SIMD4<T, Width>::widthImpl>;
     static constexpr SIMDWidth width = Width;
-    static constexpr SIMDWidth widthImpl = typename SIMD4Def::widthImpl;
+    static constexpr SIMDWidth widthImpl = SIMD4Def::widthImpl;
     using BaseDef = typename SIMD4Def::BaseDef;
     using InBaseDef = typename SIMD4Def::InBaseDef;
     using RangeDef = Range<T, Range<T, widthImpl>::widthImpl>;

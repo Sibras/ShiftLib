@@ -351,11 +351,11 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                         }
                     }
                 } else {
-                    if (constexpr uint32 copyThreshold = (alignof(T) == 1) ?
-                            systemAlignment * 4 :
-                            ((alignof(T) == 2) ? systemAlignment * 2 : systemAlignment);
-                        XS_UNEXPECT(size < copyThreshold)) {
-                        if (XS_EXPECT(size >= (alignof(T) * 32))) {
+                    constexpr uint32 copyThreshold = (alignof(T) == 1) ?
+                        systemAlignment * 4 :
+                        ((alignof(T) == 2) ? systemAlignment * 2 : systemAlignment);
+                    if (size < copyThreshold) [[unlikely]] {
+                        if (size >= (alignof(T) * 32)) [[likely]] {
                             // rep movs is only generally faster than a normal loop when count>=32
                             if constexpr (alignof(T) == 4) {
                                 XS_REPMOVSD(dest2, source2, size >> 2);
@@ -393,7 +393,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                         } else {
                             outputAlignment2 = outputAlignment;
                         }
-                        if (XS_EXPECT(outputAlignment2)) {
+                        if (outputAlignment2) [[likely]] {
                             if constexpr (alignof(T) == 1) {
                                 for (auto count = outputAlignment2; count != 0; --count) {
                                     *dest2 = *source2;
@@ -477,7 +477,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                     size -= outputAlignment;
 
                     // Check if we have correctly aligned pointers on both the source and the destination
-                    if (XS_UNEXPECT((inputAlignment & alignMinus1) == 0)) {
+                    if ((inputAlignment & alignMinus1) == 0) [[unlikely]] {
                         // Copy using aligned operations
                         if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                             const uint0 maxCount = size >> 6;
@@ -729,7 +729,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                             *reinterpret_cast<uint64*>(dest2) = *reinterpret_cast<const uint64*>(source2);
                         }
                     } else if constexpr (alignof(T) == 4) {
-                        if (XS_EXPECT(outputAlignment)) {
+                        if (outputAlignment) [[likely]] {
                             const auto loops = outputAlignment >> 2;
                             for (auto count = loops - 1; count != 0; --count) {
                                 *reinterpret_cast<uint32*>(dest2) = *reinterpret_cast<const uint32*>(source2);
@@ -739,7 +739,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                             *reinterpret_cast<uint32*>(dest2) = *reinterpret_cast<const uint32*>(source2);
                         }
                     } else if constexpr (alignof(T) == 2) {
-                        if (XS_EXPECT(outputAlignment)) {
+                        if (outputAlignment) [[likely]] {
                             const auto loops = outputAlignment >> 1;
                             for (auto count = loops - 1; count != 0; --count) {
                                 *reinterpret_cast<uint16*>(dest2) = *reinterpret_cast<const uint16*>(source2);
@@ -749,7 +749,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
                             *reinterpret_cast<uint16*>(dest2) = *reinterpret_cast<const uint16*>(source2);
                         }
                     } else if constexpr (alignof(T) == 1) {
-                        if (XS_EXPECT(outputAlignment)) {
+                        if (outputAlignment) [[likely]] {
                             const auto loops = outputAlignment;
                             for (auto count = loops - 1; count != 0; --count) {
                                 *dest2 = *source2;
@@ -971,7 +971,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                     }
                 }
             } else {
-                if (constexpr uint32 copyThreshold = systemAlignment; XS_UNEXPECT(size < copyThreshold)) {
+                if (constexpr uint32 copyThreshold = systemAlignment; size < copyThreshold) [[unlikely]] {
                     constexpr auto logSize = NoExport::log2(sizeof(T));
                     const auto loops = size >> logSize;
                     for (auto count = loops; count != 0; --count) {
@@ -999,7 +999,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                     } else {
                         outputAlignment2 = outputAlignment;
                     }
-                    if (XS_EXPECT(outputAlignment2)) {
+                    if (outputAlignment2) [[likely]] {
                         if constexpr (alignof(T) == 1) {
                             for (auto count = outputAlignment2; count != 0; --count) {
                                 --dest2;
@@ -1083,7 +1083,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                 size -= outputAlignment;
 
                 // Check if we have correctly aligned pointers on both the source and the destination
-                if (XS_UNEXPECT((inputAlignment & alignMinus1) == 0)) {
+                if ((inputAlignment & alignMinus1) == 0) [[unlikely]] {
                     // Copy using aligned operations
                     if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                         const uint0 maxCount = size >> 6;
@@ -1329,7 +1329,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                         *reinterpret_cast<uint64*>(dest2) = *reinterpret_cast<const uint64*>(source2);
                     }
                 } else if constexpr (alignof(T) == 4) {
-                    if (XS_EXPECT(outputAlignment)) {
+                    if (outputAlignment) [[likely]] {
                         const auto loops = outputAlignment >> 2;
                         for (auto count = loops; count != 0; --count) {
                             dest2 -= 4;
@@ -1338,7 +1338,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                         }
                     }
                 } else if constexpr (alignof(T) == 2) {
-                    if (XS_EXPECT(outputAlignment)) {
+                    if (outputAlignment) [[likely]] {
                         const auto loops = outputAlignment >> 1;
                         for (auto count = loops; count != 0; --count) {
                             dest2 -= 2;
@@ -1347,7 +1347,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
                         }
                     }
                 } else if constexpr (alignof(T) == 1) {
-                    if (XS_EXPECT(outputAlignment)) {
+                    if (outputAlignment) [[likely]] {
                         const auto loops = outputAlignment;
                         for (auto count = loops; count != 0; --count) {
                             --dest2;
@@ -1596,6 +1596,40 @@ XS_INLINE void memCopy(T* XS_RESTRICT dest, const T2* XS_RESTRICT source, const 
 }
 
 /**
+ * Swaps the data located at one location with the data from another.
+ * @tparam T Generic type parameter.
+ * @param  first  The first data location.
+ * @param  second The second data location to swap with the first.
+ */
+template<typename T>
+XS_INLINE void memSwap(T* const XS_RESTRICT first, T* const XS_RESTRICT second) noexcept
+{
+    using block = NoExport::BulkBlock<T>;
+    if constexpr (hasSIMD<uint32> && (alignof(T) >= 16)) {
+        // If we can do SIMD optimised bulk copy then prefer that
+        static_assert(sizeof(T) == sizeof(block), "Invalid block size");
+        block temp = *reinterpret_cast<block*>(first);
+        *reinterpret_cast<block*>(first) = *reinterpret_cast<block*>(second);
+        *reinterpret_cast<block*>(second) = temp;
+    } else if constexpr (isTriviallyCopyable<T>) {
+        T temp = *first;
+        *first = *second;
+        *second = temp;
+    } else if constexpr (isSwappableMember<T>) {
+        // All allocated types must define there own swap function
+        first->swap(*second);
+    } else if constexpr (isSwappable<T>) {
+        swap(*first, *second);
+    } else {
+        // Brute force a memory move
+        static_assert(sizeof(T) == sizeof(block), "Invalid block size");
+        block temp = *reinterpret_cast<block*>(first);
+        *reinterpret_cast<block*>(first) = *static_cast<block*>(second);
+        *reinterpret_cast<block*>(second) = temp;
+    }
+}
+
+/**
  * Reverse a sequence of data.
  * @note This reverses the order that data occurs in from within the specified range.
  * @tparam T Generic type parameter.
@@ -1612,8 +1646,8 @@ XS_INLINE void memReverse(T* XS_RESTRICT start, T* XS_RESTRICT end) noexcept
         constexpr auto logSize = NoExport::log2(sizeof(T));
         constexpr uint32 copyThreshold =
             (alignof(T) == 1) ? systemAlignment * 4 : ((alignof(T) == 2) ? systemAlignment * 2 : systemAlignment);
-        if (uint0 size = (reinterpret_cast<uint0>(end) - reinterpret_cast<uint0>(start));
-            XS_UNEXPECT(size < (2 * copyThreshold))) {
+        if (uint0 size = (reinterpret_cast<uint0>(end) - reinterpret_cast<uint0>(start)); size < (2 * copyThreshold))
+            [[unlikely]] {
             // Reverse memory using default method
             while (start < end) {
                 --end;
@@ -1667,7 +1701,7 @@ XS_INLINE void memReverse(T* XS_RESTRICT start, T* XS_RESTRICT end) noexcept
         }
 
         // Check if we have correctly aligned pointers on both the source and the destination
-        if (XS_UNEXPECT(startAlignment == endAlignment)) {
+        if (startAlignment == endAlignment) [[unlikely]] {
             // Copy using aligned operations
             if constexpr (hasISAFeature<ISAFeature::AVX2> && (sizeof(T) <= 16)) {
                 // Check if we need 16Byte copy
@@ -2208,40 +2242,6 @@ XS_INLINE void memReverse(T* XS_RESTRICT start, T* XS_RESTRICT end) noexcept
 }
 
 /**
- * Swaps the data located at one location with the data from another.
- * @tparam T Generic type parameter.
- * @param  first  The first data location.
- * @param  second The second data location to swap with the first.
- */
-template<typename T>
-XS_INLINE void memSwap(T* const XS_RESTRICT first, T* const XS_RESTRICT second) noexcept
-{
-    using block = NoExport::BulkBlock<T>;
-    if constexpr (hasSIMD<uint32> && (alignof(T) >= 16)) {
-        // If we can do SIMD optimised bulk copy then prefer that
-        static_assert(sizeof(T) == sizeof(block), "Invalid block size");
-        block temp = *reinterpret_cast<block*>(first);
-        *reinterpret_cast<block*>(first) = *reinterpret_cast<block*>(second);
-        *reinterpret_cast<block*>(second) = temp;
-    } else if constexpr (isTriviallyCopyable<T>) {
-        T temp = *first;
-        *first = *second;
-        *second = temp;
-    } else if constexpr (isSwappableMember<T>) {
-        // All allocated types must define there own swap function
-        first->swap(*second);
-    } else if constexpr (isSwappable<T>) {
-        swap(*first, *second);
-    } else {
-        // Brute force a memory move
-        static_assert(sizeof(T) == sizeof(block), "Invalid block size");
-        block temp = *reinterpret_cast<block*>(first);
-        *reinterpret_cast<block*>(first) = *static_cast<block*>(second);
-        *reinterpret_cast<block*>(second) = temp;
-    }
-}
-
-/**
  * Rotate data around a central pivot point.
  * @note This just swaps all data on the left of the pivot point with all the data on the right of the pivot point.
  * @tparam T Generic type parameter.
@@ -2254,13 +2254,13 @@ template<typename T>
 XS_INLINE T* memRotate(T* const XS_RESTRICT start, T* const XS_RESTRICT pivot, T* const XS_RESTRICT end) noexcept
 {
     XS_ASSERT(start < pivot && pivot < end);
-    if (XS_UNEXPECT(start == pivot)) {
+    if (start == pivot) [[unlikely]] {
         return end;
     }
-    if (XS_UNEXPECT(end == pivot)) {
+    if (end == pivot) [[unlikely]] {
         return start;
     }
-    if (XS_UNEXPECT((end - start) == 2)) {
+    if ((end - start) == 2) [[unlikely]] {
         memSwap(start, pivot);
         return pivot;
     }

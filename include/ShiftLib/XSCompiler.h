@@ -114,28 +114,10 @@
 #endif
 
 /* Set up functions for missing c++20 features */
-#ifdef __has_cpp_attribute
-#    if __has_cpp_attribute(likely)
-#        define XS_EXPECT(expr) [[likely]] expr
-#        define XS_UNEXPECT(expr) [[unlikely]] expr
-#    else
-#        define XS_EXPECT(expr) expr
-#        define XS_UNEXPECT(expr) expr
-#    endif
-#elif (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_GNUC)
-#    define XS_EXPECT(expr) __builtin_expect((long)(expr), true)
-#    define XS_UNEXPECT(expr) __builtin_expect((long)(expr), false)
-#else
-#    define XS_EXPECT(expr) expr
-#    define XS_UNEXPECT(expr) expr
-#endif
-
 #ifdef __cpp_concepts
 #    define XS_REQUIRES(expr) requires(expr)
-#    define XS_REQUIRES2(expr) requires(expr)
 #else
 #    define XS_REQUIRES(expr)
-#    define XS_REQUIRES2(expr) template<typename = require<expr>>
 #endif
 
 #ifdef __cpp_consteval

@@ -653,7 +653,7 @@ public:
                     ++length;
                 }
                 // Must use less than when checking in case the length bailout was triggered above
-                if (XS_UNEXPECT((number < count) & (count > 1))) {
+                if ((number < count) & (count > 1)) [[unlikely]] {
                     --length;
                 }
             } else {
@@ -664,7 +664,7 @@ public:
                 }
                 // Check if number is exactly same as count (i.e. 100 has length 3 while 99 has length 2)
                 // Also check that count is greater than 1 (i.e. to support input values of 0)
-                if (XS_UNEXPECT((static_cast<promote<T>>(number) != count) & (count > 1))) {
+                if ((static_cast<promote<T>>(number) != count) & (count > 1)) [[unlikely]] {
                     --length;
                 }
             }
@@ -674,9 +674,9 @@ public:
                 numberElements += static_cast<uint32>(addSign);
             }
             // Check if we need to increase number elements
-            if (XS_UNEXPECT(numberElements > this->getLength())) {
+            if (numberElements > this->getLength()) [[unlikely]] {
                 // Check reserved size
-                if (XS_UNEXPECT(!this->checkReservedLength(numberElements, iterator))) {
+                if (!this->checkReservedLength(numberElements, iterator)) [[unlikely]] {
                     return false;
                 }
                 this->nextElement = this->handle.pointer + numberElements;
@@ -866,7 +866,7 @@ public:
                 }
                 // Check if number is exactly same as count (i.e. 100 has length 3 while 99 has length 2)
                 // Also check that count is greater than 1 (i.e. to support input values of 0)
-                if (XS_UNEXPECT((static_cast<uint64>(prePoint) != count) && (count > 1))) {
+                if ((static_cast<uint64>(prePoint) != count) && (count > 1)) [[unlikely]] {
                     --length2;
                 }
             } else {
@@ -877,7 +877,7 @@ public:
                     ++length2;
                 }
                 // Must use less than when checking in case the length bailout was triggered above
-                if (XS_UNEXPECT((prePoint < count) && (count > 1))) {
+                if ((prePoint < count) && (count > 1)) [[unlikely]] {
                     --length2;
                 }
             }
@@ -894,7 +894,7 @@ public:
                 }
                 // Check if number is exactly same as count (i.e. 100 has length 3 while 99 has length 2)
                 // Also check that count is greater than 1 (i.e. to support input values of 0)
-                if (XS_UNEXPECT((static_cast<uint64>(postPoint) != count) && (count > 1))) {
+                if ((static_cast<uint64>(postPoint) != count) && (count > 1)) [[unlikely]] {
                     --length;
                 }
             } else {
@@ -905,7 +905,7 @@ public:
                     ++length;
                 }
                 // Must use less than when checking in case the length bailout was triggered above
-                if (XS_UNEXPECT((postPoint < count) && (count > 1))) {
+                if ((postPoint < count) && (count > 1)) [[unlikely]] {
                     --length;
                 }
             }
@@ -924,9 +924,9 @@ public:
             uint32 numberElements = (pointOffset > 0) ? totalLength + 2 + doubleFix : totalLength;
             numberElements = (pointOffset < 0) ? numberElements + 3 + doubleFix : numberElements;
             // Check if we need to increase number elements
-            if (XS_UNEXPECT(numberElements > this->getLength())) {
+            if (numberElements > this->getLength()) [[unlikely]] {
                 // Update num elements
-                if (XS_UNEXPECT(!this->checkReservedLength(numberElements, iterator))) {
+                if (!this->checkReservedLength(numberElements, iterator)) [[unlikely]] {
                     return false;
                 }
                 this->nextElement = this->handle.pointer + numberElements;
@@ -964,7 +964,7 @@ public:
                     prePoint /= convertBaseMax;
                     if (prePoint == 0) {
                         prePoint = postPoint / (convertBaseMax / 10);
-                        if (XS_UNEXPECT(prePoint == 0)) {
+                        if (prePoint == 0) [[unlikely]] {
                             prePoint = postPoint / (convertBaseMax / 100);
                         }
                     }
@@ -1225,7 +1225,7 @@ public:
             while (tempIt < this->cend()) {
                 // CSheck for valid number
                 const CharType newChar = this->at(tempIt);
-                if (XS_EXPECT((newChar >= utfZero) && (newChar < utfZero + 10))) {
+                if ((newChar >= utfZero) && (newChar < utfZero + 10)) [[likely]] {
                     // Multiply existing number by base (i.e. 10)
                     ret *= 10;
                     // Add the new digit
@@ -1264,7 +1264,7 @@ public:
         while ((it1 < this->cend()) && (it2 < end)) {
             const CharType char1 = *it1;
             const CharType char2 = *it2;
-            if (XS_UNEXPECT(char1 != char2)) {
+            if (char1 != char2) [[unlikely]] {
                 // Directly return difference between characters
                 return (static_cast<int32>(char1) - static_cast<int32>(char2));
             }
