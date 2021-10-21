@@ -57,7 +57,7 @@ TEST_NS(Bit, Bit, Bsr)
 #endif
 
 #if !defined(XSTESTMAIN) || (XS_ISA != XS_X86)
-TEST_NS(Bit, Bit, TESTISA(Popcnt))
+TEST_NS2(Bit, Bit, TESTISA(Popcnt))
 {
     // Has separate implementations for 32b, 64b and SSE4.2+
     ASSERT_EQ(popcnt<int8>(0x04_i8), 1_ui8);
@@ -89,7 +89,7 @@ TEST_NS(Bit, Bit, TESTISA(Popcnt))
     ASSERT_EQ(popcnt<uint64>(0x0FF0000000000000_ui64), 8_ui32);
 }
 
-TEST_NS(Bit, Bit, TESTISA(Ctz))
+TEST_NS2(Bit, Bit, TESTISA(Ctz))
 {
     // Has separate implementations for 32b, 64b and AVX2
     ASSERT_EQ(ctz<int8>(0x04_i8), 2_ui8);
@@ -121,7 +121,7 @@ TEST_NS(Bit, Bit, TESTISA(Ctz))
     ASSERT_EQ(ctz<uint64>(0x0FF0000000000000_ui64), 52_ui32);
 }
 
-TEST_NS(Bit, Bit, TESTISA(Clz))
+TEST_NS2(Bit, Bit, TESTISA(Clz))
 {
     // Has separate implementations for 32b, 64b and AVX2
     ASSERT_EQ(clz<int32>(0x00000004_i32), 29_ui32);
