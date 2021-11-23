@@ -21,8 +21,8 @@
 #include "SIMD/XSSIMD3.inl"
 #include "SIMD/XSSIMD3x3.inl"
 #include "SIMD/XSSIMD4.inl"
-#include "SIMD/XSSIMDBase.inl"
-#include "SIMD/XSSIMDInBase.inl"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 #include "SIMD/XSSIMDTraits.hpp"
 
 namespace Shift {

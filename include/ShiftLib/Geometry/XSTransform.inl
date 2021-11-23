@@ -20,7 +20,7 @@
 #include "Geometry/XSMatrix4x3.inl"
 #include "Geometry/XSQuaternion.inl"
 #include "Geometry/XSVector3D.inl"
-#include "SIMD/XSSIMDBase.inl"
+#include "SIMD/XSSIMDBase.hpp"
 
 namespace Shift {
 template<typename T, bool Matrix>

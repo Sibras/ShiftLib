@@ -51,13 +51,13 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    include "SIMD/XSSIMD8.inl"
 #endif
 #ifdef XS_TESTING_BASE
-#    include "SIMD/XSSIMDBase.inl"
+#    include "SIMD/XSSIMDBase.hpp"
 #endif
 #ifdef XS_TESTING_BOOL
 #    include "SIMD/XSSIMDBool.inl"
 #endif
 #ifdef XS_TESTING_INBASE
-#    include "SIMD/XSSIMDInBase.inl"
+#    include "SIMD/XSSIMDInBase.hpp"
 #endif
 
 /**

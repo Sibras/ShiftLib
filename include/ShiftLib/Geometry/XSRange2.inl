@@ -18,8 +18,8 @@
 #include "Geometry/XSRange2.hpp"
 
 #include "SIMD/XSSIMD4.inl"
-#include "SIMD/XSSIMDBase.inl"
-#include "SIMD/XSSIMDInBase.inl"
+#include "SIMD/XSSIMDBase.hpp"
+#include "SIMD/XSSIMDInBase.hpp"
 
 namespace Shift {
 template<typename T>
