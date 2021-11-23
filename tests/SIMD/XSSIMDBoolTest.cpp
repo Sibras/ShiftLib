@@ -15,7 +15,7 @@
  */
 
 #ifdef XSTESTMAIN
-#    include "SIMD/XSSIMDBool.inl"
+#    include "SIMD/XSSIMDBool.hpp"
 
 #    define XS_TESTING_BOOL
 #    include "SIMD/XSGTestSIMD.hpp"
