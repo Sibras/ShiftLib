@@ -21,7 +21,7 @@
 #include "SIMD/XSSIMD2.hpp"
 #include "SIMD/XSSIMD3.hpp"
 #include "SIMD/XSSIMD4.hpp"
-#include "SIMD/XSSIMD8.inl"
+#include "SIMD/XSSIMD8.hpp"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
 #include "SIMD/XSSIMDTraits.hpp"
