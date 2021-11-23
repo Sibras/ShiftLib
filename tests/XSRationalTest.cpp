@@ -15,7 +15,7 @@
  */
 
 #ifdef XSTESTMAIN
-#    include "XSRational.inl"
+#    include "XSRational.hpp"
 
 #    include "XSGTest.hpp"
 #    include "XSInt128.inl"
