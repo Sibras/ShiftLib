@@ -24,7 +24,7 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    include "SIMD/XSSIMD12.inl"
 #endif
 #ifdef XS_TESTING_SIMD16
-#    include "SIMD/XSSIMD16.inl"
+#    include "SIMD/XSSIMD16.hpp"
 #endif
 #ifdef XS_TESTING_SIMD2
 #    include "SIMD/XSSIMD2.hpp"

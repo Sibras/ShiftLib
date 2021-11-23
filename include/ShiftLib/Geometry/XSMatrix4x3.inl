@@ -17,7 +17,7 @@
 
 #include "Geometry/XSMatrix4x3.hpp"
 
-#include "SIMD/XSSIMD16.inl"
+#include "SIMD/XSSIMD16.hpp"
 #include "SIMD/XSSIMD3x4.inl"
 #include "SIMD/XSSIMD4.hpp"
 #include "SIMD/XSSIMD8.inl"
