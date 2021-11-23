@@ -19,7 +19,7 @@
 
 #include "SIMD/XSSIMD2.hpp"
 #include "SIMD/XSSIMD3.hpp"
-#include "SIMD/XSSIMD3x3.inl"
+#include "SIMD/XSSIMD3x3.hpp"
 #include "SIMD/XSSIMD4.hpp"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
