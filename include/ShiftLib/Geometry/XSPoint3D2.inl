@@ -17,8 +17,8 @@
 
 #include "Geometry/XSPoint3D2.hpp"
 
-#include "SIMD/XSSIMD3x2.inl"
-#include "SIMD/XSSIMD6.inl"
+#include "SIMD/XSSIMD3x2.hpp"
+#include "SIMD/XSSIMD6.hpp"
 
 namespace Shift {
 template<typename T, bool Packed>

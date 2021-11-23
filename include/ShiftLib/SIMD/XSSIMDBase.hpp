@@ -15,15 +15,7 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMDData.hpp"
-
-#if XS_ISA == XS_X86
-#    include "SIMD/XSSIMDx86.hpp"
-#    include "SIMD/XSSIMDx86Functions.hpp"
-#endif
 #include "SIMD/XSSIMDInBase.hpp"
-#include "XSBit.hpp"
-#include "XSMath.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
