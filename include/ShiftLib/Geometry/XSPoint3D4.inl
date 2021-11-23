@@ -17,9 +17,6 @@
 
 #include "Geometry/XSPoint3D4.hpp"
 
-#include "SIMD/XSSIMD12.inl"
-#include "SIMD/XSSIMD3x4.inl"
-
 namespace Shift {
 template<typename T, bool Packed>
 template<SIMDWidth Width>

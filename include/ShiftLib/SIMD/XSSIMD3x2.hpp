@@ -983,11 +983,11 @@ public:
     }
 
     /**
-     * Construct from SIMD6 from a SIMD3x2.
+     * Construct a SIMD6 from a SIMD3x2.
      * @note Note SIMD3s are packed when put into a SIMD6. This means that the first 2 elements will
      * actually consist of the packed first element of each of the 2 SIMD3s etc.
      */
-    XS_FUNCTION constexpr explicit operator SIMD6Def() const noexcept
+    XS_FUNCTION explicit operator SIMD6Def() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {

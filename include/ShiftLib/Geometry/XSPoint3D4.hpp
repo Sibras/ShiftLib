@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMD12.hpp"
 #include "SIMD/XSSIMD3x4.hpp"
+//
+#include "SIMD/XSSIMD12.hpp"
 
 // Additional includes
 #include "Geometry/XSPoint3D.hpp"

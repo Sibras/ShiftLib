@@ -18,8 +18,6 @@
 #include "Geometry/XSVector3D4.hpp"
 
 #include "Geometry/XSVector3D.inl"
-#include "SIMD/XSSIMD12.inl"
-#include "SIMD/XSSIMD3x4.inl"
 
 namespace Shift {
 template<typename T, bool Packed>
