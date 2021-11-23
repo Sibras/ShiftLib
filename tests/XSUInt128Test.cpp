@@ -15,10 +15,10 @@
  */
 
 #ifdef XSTESTMAIN
-#    include "XSUInt128.inl"
+#    include "XSUInt128.hpp"
 
 #    include "XSGTest.hpp"
-#    include "XSInt128.inl"
+#    include "XSInt128.hpp"
 
 using namespace Shift;
 

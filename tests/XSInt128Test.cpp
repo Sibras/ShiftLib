@@ -15,7 +15,7 @@
  */
 
 #ifdef XSTESTMAIN
-#    include "XSInt128.inl"
+#    include "XSInt128.hpp"
 
 #    include "XSGTest.hpp"
 

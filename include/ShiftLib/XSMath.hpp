@@ -31,8 +31,6 @@
 #ifdef max
 #    undef max
 #endif
-#include "XSInt128.hpp"
-#include "XSUInt128.hpp"
 
 namespace Shift {
 /**< The value pi */
@@ -230,11 +228,11 @@ XS_INLINE constexpr promote<T> mul(T param1, T param2) noexcept
     } else if constexpr (isSame<T, int64> && currentArch == Architecture::Bit64) {
         int64 high;
         const int64 low = _mul128(param1, param2, &high);
-        return int128(high, low);
+        return Int128(high, low);
     } else if constexpr (isSame<T, uint64> && currentArch == Architecture::Bit64) {
         uint64_t high;
         const uint64 low = _umul128(param1, param2, &high);
-        return uint128(high, low);
+        return UInt128(high, low);
     } else
 #endif
         if constexpr (isSame<T, uint64> && currentArch == Architecture::Bit32) {

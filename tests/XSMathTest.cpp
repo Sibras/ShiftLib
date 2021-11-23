@@ -18,6 +18,8 @@
 #    include "XSMath.hpp"
 
 #    include "XSGTest.hpp"
+#    include "XSInt128.hpp"
+#    include "XSUInt128.hpp"
 
 using namespace Shift;
 

@@ -18,6 +18,9 @@
 #include "Memory/XSDArray.hpp"
 
 namespace Shift {
+class UInt128;
+class Int128;
+
 template<typename CharType = char>
 class String : public DArray<CharType>
 {
@@ -645,7 +648,7 @@ public:
             // Determine length of number
             uint0 length = 1;
             if constexpr ((currentArch == Architecture::Bit32 && isSameAny<T, uint32, int32>) ||
-                isSameAny<T, uint64, int64, uint128, int128>) {
+                isSameAny<T, uint64, int64, UInt128, Int128>) {
                 T count = 1;
                 constexpr auto maxDigits = (sizeof(T) * 5) / 2;
                 while ((number > count) & (length < maxDigits)) {
