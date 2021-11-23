@@ -17,7 +17,7 @@
 
 #include "Geometry/XSRange.hpp"
 
-#include "SIMD/XSSIMD2.inl"
+#include "SIMD/XSSIMD2.hpp"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
 
