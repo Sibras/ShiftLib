@@ -17,7 +17,6 @@
 
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDBool.hpp"
-#include "SIMD/XSSIMDInBase.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>

@@ -17,7 +17,7 @@
 
 #include "Geometry/XSVector3D.hpp"
 
-#include "SIMD/XSSIMD3.inl"
+#include "SIMD/XSSIMD3.hpp"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
 
