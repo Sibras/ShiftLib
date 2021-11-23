@@ -20,7 +20,7 @@
 #include "SIMD/XSSIMD16.inl"
 #include "SIMD/XSSIMD2.hpp"
 #include "SIMD/XSSIMD3.hpp"
-#include "SIMD/XSSIMD4.inl"
+#include "SIMD/XSSIMD4.hpp"
 #include "SIMD/XSSIMD8.inl"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"

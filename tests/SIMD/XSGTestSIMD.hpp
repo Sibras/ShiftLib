@@ -42,7 +42,7 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    include "SIMD/XSSIMD3x4.inl"
 #endif
 #ifdef XS_TESTING_SIMD4
-#    include "SIMD/XSSIMD4.inl"
+#    include "SIMD/XSSIMD4.hpp"
 #endif
 #ifdef XS_TESTING_SIMD6
 #    include "SIMD/XSSIMD6.inl"

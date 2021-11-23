@@ -18,7 +18,7 @@
 #include "Geometry/XSQuaternion.hpp"
 
 #include "SIMD/XSSIMD2.hpp"
-#include "SIMD/XSSIMD4.inl"
+#include "SIMD/XSSIMD4.hpp"
 #include "SIMD/XSSIMDBase.hpp"
 #include "SIMD/XSSIMDInBase.hpp"
 
