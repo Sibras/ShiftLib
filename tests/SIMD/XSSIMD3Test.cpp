@@ -21,7 +21,6 @@
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_BOOL
 #    define XS_TESTING_SIMD2
-#    define XS_TESTING_SIMD4 // TODO: Remove
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD3Test)
 #    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;

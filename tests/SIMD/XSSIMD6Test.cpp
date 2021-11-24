@@ -21,7 +21,6 @@
 #    define XS_TESTING_INBASE
 #    define XS_TESTING_SIMD2
 #    define XS_TESTING_SIMD3
-#    define XS_TESTING_SIMD3X2 // only needed for header include
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD6Test)
 #    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
@@ -127,10 +126,6 @@ TYPED_TEST_NS2(SIMD6, TESTISA(SIMD6), SIMD6)
     TestType test8 = TestType(TestType::SIMD3Def(1.3f, 1.5f, 1.9f), TestType::SIMD3Def(-1.4f, 1.6f, -1.1f));
     ASSERT_PRED7(
         (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), test8, 1.3f, -1.4f, 1.5f, 1.6f, 1.9f, -1.1f);
-
-    auto textX = TestType(TestType::SIMD3x2Def::SIMD6Def(TestType::SIMD3x2Def(1.3f, 1.5f, 1.9f, -1.4f, 1.6f, -1.1f)));
-    ASSERT_PRED7(
-        (assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>), textX, 1.3f, -1.4f, 1.5f, 1.6f, 1.9f, -1.1f);
 
     ASSERT_PRED7((assertSIMD6<typename TestFixture::TypeInt, TestFixture::width>),
         TestType(TestType::SIMD3Def(1.3f, 1.5f, 1.9f)), 1.3f, 1.3f, 1.5f, 1.5f, 1.9f, 1.9f);

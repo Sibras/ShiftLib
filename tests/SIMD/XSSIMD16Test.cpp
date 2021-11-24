@@ -24,7 +24,6 @@
 #    define XS_TESTING_SIMD3X4
 #    define XS_TESTING_SIMD8
 #    define XS_TESTING_SIMD12
-#    define XS_TESTING_SIMD3 // Only needed for header include
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMD16Test)
 #    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;

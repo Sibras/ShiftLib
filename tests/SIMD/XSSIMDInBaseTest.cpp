@@ -17,7 +17,6 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 #    define XS_TESTING_INBASE
-#    define XS_TESTING_BASE
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(SIMDInBaseTest)
 #    include "SIMD/XSGTestSIMD.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
@@ -72,9 +71,7 @@ TYPED_TEST_NS2(SIMDInBase, TESTISA(SIMDIB), SIMDInBase)
     TestType test2 = TestType(-42.21f);
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test2, -42.21f);
 
-    auto test3a =
-        SIMDBase<TestType::Type, TestType::widthImpl>::InBaseDef(SIMDBase<TestType::Type, TestType::widthImpl>(5.234f));
-    TestType test3 = TestType(test3a);
+    TestType test3 = TestType(5.234f);
     ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestFixture::width>), test3, 5.234f);
 
     TestType test4 = TestType(test1);

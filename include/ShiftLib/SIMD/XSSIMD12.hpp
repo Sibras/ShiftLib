@@ -282,7 +282,6 @@ public:
     using SIMD6Def = SIMD6<T, SIMD6<T, widthImpl>::widthImpl>;
     using SIMD8Def = SIMD8<T, SIMD8<T, widthImpl>::widthImpl>;
     using SIMD3x3Def = SIMD3x3<T, SIMD3x3<T, widthImpl>::widthImpl>;
-    using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /**

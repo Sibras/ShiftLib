@@ -124,6 +124,9 @@ TYPED_TEST_NS2(SIMDBase, TESTISA(SIMDB), SIMDBase)
     const TestType test6 = TestType(1.3f);
     ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::width>), test6, 1.3f);
 
+    auto testX = TestType::InBaseDef(test3);
+    ASSERT_PRED2((assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::widthImpl>), testX, 5.234f);
+
     //  Preset Constructor Test
     ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestFixture::width>), TestType::Zero(), 0.0f);
 

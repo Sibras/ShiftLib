@@ -226,7 +226,6 @@ public:
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
     using SIMD3Def = SIMD3<T, SIMD3<T, widthImpl>::widthImpl>;
     using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
-    using SIMD3x2Def = SIMD3x2<T, SIMD3x2<T, widthImpl>::widthImpl>;
     using Data::SIMDData;
 
     /** Hex Mask object used to store 6 different masks at once. */
