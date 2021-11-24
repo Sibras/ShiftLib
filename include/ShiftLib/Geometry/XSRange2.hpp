@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-#include "SIMD/XSSIMD4.hpp"
-
-// Additional includes
 #include "Geometry/XSRange.hpp"
+#include "SIMD/XSSIMD4.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
@@ -39,7 +37,10 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Range2Data(const Range2<T, Width>& other) noexcept;
+    XS_FUNCTION explicit Range2Data(const Range2<T, Width>& other) noexcept
+    {
+        store(other);
+    }
 
     /**
      * Save to memory.
@@ -47,7 +48,14 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Range2<T, Width>& other) noexcept;
+    XS_FUNCTION void store(const Range2<T, Width>& other) noexcept
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            this->minMax.store(other.minMax.template negate<true, true, false, false>());
+        } else {
+            this->minMax.store(other.minMax);
+        }
+    }
 
     /**
      * Load from memory.
@@ -55,7 +63,10 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Range2<T, Width> load() const noexcept;
+    XS_FUNCTION Range2<T, Width> load() const noexcept
+    {
+        return Range2<T, Width>(this->minMax.template load<Range2<T, Width>::widthImpl>());
+    }
 };
 
 /** Range2 type used to store minimum and maximum values for two different specific ranges. */
@@ -107,13 +118,26 @@ public:
      * Construct a range2 from its member variables.
      * @param minMax The minimum 2 values followed by the maximum 2 values of the range.
      */
-    XS_FUNCTION explicit Range2(const SIMD4Def& minMax);
+    XS_FUNCTION explicit Range2(const SIMD4Def& minMax)
+        : minMax(minMax)
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            minMax = minMax.template negate<true, true, false, false>();
+        }
+    }
 
     /**
      * Construct a range2 from a single range.
      * @param range Input range to copy.
      */
-    XS_FUNCTION explicit Range2(const RangeDef& range);
+    XS_FUNCTION explicit Range2(const RangeDef& range)
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            minMax = SIMD4Def(range.minMax.values).template shuffle<0, 0, 1, 1>();
+        } else {
+            minMax = range.minMax.template shuffle<0, 0>(), range.minMax.template shuffle<1, 1>();
+        }
+    }
 
     /**
      * Returns an internal range element.
@@ -121,7 +145,19 @@ public:
      * @returns The specified range.
      */
     template<uint32_t Index>
-    XS_FUNCTION RangeDef getRange() const noexcept;
+    XS_FUNCTION RangeDef getRange() const noexcept
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        if constexpr (Width > SIMDWidth::Scalar) {
+            RangeDef ret;
+            ret.minMax = this->minMax.template shuffle<0 + Index, 2 + Index, 0 + Index,
+                2 + Index>(); // Need to avoid re-negating the min values in constructor
+            return ret;
+        } else {
+            return RangeDef(SIMD2(
+                this->minMax.template getValueInBase<Index>(), this->minMax.template getValueInBase<2 + Index>()));
+        }
+    }
 
     /**
      * Returns the ranges minimum value.
@@ -129,7 +165,15 @@ public:
      * @returns The minimum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMinInBase() const noexcept;
+    XS_FUNCTION InBaseDef getMinInBase() const noexcept
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        if constexpr (Width > SIMDWidth::Scalar) {
+            return this->minMax.template negate<true, true, false, false>().template getValueInBase<Index>();
+        } else {
+            return this->minMax.template getValueInBase<Index>();
+        }
+    }
 
     /**
      * Returns the ranges maximum value.
@@ -137,7 +181,11 @@ public:
      * @returns The maximum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMaxInBase() const noexcept;
+    XS_FUNCTION InBaseDef getMaxInBase() const noexcept
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        return this->minMax.template getValueInBase<Index + 2>();
+    }
 
     /**
      * Returns the ranges minimum value.
@@ -145,7 +193,15 @@ public:
      * @returns The minimum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMin() const noexcept;
+    XS_FUNCTION BaseDef getMin() const noexcept
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        if constexpr (Width > SIMDWidth::Scalar) {
+            return this->minMax.template negate<true, true, false, false>().template getValue<Index>();
+        } else {
+            return this->minMax.template getValue<Index>();
+        }
+    }
 
     /**
      * Returns the ranges maximum value.
@@ -153,13 +209,24 @@ public:
      * @returns The maximum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMax() const noexcept;
+    XS_FUNCTION BaseDef getMax() const noexcept
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        return this->minMax.template getValue<Index + 2>();
+    }
 
     /**
      * Gets the length of each range.
      * @returns The length.
      */
-    XS_FUNCTION SIMD2Def getLength() const noexcept;
+    XS_FUNCTION SIMD2Def getLength() const noexcept
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            return this->minMax.template getValue2<1>() + this->minMax.template getValue2<0>();
+        } else {
+            return this->minMax.template getValue2<1>() - this->minMax.template getValue2<0>();
+        }
+    }
 
     /**
      * Sets the minimum value.
@@ -167,7 +234,14 @@ public:
      * @param min The new minimum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMin(BaseDef min);
+    XS_FUNCTION void setMin(BaseDef min)
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        this->minMax.template setValue<Index>(min);
+        if constexpr (Width > SIMDWidth::Scalar) {
+            this->minMax = this->minMax.template negate<true, true, false, false>();
+        }
+    }
 
     /**
      * Sets the maximum value.
@@ -175,44 +249,97 @@ public:
      * @param max The new maximum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMax(BaseDef max);
+    XS_FUNCTION void setMax(BaseDef max)
+    {
+        static_assert(Index < 2, "Invalid Index: Index must be <2");
+        this->minMax.template setValue<Index + 2>(max);
+    }
 
     /**
      * Sets the minimum value of all range elements.
      * @param min The new minimum.
      */
-    XS_FUNCTION void setMin2(BaseDef min);
+    XS_FUNCTION void setMin2(BaseDef min)
+    {
+        this->minMax.template setDualFloat<0>(XSFloat2(min));
+        if constexpr (Width > SIMDWidth::Scalar) {
+            this->minMax = this->minMax.template negate<true, true, false, false>();
+        }
+    }
 
     /**
      * Sets the maximum value of all range elements.
      * @param max The new maximum.
      */
-    XS_FUNCTION void setMaxDual(BaseDef max);
+    XS_FUNCTION void setMaxDual(BaseDef max)
+    {
+        this->minMax.template setDualFloat<1>(XSFloat2(max));
+    }
 
     /**
      * Check if a value is within the current range.
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(BaseDef value) const noexcept;
+    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(BaseDef value) const noexcept
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            const typename SIMD4Def::Mask mask4(
+                SIMD4Def(value).template negate<true, true, false, false>().lessThanMask(this->minMax));
+            return mask4.template getMask2<1>() & mask4.template getMask2<0>();
+        } else {
+            return (this->minMax.template getValue2<0>().lessThanMask(value)) &
+                (SIMD2Def(value).lessThanMask(this->minMax.template getValue2<1>()));
+        }
+    }
 
     /**
      * Check if a values are within the current range.
      * @param values The values to check.
      * @returns If the values are within the range.
      */
-    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(const SIMD2Def& values) const noexcept;
+    XS_FUNCTION typename SIMD2Def::Mask isWithinRange(const SIMD2Def& values) const noexcept
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            const SIMD4Def data4(values.values); // Avoid constructor duplication v2
+            const typename SIMD4Def::Mask mask4(
+                data4.template shuffle<0, 0, 1, 1>().template negate<true, true, false, false>().lessThanMask(
+                    this->minMax));
+            return mask4.template getMask2<1>() & mask4.template getMask2<0>();
+        } else {
+            return (this->minMax.template getValue2<0>().lessThanMask(values)) &
+                (SIMD2Def(values).lessThanMask(this->minMax.template getValue2<1>()));
+        }
+    }
 
     /**
      * Clips the minimum values to the largest from 2 ranges.
      * @param range The second range to clip to.
      */
-    XS_FUNCTION void clipMin(const Range2& range);
+    XS_FUNCTION void clipMin(const Range2& range)
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            const SIMD4Def min(this->minMax.min(range.minMax));
+            this->minMax.template blend<true, true, false, false>(min);
+        } else {
+            this->minMax.template setValue2<0>(
+                this->minMax.template getValue2<0>().max(range.minMax.template getValue2<0>()));
+        }
+    }
 
     /**
      * Clips the maximum values to the smallest from 2 ranges.
      * @param range The second range to clip to.
      */
-    XS_FUNCTION void clipMax(const Range2& range);
+    XS_FUNCTION void clipMax(const Range2& range)
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            const SIMD4Def max(this->minMax.min(range.minMax));
+            this->minMax.template blend<false, false, true, true>(max);
+        } else {
+            this->minMax.template setValue2<1>(
+                this->minMax.template getValue2<1>().min(range.minMax.template getValue2<1>()));
+        }
+    }
 };
 } // namespace Shift

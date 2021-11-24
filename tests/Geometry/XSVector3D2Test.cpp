@@ -72,6 +72,10 @@ TYPED_TEST_NS2(Vector3D2, TESTISA(V3D2), Vector3D2)
     ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),
         TestType(temp), 5.234f, 1.836f, -5.2789f, 1.0f, 7.2654f, -1.0547f);
 
+    typename TestType::SIMD3x2Def temp2 = TestType::SIMD3x2Def(5.234f, 1.0f, 1.836f, 7.2654f, -5.2789f, -1.0547f);
+    ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),
+        TestType(temp2), 5.234f, 1.0f, 1.836f, 7.2654f, -5.2789f, -1.0547f);
+
     //  Get Test
     ASSERT_PRED4((assertVector3D<typename TestFixture::TypeInt, TestType::Vector3DDef::width>),
         test1.template getVector<0>(), 10.0f, 4.0f, 7.0f);
@@ -193,21 +197,21 @@ TYPED_TEST_NS2(Vector3D2, TESTISA(V3D2), Vector3D2)
         -10.0f, -4.0f, -7.0f, -5.0f, -2.0f, 2.0f);
 
     //  Length Test
-    typename TestType::SIMD2Def temp2 = test8.lengthSqr();
+    typename TestType::SIMD2Def temp3 = test8.lengthSqr();
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp2, 178.1690372f, 44.61802925f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp3, 178.1690372f, 44.61802925f);
 
-    temp2 = test8.length();
+    temp3 = test8.length();
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp2, 13.3479975f, 6.67967284f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp3, 13.3479975f, 6.67967284f);
 
     //  Normalize Test
     ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),
         test10.normalize(), 0.8402313921f, 0.331510188f, 0.429082979f, 0.768838f, 0.547462f, -0.330415f);
 
     //  Dot3 Test
-    temp2 = test10.dot3(test9);
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp2, 10331.6f, 2192.73f);
+    temp3 = test10.dot3(test9);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestType::SIMD2Def::width>), temp3, 10331.6f, 2192.73f);
 
     //  Cross3 Test
     ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),

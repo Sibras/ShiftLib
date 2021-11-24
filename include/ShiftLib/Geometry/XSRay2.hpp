@@ -16,11 +16,8 @@
  */
 
 #include "Geometry/XSPoint3D2.hpp"
-#include "Geometry/XSVector3D2.hpp"
-
-// Additional includes
 #include "Geometry/XSRay.hpp"
-#include "SIMD/XSSIMD2.hpp"
+#include "Geometry/XSVector3D2.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
@@ -85,26 +82,38 @@ public:
      * @param origin    The new origin values for the 2 rays.
      * @param direction The new direction values for the 2 rays.
      */
-    XS_FUNCTION Ray2(const Point3D2Def& origin, const Vector3D2Def& direction) noexcept;
+    XS_FUNCTION Ray2(const Point3D2Def& origin, const Vector3D2Def& direction) noexcept
+        : origins(origin)
+        , directions(direction)
+    {}
 
     /**
      * Construct a ray2 from 4 regular rays.
      * @param ray0 The first ray.
      * @param ray1 The second ray.
      */
-    XS_FUNCTION Ray2(const RayDef& ray0, const RayDef& ray1) noexcept;
+    XS_FUNCTION Ray2(const RayDef& ray0, const RayDef& ray1) noexcept
+        : origins(ray0.origin, ray1.origin)
+        , directions(ray0.direction, ray1.direction)
+    {}
 
     /**
      * Construct a ray2 by duplicating a single ray.
      * @param ray The ray.
      */
-    XS_FUNCTION explicit Ray2(const RayDef& ray) noexcept;
+    XS_FUNCTION explicit Ray2(const RayDef& ray) noexcept
+        : origins(ray.origin)
+        , directions(ray.direction)
+    {}
 
     /**
      * Determine a point along a ray2.
      * @param dist The number of units to move along each ray.
      * @returns The Point3D2 at the specified distance along each ray.
      */
-    XS_FUNCTION Point3D2Def pointAlongRay(const SIMD2Def& dist) const noexcept;
+    XS_FUNCTION Point3D2Def pointAlongRay(const SIMD2Def& dist) const noexcept
+    {
+        return this->directions.mad(dist, this->origins);
+    }
 };
 } // namespace Shift

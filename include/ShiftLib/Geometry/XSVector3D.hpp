@@ -36,7 +36,9 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Vector3DData(const Vector3D<T, Width>& other) noexcept;
+    XS_FUNCTION explicit Vector3DData(const Vector3D<T, Width>& other) noexcept
+        : values(other.values)
+    {}
 
     /**
      * Directly set the contents this object.
@@ -46,7 +48,10 @@ public:
      * @param y Points pre-calculated y value.
      * @param z Points pre-calculated z value.
      */
-    XS_FUNCTION void setData(T x, T y, T z) noexcept;
+    XS_FUNCTION void setData(T x, T y, T z) noexcept
+    {
+        this->values.setData(x, y, z);
+    }
 
     /**
      * Save to memory.
@@ -54,7 +59,10 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Vector3D<T, Width>& other) noexcept;
+    XS_FUNCTION void store(const Vector3D<T, Width>& other) noexcept
+    {
+        this->values.store(other.values);
+    }
 
     /**
      * Load from memory.
@@ -62,7 +70,10 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Vector3D<T, Width> load() const noexcept;
+    XS_FUNCTION Vector3D<T, Width> load() const noexcept
+    {
+        return Vector3D<T, Width>(this->values.template load<Vector3D<T, Width>::widthImpl>());
+    }
 };
 
 template<typename T>
@@ -80,7 +91,9 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Vector3DDataPad(const Vector3D<T, Width>& other) noexcept;
+    XS_FUNCTION explicit Vector3DDataPad(const Vector3D<T, Width>& other) noexcept
+        : values(other.values)
+    {}
 
     /**
      * Directly set the contents this object.
@@ -90,7 +103,10 @@ public:
      * @param y Points pre-calculated y value.
      * @param z Points pre-calculated z value.
      */
-    XS_FUNCTION void setData(T x, T y, T z) noexcept;
+    XS_FUNCTION void setData(T x, T y, T z) noexcept
+    {
+        this->values.setData(x, y, z);
+    }
 
     /**
      * Save to memory.
@@ -98,7 +114,10 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Vector3D<T, Width>& other) noexcept;
+    XS_FUNCTION void store(const Vector3D<T, Width>& other) noexcept
+    {
+        this->values.store(other.values);
+    }
 
     /**
      * Load from memory.
@@ -106,7 +125,10 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Vector3D<T, Width> load() const noexcept;
+    XS_FUNCTION Vector3D<T, Width> load() const noexcept
+    {
+        return Vector3D<T, Width>(this->values.template load<Vector3D<T, Width>::widthImpl>());
+    }
 };
 
 /**
@@ -164,31 +186,43 @@ public:
      * @param y The y value.
      * @param z The z value.
      */
-    XS_FUNCTION Vector3D(T x, T y, T z) noexcept;
+    XS_FUNCTION Vector3D(T x, T y, T z) noexcept
+        : values(x, y, z)
+    {}
 
     /**
      * Constructor to set all elements to the same scalar value.
      * @param value Value to set all vector elements to.
      */
-    XS_FUNCTION explicit Vector3D(T value) noexcept;
+    XS_FUNCTION explicit Vector3D(T value) noexcept
+        : values(value)
+    {}
 
     /**
      * Construct a 3-D vector from a SIMD3.
      * @param values The SIMD3.
      */
-    XS_FUNCTION explicit Vector3D(const SIMD3Def& values) noexcept;
+    XS_FUNCTION explicit Vector3D(const SIMD3Def& values) noexcept
+        : values(values)
+    {}
 
     /**
      * Constructor to build a 3-D vector with all elements set to 0.
      * @returns Newly constructed Vector3D with required attributes.
      */
-    XS_FUNCTION static Vector3D Zero() noexcept;
+    XS_FUNCTION static Vector3D Zero() noexcept
+    {
+        return Vector3D(SIMD3Def::Zero());
+    }
 
     /**
      * Constructor to build a 3-D vector with all elements set to 1.
      * @returns Newly constructed Vector3D with required attributes.
      */
-    XS_FUNCTION static Vector3D One() noexcept;
+    XS_FUNCTION static Vector3D One() noexcept
+    {
+        return Vector3D(SIMD3Def::One());
+    }
 
     /**
      * Get an element of a 3-D vector.
@@ -197,7 +231,10 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const noexcept;
+    XS_FUNCTION InBaseDef getValueInBase() const noexcept
+    {
+        return this->values.template getValueInBase<Index>();
+    }
 
     /**
      * Get an element of a 3-D vector.
@@ -206,7 +243,10 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const noexcept;
+    XS_FUNCTION BaseDef getValue() const noexcept
+    {
+        return this->values.template getValue<Index>();
+    }
 
     /**
      * Set an element of a 3-D vector.
@@ -214,7 +254,10 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(InBaseDef value) noexcept;
+    XS_FUNCTION void setValue(InBaseDef value) noexcept
+    {
+        this->values.template setValue<Index>(value);
+    }
 
     /**
      * Set an element of a 3-D vector.
@@ -222,7 +265,10 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(BaseDef value) noexcept;
+    XS_FUNCTION void setValue(BaseDef value) noexcept
+    {
+        this->values.template setValue<Index>(value);
+    }
 
     /**
      * Multiply a 3-D vector by a scalar and then add another vector.
@@ -230,21 +276,30 @@ public:
      * @param vector Second vector to add.
      * @returns The result of the operation.
      */
-    XS_FUNCTION Vector3D mad(BaseDef value, const Vector3D& vector) const noexcept;
+    XS_FUNCTION Vector3D mad(BaseDef value, const Vector3D& vector) const noexcept
+    {
+        return Vector3D(this->values.mad(value, vector.values));
+    }
 
     /**
      * Compute the dot product of two 3-D vectors.
      * @param vector The second vector.
      * @returns The value of the dot product stored in a floatBase.
      */
-    XS_FUNCTION BaseDef dot3(const Vector3D& vector) const noexcept;
+    XS_FUNCTION BaseDef dot3(const Vector3D& vector) const noexcept
+    {
+        return this->values.dot3(vector.values);
+    }
 
     /**
      * Compute the dot product of two 3-D vectors.
      * @param vector The second vector.
      * @returns The value of the dot product stored in a floatInBase.
      */
-    XS_FUNCTION InBaseDef dot3InBase(const Vector3D& vector) const noexcept;
+    XS_FUNCTION InBaseDef dot3InBase(const Vector3D& vector) const noexcept
+    {
+        return this->values.dot3InBase(vector.values);
+    }
 
     /**
      * Compute cross product of two 3-D vectors.
@@ -252,45 +307,66 @@ public:
      * @param vector The second vector.
      * @returns A new vector corresponding to the cross product of the inputs.
      */
-    XS_FUNCTION Vector3D cross3(const Vector3D& vector) const noexcept;
+    XS_FUNCTION Vector3D cross3(const Vector3D& vector) const noexcept
+    {
+        return Vector3D(this->values.cross3(vector.values));
+    }
 
     /**
      * Compute component product of two 3-D vectors.
      * @param vector The second vector.
      * @returns A new vector corresponding to the component product of the inputs.
      */
-    XS_FUNCTION Vector3D component3(const Vector3D& vector) const noexcept;
+    XS_FUNCTION Vector3D component3(const Vector3D& vector) const noexcept
+    {
+        return Vector3D(this->values * vector.values);
+    }
 
     /**
      * Compute the square of the length of a 3-D vector.
      * @returns Squared length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef lengthSqr() const noexcept;
+    XS_FUNCTION BaseDef lengthSqr() const noexcept
+    {
+        return this->values.lengthSqr();
+    }
 
     /**
      * Compute the length of a 3-D vector.
      * @returns Length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef length() const noexcept;
+    XS_FUNCTION BaseDef length() const noexcept
+    {
+        return this->values.length();
+    }
 
     /**
      * Compute the square of the length of a 3-D vector.
      * @returns Squared length of vector stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthSqrInBase() const noexcept;
+    XS_FUNCTION InBaseDef lengthSqrInBase() const noexcept
+    {
+        return this->values.lengthSqrInBase();
+    }
 
     /**
      * Compute the length of a 3-D vector.
      * @returns Length of vector stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthInBase() const noexcept;
+    XS_FUNCTION InBaseDef lengthInBase() const noexcept
+    {
+        return this->values.lengthInBase();
+    }
 
     /**
      * Normalise a vector.
      * @note The result is unpredictable when all elements of vector are at or near zero.
      * @returns A new vector corresponding to the normalised vector.
      */
-    XS_FUNCTION Vector3D normalize() const noexcept;
+    XS_FUNCTION Vector3D normalize() const noexcept
+    {
+        return Vector3D(this->values.normalize());
+    }
 };
 
 /**
@@ -300,7 +376,10 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Vector3D<T, Width> operator+(const Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept;
+XS_FUNCTION Vector3D<T, Width> operator+(const Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept
+{
+    return Vector3D<T, Width>(vector1.values + vector2.values);
+}
 
 /**
  * Subtract a 3-D vector from another 3-D vector.
@@ -309,7 +388,10 @@ XS_FUNCTION Vector3D<T, Width> operator+(const Vector3D<T, Width>& vector1, cons
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept;
+XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept
+{
+    return Vector3D<T, Width>(vector1.values - vector2.values);
+}
 
 /**
  * Multiply a 3-D vector by a scalar.
@@ -319,7 +401,10 @@ XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector1, cons
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width> operator*(
-    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
+    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+{
+    return Vector3D<T, Width>(vector.values * value);
+}
 
 /**
  * Divide a 3-D vector by a scalar.
@@ -329,7 +414,10 @@ XS_FUNCTION Vector3D<T, Width> operator*(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width> operator/(
-    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
+    const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+{
+    return Vector3D<T, Width>(vector.values / value);
+}
 
 /**
  * Negate all elements of a 3-D vector.
@@ -337,7 +425,10 @@ XS_FUNCTION Vector3D<T, Width> operator/(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector) noexcept;
+XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector) noexcept
+{
+    return Vector3D<T, Width>(-vector.values);
+}
 
 /**
  * Perform compound assignment and addition with a 3-D vector.
@@ -346,7 +437,11 @@ XS_FUNCTION Vector3D<T, Width> operator-(const Vector3D<T, Width>& vector) noexc
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Vector3D<T, Width>& operator+=(Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept;
+XS_FUNCTION Vector3D<T, Width>& operator+=(Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept
+{
+    vector1.values += vector2.values;
+    return vector1;
+}
 
 /**
  * Perform compound assignment and subtraction by a 3-D vector.
@@ -355,7 +450,11 @@ XS_FUNCTION Vector3D<T, Width>& operator+=(Vector3D<T, Width>& vector1, const Ve
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Vector3D<T, Width>& operator-=(Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept;
+XS_FUNCTION Vector3D<T, Width>& operator-=(Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept
+{
+    vector1.values -= vector2.values;
+    return vector1;
+}
 
 /**
  * Perform compound assignment and multiplication by a scalar.
@@ -365,7 +464,11 @@ XS_FUNCTION Vector3D<T, Width>& operator-=(Vector3D<T, Width>& vector1, const Ve
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width>& operator*=(
-    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
+    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+{
+    vector.values *= value;
+    return vector;
+}
 
 /**
  * Perform compound assignment and division by a scalar.
@@ -375,5 +478,9 @@ XS_FUNCTION Vector3D<T, Width>& operator*=(
  */
 template<typename T, SIMDWidth Width>
 XS_FUNCTION Vector3D<T, Width>& operator/=(
-    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept;
+    Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
+{
+    vector.values /= value;
+    return vector;
+}
 } // namespace Shift

@@ -72,13 +72,19 @@ public:
      * @param origin    The point to use as the rays origin.
      * @param direction The vector to use as the rays direction.
      */
-    XS_FUNCTION Ray(const Point3DDef& origin, const Vector3DDef& direction) noexcept;
+    XS_FUNCTION Ray(const Point3DDef& origin, const Vector3DDef& direction) noexcept
+        : origin(origin)
+        , direction(direction)
+    {}
 
     /**
      * Determine a point along a ray.
      * @param dist The number of units to move along the ray.
      * @returns The 3-D point at the specified distance along the ray.
      */
-    XS_FUNCTION Point3DDef pointAlongRay(InBaseDef dist) const noexcept;
+    XS_FUNCTION Point3DDef pointAlongRay(InBaseDef dist) const noexcept
+    {
+        return this->direction.mad(dist, this->origin);
+    }
 };
 } // namespace Shift

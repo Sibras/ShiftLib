@@ -71,6 +71,10 @@ TYPED_TEST_NS2(Point3D2, TESTISA(P3D2), Point3D2)
     ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),
         TestType(temp), 5.234f, 1.836f, -5.2789f, 1.0f, 7.2654f, -1.0547f);
 
+    typename TestType::SIMD3x2Def temp2 = TestType::SIMD3x2Def(5.234f, 1.0f, 1.836f, 7.2654f, -5.2789f, -1.0547f);
+    ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>),
+        TestType(temp2), 5.234f, 1.0f, 1.836f, 7.2654f, -5.2789f, -1.0547f);
+
     TestType test9 = TestType(TestType::Point3DDef(52.0f, 20.8f, 36.4f), TestType::Point3DDef(26.0f, 10.4f, -10.4f));
     ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test9, 52.0f,
         20.8f, 36.4f, 26.0f, 10.4f, -10.4f);

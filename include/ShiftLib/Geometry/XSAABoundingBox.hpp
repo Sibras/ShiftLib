@@ -37,7 +37,10 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit AABoundingBoxData(const AABoundingBox<T, Width>& other) noexcept;
+    XS_FUNCTION explicit AABoundingBoxData(const AABoundingBox<T, Width>& other) noexcept
+        : minPoint(other.minPoint)
+        , maxPoint(other.maxPoint)
+    {}
 
     /**
      * Save to memory.
@@ -45,7 +48,11 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const AABoundingBox<T, Width>& other) noexcept;
+    XS_FUNCTION void store(const AABoundingBox<T, Width>& other) noexcept
+    {
+        this->minPoint.store(other.minPoint);
+        this->maxPoint.store(other.maxPoint);
+    }
 
     /**
      * Load from memory.
@@ -53,7 +60,11 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION AABoundingBox<T, Width> load() const noexcept;
+    XS_FUNCTION AABoundingBox<T, Width> load() const noexcept
+    {
+        return AABoundingBox<T, Width>(this->minPoint.template load<AABoundingBox<T, Width>::widthImpl>(),
+            this->maxPoint.template load<AABoundingBox<T, Width>::widthImpl>());
+    }
 };
 
 template<typename T>
@@ -72,7 +83,10 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit AABoundingBoxDataPad(const AABoundingBox<T, Width>& other) noexcept;
+    XS_FUNCTION explicit AABoundingBoxDataPad(const AABoundingBox<T, Width>& other) noexcept
+        : minPoint(other.minPoint)
+        , maxPoint(other.maxPoint)
+    {}
 
     /**
      * Save to memory.
@@ -80,7 +94,11 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const AABoundingBox<T, Width>& other) noexcept;
+    XS_FUNCTION void store(const AABoundingBox<T, Width>& other) noexcept
+    {
+        this->minPoint.store(other.minPoint);
+        this->maxPoint.store(other.maxPoint);
+    }
 
     /**
      * Load from memory.
@@ -88,7 +106,11 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION AABoundingBox<T, Width> load() const noexcept;
+    XS_FUNCTION AABoundingBox<T, Width> load() const noexcept
+    {
+        return AABoundingBox<T, Width>(this->minPoint.template load<AABoundingBox<T, Width>::widthImpl>(),
+            this->maxPoint.template load<AABoundingBox<T, Width>::widthImpl>());
+    }
 };
 
 /**
@@ -143,30 +165,53 @@ public:
      * @param minValues The new min values for the BB.
      * @param maxValues The new max values for the BB.
      */
-    XS_FUNCTION AABoundingBox(const Point3DDef& minValues, const Point3DDef& maxValues) noexcept;
+    XS_FUNCTION AABoundingBox(const Point3DDef& minValues, const Point3DDef& maxValues) noexcept
+        : minPoint(minValues)
+        , maxPoint(maxValues)
+    {
+        XS_ASSERT(minPoint.values <= maxPoint.values);
+    }
 
     /**
      * Construct a bounding box around a single point.
      * @param point The bounding point.
      */
-    XS_FUNCTION explicit AABoundingBox(const Point3DDef& point) noexcept;
+    XS_FUNCTION explicit AABoundingBox(const Point3DDef& point) noexcept
+        : minPoint(point)
+        , maxPoint(point)
+    {}
 
     /**
      * Extends the original bounding box to incorporate the new point.
      * @param point The bounding point to extend around.
      */
-    XS_FUNCTION void extend(const Point3DDef& point) noexcept;
+    XS_FUNCTION void extend(const Point3DDef& point) noexcept
+    {
+        this->minPoint = Point3DDef(this->minPoint.values.min(point.values));
+        this->maxPoint = Point3DDef(this->maxPoint.values.max(point.values));
+    }
 
     /**
      * Extends the original bounding box to incorporate the additional one.
      * @param box The bounding box to add to the original.
      */
-    XS_FUNCTION void extend(const AABoundingBox<T, Width>& box) noexcept;
+    XS_FUNCTION void extend(const AABoundingBox<T, Width>& box) noexcept
+    {
+        this->minPoint = Point3DDef(this->minPoint.values.min(box.minPoint.values));
+        this->maxPoint = Point3DDef(this->maxPoint.values.max(box.maxPoint.values));
+    }
 
     /**
      * Calculates the Surface Area of a Bounding Box.
      * @returns The surface area of the box in floating point.
      */
-    XS_FUNCTION InBaseDef surfaceArea() const noexcept;
+    XS_FUNCTION InBaseDef surfaceArea() const noexcept
+    {
+        // calculate size of bounding box
+        SIMD3<T, Width> size(this->maxPoint.values - this->minPoint.values);
+        // calculate Surface Area
+        const SIMD3<T, Width> sizeYZX(size.template shuffle<1, 2, 0>());
+        return ((size *= sizeYZX).haddInBase() /** SIMDInBase( 2.0f )*/);
+    }
 };
 } // namespace Shift

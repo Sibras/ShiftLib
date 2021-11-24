@@ -27,9 +27,8 @@
 #    define XS_TESTING_POINT3D4
 #    define XS_TESTING_SIMD3
 #    define XS_TESTING_BASE
-#    define XS_TESTING_MATRIX4X4  // only needed for header include
-#    define XS_TESTING_MATRIX4X3  // only needed for header include
-#    define XS_TESTING_QUATERNION // only needed for header include
+#    define XS_TESTING_MATRIX4X4
+#    define XS_TESTING_MATRIX4X3
 #    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -62,29 +61,13 @@ TYPED_TEST_NS2(Matrix3x3, TESTISA(M3x3), Matrix3x3)
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f,
         -4.32f, 1.0f, 51.2f, 1.7f, 8.8f, -1.1f);
 
-    typename TestType::Matrix4x4Def testB =
-        TestType::Matrix4x4Def(TestType::Matrix4x4Def::SIMD4Def(11.1f, -11.1f, 2.3f, 8.0f),
-            TestType::Matrix4x4Def::SIMD4Def(0.2f, 3.3f, -4.5f, 9.0f),
-            TestType::Matrix4x4Def::SIMD4Def(0.6f, -0.2f, 33.6f, 2.0f),
-            TestType::Matrix4x4Def::SIMD4Def(9.1f, 2.8f, -92.1f, 4.0f));
-    TestType test2 = TestType(testB);
+    TestType test2 = TestType(11.1f, -11.1f, 2.3f, 0.2f, 3.3f, -4.5f, 0.6f, -0.2f, 33.6f);
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test2, 11.1f, 0.2f, 0.6f,
         -11.1f, 3.3f, -0.2f, 2.3f, -4.5f, 33.6f);
 
     TestType test3 = TestType(test1);
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test3, 2.3f, -1.1f, 2.0f,
         -4.32f, 1.0f, 51.2f, 1.7f, 8.8f, -1.1f);
-
-    typename TestType::Matrix4x3Def testM431 =
-        TestType::Matrix4x3Def(2.3f, -4.32f, 1.7f, -1.1f, 1.0f, 8.8f, 2.0f, 51.2f, -1.1f, -8.7f, 1.05f, -1.05f);
-
-    ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), TestType(testM431), 2.3f, -1.1f,
-        2.0f, -4.32f, 1.0f, 51.2f, 1.7f, 8.8f, -1.1f);
-
-    TestType test2B = TestType(TestType::QuaternionDef(0.21874201717316725335489085354707f,
-        0.04374840343463345067097817070941f, 0.13124521030390035201293451212824f, 0.9659258262890682867497431997289f));
-    ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestFixture::width>), test2B, 0.9616938f, -0.2343758f,
-        0.141933f, 0.2726431f, 0.86985213f, -0.411035806f, -0.027101949f, 0.43399617f, 0.90046602f);
 
     //  Preset Constructor Test
     TestType test4 = TestType::Identity();

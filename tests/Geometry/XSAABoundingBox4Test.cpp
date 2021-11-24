@@ -18,7 +18,6 @@
 #    include "XSCompilerOptions.h"
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(AABB4Test)
 #    define XS_TESTING_AABB4
-#    define XS_TESTING_AABB // only needed for header include
 #    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;

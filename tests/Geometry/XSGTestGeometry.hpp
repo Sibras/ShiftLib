@@ -24,19 +24,19 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    ifndef XS_TESTING_POINT3D2
 #        define XS_TESTING_POINT3D2 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSAABoundingBox2.inl"
+#    include "Geometry/XSAABoundingBox2.hpp"
 #endif
 #ifdef XS_TESTING_AABB4
 #    ifndef XS_TESTING_POINT3D4
 #        define XS_TESTING_POINT3D4 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSAABoundingBox4.inl"
+#    include "Geometry/XSAABoundingBox4.hpp"
 #endif
 #ifdef XS_TESTING_AABB
 #    ifndef XS_TESTING_POINT3D
 #        define XS_TESTING_POINT3D // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSAABoundingBox.inl"
+#    include "Geometry/XSAABoundingBox.hpp"
 #endif
 #ifdef XS_TESTING_RAY
 #    ifndef XS_TESTING_POINT3D
@@ -45,7 +45,7 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    ifndef XS_TESTING_VECTOR3D
 #        define XS_TESTING_VECTOR3D
 #    endif
-#    include "Geometry/XSRay.inl"
+#    include "Geometry/XSRay.hpp"
 #endif
 #ifdef XS_TESTING_RAY2
 #    ifndef XS_TESTING_POINT3D2
@@ -54,7 +54,7 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    ifndef XS_TESTING_VECTOR3D2
 #        define XS_TESTING_VECTOR3D2
 #    endif
-#    include "Geometry/XSRay2.inl"
+#    include "Geometry/XSRay2.hpp"
 #endif
 #ifdef XS_TESTING_RAY4
 #    ifndef XS_TESTING_POINT3D4
@@ -63,70 +63,70 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    ifndef XS_TESTING_VECTOR3D2
 #        define XS_TESTING_VECTOR3D2
 #    endif
-#    include "Geometry/XSRay4.inl"
+#    include "Geometry/XSRay4.hpp"
 #endif
 #ifdef XS_TESTING_MATRIX3X3
 #    ifndef XS_TESTING_SIMD3
 #        define XS_TESTING_SIMD3 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSMatrix3x3.inl"
+#    include "Geometry/XSMatrix3x3.hpp"
 #endif
 #ifdef XS_TESTING_MATRIX4X3
 #    ifndef XS_TESTING_SIMD4
 #        define XS_TESTING_SIMD4 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSMatrix4x3.inl"
+#    include "Geometry/XSMatrix4x3.hpp"
 #endif
 #ifdef XS_TESTING_MATRIX4X4
 #    ifndef XS_TESTING_SIMD4
 #        define XS_TESTING_SIMD4 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSMatrix4x4.inl"
+#    include "Geometry/XSMatrix4x4.hpp"
 #endif
 #ifdef XS_TESTING_POINT3D2
 #    ifndef XS_TESTING_POINT3D
 #        define XS_TESTING_POINT3D // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSPoint3D2.inl"
+#    include "Geometry/XSPoint3D2.hpp"
 #endif
 #ifdef XS_TESTING_POINT3D4
 #    ifndef XS_TESTING_POINT3D
 #        define XS_TESTING_POINT3D // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSPoint3D4.inl"
+#    include "Geometry/XSPoint3D4.hpp"
 #endif
 #ifdef XS_TESTING_POINT3D
-#    include "Geometry/XSPoint3D.inl"
+#    include "Geometry/XSPoint3D.hpp"
 #endif
 #ifdef XS_TESTING_QUATERNION
-#    include "Geometry/XSQuaternion.inl"
+#    include "Geometry/XSQuaternion.hpp"
 #endif
 #ifdef XS_TESTING_RANGE
-#    include "Geometry/XSRange.inl"
+#    include "Geometry/XSRange.hpp"
 #endif
 #ifdef XS_TESTING_RANGE2
-#    include "Geometry/XSRange2.inl"
+#    include "Geometry/XSRange2.hpp"
 #endif
 #ifdef XS_TESTING_RANGE4
-#    include "Geometry/XSRange4.inl"
+#    include "Geometry/XSRange4.hpp"
 #endif
 #ifdef XS_TESTING_TRANSFORM
-#    include "Geometry/XSTransform.inl"
+#    include "Geometry/XSTransform.hpp"
 #endif
 #ifdef XS_TESTING_VECTOR3D2
 #    ifndef XS_TESTING_VECTOR3D
 #        define XS_TESTING_VECTOR3D // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSVector3D2.inl"
+#    include "Geometry/XSVector3D2.hpp"
 #endif
 #ifdef XS_TESTING_VECTOR3D4
 #    ifndef XS_TESTING_VECTOR3D
 #        define XS_TESTING_VECTOR3D // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSVector3D4.inl"
+#    include "Geometry/XSVector3D4.hpp"
 #endif
 #ifdef XS_TESTING_VECTOR3D
-#    include "Geometry/XSVector3D.inl"
+#    include "Geometry/XSVector3D.hpp"
 #endif
 
 #ifndef XS_TESTING_INBASE

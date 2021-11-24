@@ -27,8 +27,8 @@
 #    define XS_TESTING_POINT3D4
 #    define XS_TESTING_BASE
 #    define XS_TESTING_SIMD4
-#    define XS_TESTING_MATRIX3X3 // only needed for header include
-#    define XS_TESTING_MATRIX4X3 // only needed for header include
+#    define XS_TESTING_MATRIX3X3
+#    define XS_TESTING_MATRIX4X3
 #    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -89,6 +89,10 @@ TYPED_TEST_NS2(Matrix4x4, TESTISA(M4x4), Matrix4x4)
     ASSERT_PRED17((assertMatrix4x4<typename TestFixture::TypeInt, TestFixture::width>),
         TestType(testM431, TestType::SIMD4Def(0.0f, 0.0f, 0.0f, 1.0f)), 2.3f, -1.1f, 2.0f, -8.7f, -4.32f, 1.0f, 51.2f,
         1.05f, 1.7f, 8.8f, -1.1f, -1.05f, 0.0f, 0.0f, 0.0f, 1.0f);
+
+    typename TestType::Matrix3x3Def test2B = TestType::Matrix3x3Def(test2);
+    ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestType::Matrix3x3Def::widthImpl>), test2B, 11.1f,
+        0.2f, 0.6f, -11.1f, 3.3f, -0.2f, 2.3f, -4.5f, 33.6f);
 
     //  Preset Constructor Test
     TestType test4 = TestType::Identity();

@@ -26,7 +26,7 @@
 #    define XS_TESTING_POINT3D2
 #    define XS_TESTING_POINT3D4
 #    define XS_TESTING_BASE
-#    define XS_TESTING_MATRIX3X3 // Only needed for header include
+#    define XS_TESTING_MATRIX3X3
 #    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -76,6 +76,12 @@ TYPED_TEST_NS2(Quaternion, TESTISA(Quat), Quaternion)
     TestType test11 = TestType(testMat2);
     ASSERT_PRED5((assertQuaternion<typename TestFixture::TypeInt, TestFixture::width>), test11, 0.218710363f,
         0.0437419713f, 0.131226167f, 0.965925813f);
+
+    typename TestType::Matrix3x3Def test2B = TestType::Matrix3x3Def(TestType(0.21874201717316725335489085354707f,
+        0.04374840343463345067097817070941f, 0.13124521030390035201293451212824f, 0.9659258262890682867497431997289f));
+    ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestType::Matrix3x3Def::widthImpl>), test2B,
+        0.9616938f, -0.2343758f, 0.141933f, 0.2726431f, 0.86985213f, -0.411035806f, -0.027101949f, 0.43399617f,
+        0.90046602f);
 
     //  Preset Constructor Test
     TestType test4 = TestType::Identity();

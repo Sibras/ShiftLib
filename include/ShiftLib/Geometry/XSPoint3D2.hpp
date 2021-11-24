@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
+#include "Geometry/XSPoint3D.hpp"
+#include "Geometry/XSVector3D2.hpp"
 #include "SIMD/XSSIMD3x2.hpp"
 #include "SIMD/XSSIMD6.hpp"
-
-// Additional includes
-#include "Geometry/XSPoint3D.hpp"
-#include "Geometry/XSVector3D.hpp"
-#include "Geometry/XSVector3D2.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width, bool Packed>
@@ -54,7 +51,9 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Point3D2Data(const Point3D2<T, Width, Packed>& other) noexcept;
+    XS_FUNCTION explicit Point3D2Data(const Point3D2<T, Width, Packed>& other) noexcept
+        : values(other.points)
+    {}
 
     /**
      * Directly set the contents this object.
@@ -67,7 +66,14 @@ public:
      * @param p0Z The Z value of the first point.
      * @param p1Z The Z value of the second point.
      */
-    XS_FUNCTION void setData(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept;
+    XS_FUNCTION void setData(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept
+    {
+        if constexpr (!Packed) {
+            this->values.setData(p0X, p0Y, p0Z, p1X, p1Y, p1Z);
+        } else {
+            this->values.setData(p0X, p1X, p0Y, p1Y, p0Z, p1Z);
+        }
+    }
 
     /**
      * Save to memory.
@@ -75,7 +81,10 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Point3D2<T, Width, Packed>& other) noexcept;
+    XS_FUNCTION void store(const Point3D2<T, Width, Packed>& other) noexcept
+    {
+        this->values.store(other.points);
+    }
 
     /**
      * Load from memory.
@@ -83,7 +92,10 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Point3D2<T, Width, Packed> load() const noexcept;
+    XS_FUNCTION Point3D2<T, Width, Packed> load() const noexcept
+    {
+        return Point3D2<T, Width, Packed>(this->values.template load<Point3D2<T, Width, Packed>::widthImpl>());
+    }
 };
 
 template<typename T, bool Packed = false>
@@ -113,7 +125,9 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Point3D2DataPad(const Point3D2<T, Width, Packed>& other) noexcept;
+    XS_FUNCTION explicit Point3D2DataPad(const Point3D2<T, Width, Packed>& other) noexcept
+        : values(other.points)
+    {}
 
     /**
      * Directly set the contents this object.
@@ -126,7 +140,14 @@ public:
      * @param p0Z The Z value of the first point.
      * @param p1Z The Z value of the second point.
      */
-    XS_FUNCTION void setData(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept;
+    XS_FUNCTION void setData(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept
+    {
+        if constexpr (!Packed) {
+            this->values.setData(p0X, p0Y, p0Z, p1X, p1Y, p1Z);
+        } else {
+            this->values.setData(p0X, p1X, p0Y, p1Y, p0Z, p1Z);
+        }
+    }
 
     /**
      * Save to memory.
@@ -134,7 +155,10 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Point3D2<T, Width, Packed>& other) noexcept;
+    XS_FUNCTION void store(const Point3D2<T, Width, Packed>& other) noexcept
+    {
+        this->values.store(other.points);
+    }
 
     /**
      * Load from memory.
@@ -142,7 +166,10 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Point3D2<T, Width, Packed> load() const noexcept;
+    XS_FUNCTION Point3D2<T, Width, Packed> load() const noexcept
+    {
+        return Point3D2<T, Width, Packed>(this->values.template load<Point3D2<T, Width, Packed>::widthImpl>());
+    }
 };
 
 /**
@@ -159,7 +186,7 @@ class Point3D2
     {
         using Point3D2Intern = SIMD6<T, SIMD6<T, Width>::widthImpl>;
         using SIMD6Def = Point3D2Intern;
-        using SIMD3x2Def = typename Point3D2Intern::SIMD3x2Def;
+        using SIMD3x2Def = SIMD3x2<T, SIMD3x2<T, Point3D2Intern::widthImpl>::widthImpl>;
     };
 
     template<>
@@ -219,20 +246,26 @@ public:
      * Construct a point3d2 from a SIMD6.
      * @param values The SIMD6.
      */
-    XS_FUNCTION explicit Point3D2(const SIMD6Def& values) noexcept;
+    XS_FUNCTION explicit Point3D2(const SIMD6Def& values) noexcept
+        : points(values)
+    {}
 
     /**
      * Construct a point3d2 from a SIMD3x2.
      * @param values The SIMD3x2.
      */
-    XS_FUNCTION explicit Point3D2(const SIMD3x2Def& values) noexcept;
+    XS_FUNCTION explicit Point3D2(const SIMD3x2Def& values) noexcept
+        : points(values)
+    {}
 
     /**
      * Construct a point3d2 from 2 point3ds.
      * @param point0 The first point.
      * @param point1 The second point.
      */
-    XS_FUNCTION Point3D2(const Point3DDef& point0, const Point3DDef& point1) noexcept;
+    XS_FUNCTION Point3D2(const Point3DDef& point0, const Point3DDef& point1) noexcept
+        : points(point0.values, point1.values)
+    {}
 
     /**
      * Construct a point3d2 from 6 values representing 2 different point3ds.
@@ -243,13 +276,22 @@ public:
      * @param p0Z The Z value of the first point.
      * @param p1Z The Z value of the second point.
      */
-    XS_FUNCTION Point3D2(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept;
+    XS_FUNCTION Point3D2(T p0X, T p1X, T p0Y, T p1Y, T p0Z, T p1Z) noexcept
+    {
+        if constexpr (!Packed) {
+            points = Point3D2Def(p0X, p0Y, p0Z, p1X, p1Y, p1Z);
+        } else {
+            points = Point3D2Def(p0X, p1X, p0Y, p1Y, p0Z, p1Z);
+        }
+    }
 
     /**
      * Construct a point3d2 from a single point.
      * @param point The point.
      */
-    XS_FUNCTION explicit Point3D2(const Point3DDef& point) noexcept;
+    XS_FUNCTION explicit Point3D2(const Point3DDef& point) noexcept
+        : points(point.values)
+    {}
 
     /**
      * Get a contained 3-D point.
@@ -257,7 +299,10 @@ public:
      * @returns Point3D containing the desired point.
      */
     template<uint32_t Index>
-    XS_FUNCTION Point3DDef getPoint() const noexcept;
+    XS_FUNCTION Point3DDef getPoint() const noexcept
+    {
+        return typename Point3D2<T, Width, Packed>::Point3DDef(this->points.template getValue3<Index>());
+    }
 
     /**
      * Set a contained 3-D point.
@@ -265,7 +310,10 @@ public:
      * @param point The new point.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setPoint(const Point3DDef& point) noexcept;
+    XS_FUNCTION void setPoint(const Point3DDef& point) noexcept
+    {
+        this->points.template setValue3<Index>(point.values);
+    }
 };
 
 /**
@@ -276,7 +324,10 @@ public:
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed> operator+(
-    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept;
+    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept
+{
+    return Point3D2<T, Width, Packed>(point.points + vector.values);
+}
 
 /**
  * Add a vector2 to each component point2 in a point4.
@@ -286,7 +337,10 @@ XS_FUNCTION Point3D2<T, Width, Packed> operator+(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed> operator+(
-    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept;
+    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept
+{
+    return Point3D2<T, Width, Packed>(point.points + vector.vectors);
+}
 
 /**
  * Subtract a point from each component point in a point4.
@@ -296,7 +350,10 @@ XS_FUNCTION Point3D2<T, Width, Packed> operator+(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION typename Point3D2<T, Width, Packed>::Vector3D2Def operator-(
-    const Point3D2<T, Width, Packed>& point1, const typename Point3D2<T, Width, Packed>::Point3DDef& point2) noexcept;
+    const Point3D2<T, Width, Packed>& point1, const typename Point3D2<T, Width, Packed>::Point3DDef& point2) noexcept
+{
+    return typename Point3D2<T, Width, Packed>::Vector3D2Def(point1.points - point2.values);
+}
 
 /**
  * Subtract a point2 from each component point2 in a point4.
@@ -306,7 +363,10 @@ XS_FUNCTION typename Point3D2<T, Width, Packed>::Vector3D2Def operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION typename Point3D2<T, Width, Packed>::Vector3D2Def operator-(
-    const Point3D2<T, Width, Packed>& point1, const Point3D2<T, Width, Packed>& point2) noexcept;
+    const Point3D2<T, Width, Packed>& point1, const Point3D2<T, Width, Packed>& point2) noexcept
+{
+    return typename Point3D2<T, Width, Packed>::Vector3D2Def(point1.points - point2.points);
+}
 
 /**
  * Subtract a vector from each component point in a point4.
@@ -316,7 +376,10 @@ XS_FUNCTION typename Point3D2<T, Width, Packed>::Vector3D2Def operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed> operator-(
-    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept;
+    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept
+{
+    return Point3D2<T, Width, Packed>(point.points - vector.values);
+}
 
 /**
  * Subtract a vector2 from each component point2 in a point4.
@@ -326,7 +389,10 @@ XS_FUNCTION Point3D2<T, Width, Packed> operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed> operator-(
-    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept;
+    const Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept
+{
+    return Point3D2<T, Width, Packed>(point.points - vector.vectors);
+}
 
 /**
  * Perform compound assignment and addition of a vector to each component point in a point4.
@@ -336,7 +402,11 @@ XS_FUNCTION Point3D2<T, Width, Packed> operator-(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed>& operator+=(
-    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept;
+    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept
+{
+    point.points += vector.values;
+    return point;
+}
 
 /**
  * Perform compound assignment and addition of a vector2 to each component point2 in a point4.
@@ -346,7 +416,11 @@ XS_FUNCTION Point3D2<T, Width, Packed>& operator+=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed>& operator+=(
-    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept;
+    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept
+{
+    point.points += vector.vectors;
+    return point;
+}
 
 /**
  * Perform compound assignment and subtraction of a vector from each component point in a point4.
@@ -356,7 +430,11 @@ XS_FUNCTION Point3D2<T, Width, Packed>& operator+=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed>& operator-=(
-    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept;
+    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3DDef& vector) noexcept
+{
+    point.points -= vector.values;
+    return point;
+}
 
 /**
  * Perform compound assignment and subtraction of a vector2 from each component point2 in a point4.
@@ -366,5 +444,9 @@ XS_FUNCTION Point3D2<T, Width, Packed>& operator-=(
  */
 template<typename T, SIMDWidth Width, bool Packed>
 XS_FUNCTION Point3D2<T, Width, Packed>& operator-=(
-    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept;
+    Point3D2<T, Width, Packed>& point, const typename Point3D2<T, Width, Packed>::Vector3D2Def& vector) noexcept
+{
+    point.points -= vector.vectors;
+    return point;
+}
 } // namespace Shift
