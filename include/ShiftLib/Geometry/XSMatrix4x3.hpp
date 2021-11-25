@@ -364,10 +364,10 @@ public:
         using BaseDef2 = typename SIMD2Def::BaseDef;
         SIMD2Def sinCos;
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)));
         } else {
             BaseDef2 cos;
-            const BaseDef2 sin(rotation.sincos(cos));
+            const BaseDef2 sin(sincos(rotation, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         const SIMD3Def ident(1.0, 0.0, 0.0f);
@@ -387,10 +387,10 @@ public:
         using BaseDef2 = typename SIMD2Def::BaseDef;
         SIMD2Def sinCos;
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)));
         } else {
             BaseDef2 cos;
-            const BaseDef2 sin(rotation.sincos(cos));
+            const BaseDef2 sin(sincos(rotation, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         const SIMD3Def col2(0.0f, 1.0f, 0.0f);
@@ -410,10 +410,10 @@ public:
         using BaseDef2 = typename SIMD2Def::BaseDef;
         SIMD2Def sinCos;
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)));
         } else {
             BaseDef2 cos;
-            const BaseDef2 sin(rotation.sincos(cos));
+            const BaseDef2 sin(sincos(rotation, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         const SIMD3Def col3(0.0f, 0.0f, 1.0f);
@@ -438,10 +438,10 @@ public:
         using BaseDef2 = typename SIMD2Def::BaseDef;
         SIMD2Def sinCos;
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation, rotation + BaseDef2(valPi2<T>)));
         } else {
             BaseDef2 cos;
-            const BaseDef2 sin(rotation.sincos(cos));
+            const BaseDef2 sin(sincos(rotation, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         const typename SIMD3Def::BaseDef oneMinusCos(SIMD3Def::BaseDef::One() - sinCos.template getValue<1>());
@@ -788,7 +788,7 @@ public:
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         SIMD3x4Def ret(this->columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue3x2<1, 2>(
@@ -813,7 +813,7 @@ public:
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         SIMD3x4Def ret(this->columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue3x2<0, 2>(
@@ -838,7 +838,7 @@ public:
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         SIMD3x4Def ret(this->columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue3x2<0, 1>(
@@ -864,7 +864,7 @@ public:
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<1, 2>(
@@ -891,7 +891,7 @@ public:
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<0, 2>(
@@ -918,7 +918,7 @@ public:
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
-        const BaseDef3 sin(rotation.sincos(cos));
+        const BaseDef3 sin(sincos(rotation, cos));
         typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<0, 1>(

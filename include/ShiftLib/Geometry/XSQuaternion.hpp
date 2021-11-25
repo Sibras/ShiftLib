@@ -16,6 +16,7 @@
  */
 
 #include "Geometry/XSMatrix3x3.hpp"
+#include "SIMD/XSSIMDMath.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
@@ -204,7 +205,7 @@ public:
         mA.template addValue<0>(col0.template getValueInBase<0>() + InBaseDef::One());
 
         InBaseDef fibW(mA.template getValueInBase<0>());
-        fibW = fibW.sqrt();
+        fibW = sqrt(fibW);
         const SIMD4Def f4W(fibW + fibW);
         mA /= f4W;
 
@@ -282,10 +283,10 @@ public:
         SIMD2Def sinCos;
         const BaseDef rotation2(rotation * BaseDef(T{0.5}));
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)));
         } else {
             BaseDef cos;
-            const BaseDef sin(rotation2.sincos(cos));
+            const BaseDef sin(sincos(rotation2, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<0, 2, 3, 1>());
@@ -302,10 +303,10 @@ public:
         SIMD2Def sinCos;
         const BaseDef rotation2(rotation * BaseDef(T{0.5}));
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)));
         } else {
             BaseDef cos;
-            const BaseDef sin(rotation2.sincos(cos));
+            const BaseDef sin(sincos(rotation2, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<3, 0, 2, 1>());
@@ -322,10 +323,10 @@ public:
         SIMD2Def sinCos;
         const BaseDef rotation2(rotation * BaseDef(T{0.5}));
         if constexpr (widthImpl > SIMDWidth::Scalar) {
-            sinCos = SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)).sin();
+            sinCos = sin(SIMD2Def(rotation2, rotation2 + BaseDef(valPi2<T>)));
         } else {
             BaseDef cos;
-            const BaseDef sin(rotation2.sincos(cos));
+            const BaseDef sin(sincos(rotation2, cos));
             sinCos = SIMD2Def(sin, cos);
         }
         return Quaternion(SIMD4Def(sinCos, typename SIMD2Def::Zero()).template shuffle<2, 3, 0, 1>());
@@ -340,7 +341,7 @@ public:
     XS_FUNCTION static Quaternion RotationAxis(const Vector3DDef& axis, BaseDef rotation) noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         return Quaternion(SIMD4Def(axis.values * sin, cos));
     }
 
@@ -397,8 +398,8 @@ public:
                 SIMD4Def::One().subAdd(temp1.template combine<1, 3, 7, 5>(temp2)).template shuffle<0, 2, 1, 1>());
             mA = mA.subAdd(mAB12.template combine<3, 1, 5, 5>(SIMD4Def(mAB3.values)));
             const SIMD3Def mB(mAB12.template getValue3<0, 1, 2>().template combine<0, 2, 3>(SIMD3Def(mAB3.values)));
-            mA = mA.sqrt(); // may need to max trace with 0 to ensure to not square rooting something <=0 due to
-                            // rounding error
+            mA = sqrt(mA); // may need to max trace with 0 to ensure to not square rooting something <=0 due to
+                           // rounding error
             mA *= BaseDef(0.5f);
             return Quaternion(mA.template sign<true, true, true, false>(SIMD4Def(
                 mB.values))); // Should be copysign but this is equivalent as fA will always be positive due to sqrt
@@ -411,7 +412,7 @@ public:
             mA = mA.subAdd(mAB12.template combine<3, 1, 5, 5>(SIMD4Def(mAB3)));
             const SIMD3Def mB(
                 mAB12.template getValue3<0, 1, 2>().template combine<0, 2, 3>(SIMD3Def(mAB3, SIMD3Def::InBaseDef())));
-            mA = mA.sqrt();
+            mA = sqrt(mA);
             mA *= BaseDef(0.5f);
             return Quaternion(mA.template sign<true, true, true, false>(SIMD4Def(mB, SIMD4Def::BaseDef())));
         }
@@ -675,7 +676,7 @@ public:
     XS_FUNCTION Quaternion postRotateX(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<3, 2, 1, 0>().template negate<false, false, true, true>().template mad<false>(
@@ -690,7 +691,7 @@ public:
     XS_FUNCTION Quaternion postRotateY(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<2, 3, 0, 1>().template negate<true, false, false, true>().template mad<false>(
@@ -705,7 +706,7 @@ public:
     XS_FUNCTION Quaternion postRotateZ(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<1, 0, 3, 2>().template negate<false, true, false, true>().template mad<false>(
@@ -720,7 +721,7 @@ public:
     XS_FUNCTION Quaternion preRotateX(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<3, 2, 1, 0>().template negate<false, true, false, true>().template mad<false>(
@@ -735,7 +736,7 @@ public:
     XS_FUNCTION Quaternion preRotateY(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<2, 3, 0, 1>().template negate<false, false, true, true>().template mad<false>(
@@ -750,7 +751,7 @@ public:
     XS_FUNCTION Quaternion preRotateZ(BaseDef rotation) const noexcept
     {
         BaseDef cos;
-        const BaseDef sin((rotation * BaseDef(T{0.5})).sincos(cos));
+        const BaseDef sin(sincos((rotation * BaseDef(T{0.5})), cos));
         const SIMD4Def ret(this->values * cos);
         return Quaternion(
             this->values.template shuffle<1, 0, 3, 2>().template negate<true, false, false, true>().template mad<false>(

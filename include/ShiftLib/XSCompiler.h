@@ -375,8 +375,8 @@
 #endif
 
 /* Check minimum SSE version requirements */
-#if (XS_ISA == XS_X86) && !XS_ARCH_SSE3 && !defined(XS_IGNORE_ISA_OPT)
-#    error Error: The minimum supported version of SSE is SSE3.
+#if (XS_ISA == XS_X86) && !XS_ARCH_SSE4_2 && !defined(XS_IGNORE_ISA_OPT)
+#    error Error: The minimum supported version of SSE is SSE4.2.
 #endif
 
 #if defined(_DEBUG) || !defined(NDEBUG)

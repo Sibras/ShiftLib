@@ -397,7 +397,7 @@ TYPED_TEST_NS2(SIMD2, TESTISA(SIMD2), SIMD2)
 
     ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test7.abs(), 7.0f, 5.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.reciprocal(), 0.1f, 0.25f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), reciprocal(test4), 0.1f, 0.25f);
 
     ASSERT_PRED2((assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test7.hadd(), 2.0f);
 
@@ -409,95 +409,96 @@ TYPED_TEST_NS2(SIMD2, TESTISA(SIMD2), SIMD2)
     ASSERT_PRED2(
         (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.hsubInBase(), 12.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test20.ceil(), 4.0f, 0.0f);
+    // Math Test
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), ceil(test20), 4.0f, 0.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test20.floor(), 3.0f, -1.0f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), floor(test20), 3.0f, -1.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test20.trunc(), 3.0f, 0.0f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), trunc(test20), 3.0f, 0.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.sqrt(), 3.16227766f, 2.0f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), sqrt(test4), 3.16227766f, 2.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.rsqrt(), 0.316227766f, 0.5f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), rsqrt(test4), 0.316227766f, 0.5f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.log2(),
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), log2(test4),
         3.3219280948873623478703194294894f, 2.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.log(),
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), log(test4),
         2.3025850929940456840179914546844f, 1.3862943611198906188344642429164f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.exp2(), 1024.0f, 16.0f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), exp2(test4), 1024.0f, 16.0f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test4.exp(),
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), exp(test4),
         22026.465794806716516957900645284f, 54.598150033144239078110261202861f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test8.pow(test4), 13.78584918f, 3.8416f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), pow(test8, test4), 13.78584918f, 3.8416f);
+
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), pow(test8, test7), 6.2748517f,
+        -0.1859344321f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test8.pow(test7), 6.2748517f, -0.1859344321f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), powr(test8, test4), 13.78584918f, 3.8416f);
 
-    ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test8.powr(test4), 13.78584918f, 3.8416f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test8.pow(TestType::BaseDef(4.0f)),
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), pow(test8, TestType::BaseDef(4.0f)),
         2.8561f, 3.8416f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test8.powr(TestType::BaseDef(10.0f)),
-        13.7858f, 28.9255f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>),
+        powr(test8, TestType::BaseDef(10.0f)), 13.7858f, 28.9255f);
 
     test22 = TestType(0.52f, -2.6f);
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.sin(), 0.4968801361f, -0.5155013718f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).sin(), -0.4968801361f,
-        0.5155013718f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), sin(test22), 0.4968801361f, -0.5155013718f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.cos(), 0.8678191802f, -0.8568887534f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).cos(), 0.8678191802f,
-        -0.8568887534f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), sin(-test22), -0.4968801361f, 0.5155013718f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.tan(), 0.5725618303f, 0.6015966131f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), cos(test22), 0.8678191802f, -0.8568887534f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).tan(), -0.5725618303f,
-        -0.6015966131f);
+    ASSERT_PRED3(
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), cos(-test22), 0.8678191802f, -0.8568887534f);
+
+    ASSERT_PRED3(
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), tan(test22), 0.5725618303f, 0.6015966131f);
+
+    ASSERT_PRED3(
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), tan(-test22), -0.5725618303f, -0.6015966131f);
 
     TestType test22B;
-    TestType test22A = test22.sincos(test22B);
+    TestType test22A = sincos(test22, test22B);
     ASSERT_PRED3(
         (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22A, 0.4968801361f, -0.5155013718f);
     ASSERT_PRED3(
         (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22B, 0.8678191802f, -0.8568887534f);
 
-    test22A = (-test22).sincos(test22B);
+    test22A = sincos(-test22, test22B);
     ASSERT_PRED3(
         (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22A, -0.4968801361f, 0.5155013718f);
     ASSERT_PRED3(
         (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22B, 0.8678191802f, -0.8568887534f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.sin().asin(), 0.52f, -0.5415926536f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).sin().asin(), -0.52f,
-        0.5415926536f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.cos().acos(), 0.52f, 2.6f);
-
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).cos().acos(), 0.52f, 2.6f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), asin(sin(test22)), 0.52f, -0.5415926536f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.tan().atan(), 0.52f, 0.5415926536f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), asin(sin(-test22)), -0.52f, 0.5415926536f);
 
-    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), (-test22).tan().atan(), -0.52f,
-        -0.5415926536f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), acos(cos(test22)), 0.52f, 2.6f);
 
-    ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test22.atan2(test7), 0.074149519f, -2.66207f);
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), acos(cos(-test22)), 0.52f, 2.6f);
 
     ASSERT_PRED3(
-        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), test7.atan2(test22), 1.4966468f, -2.05032f);
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), atan(tan(test22)), 0.52f, 0.5415926536f);
+
+    ASSERT_PRED3(
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), atan(tan(-test22)), -0.52f, -0.5415926536f);
+
+    ASSERT_PRED3((assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), atan2(test22, test7), 0.074149519f,
+        -2.66207f);
+
+    ASSERT_PRED3(
+        (assertSIMD2<typename TestFixture::TypeInt, TestFixture::width>), atan2(test7, test22), 1.4966468f, -2.05032f);
 
     //  Swizzle Tests
 #    define S2_GET_INDEX0(val) val.template getValueInBase<0>().getValue()

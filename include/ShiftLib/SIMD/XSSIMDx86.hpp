@@ -266,17 +266,6 @@ namespace Shift {
             _mm256_sub_ps(_mm256_xor_ps(m256_2, _mm256_set1_ps(-0.0f)), _mm256_mul_ps(m256_0, m256_1))
 #    endif
 
-#    if !XS_ARCH_SSE4_1
-#        undef _mm_ceil_ps
-#        undef _mm_floor_ps
-#        define _mm_ceil_ps(m128)                              \
-            _mm_cvtepi32_ps(_mm_sub_epi32(_mm_setzero_si128(), \
-                _mm_srai_epi32(_mm_cvtps_epi32(_mm_sub_ps(_mm_set1_ps(-0.5f), _mm_add_ps(m128, m128))), 1)))
-#        define _mm_floor_ps(m128) \
-            _mm_cvtepi32_ps(_mm_srai_epi32(_mm_cvtps_epi32(_mm_add_ps(_mm_add_ps(m128, m128), _mm_set1_ps(-0.5f))), 1))
-#        define _mm_trunc_ps(m128) _mm_cvtepi32_ps(_mm_cvttps_epi32(m128))
-#    endif
-
 #    if XS_ARCH_AVX512F
 #        define _mm256_blend_insertf128_ps(m256_0, mask, m256_1, m128_0, imm8) \
             _mm256_mask_insertf32x4((m256_0), _cvtu32_mask8(mask), (m256_1), (m128_0), (imm8))

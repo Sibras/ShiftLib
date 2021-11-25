@@ -91,7 +91,8 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD3x4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMD16.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDx86.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDx86Functions.hpp>"    
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDx86Functions.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDMath.hpp>"
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSAABoundingBox.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSAABoundingBox2.hpp>"
@@ -269,28 +270,32 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
 
     # Create a list of tested compiler options
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-        list(APPEND SHIFTLIBTESTOPTIONS -march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBTESTOPTIONS -march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
         else()
-            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
         endif()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
-        list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+        list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBTESTOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:AVX /arch:AVX2 /arch:AVX512)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBTESTOPTIONS /arch:IA32 /W4 /arch:AVX /arch:AVX2 /arch:AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS /arch:IA32 /arch:AVX /arch:AVX2 /arch:AVX512)
         else()
-            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+            list(APPEND SHIFTLIBTESTOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBTESTOPTIONS march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
         endif()
     endif()
+
+    # Set minimum required version for project
+    list(GET SHIFTLIBTESTOPTIONS 1 TESTOPTIONSDEFAULT)
+    target_compile_options(ShiftLibTest PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${TESTOPTIONSDEFAULT}>)
 
     #Add an library for each tested set of compiler options
     foreach(SHIFTLIBCOMPILE ${SHIFTLIBTESTOPTIONSTAG})
@@ -387,28 +392,32 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_BENCHMARKING)
 
     # Create a list of benched compiler options
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-        list(APPEND SHIFTLIBBENCHOPTIONS -march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBBENCHOPTIONS -march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE4.2 /arch:CORE-AVX-I /arch:CORE-AVX2 /arch:SKYLAKE-AVX512)
         else()
-            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
         endif()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
-        list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:SSE2 /arch:AVX /arch:AVX2 /arch:AVX512)
+        list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 AVX AVX2 AVX512)
+        list(APPEND SHIFTLIBBENCHOPTIONS "/arch:IA32 /DXS_IGNORE_ISA_OPT" /arch:AVX /arch:AVX2 /arch:AVX512)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBBENCHOPTIONS /arch:IA32 /W3 /arch:AVX /arch:AVX2 /arch:AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS /arch:IA32 /arch:AVX /arch:AVX2 /arch:AVX512)
         else()
-            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE3 SSE4 AVX AVX2 AVX512)
-            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=core2 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
+            list(APPEND SHIFTLIBBENCHOPTIONSTAG IA32 SSE4 AVX AVX2 AVX512)
+            list(APPEND SHIFTLIBBENCHOPTIONS march=i586 -march=nehalem -march=sandybridge -march=haswell -march=skylake-avx512)
         endif()
     endif()
+
+    # Set minimum required version for project
+    list(GET SHIFTLIBBENCHOPTIONS 1 BENCHOPTIONSDEFAULT)
+    target_compile_options(ShiftLibBench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${BENCHOPTIONSDEFAULT}>)
 
     #Add an library for each set of compiler options
     foreach(SHIFTLIBCOMPILE ${SHIFTLIBBENCHOPTIONSTAG})

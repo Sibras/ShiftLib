@@ -295,6 +295,8 @@ public:
     using Data = NoExport::SIMDData<T, 12, 4, Width>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Data::width;
+    static constexpr uint32 numValues = 12;
+    static constexpr uint32 size = Data::size;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD3Def = SIMD3<T, SIMD3<T, widthImpl>::widthImpl>;
@@ -2266,42 +2268,6 @@ public:
     }
 
     /**
-     * Approximate reciprocal (1/other) of object per element.
-     * @returns The result of the operation.
-     */
-    XS_FUNCTION SIMD3x4 reciprocal() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            const __m512 recip = _mm512_rcp14_ps(this->values);
-            return SIMD3x4(_mm512_fnmadd_ps(_mm512_mul_ps(recip, recip), this->values, _mm512_add_ps(recip, recip)));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 recip0 = _mm256_recip_ps(this->values0);
-            const __m256 recip1 = _mm256_recip_ps(this->values1);
-            return SIMD3x4(
-                _mm256_fnmadd_ps(_mm256_mul_ps(recip0, recip0), this->values0, _mm256_add_ps(recip0, recip0)),
-                _mm256_fnmadd_ps(_mm256_mul_ps(recip1, recip1), this->values1, _mm256_add_ps(recip1, recip1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 recip0 = _mm_recip_ps(this->values0);
-            const __m128 recip1 = _mm_recip_ps(this->values1);
-            const __m128 recip2 = _mm_recip_ps(this->values2);
-            const __m128 recip3 = _mm_recip_ps(this->values3);
-            return SIMD3x4(_mm_fnmadd_ps(_mm_mul_ps(recip0, recip0), this->values0, _mm_add_ps(recip0, recip0)),
-                _mm_fnmadd_ps(_mm_mul_ps(recip1, recip1), this->values1, _mm_add_ps(recip1, recip1)),
-                _mm_fnmadd_ps(_mm_mul_ps(recip2, recip2), this->values2, _mm_add_ps(recip2, recip2)),
-                _mm_fnmadd_ps(_mm_mul_ps(recip3, recip3), this->values3, _mm_add_ps(recip3, recip3)));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::recip<T>(this->values0), Shift::recip<T>(this->values1),
-                Shift::recip<T>(this->values2), Shift::recip<T>(this->values3), Shift::recip<T>(this->values4),
-                Shift::recip<T>(this->values5), Shift::recip<T>(this->values6), Shift::recip<T>(this->values7),
-                Shift::recip<T>(this->values8), Shift::recip<T>(this->values9), Shift::recip<T>(this->values10),
-                Shift::recip<T>(this->values11));
-        }
-    }
-
-    /**
      * Compute the sum of each internally stored SIMD3.
      * @returns SIMD3 set to the sum of all elements between each internal SIMD3.
      */
@@ -2435,155 +2401,6 @@ public:
             res3 += this->values8;
             res4 += this->values11;
             return SIMD4Def(res, res2, res3, res4);
-        }
-    }
-
-    /**
-     * Round up each element of the object.
-     * @returns The result of the operation.
-     */
-    XS_FUNCTION SIMD3x4 ceil() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD3x4(_mm512_roundscale_ps(this->values, FROUND_CEIL));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD3x4(_mm256_round_ps(this->values0, FROUND_CEIL), _mm256_round_ps(this->values1, FROUND_CEIL));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD3x4(_mm_ceil_ps(this->values0), _mm_ceil_ps(this->values1), _mm_ceil_ps(this->values2),
-                _mm_ceil_ps(this->values3));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::ceil<T>(this->values0), Shift::ceil<T>(this->values1), Shift::ceil<T>(this->values2),
-                Shift::ceil<T>(this->values3), Shift::ceil<T>(this->values4), Shift::ceil<T>(this->values5),
-                Shift::ceil<T>(this->values6), Shift::ceil<T>(this->values7), Shift::ceil<T>(this->values8),
-                Shift::ceil<T>(this->values9), Shift::ceil<T>(this->values10), Shift::ceil<T>(this->values11));
-        }
-    }
-
-    /**
-     * Round down each element of the object.
-     * @returns The result of the operation.
-     */
-    XS_FUNCTION SIMD3x4 floor() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD3x4(_mm512_roundscale_ps(this->values, FROUND_FLOOR));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD3x4(_mm256_round_ps(this->values0, FROUND_FLOOR), _mm256_round_ps(this->values1, FROUND_FLOOR));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD3x4(_mm_floor_ps(this->values0), _mm_floor_ps(this->values1), _mm_floor_ps(this->values2),
-                _mm_floor_ps(this->values3));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::floor<T>(this->values0), Shift::floor<T>(this->values1),
-                Shift::floor<T>(this->values2), Shift::floor<T>(this->values3), Shift::floor<T>(this->values4),
-                Shift::floor<T>(this->values5), Shift::floor<T>(this->values6), Shift::floor<T>(this->values7),
-                Shift::floor<T>(this->values8), Shift::floor<T>(this->values9), Shift::floor<T>(this->values10),
-                Shift::floor<T>(this->values11));
-        }
-    }
-
-    /**
-     * Round toward zero the object.
-     * @returns Result of operation.
-     */
-    XS_FUNCTION SIMD3x4 trunc() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD3x4(_mm512_roundscale_ps(this->values, FROUND_TRUNC));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD3x4(_mm256_round_ps(this->values0, FROUND_TRUNC), _mm256_round_ps(this->values1, FROUND_TRUNC));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD3x4(_mm_trunc_ps(this->values0), _mm_trunc_ps(this->values1), _mm_trunc_ps(this->values2),
-                _mm_trunc_ps(this->values3));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::trunc<T>(this->values0), Shift::trunc<T>(this->values1),
-                Shift::trunc<T>(this->values2), Shift::trunc<T>(this->values3), Shift::trunc<T>(this->values4),
-                Shift::trunc<T>(this->values5), Shift::trunc<T>(this->values6), Shift::trunc<T>(this->values7),
-                Shift::trunc<T>(this->values8), Shift::trunc<T>(this->values9), Shift::trunc<T>(this->values10),
-                Shift::trunc<T>(this->values11));
-        }
-    }
-
-    /**
-     * Returns the sqrt of each element in the object.
-     * @returns The result of the operation.
-     */
-    XS_FUNCTION SIMD3x4 sqrt() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD3x4(_mm512_sqrt_ps(this->values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD3x4(_mm256_sqrt_ps(this->values0), _mm256_sqrt_ps(this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD3x4(_mm_sqrt_ps(this->values0), _mm_sqrt_ps(this->values1), _mm_sqrt_ps(this->values2),
-                _mm_sqrt_ps(this->values3));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::sqrt<T>(this->values0), Shift::sqrt<T>(this->values1), Shift::sqrt<T>(this->values2),
-                Shift::sqrt<T>(this->values3), Shift::sqrt<T>(this->values4), Shift::sqrt<T>(this->values5),
-                Shift::sqrt<T>(this->values6), Shift::sqrt<T>(this->values7), Shift::sqrt<T>(this->values8),
-                Shift::sqrt<T>(this->values9), Shift::sqrt<T>(this->values10), Shift::sqrt<T>(this->values11));
-        }
-    }
-
-    /**
-     * Approximate reciprocal square root of each element in the object.
-     * @note Useful as the reciprocal square root is faster to determine.
-     * @returns The result of the operation.
-     */
-    XS_FUNCTION SIMD3x4 rsqrt() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            const __m512 recip = _mm512_rsqrt14_ps(this->values);
-            const __m512 val1 = _mm512_mul_ps(_mm512_mul_ps(_mm512_set1_ps(0.5f), this->values), recip);
-            const __m512 val2 = _mm512_fnmadd_ps(recip, val1, _mm512_set1_ps(1.5f));
-            return SIMD3x4(_mm512_mul_ps(recip, val2));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 recip0 = _mm256_recipsqrt_ps(this->values0);
-            const __m256 recip1 = _mm256_recipsqrt_ps(this->values1);
-            const __m256 half = _mm256_set1_ps(0.5f);
-            const __m256 val01 = _mm256_mul_ps(_mm256_mul_ps(half, this->values0), recip0);
-            const __m256 val11 = _mm256_mul_ps(_mm256_mul_ps(half, this->values1), recip1);
-            const __m256 threeHalf = _mm256_set1_ps(1.5f);
-            const __m256 val02 = _mm256_fnmadd_ps(recip0, val01, threeHalf);
-            const __m256 val12 = _mm256_fnmadd_ps(recip1, val11, threeHalf);
-            return SIMD3x4(_mm256_mul_ps(recip0, val02), _mm256_mul_ps(recip1, val12));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 recip0 = _mm_recipsqrt_ps(this->values0);
-            const __m128 recip1 = _mm_recipsqrt_ps(this->values1);
-            const __m128 recip2 = _mm_recipsqrt_ps(this->values2);
-            const __m128 recip3 = _mm_recipsqrt_ps(this->values3);
-            const __m128 half = _mm_set1_ps(0.5f);
-            const __m128 threeHalf = _mm_set1_ps(1.5f);
-            const __m128 val01 = _mm_mul_ps(_mm_mul_ps(half, this->values0), recip0);
-            const __m128 val11 = _mm_mul_ps(_mm_mul_ps(half, this->values1), recip1);
-            const __m128 val21 = _mm_mul_ps(_mm_mul_ps(half, this->values2), recip2);
-            const __m128 val31 = _mm_mul_ps(_mm_mul_ps(half, this->values3), recip3);
-            const __m128 val02 = _mm_fnmadd_ps(recip0, val01, threeHalf);
-            const __m128 val12 = _mm_fnmadd_ps(recip1, val11, threeHalf);
-            const __m128 val22 = _mm_fnmadd_ps(recip2, val21, threeHalf);
-            const __m128 val32 = _mm_fnmadd_ps(recip3, val31, threeHalf);
-            return SIMD3x4(_mm_mul_ps(recip0, val02), _mm_mul_ps(recip1, val12), _mm_mul_ps(recip2, val22),
-                _mm_mul_ps(recip3, val32));
-        } else
-#endif
-        {
-            return SIMD3x4(Shift::rsqrt<T>(this->values0), Shift::rsqrt<T>(this->values1),
-                Shift::rsqrt<T>(this->values2), Shift::rsqrt<T>(this->values3), Shift::rsqrt<T>(this->values4),
-                Shift::rsqrt<T>(this->values5), Shift::rsqrt<T>(this->values6), Shift::rsqrt<T>(this->values7),
-                Shift::rsqrt<T>(this->values8), Shift::rsqrt<T>(this->values9), Shift::rsqrt<T>(this->values10),
-                Shift::rsqrt<T>(this->values11));
         }
     }
 

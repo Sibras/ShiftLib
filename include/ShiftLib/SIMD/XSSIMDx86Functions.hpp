@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-// ReSharper disable CppTabsAndSpacesMismatch
-// ReSharper disable CppInconsistentNaming
-
 #include "XSArchitecture.hpp"
 #include "XSMath.hpp"
 #if XS_ISA == XS_X86
@@ -27,13 +24,8 @@ namespace Shift::NoExport {
 static XS_INLINE __m128 exp2f4(const __m128 other) noexcept
 {
     // get integer component
-#    if XS_ARCH_SSE4_1
     __m128 m128_2 = _mm_round_ps(other, FROUND_FLOOR);
     const __m128i m128i_1 = _mm_cvtps_epi32(m128_2);
-#    else
-    const __m128i m128i_1 = _mm_cvtps_epi32(_mm_sub_ps(other, _mm_set1_ps(0.5f)));
-    __m128 m128_2 = _mm_cvtepi32_ps(m128i_1);
-#    endif
 
     // get fractional component
     m128_2 = _mm_sub_ps(other, m128_2);

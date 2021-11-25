@@ -792,7 +792,7 @@ TYPED_TEST_NS2(SIMD3x4, TESTISA(SIMD3x4), SIMD3x4)
     ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test4.abs(), 10.0f, 4.0f, 7.0f,
         5.0f, 2.0f, 2.0f, 9.0f, 5.0f, 10.0f, 4.0f, 7.0f, 5.0f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test4.reciprocal(), 0.1f, 0.25f,
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), reciprocal(test4), 0.1f, 0.25f,
         0.1428571429f, 0.2f, 0.5f, -0.5f, 0.111111111111f, -0.2f, -0.1f, -0.25f, -0.1428571429f, -0.2f);
 
     test20 = TestType(3.034f, -0.364f, -7.4789f, -1.2f, 5.0654f, -3.2547f, 6.054f, -2.2f, -7.434f, -4.036f, 3.0789f,
@@ -810,20 +810,20 @@ TYPED_TEST_NS2(SIMD3x4, TESTISA(SIMD3x4), SIMD3x4)
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestType::SIMD4Def::width>), test20.hadd3(), -4.8089f,
         0.6107f, -3.58f, -4.1571f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test20.ceil(), 4.0f, 0.0f, -7.0f,
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), ceil(test20), 4.0f, 0.0f, -7.0f,
         -1.0f, 6.0f, -3.0f, 7.0f, -2.0f, -7.0f, -4.0f, 4.0f, -3.0f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test20.floor(), 3.0f, -1.0f,
-        -8.0f, -2.0f, 5.0f, -4.0f, 6.0f, -3.0f, -8.0f, -5.0f, 3.0f, -4.0f);
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), floor(test20), 3.0f, -1.0f, -8.0f,
+        -2.0f, 5.0f, -4.0f, 6.0f, -3.0f, -8.0f, -5.0f, 3.0f, -4.0f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test20.trunc(), 3.0f, 0.0f, -7.0f,
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), trunc(test20), 3.0f, 0.0f, -7.0f,
         -1.0f, 5.0f, -3.0f, 6.0f, -2.0f, -7.0f, -4.0f, 3.0f, -3.0f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test4.abs().sqrt(), 3.16227766f,
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), sqrt(test4.abs()), 3.16227766f,
         2.0f, 2.645751311f, 2.236067977f, 1.414213562f, 1.414213562f, 3.0f, 2.236067977f, 3.16227766f, 2.0f,
         2.645751311f, 2.236067977f);
 
-    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), test4.abs().rsqrt(), 0.316227766f,
+    ASSERT_PRED13((assertSIMD3x4<typename TestFixture::TypeInt, TestFixture::width>), rsqrt(test4.abs()), 0.316227766f,
         0.5f, 0.377964473f, 0.4472135955f, 0.7071067812f, 0.7071067812f, 0.333333333333f, 0.4472135955f, 0.316227766f,
         0.5f, 0.377964473f, 0.4472135955f);
 

@@ -69,12 +69,12 @@ XS_CONSTEVAL size_t maxSize(const size_t size)
 
 #define ENABLE_MEMMOVE_TEST                                                \
     (XS_BENCH_MEMMOVE &&                                                   \
-        ((XS_BENCH_MEMMOVE_SSE2 && XS_ARCH_SSE2 && !XS_ARCH_SSSE3) ||      \
+        ((XS_BENCH_MEMMOVE_SSE2 && XS_ARCH_SSE2 && !XS_ARCH_AVX) ||        \
             (XS_BENCH_MEMMOVE_AVX2 && XS_ARCH_AVX2 && !XS_ARCH_AVX512F) || \
             (XS_BENCH_MEMMOVE_IA32 && XS_IGNORE_ISA_OPT) || (XS_BENCH_MEMMOVE_AVX512 && XS_ARCH_AVX512F)))
 #define ENABLE_MEMMOVEBACK_TEST                                                \
     (XS_BENCH_MEMMOVEBACK &&                                                   \
-        ((XS_BENCH_MEMMOVEBACK_SSE2 && XS_ARCH_SSE2 && !XS_ARCH_SSSE3) ||      \
+        ((XS_BENCH_MEMMOVEBACK_SSE2 && XS_ARCH_SSE2 && !XS_ARCH_AVX) ||        \
             (XS_BENCH_MEMMOVEBACK_AVX2 && XS_ARCH_AVX2 && !XS_ARCH_AVX512F) || \
             (XS_BENCH_MEMMOVEBACK_IA32 && XS_IGNORE_ISA_OPT) || (XS_BENCH_MEMMOVEBACK_AVX512 && XS_ARCH_AVX512F)))
 #ifndef XSBENCHMAIN

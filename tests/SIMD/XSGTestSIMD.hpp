@@ -59,6 +59,7 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #ifdef XS_TESTING_INBASE
 #    include "SIMD/XSSIMDInBase.hpp"
 #endif
+#include "SIMD/XSSIMDMath.hpp"
 
 /**
  * Helper function to check at compile time the size of an object.
