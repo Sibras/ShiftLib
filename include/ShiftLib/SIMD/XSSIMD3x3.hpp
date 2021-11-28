@@ -1955,13 +1955,8 @@ public:
             const __m128 val1 = _mm_unpacklo_ps(this->values0, this->values1);
             const __m128 val2 = _mm_shuffle1_ps(this->values2, _MM_SHUFFLE(3, 1, 3, 0)); //(0,x,1,x))
             const __m128 val3 = _mm_unpackhi_ps(this->values0, this->values1);
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return SIMD3x3(_mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1),
-                    _mm_blend_ps(val3, this->values2, _MM_BLEND(1, 1, 0, 0)));
-            } else {
-                return SIMD3x3(_mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1),
-                    _mm_shuffle_ps(val3, this->values2, _MM_SHUFFLE(3, 2, 1, 0)));
-            }
+            return SIMD3x3(_mm_movelh_ps(val1, val2), _mm_movehl_ps(val2, val1),
+                _mm_blend_ps(val3, this->values2, _MM_BLEND(1, 1, 0, 0)));
         } else
 #endif
         {
@@ -2015,69 +2010,16 @@ public:
             }
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
-                return SIMD3x3(_mm_move_ss(this->values0, other.values0), _mm_move_ss(this->values1, other.values1),
-                    _mm_move_ss(this->values2, other.values2));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == Index1) {
+                return SIMD3x3(_mm_blend_ss(this->values0, other.values0), _mm_blend_ss(this->values1, other.values1),
+                    _mm_blend_ss(this->values2, other.values2));
+            } else if constexpr (Index0 == Index1) {
                 return SIMD3x3(_mm_blend_ps(this->values0, other.values0, 1UL << Index0),
                     _mm_blend_ps(this->values1, other.values1, 1UL << Index0),
                     _mm_blend_ps(this->values2, other.values2, 1UL << Index0));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 return SIMD3x3(_mm_insert_ps(this->values0, other.values0, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)),
                     _mm_insert_ps(this->values1, other.values1, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)),
                     _mm_insert_ps(this->values2, other.values2, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)));
-            } else if constexpr (Index0 == 0 && Index1 == 1) {
-                return SIMD3x3(_mm_move_ss(this->values0, _mm_shuffle3311_ps(other.values0)),
-                    _mm_move_ss(this->values1, _mm_shuffle3311_ps(other.values1)),
-                    _mm_move_ss(this->values2, _mm_shuffle3311_ps(other.values2))); //(x,x,x,1)
-            } else if constexpr (Index0 == 0 && Index1 == 2) {
-                return SIMD3x3(_mm_move_ss(this->values0, _mm_movehl_ps(other.values0, other.values0)),
-                    _mm_move_ss(this->values1, _mm_movehl_ps(other.values1, other.values1)),
-                    _mm_move_ss(this->values2, _mm_movehl_ps(other.values2, other.values2)));
-            } else if constexpr (Index0 == 1 && Index1 == 0) {
-                const __m128 val0 = _mm_movelh_ps(this->values0, other.values0); /*(x,0,x,0)*/
-                const __m128 val1 = _mm_movelh_ps(this->values1, other.values1);
-                const __m128 val2 = _mm_movelh_ps(this->values2, other.values2);
-                return SIMD3x3(_mm_shuffle_ps(val0, this->values0, _MM_SHUFFLE(3, 2, 2, 0)),
-                    _mm_shuffle_ps(val1, this->values1, _MM_SHUFFLE(3, 2, 2, 0)),
-                    _mm_shuffle_ps(val2, this->values2, _MM_SHUFFLE(3, 2, 2, 0)));
-            } else if constexpr (Index0 == 1 && Index1 == 1) {
-                const __m128 val0 = _mm_movelh_ps(this->values0, other.values0); //(b1,x,x,a0)
-                const __m128 val1 = _mm_movelh_ps(this->values1, other.values1);
-                const __m128 val2 = _mm_movelh_ps(this->values2, other.values2);
-                return SIMD3x3(_mm_shuffle_ps(val0, this->values0, _MM_SHUFFLE(3, 2, 3, 0)),
-                    _mm_shuffle_ps(val1, this->values1, _MM_SHUFFLE(3, 2, 3, 0)),
-                    _mm_shuffle_ps(val2, this->values2, _MM_SHUFFLE(3, 2, 3, 0)));
-            } else if constexpr (Index0 == 2 && Index1 == 2) {
-                const __m128 val0 = _mm_movehl_ps(this->values0, other.values0); /*(3,x,x,2)*/
-                const __m128 val1 = _mm_movehl_ps(this->values1, other.values1);
-                const __m128 val2 = _mm_movehl_ps(this->values2, other.values2);
-                return SIMD3x3(_mm_shuffle_ps(this->values0, val0, _MM_SHUFFLE(3, 0, 1, 0)),
-                    _mm_shuffle_ps(this->values1, val1, _MM_SHUFFLE(3, 0, 1, 0)),
-                    _mm_shuffle_ps(this->values2, val2, _MM_SHUFFLE(3, 0, 1, 0)));
-            } else if constexpr (Index0 == 0) {
-                const __m128 val0 =
-                    _mm_shuffle_ps(this->values0, other.values0, _MM_SHUFFLE(Index1, Index1, 1, 1)); /*(x,Index1,x,1)*/
-                const __m128 val1 = _mm_shuffle_ps(this->values1, other.values1, _MM_SHUFFLE(Index1, Index1, 1, 1));
-                const __m128 val2 = _mm_shuffle_ps(this->values2, other.values2, _MM_SHUFFLE(Index1, Index1, 1, 1));
-                return SIMD3x3(_mm_shuffle_ps(val0, this->values0, _MM_SHUFFLE(3, 2, 0, 2)),
-                    _mm_shuffle_ps(val1, this->values1, _MM_SHUFFLE(3, 2, 0, 2)),
-                    _mm_shuffle_ps(val2, this->values2, _MM_SHUFFLE(3, 2, 0, 2)));
-            } else if constexpr (Index0 == 1) {
-                const __m128 val0 =
-                    _mm_shuffle_ps(this->values0, other.values0, _MM_SHUFFLE(Index1, Index1, 0, 0)); /*(x,Index1,x,0)*/
-                const __m128 val1 = _mm_shuffle_ps(this->values1, other.values1, _MM_SHUFFLE(Index1, Index1, 0, 0));
-                const __m128 val2 = _mm_shuffle_ps(this->values2, other.values2, _MM_SHUFFLE(Index1, Index1, 0, 0));
-                return SIMD3x3(_mm_shuffle_ps(val0, this->values0, _MM_SHUFFLE(3, 2, 2, 0)),
-                    _mm_shuffle_ps(val1, this->values1, _MM_SHUFFLE(3, 2, 2, 0)),
-                    _mm_shuffle_ps(val2, this->values2, _MM_SHUFFLE(3, 2, 2, 0)));
-            } else /*Index0 == 2*/ {
-                const __m128 val0 =
-                    _mm_shuffle_ps(this->values0, other.values0, _MM_SHUFFLE(Index1, Index1, 3, 3)); /*(x,Index1,x,3)*/
-                const __m128 val1 = _mm_shuffle_ps(this->values1, other.values1, _MM_SHUFFLE(Index1, Index1, 3, 3));
-                const __m128 val2 = _mm_shuffle_ps(this->values2, other.values2, _MM_SHUFFLE(Index1, Index1, 3, 3));
-                return SIMD3x3(_mm_shuffle_ps(this->values0, val0, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(this->values1, val1, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(this->values2, val2, _MM_SHUFFLE(3, 2, 1, 0)));
             }
         } else
 #endif
@@ -2122,37 +2064,15 @@ public:
                 _mm_blend_ps(this->values1, other.values1, _MM_BLEND(0, Elem2, Elem1, Elem0)));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
-                return SIMD3x3(_mm_move_ss(this->values0, other.values0), _mm_move_ss(this->values1, other.values1),
-                    _mm_move_ss(this->values2, other.values2));
+                return SIMD3x3(_mm_blend_ss(this->values0, other.values0), _mm_blend_ss(this->values1, other.values1),
+                    _mm_blend_ss(this->values2, other.values2));
             } else if constexpr (!Elem0 && Elem1 && Elem2) {
-                return SIMD3x3(_mm_move_ss(other.values0, this->values0), _mm_move_ss(other.values1, this->values1),
-                    _mm_move_ss(other.values2, this->values2));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+                return SIMD3x3(_mm_blend_ss(other.values0, this->values0), _mm_blend_ss(other.values1, this->values1),
+                    _mm_blend_ss(other.values2, this->values2));
+            } else {
                 return SIMD3x3(_mm_blend_ps(this->values0, other.values0, _MM_BLEND(0, Elem2, Elem1, Elem0)),
                     _mm_blend_ps(this->values1, other.values1, _MM_BLEND(0, Elem2, Elem1, Elem0)),
                     _mm_blend_ps(this->values2, other.values2, _MM_BLEND(0, Elem2, Elem1, Elem0)));
-            } else if constexpr (!Elem0 && !Elem1 && Elem2) {
-                return SIMD3x3(_mm_shuffle_ps(this->values0, other.values0, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(this->values1, other.values1, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(this->values2, other.values2, _MM_SHUFFLE(3, 2, 1, 0)));
-            } else if constexpr (!Elem0 && Elem1 && !Elem2) {
-                const __m128 val0 = _mm_movelh_ps(this->values0, other.values0); //(b1,x,x,a0)
-                const __m128 val1 = _mm_movelh_ps(this->values1, other.values1);
-                const __m128 val2 = _mm_movelh_ps(this->values2, other.values2);
-                return SIMD3x3(_mm_shuffle_ps(val0, this->values0, _MM_SHUFFLE(3, 2, 3, 0)),
-                    _mm_shuffle_ps(val1, this->values1, _MM_SHUFFLE(3, 2, 3, 0)),
-                    _mm_shuffle_ps(val2, this->values2, _MM_SHUFFLE(3, 2, 3, 0)));
-            } else if constexpr (Elem0 && !Elem1 && Elem2) {
-                const __m128 val0 = _mm_movelh_ps(this->values0, other.values0); //(x,b0,a1,x)
-                const __m128 val1 = _mm_movelh_ps(this->values1, other.values1);
-                const __m128 val2 = _mm_movelh_ps(this->values2, other.values2);
-                return SIMD3x3(_mm_shuffle_ps(val0, other.values0, _MM_SHUFFLE(3, 2, 1, 2)),
-                    _mm_shuffle_ps(val1, other.values1, _MM_SHUFFLE(3, 2, 1, 2)),
-                    _mm_shuffle_ps(val2, other.values2, _MM_SHUFFLE(3, 2, 1, 2)));
-            } else /*Elem0 && Elem1 && !Elem2*/ {
-                return SIMD3x3(_mm_shuffle_ps(other.values0, this->values0, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(other.values1, this->values1, _MM_SHUFFLE(3, 2, 1, 0)),
-                    _mm_shuffle_ps(other.values2, this->values2, _MM_SHUFFLE(3, 2, 1, 0)));
             }
         }
 #endif

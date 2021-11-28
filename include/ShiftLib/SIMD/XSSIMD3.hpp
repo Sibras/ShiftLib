@@ -970,11 +970,7 @@ public:
 
             otherT0.values = _mm_movelh_ps(val1, val2);
             otherT1.values = _mm_movehl_ps(val2, val1);
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                otherT2.values = _mm_blend_ps(val3, other2.values, _MM_BLEND(1, 1, 0, 0));
-            } else {
-                otherT2.values = _mm_shuffle_ps(val3, other2.values, _MM_SHUFFLE(3, 2, 1, 0));
-            }
+            otherT2.values = _mm_blend_ps(val3, other2.values, _MM_BLEND(1, 1, 0, 0));
         } else
 #endif
         {
@@ -1135,15 +1131,9 @@ public:
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
-                this->values = _mm_move_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+                this->values = _mm_blend_ss(this->values, other.values);
+            } else {
                 this->values = _mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(0, Index, 0));
-            } else if constexpr (Index == 1) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); /*(x,0,x,0)*/
-                this->values = _mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 2, 0));
-            } else /*Index == 2*/ {
-                const __m128 val = _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(3, 1, 0, 2)); /*(3,x,0,x)*/
-                this->values = _mm_shuffle_ps(this->values, val, _MM_SHUFFLE(3, 1, 1, 0));
             }
         } else
 #endif
@@ -1164,15 +1154,9 @@ public:
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
-                this->values = _mm_move_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+                this->values = _mm_blend_ss(this->values, other.values);
+            } else {
                 this->values = _mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(0, Index, 0));
-            } else if constexpr (Index == 1) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); /*(x,0,x,0)*/
-                this->values = _mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 2, 0));
-            } else /*Index == 2*/ {
-                const __m128 val = _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(3, 1, 0, 2)); /*(3,x,0,x)*/
-                this->values = _mm_shuffle_ps(this->values, val, _MM_SHUFFLE(3, 1, 1, 0));
             }
         } else
 #endif
@@ -1195,13 +1179,7 @@ public:
                 this->values = _mm_mask_blend_ps(_cvtu32_mask8(1UL << index), this->values, other.values);
             } else {
                 const __m128 mask = _mm_castsi128_ps(_mm_cmpeq_epi32(_mm_set1_epi32(index), _mm_set_epi32(3, 2, 1, 0)));
-                if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                    this->values = _mm_blendv_ps(this->values, other.values, mask);
-                } else {
-                    const __m128 val0 = _mm_and_ps(other.values, mask);
-                    const __m128 val1 = _mm_andnot_ps(mask, this->values);
-                    this->values = _mm_or_ps(val0, val1);
-                }
+                this->values = _mm_blendv_ps(this->values, other.values, mask);
             }
         } else
 #endif
@@ -1223,17 +1201,12 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
                 this->values = _mm_add_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
+            } else if constexpr (Index == 1) {
                 const __m128 value = _mm_shuffle2200_ps(other.values);
                 this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, value);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 value = _mm_shuffle0000_ps(other.values);
                 this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, value);
-            } else {
-                constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-                __m128 val = _mm_shuffle1_ps(this->values, shuffle);
-                val = _mm_add_ss(val, other.values);
-                this->values = _mm_shuffle1_ps(val, shuffle);
             }
         } else
 #endif
@@ -1255,17 +1228,12 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
                 this->values = _mm_sub_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
+            } else if constexpr (Index == 1) {
                 const __m128 value = _mm_shuffle2200_ps(other.values);
                 this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, value);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 value = _mm_shuffle0000_ps(other.values);
                 this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, value);
-            } else {
-                constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-                __m128 val = _mm_shuffle1_ps(this->values, shuffle);
-                val = _mm_sub_ss(val, other.values);
-                this->values = _mm_shuffle1_ps(val, shuffle);
             }
         } else
 #endif
@@ -1287,17 +1255,12 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
                 this->values = _mm_mul_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
+            } else if constexpr (Index == 1) {
                 const __m128 value = _mm_shuffle2200_ps(other.values);
                 this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 value = _mm_shuffle0000_ps(other.values);
                 this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
-            } else {
-                constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-                __m128 val = _mm_shuffle1_ps(this->values, shuffle);
-                val = _mm_mul_ss(val, other.values);
-                this->values = _mm_shuffle1_ps(val, shuffle);
             }
         } else
 #endif
@@ -1319,17 +1282,12 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
                 this->values = _mm_div_ss(this->values, other.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index == 1) {
+            } else if constexpr (Index == 1) {
                 const __m128 value = _mm_shuffle2200_ps(other.values);
                 this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, value);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 value = _mm_shuffle0000_ps(other.values);
                 this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, value);
-            } else {
-                constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-                __m128 val = _mm_shuffle1_ps(this->values, shuffle);
-                val = _mm_div_ss(val, other.values);
-                this->values = _mm_shuffle1_ps(val, shuffle);
             }
         } else
 #endif
@@ -1352,19 +1310,14 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index == 0) {
                 this->values = _mm_fmadd_ss(this->values, other1.values, other2.values);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index % 4 == 1) {
+            } else if constexpr (Index % 4 == 1) {
                 const __m128 value1 = _mm_shuffle2200_ps(other1.values);
                 const __m128 value2 = _mm_shuffle2200_ps(other2.values);
                 this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), value1, value2);
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 value1 = _mm_shuffle0000_ps(other1.values);
                 const __m128 value2 = _mm_shuffle0000_ps(other2.values);
                 this->values = _mm_blend_fmadd_ps(this->values, 1 << Index, value1, value2);
-            } else {
-                constexpr auto shuffle = _MM_SHUFFLE(3, Index == 2 ? 0 : 2, Index == 1 ? 0 : 1, Index);
-                __m128 value = _mm_shuffle1_ps(this->values, shuffle);
-                value = _mm_fmadd_ss(value, other1.values, other2.values);
-                this->values = _mm_shuffle1_ps(value, shuffle);
             }
         } else
 #endif
@@ -2067,14 +2020,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return BaseDef(_mm_dp_ps(this->values, other.values, 0x7F));
-            } else {
-                __m128 res = _mm_mul_ps(this->values, other.values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                res = _mm_add_ss(_mm_shuffle3311_ps(res), res2);              //(x,x,x,1)
-                return BaseDef(_mm_shuffle0000_ps(res));
-            }
+            return BaseDef(_mm_dp_ps(this->values, other.values, 0x7F));
         } else
 #endif
         {
@@ -2096,13 +2042,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return InBaseDef(_mm_dp_ps(this->values, other.values, 0x71));
-            } else {
-                const __m128 res = _mm_mul_ps(this->values, other.values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                return InBaseDef(_mm_add_ss(_mm_shuffle3311_ps(res), res2));  //(x,x,x,1)
-            }
+            return InBaseDef(_mm_dp_ps(this->values, other.values, 0x71));
         } else
 #endif
         {
@@ -2146,14 +2086,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return BaseDef(_mm_dp_ps(this->values, this->values, 0x7F));
-            } else {
-                __m128 res = _mm_mul_ps(this->values, this->values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                res = _mm_add_ss(_mm_shuffle3311_ps(res), res2);              //(x,x,x,1)
-                return BaseDef(_mm_shuffle0000_ps(res));
-            }
+            return BaseDef(_mm_dp_ps(this->values, this->values, 0x7F));
         } else
 #endif
         {
@@ -2174,15 +2107,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return BaseDef(_mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F)));
-            } else {
-                __m128 res = _mm_mul_ps(this->values, this->values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                res = _mm_add_ss(_mm_shuffle3311_ps(res), res2);              //(x,x,x,1)
-                res = _mm_sqrt_ss(res);
-                return BaseDef(_mm_shuffle0000_ps(res));
-            }
+            return BaseDef(_mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F)));
         } else
 #endif
         {
@@ -2203,13 +2128,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return InBaseDef(_mm_dp_ps(this->values, this->values, 0x71));
-            } else {
-                const __m128 res = _mm_mul_ps(this->values, this->values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                return InBaseDef(_mm_add_ss(_mm_shuffle3311_ps(res), res2));  //(x,x,x,1)
-            }
+            return InBaseDef(_mm_dp_ps(this->values, this->values, 0x71));
         } else
 #endif
         {
@@ -2230,14 +2149,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return InBaseDef(_mm_sqrt_ss(_mm_dp_ps(this->values, this->values, 0x71)));
-            } else {
-                const __m128 res = _mm_mul_ps(this->values, this->values);
-                __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                res2 = _mm_add_ss(_mm_shuffle3311_ps(res), res2);       //(x,x,x,1)
-                return InBaseDef(_mm_sqrt_ss(res2));
-            }
+            return InBaseDef(_mm_sqrt_ss(_mm_dp_ps(this->values, this->values, 0x71)));
         } else
 #endif
         {
@@ -2259,17 +2171,8 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                const __m128 val = _mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F));
-                return SIMD3(_mm_div_ps(this->values, val));
-            } else {
-                __m128 res = _mm_mul_ps(this->values, this->values);
-                const __m128 res2 = _mm_add_ss(_mm_shuffle3232_ps(res), res); //(x,x,x,2)
-                res = _mm_add_ss(_mm_shuffle3311_ps(res), res2);              //(x,x,x,1)
-                res = _mm_sqrt_ss(res);
-                const __m128 val = _mm_shuffle0000_ps(res);
-                return SIMD3(_mm_div_ps(this->values, val));
-            }
+            const __m128 val = _mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F));
+            return SIMD3(_mm_div_ps(this->values, val));
         } else
 #endif
         {
@@ -2291,32 +2194,11 @@ public:
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
-                return SIMD3(_mm_move_ss(this->values, other.values));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == Index1) {
+                return SIMD3(_mm_blend_ss(this->values, other.values));
+            } else if constexpr (Index0 == Index1) {
                 return SIMD3(_mm_blend_ps(this->values, other.values, 1UL << Index0));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 return SIMD3(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index1, Index0, 0)));
-            } else if constexpr (Index0 == 0 && Index1 == 1) {
-                return SIMD3(_mm_move_ss(this->values, _mm_shuffle3311_ps(other.values))); //(x,x,x,1)
-            } else if constexpr (Index0 == 0 && Index1 == 2) {
-                return SIMD3(_mm_move_ss(this->values, _mm_movehl_ps(other.values, other.values)));
-            } else if constexpr (Index0 == 1 && Index1 == 0) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); /*(x,0,x,0)*/
-                return SIMD3(_mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 2, 0)));
-            } else if constexpr (Index0 == 1 && Index1 == 1) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); //(b1,x,x,a0)
-                return SIMD3(_mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 3, 0)));
-            } else if constexpr (Index0 == 2 && Index1 == 2) {
-                const __m128 val = _mm_movehl_ps(this->values, other.values); /*(3,x,x,2) from reversed inputs*/
-                return SIMD3(_mm_shuffle_ps(this->values, val, _MM_SHUFFLE(3, 0, 1, 0)));
-            } else if constexpr (Index0 == 1) {
-                const __m128 val =
-                    _mm_shuffle_ps(this->values, other.values, _MM_SHUFFLE(Index1, Index1, 0, 0)); /*(x,iIndex1,x,0)*/
-                return SIMD3(_mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 2, 0)));
-            } else /* Index0 == 2*/ {
-                const __m128 val =
-                    _mm_shuffle_ps(this->values, other.values, _MM_SHUFFLE(Index1, Index1, 3, 3)); /*(x,iIndex1,x,3)*/
-                return SIMD3(_mm_shuffle_ps(this->values, val, _MM_SHUFFLE(3, 2, 1, 0)));
             }
         } else
 #endif
@@ -2347,21 +2229,11 @@ public:
 #if XS_ISA == XS_X86
         else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
-                return SIMD3(_mm_move_ss(this->values, other.values));
+                return SIMD3(_mm_blend_ss(this->values, other.values));
             } else if constexpr (!Elem0 && Elem1 && Elem2) {
-                return SIMD3(_mm_move_ss(other.values, this->values));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+                return SIMD3(_mm_blend_ss(other.values, this->values));
+            } else {
                 return SIMD3(_mm_blend_ps(this->values, other.values, _MM_BLEND(0, Elem2, Elem1, Elem0)));
-            } else if constexpr (!Elem0 && !Elem1 && Elem2) {
-                return SIMD3(_mm_shuffle_ps(this->values, other.values, _MM_SHUFFLE(3, 2, 1, 0)));
-            } else if constexpr (!Elem0 && Elem1 && !Elem2) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); //(b1,x,x,a0)
-                return SIMD3(_mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 3, 0)));
-            } else if constexpr (Elem0 && !Elem1 && Elem2) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); //(x,b0,a1,x)
-                return SIMD3(_mm_shuffle_ps(val, other.values, _MM_SHUFFLE(3, 2, 1, 2)));
-            } else /*Elem0 && Elem1 && !Elem2*/ {
-                return SIMD3(_mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(3, 2, 1, 0)));
             }
         }
 #endif
@@ -2385,12 +2257,8 @@ public:
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return SIMD3(_mm_mask_blend_ps(mask.values, this->values, other.values));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
-                return SIMD3(_mm_blendv_ps(this->values, other.values, mask.values));
             } else {
-                const __m128 val0 = _mm_and_ps(other.values, mask.values);
-                const __m128 val1 = _mm_andnot_ps(mask.values, this->values);
-                return SIMD3(_mm_or_ps(val0, val1));
+                return SIMD3(_mm_blendv_ps(this->values, other.values, mask.values));
             }
         } else
 #endif
@@ -2423,33 +2291,16 @@ public:
         else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
                 const __m128 backup = other.values;
-                other.values = _mm_move_ss(other.values, this->values);
-                return SIMD3(_mm_move_ss(this->values, backup));
+                other.values = _mm_blend_ss(other.values, this->values);
+                return SIMD3(_mm_blend_ss(this->values, backup));
             } else if constexpr (!Elem0 && Elem1 && Elem2) {
                 const __m128 backup = other.values;
-                other.values = _mm_move_ss(this->values, other.values);
-                return SIMD3(_mm_move_ss(backup, this->values));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+                other.values = _mm_blend_ss(this->values, other.values);
+                return SIMD3(_mm_blend_ss(backup, this->values));
+            } else {
                 const __m128 backup = other.values;
                 other.values = _mm_blend_ps(other.values, this->values, _MM_BLEND(0, Elem2, Elem1, Elem0));
                 return SIMD3(_mm_blend_ps(this->values, backup, _MM_BLEND(0, Elem2, Elem1, Elem0)));
-            } else if constexpr (!Elem0 && !Elem1 && Elem2) {
-                const __m128 backup = other.values;
-                other.values = _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(3, 2, 1, 0));
-                return SIMD3(_mm_shuffle_ps(this->values, backup, _MM_SHUFFLE(3, 2, 1, 0)));
-            } else if constexpr (!Elem0 && Elem1 && !Elem2) {
-                const __m128 val = _mm_movelh_ps(this->values, other.values); //(b1,b0,a1,a0)
-                other.values = _mm_shuffle_ps(val, other.values, _MM_SHUFFLE(3, 2, 1, 2));
-                return SIMD3(_mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 3, 0)));
-            } else if constexpr (Elem0 && !Elem1 && Elem2) {
-                const __m128 backup = other.values;
-                const __m128 val = _mm_movelh_ps(this->values, other.values); //(b1,b0,a1,a0)
-                other.values = _mm_shuffle_ps(val, this->values, _MM_SHUFFLE(3, 2, 3, 0));
-                return SIMD3(_mm_shuffle_ps(val, backup, _MM_SHUFFLE(3, 2, 1, 2)));
-            } else /*Elem0 && Elem1 && !Elem2*/ {
-                const __m128 backup = other.values;
-                other.values = _mm_shuffle_ps(this->values, other.values, _MM_SHUFFLE(3, 2, 1, 0));
-                return SIMD3(_mm_shuffle_ps(backup, this->values, _MM_SHUFFLE(3, 2, 1, 0)));
             }
         }
 #endif
@@ -2478,17 +2329,10 @@ public:
                 const __m128 backup = other.values;
                 other.values = _mm_mask_blend_ps(mask.values, other.values, this->values);
                 return SIMD3(_mm_mask_blend_ps(mask.values, this->values, backup));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41>) {
+            } else {
                 const __m128 backup = other.values;
                 other.values = _mm_blendv_ps(other.values, this->values, mask.values);
                 return SIMD3(_mm_blendv_ps(this->values, backup, mask.values));
-            } else {
-                const __m128 val0A = _mm_and_ps(this->values, mask.values);
-                const __m128 val0B = _mm_and_ps(other.values, mask.values);
-                const __m128 val1A = _mm_andnot_ps(mask.values, other.values);
-                const __m128 val1B = _mm_andnot_ps(mask.values, this->values);
-                other.values = _mm_or_ps(val0A, val1A);
-                return SIMD3(_mm_or_ps(val0B, val1B));
             }
         } else
 #endif
@@ -2575,15 +2419,15 @@ public:
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
             if constexpr (Index0 == 3 && Index1 == 1 && Index2 == 2) {
-                return SIMD3(_mm_move_ss(this->values, other.values));
+                return SIMD3(_mm_blend_ss(this->values, other.values));
             } else if constexpr (Index0 == 0 && Index1 == 4 && Index2 == 5) {
-                return SIMD3(_mm_move_ss(other.values, this->values));
+                return SIMD3(_mm_blend_ss(other.values, this->values));
             } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 3) {
                 return SIMD3(_mm_movelh_ps(this->values, other.values));
             } else if constexpr (Index0 == 3 && Index1 == 4 && Index2 == 0) {
                 return SIMD3(_mm_movelh_ps(other.values, this->values));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && (Index0 == 0 || Index0 == 3) &&
-                (Index1 == 1 || Index1 == 4) && (Index2 == 2 || Index2 == 5)) {
+            } else if constexpr ((Index0 == 0 || Index0 == 3) && (Index1 == 1 || Index1 == 4) &&
+                (Index2 == 2 || Index2 == 5)) {
                 return SIMD3(
                     _mm_blend_ps(this->values, other.values, _MM_BLEND(0, Index2 >= 3, Index1 >= 3, Index0 >= 3)));
             } else if constexpr (Index0 == 0 && Index1 == 3 && Index2 == 1) {
@@ -2599,20 +2443,20 @@ public:
             } else if constexpr (Index0 >= 3 && Index1 >= 3 && Index2 < 3) {
                 return SIMD3(
                     _mm_shuffle_ps(other.values, this->values, _MM_SHUFFLE(0, Index2, Index1 - 3, Index0 - 3)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index1 == 1) {
+            } else if constexpr (Index0 == 0 && Index1 == 1) {
                 return SIMD3(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index2 - 3, 2, 0)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0 && Index2 == 2) {
+            } else if constexpr (Index0 == 0 && Index2 == 2) {
                 return SIMD3(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index1 - 3, 1, 0)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1 && Index2 == 2) {
+            } else if constexpr (Index1 == 1 && Index2 == 2) {
                 return SIMD3(_mm_insert_ps(this->values, other.values, _MM_MK_INSERTPS_NDX(Index0 - 3, 0, 0)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 3 && Index1 == 4) {
+            } else if constexpr (Index0 == 3 && Index1 == 4) {
                 return SIMD3(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index2, 2, 0)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 3 && Index2 == 5) {
+            } else if constexpr (Index0 == 3 && Index2 == 5) {
                 return SIMD3(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index1, 1, 0)));
-            } else if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 4 && Index2 == 5) {
+            } else if constexpr (Index1 == 4 && Index2 == 5) {
                 return SIMD3(_mm_insert_ps(other.values, this->values, _MM_MK_INSERTPS_NDX(Index0, 0, 0)));
             } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3) {
-                if constexpr (hasISAFeature<ISAFeature::SSE41> && Index1 == 1) {
+                if constexpr (Index1 == 1) {
                     return SIMD3(_mm_blend_ps(this->values,
                         (other.shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3,
                                   Index2 - 3>()
@@ -2624,7 +2468,7 @@ public:
                         _MM_SHUFFLE(3, Index2 - 3, 0, 2)));
                 }
             } else if constexpr (Index0 < 3 && Index1 >= 3 && Index2 >= 3) {
-                if constexpr (hasISAFeature<ISAFeature::SSE41> && Index0 == 0) {
+                if constexpr (Index0 == 0) {
                     return SIMD3(_mm_blend_ps(this->values,
                         (other.shuffle<XS_SHUFF128_DONTCARE_0_12(Index1 - 3, Index2 - 3), Index1 - 3, Index2 - 3>()
                                 .values),

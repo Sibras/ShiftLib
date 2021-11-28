@@ -204,6 +204,11 @@
 #else
 #    define XS_ARCH_BMI2 0
 #endif
+#if defined(__SHA__) && !defined(XS_IGNORE_ISA_OPT)
+#    define XS_ARCH_SHA 1
+#else
+#    define XS_ARCH_SHA 0
+#endif
 #if defined(__AVX512F__) && !defined(XS_IGNORE_ISA_OPT)
 /* Added on SkylakeX/CannonLake */
 #    define XS_ARCH_AVX512F 1

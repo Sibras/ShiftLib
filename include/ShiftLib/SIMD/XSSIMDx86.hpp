@@ -45,15 +45,17 @@ namespace Shift {
 #    define FROUND_TRUNC (_MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC)
 
 /*
- * _mm_permute_ps should never be used as shufps is faster on iceLake (same for all others) and uses 1B shorter opcode
- * _mm_broadcastss_ps should never be used as shufps is faster on iceLake (same for all others)
- * _mm_moveldup_ps/_mm_movehdup_ps should always be used as have same speed as shufps but occupy 1B shorter opcode
- * _mm_movelh_ps/_mm_movehl_ps/_mm_unpackhi_ps/_mm_unpacklo_ps have no speed advantage over any of above (slower on
- * icelake) but has 1B shorter opcode when not using VEX encoding
- * All 128b swizzles are executed on the same port except on IceLake which has extra port used by
- * shufps/movsldup/movshdup
- * _mm_move_ss is 2B shorter than blendps but is faster on Conroe/CannonLake+/Zen but slower on
- * Nehalem/SandyBridge/Haswell/Skylake
+ * _mm_permute_ps should never be used as shufps has higher throughput on iceLake+ (is same for all others) and uses 1B
+ * shorter opcode.
+ * _mm_broadcastss_ps should never be used as shufps has higher throughput on iceLake+ (is same for all
+ * others).
+ * _mm_moveldup_ps/_mm_movehdup_ps should always be used as have same speed as shufps but occupy 1B less when using VEX
+ * _mm_movelh_ps/_mm_movehl_ps/_mm_unpackhi_ps/_mm_unpacklo_ps have no speed advantage over any of above (lower
+ * throughput on icelake+) but has 1B shorter opcode than shufps
+ * All 128b swizzles are executed on the same port except on IceLake+ which has extra port used by
+ * shufps/movsldup/movshdup.
+ * _mm_move_ss is 2B shorter than blendps but has higher throughput on Zen but slower on Intel pre Icelake.
+ * _mm_blend_ps has higher throughput than shufps on Broadwell+/Zen+ but 2B larger opcode
  */
 #    define _mm_shuffle1_ps(m128, iMask) _mm_shuffle_ps(m128, m128, (iMask))
 #    if !XS_ARCH_AVX
@@ -68,7 +70,8 @@ namespace Shift {
 
 #    define _mm_shuffle2200_ps(m128) _mm_moveldup_ps(m128)
 #    define _mm_shuffle3311_ps(m128) _mm_movehdup_ps(m128)
-#    if XS_ARCH_AVX
+#    if XS_ARCH_SHA
+// Both Icelake and Zen introduce SHA instructions
 #        define _mm_shuffle1010_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 0, 1, 0))
 #        define _mm_shuffle3232_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 2, 3, 2))
 #        define _mm_shuffle3322_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(3, 3, 2, 2))
@@ -79,19 +82,93 @@ namespace Shift {
 #        define _mm_shuffle3322_ps(m128) _mm_unpackhi_ps(m128, m128)
 #        define _mm_shuffle1100_ps(m128) _mm_unpacklo_ps(m128, m128)
 #    endif
+#    if XS_ARCH_SHA
+#        define _mm_blend_ss(m128_0, m128_1) _mm_move_ss(m128_0, m128_1)
+#    else
+#        define _mm_blend_ss(m128_0, m128_1) _mm_blend_ps(m128_0, m128_1, _MM_BLEND(0, 0, 0, 1))
+#    endif
+
+// Macros to determine best combination of shuffle parameters to get ideal shuffle when you don't care
+// about a input element
+#    define CHECK(i1, i2, i3, a, b, c) ((i1) == (a) && (i2) == (b) && (i3) == (c))
+#    define CHECK2(i1, i2, a, b) ((i1) == (a) && (i2) == (b))
+#    define XS_SHUFF128_DONTCARE_0(i1, i2, i3)                                                       \
+        CHECK(i1, i2, i3, 1, 0, 1) || CHECK(i1, i2, i3, 0, 1, 1) || CHECK(i1, i2, i3, 0, 2, 2) ? 0 : \
+            CHECK(i1, i2, i3, 1, 3, 3)                                                         ? 1 : \
+                                                                                                 2
+#    define XS_SHUFF128_DONTCARE_1(i0, i2, i3)                             \
+        CHECK(i0, i2, i3, 0, 1, 1) || CHECK(i0, i2, i3, 0, 2, 2)     ? 0 : \
+            CHECK(i0, i2, i3, 0, 0, 1) || CHECK(i0, i2, i3, 1, 3, 3) ? 1 : \
+            CHECK(i0, i2, i3, 2, 3, 3)                               ? 2 : \
+                                                                       3
+#    define XS_SHUFF128_DONTCARE_2(i0, i1, i3)                             \
+        CHECK(i0, i1, i3, 0, 1, 1)                                   ? 0 : \
+            CHECK(i0, i1, i3, 0, 0, 1)                               ? 1 : \
+            CHECK(i0, i1, i3, 2, 3, 3) || CHECK(i0, i1, i3, 0, 0, 2) ? 2 : \
+                                                                       3
+#    define XS_SHUFF128_DONTCARE_3(i0, i1, i2) \
+        CHECK(i0, i1, i2, 0, 1, 0) || CHECK(i0, i1, i2, 0, 0, 1) ? 1 : CHECK(i0, i1, i2, 0, 0, 2) ? 2 : 3
+#    define XS_SHUFF128_DONTCARE_0_12(i1, i2)                  \
+        CHECK2(i1, i2, 1, 0)                             ? 0 : \
+            CHECK2(i1, i2, 3, 2) || CHECK2(i1, i2, 2, 3) ? 2 : \
+            CHECK2(i1, i2, 0, 1) || CHECK2(i1, i2, 0, 2) ? 0 : \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_0_13(i1, i3)                  \
+        CHECK2(i1, i3, 1, 1)                             ? 0 : \
+            CHECK2(i1, i3, 3, 3) || CHECK2(i1, i3, 2, 3) ? 2 : \
+            CHECK2(i1, i3, 0, 1) || CHECK2(i1, i3, 0, 2) ? 0 : \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_0_23(i2, i3)                  \
+        CHECK2(i2, i3, 0, 1)                             ? 0 : \
+            CHECK2(i2, i3, 2, 3) || CHECK2(i2, i3, 3, 3) ? 2 : \
+            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_1_02(i0, i2) \
+        CHECK2(i0, i2, 2, 2) ? 3 : CHECK2(i0, i2, 2, 3) ? 2 : CHECK2(i0, i2, 0, 1) || CHECK2(i0, i2, 0, 2) ? 0 : 1
+#    define XS_SHUFF128_DONTCARE_1_03(i0, i3) \
+        CHECK2(i0, i3, 0, 1) ? 1 : CHECK2(i0, i3, 2, 3) ? 3 : CHECK2(i0, i3, 0, 2) ? 0 : 1
+#    define XS_SHUFF128_DONTCARE_1_23(i2, i3)                  \
+        CHECK2(i2, i3, 0, 1)                             ? 1 : \
+            CHECK2(i2, i3, 2, 3)                         ? 3 : \
+            CHECK2(i2, i3, 3, 3)                         ? 2 : \
+            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : \
+                                                           1
+#    define XS_SHUFF128_DONTCARE_2_01(i0, i1) \
+        CHECK2(i0, i1, 0, 1) ? 0 : CHECK2(i0, i1, 2, 3) ? 2 : CHECK2(i0, i1, 2, 2) ? 3 : CHECK2(i0, i1, 0, 0) ? 1 : 3
+#    define XS_SHUFF128_DONTCARE_2_03(i0, i3) \
+        CHECK2(i0, i3, 0, 1) ? 0 : CHECK2(i0, i3, 2, 3) ? 2 : CHECK2(i0, i3, 0, 2) ? 2 : 3
+#    define XS_SHUFF128_DONTCARE_2_13(i1, i3) \
+        CHECK2(i1, i3, 1, 1)     ? 0 :        \
+            CHECK2(i1, i3, 3, 3) ? 2 :        \
+            CHECK2(i1, i3, 2, 3) ? 3 :        \
+            CHECK2(i1, i3, 0, 1) ? 1 :        \
+            CHECK2(i1, i3, 0, 2) ? 2 :        \
+                                   3
+#    define XS_SHUFF128_DONTCARE_3_01(i0, i1) \
+        CHECK2(i0, i1, 0, 1) ? 1 : CHECK2(i0, i1, 2, 3) || CHECK2(i0, i1, 2, 2) ? 3 : CHECK2(i0, i1, 0, 0) ? 1 : 3
+#    define XS_SHUFF128_DONTCARE_3_02(i0, i2)                  \
+        CHECK2(i0, i2, 0, 0)                             ? 1 : \
+            CHECK2(i0, i2, 2, 2) || CHECK2(i0, i2, 2, 3) ? 3 : \
+            CHECK2(i0, i2, 0, 1)                         ? 1 : \
+            CHECK2(i0, i2, 0, 2)                         ? 2 : \
+                                                           3
+#    define XS_SHUFF128_DONTCARE_3_12(i1, i2)                  \
+        CHECK2(i1, i2, 1, 0)                             ? 1 : \
+            CHECK2(i1, i2, 2, 3) || CHECK2(i1, i2, 3, 2) ? 3 : \
+            CHECK2(i1, i2, 0, 1)                         ? 1 : \
+            CHECK2(i1, i2, 0, 2)                         ? 2 : \
+                                                           3
 
 /*
- * _mm256_permute_ps should never be used as shufps is faster on iceLake (same for all others) and uses 1B shorter
- * opcode.
+ * _mm256_permute_ps should never be used as shufps is faster on iceLake+ (is same for all others).
  * _mm256_broadcastss_ps should be used as it is 1B shorter than insertps and saves a shuffle
- * _mm256_moveldup_ps/_mm256_movehdup_ps should always be used as have same speed as shufps but occupy 1B shorter opcode
- * _mm256_unpackhi_ps/_mm256_unpacklo_ps have no speed advantage over any of above (slower on icelake) but has 1B
- * shorter opcode.
- *  _mm256_unpacklo_pd/_mm256_unpackhi_pd have no speed advantage over any of above (slower on icelake)
- * but has 1B shorter opcode.
- *  _mm_movedup_pd should never be used. Use _mm256_unpacklo_pd instead.
- * All 256b swizzles are executed on the same port except on IceLake which has extra port used by
- * shufps/movsldup/movshdup
+ * _mm256_moveldup_ps/_mm256_movehdup_ps should always be used as have same performance as shufps but occupy 1B shorter
+ * opcode.
+ * _mm256_unpackhi_ps/_mm256_unpacklo_ps/_mm256_unpacklo_pd/_mm256_unpackhi_pd have no speed advantage over any
+ * of above (lower throughput on icelake+) but has 1B shorter opcode.
+ * _mm_movedup_pd should never be used. Use _mm256_unpacklo_pd instead.
+ * All 256b swizzles are executed on the same port except on IceLake+ which has extra port
+ * used by shufps/movsldup/movshdup
  */
 #    define _mm256_shuffle1_ps(m128, iMask) _mm256_shuffle_ps(m128, m128, (iMask))
 #    define _mm256_shuffle2200_ps(m256) _mm256_moveldup_ps(m256)
@@ -130,10 +207,10 @@ namespace Shift {
 #    endif
 
 /*
- * _mm512_permute_ps and shufpd are equivalent.
+ * _mm512_permute_ps and shufps are equivalent.
  * _mm512_moveldup_ps/_mm512_movehdup_ps/_mm512_unpackhi_ps/_mm512_unpacklo_ps/_mm512_unpacklo_pd/_mm512_unpackhi_pd/_mm512_movedup_pd
- * should always be used as have same speed as shufps but occupy 1B shorter opcode All 512b swizzles are executed on the
- * same port
+ * should always be used as have same speed as shufps but occupy 1B shorter opcode.
+ * All 512b swizzles are executed on the same port
  */
 #    define _mm512_shuffle1_ps(m128, iMask) _mm512_shuffle_ps(m128, m128, (iMask))
 #    define _mm512_set_m128(m128_3, m128_2, m128_1, m128_0) \
@@ -152,101 +229,6 @@ namespace Shift {
         _mm512_shuffle_f32x4(_mm512_castps128_ps512(m128), _mm512_castps128_ps512(m128), _MM_SHUFFLE(0, 0, 0, 0))
 #    define _mm512_broadcastf64_ps(m128) _mm512_broadcast_f32x2(m128)
 #    define _mm512_broadcastf256_ps(m256) _mm512_insertf32x8(_mm512_castps256_ps512(m256), m256, 1)
-
-// Macros to determine best combination of shuffle parameters to get ideal shuffle when you don't care
-// about a input element
-#    define CHECK(i1, i2, i3, a, b, c) ((i1) == (a) && (i2) == (b) && (i3) == (c))
-#    define CHECK2(i1, i2, a, b) ((i1) == (a) && (i2) == (b))
-#    define XS_SHUFF128_DONTCARE_0(i1, i2, i3)                                                                     \
-        (CHECK(i1, i2, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i1, i2, i3, 1, 0, 1) || CHECK(i1, i2, i3, 0, 1, 1) || \
-                CHECK(i1, i2, i3, 0, 2, 2) ?                                                                       \
-                                         0 :                                                                       \
-            CHECK(i1, i2, i3, 1, 1, 3) ? 1 :                                                                       \
-                                         2
-#    define XS_SHUFF128_DONTCARE_1(i0, i2, i3)                                                                        \
-        (CHECK(i0, i2, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i0, i2, i3, 0, 1, 1) || CHECK(i0, i2, i3, 0, 2, 2) ? 0 : \
-            CHECK(i0, i2, i3, 0, 0, 1) || CHECK(i0, i2, i3, 1, 3, 3)                                            ? 1 : \
-            CHECK(i0, i2, i3, 2, 3, 3)                                                                          ? 2 : \
-                                                                                                                  3
-#    define XS_SHUFF128_DONTCARE_2(i0, i1, i3)                                          \
-        (CHECK(i0, i1, i3, 0, 0, 0) && XS_ARCH_AVX) || CHECK(i0, i1, i3, 0, 1, 1) ? 0 : \
-            CHECK(i0, i1, i3, 0, 0, 1)                                            ? 1 : \
-            CHECK(i0, i1, i3, 2, 3, 3) || CHECK(i0, i1, i3, 0, 0, 2)              ? 2 : \
-                                                                                    3
-#    define XS_SHUFF128_DONTCARE_3(i0, i1, i2)                             \
-        (CHECK(i0, i1, i2, 0, 0, 0) && XS_ARCH_AVX)                  ? 0 : \
-            CHECK(i0, i1, i2, 0, 1, 0) || CHECK(i0, i1, i2, 0, 0, 1) ? 1 : \
-            CHECK(i0, i1, i2, 0, 0, 2)                               ? 2 : \
-                                                                       3
-#    define XS_SHUFF128_DONTCARE_0_12(i1, i2)                               \
-        CHECK2(i1, i2, 1, 0) || (CHECK2(i1, i2, 0, 0) && XS_ARCH_AVX) ? 0 : \
-            CHECK2(i1, i2, 3, 2) || CHECK2(i1, i2, 2, 3)              ? 2 : \
-            CHECK2(i1, i2, 0, 1) || CHECK2(i1, i2, 0, 2)              ? 0 : \
-                                                                        1
-#    define XS_SHUFF128_DONTCARE_0_13(i1, i3)                               \
-        (CHECK2(i1, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i1, i3, 1, 1) ? 0 : \
-            CHECK2(i1, i3, 3, 3) || CHECK2(i1, i3, 2, 3)              ? 2 : \
-            CHECK2(i1, i3, 0, 1) || CHECK2(i1, i3, 0, 2)              ? 0 : \
-                                                                        1
-#    define XS_SHUFF128_DONTCARE_0_23(i2, i3)                               \
-        (CHECK2(i2, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i2, i3, 0, 1) ? 0 : \
-            CHECK2(i2, i3, 2, 3) || CHECK2(i2, i3, 3, 3)              ? 2 : \
-            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2)              ? 0 : \
-                                                                        1
-#    define XS_SHUFF128_DONTCARE_1_02(i0, i2)                                      \
-        CHECK2(i0, i2, 0, 0)                             ? (XS_ARCH_AVX ? 0 : 1) : \
-            CHECK2(i0, i2, 2, 2)                         ? 3 :                     \
-            CHECK2(i0, i2, 2, 3)                         ? 2 :                     \
-            CHECK2(i0, i2, 0, 1) || CHECK2(i0, i2, 0, 2) ? 0 :                     \
-                                                           1
-#    define XS_SHUFF128_DONTCARE_1_03(i0, i3)       \
-        (CHECK2(i0, i3, 0, 0) && XS_ARCH_AVX) ? 0 : \
-            CHECK2(i0, i3, 0, 1)              ? 1 : \
-            CHECK2(i0, i3, 2, 3)              ? 3 : \
-            CHECK2(i0, i3, 0, 2)              ? 0 : \
-                                                1
-#    define XS_SHUFF128_DONTCARE_1_23(i2, i3)                  \
-        (CHECK2(i2, i3, 0, 0) && XS_ARCH_AVX)            ? 0 : \
-            CHECK2(i2, i3, 0, 1)                         ? 1 : \
-            CHECK2(i2, i3, 2, 3)                         ? 3 : \
-            CHECK2(i2, i3, 3, 3)                         ? 2 : \
-            CHECK2(i2, i3, 1, 1) || CHECK2(i2, i3, 2, 2) ? 0 : \
-                                                           1
-#    define XS_SHUFF128_DONTCARE_2_01(i0, i1)                            \
-        (CHECK2(i0, i1, 0, 0) && XS_ARCH_AVX)) || CHECK2(i0, i1, 0, 1) ? \
-            0 :                                                                 \
-            CHECK2(i0, i1, 2, 3) ? 2 : CHECK2(i0, i1, 2, 2) ? 3 : CHECK2(i0, i1, 0, 0) ? 1 : 3
-#    define XS_SHUFF128_DONTCARE_2_03(i0, i3)                               \
-        (CHECK2(i0, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i0, i3, 0, 1) ? 0 : \
-            CHECK2(i0, i3, 2, 3)                                      ? 2 : \
-            CHECK2(i0, i3, 0, 2)                                      ? 2 : \
-                                                                        3
-#    define XS_SHUFF128_DONTCARE_2_13(i1, i3)                               \
-        (CHECK2(i1, i3, 0, 0) && XS_ARCH_AVX) || CHECK2(i1, i3, 1, 1) ? 0 : \
-            CHECK2(i1, i3, 3, 3)                                      ? 2 : \
-            CHECK2(i1, i3, 2, 3)                                      ? 3 : \
-            CHECK2(i1, i3, 0, 1)                                      ? 1 : \
-            CHECK2(i1, i3, 0, 2)                                      ? 2 : \
-                                                                        3
-#    define XS_SHUFF128_DONTCARE_3_01(i0, i1)                  \
-        (CHECK2(i0, i1, 0, 0) && XS_ARCH_AVX)            ? 0 : \
-            CHECK2(i0, i1, 0, 1)                         ? 1 : \
-            CHECK2(i0, i1, 2, 3) || CHECK2(i0, i1, 2, 2) ? 3 : \
-            CHECK2(i0, i1, 0, 0)                         ? 1 : \
-                                                           3
-#    define XS_SHUFF128_DONTCARE_3_02(i0, i2)                                      \
-        CHECK2(i0, i2, 0, 0)                             ? (XS_ARCH_AVX ? 0 : 1) : \
-            CHECK2(i0, i2, 2, 2) || CHECK2(i0, i2, 2, 3) ? 3 :                     \
-            CHECK2(i0, i2, 0, 1)                         ? 1 :                     \
-            CHECK2(i0, i2, 0, 2)                         ? 2 :                     \
-                                                           3
-#    define XS_SHUFF128_DONTCARE_3_12(i1, i2)                  \
-        (CHECK2(i1, i2, 0, 0) && XS_ARCH_AVX)            ? 0 : \
-            CHECK2(i1, i2, 1, 0)                         ? 1 : \
-            CHECK2(i1, i2, 2, 3) || CHECK2(i1, i2, 3, 2) ? 3 : \
-            CHECK2(i1, i2, 0, 1)                         ? 1 : \
-            CHECK2(i1, i2, 0, 2)                         ? 2 : \
-                                                           3
 
 #    if !XS_ARCH_AVX2
 #        define _mm_fmadd_ss(m128_0, m128_1, m128_2) _mm_add_ss(_mm_mul_ss(m128_0, m128_1), m128_2)
@@ -337,22 +319,18 @@ namespace Shift {
 #        define _mm256_recipsqrt_ps(m256) _mm256_rsqrt_ps(m256)
 #    endif
 
-#    if !XS_ARCH_AVX2
-#        define _mm_broadcastd_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(0, 0, 0, 0))
-#    endif
-
-#    define _mm_shuffle0000_epi32(m128i) _mm_broadcastd_epi32(m128i)
+/*
+ * _mm_shufflelo_epi16/_mm_shufflehi_epi16 should never be used as identical to shufd.
+ * _mm_unpacklo_epi32/_mm_unpackhi_epi32 should always be used as have same speed as shufd but occupy 1B shorter opcode.
+ * _mm_broadcastd_epi32 should never be used as shufd has higher throughput on iceLake+/ivybridge- (is same for all
+ * others).
+ * All swizzles are executed on the same port
+ */
+#    define _mm_shuffle0000_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(0, 0, 0, 0))
 #    define _mm_shuffle1111_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(1, 1, 1, 1))
 #    define _mm_shuffle2222_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(2, 2, 2, 2))
 #    define _mm_shuffle3333_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(3, 3, 3, 3))
 
-// Shufflelo has half the latency (same on i7) as shuffle and twice the throughput (same on core2 + i7)
-#    define _mm_shuffle3200_epi32(m128i) _mm_shufflelo_epi16((m128i), _MM_SHUFFLE(1, 0, 1, 0))
-#    define _mm_shuffle3201_epi32(m128i) _mm_shufflelo_epi16((m128i), _MM_SHUFFLE(1, 0, 3, 2))
-#    define _mm_shuffle3211_epi32(m128i) _mm_shufflelo_epi16((m128i), _MM_SHUFFLE(3, 2, 3, 2))
-#    define _mm_shuffle2210_epi32(m128i) _mm_shufflehi_epi16((m128i), _MM_SHUFFLE(1, 0, 1, 0))
-#    define _mm_shuffle2310_epi32(m128i) _mm_shufflehi_epi16((m128i), _MM_SHUFFLE(1, 0, 3, 2))
-#    define _mm_shuffle3310_epi32(m128i) _mm_shufflehi_epi16((m128i), _MM_SHUFFLE(3, 2, 3, 2))
 #    define _mm_shuffle3322_epi32(m128i) _mm_unpackhi_epi32(m128i, m128i)
 #    define _mm_shuffle1100_epi32(m128i) _mm_unpacklo_epi32(m128i, m128i)
 } // namespace Shift
