@@ -4203,7 +4203,7 @@ XS_INLINE SIMD4<T, Width> operator&(const SIMD4<T, Width>& other1, typename SIMD
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_and_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_and_ps(other1.values, other2.values));
     } else
 #endif
     {
@@ -4231,7 +4231,7 @@ XS_INLINE SIMD4<T, Width> operator|(const SIMD4<T, Width>& other1, const SIMD4<T
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_or_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_or_ps(other1.values, other2.values));
     } else
 #endif
     {
@@ -4259,7 +4259,7 @@ XS_INLINE SIMD4<T, Width> operator|(const SIMD4<T, Width>& other1, typename SIMD
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_or_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_or_ps(other1.values, other2.values));
     } else
 #endif
     {
@@ -4287,7 +4287,7 @@ XS_INLINE SIMD4<T, Width> operator^(const SIMD4<T, Width>& other1, const SIMD4<T
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_xor_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_xor_ps(other1.values, other2.values));
     } else
 #endif
     {
@@ -4315,7 +4315,7 @@ XS_INLINE SIMD4<T, Width> operator^(const SIMD4<T, Width>& other1, typename SIMD
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_xor_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_xor_ps(other1.values, other2.values));
     } else
 #endif
     {
@@ -4343,7 +4343,7 @@ XS_INLINE SIMD4<T, Width> operator~(const SIMD4<T, Width>& other) noexcept
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
         const __m128 val = _mm_undefined_ps();
-        return SIMD4(_mm_xor_ps(other.values, _mm_cmpeq_ps(val, val)));
+        return SIMD4<T, Width>(_mm_xor_ps(other.values, _mm_cmpeq_ps(val, val)));
     } else
 #endif
     {
