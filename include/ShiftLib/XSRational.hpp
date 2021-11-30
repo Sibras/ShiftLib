@@ -82,6 +82,8 @@ class Rational
 
 public:
     using Type = T;
+    using Data = RationalData<T>;
+    using DataPad = RationalData<T>;
 
     T numerator;
     T denominator;

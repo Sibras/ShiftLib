@@ -180,6 +180,8 @@ class Matrix4x4
 public:
     using Type = T;
     using SIMD4x4Def = SIMD16<T, SIMD16<T, Width>::widthImpl>;
+    using Data = Matrix4x4Data<T>;
+    using DataPad = Matrix4x4DataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD4x4Def::widthImpl;
     using BaseDef = typename SIMD4x4Def::BaseDef;

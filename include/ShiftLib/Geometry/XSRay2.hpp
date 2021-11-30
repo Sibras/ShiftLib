@@ -20,9 +20,6 @@
 #include "Geometry/XSVector3D2.hpp"
 
 namespace Shift {
-template<typename T, SIMDWidth Width>
-class SIMD2;
-
 /**
  * A ray2 object. The ray2 is used to store 2 rays at a time. This is mainly used when optimising for SIMD
  * architectures.

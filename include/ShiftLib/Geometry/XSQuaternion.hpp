@@ -99,6 +99,8 @@ class Quaternion
 public:
     using Type = T;
     using SIMD4Def = SIMD4<T, SIMD4<T, Width>::widthImpl>;
+    using Data = QuaternionData<T>;
+    using DataPad = QuaternionDataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD4Def::widthImpl;
     using BaseDef = typename SIMD4Def::BaseDef;

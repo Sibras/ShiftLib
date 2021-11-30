@@ -128,6 +128,8 @@ class AABoundingBox2
 public:
     using Type = T;
     using Point3D2Def = Point3D2<T, Point3D2<T, Width, Packed>::widthImpl, Packed>;
+    using Data = AABoundingBox2Data<T, Packed>;
+    using DataPad = AABoundingBox2DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D2Def::widthImpl;
     static constexpr bool packed = Packed;

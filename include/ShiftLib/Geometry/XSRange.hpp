@@ -68,6 +68,9 @@ public:
     }
 };
 
+template<typename T>
+using RangeDataPad = RangeData<T>;
+
 /** Range type used to store minimum and maximum values for a specific range. */
 template<typename T, SIMDWidth Width = widthSIMD<T>>
 class Range
@@ -75,6 +78,8 @@ class Range
 public:
     using Type = T;
     using SIMD2Def = SIMD2<T, SIMD2<T, Width>::widthImpl>;
+    using Data = RangeData<T>;
+    using DataPad = RangeDataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD2Def::widthImpl;
     using BaseDef = typename SIMD2Def::BaseDef;
@@ -207,10 +212,31 @@ public:
     }
 
     /**
+     * Sets the minimum value.
+     * @param min The new minimum.
+     */
+    XS_INLINE void setMin(BaseDef min)
+    {
+        this->minMax.template setValue<0>(min);
+        if constexpr (Width > SIMDWidth::Scalar) {
+            this->minMax = this->minMax.template negate<true, false>();
+        }
+    }
+
+    /**
      * Sets the maximum value.
      * @param max The new maximum.
      */
     XS_INLINE void setMax(InBaseDef max)
+    {
+        this->minMax.template setValue<1>(max);
+    }
+
+    /**
+     * Sets the maximum value.
+     * @param max The new maximum.
+     */
+    XS_INLINE void setMax(BaseDef max)
     {
         this->minMax.template setValue<1>(max);
     }

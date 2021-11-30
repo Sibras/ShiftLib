@@ -200,6 +200,8 @@ class Point3D2
 public:
     using Type = T;
     using Point3D2Def = typename InternData<Packed>::Point3D2Intern;
+    using Data = Point3D2Data<T, Packed>;
+    using DataPad = Point3D2DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D2Def::widthImpl;
     static constexpr bool packed = Packed;

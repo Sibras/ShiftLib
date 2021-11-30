@@ -142,6 +142,8 @@ class Point3D
 public:
     using Type = T;
     using SIMD3Def = SIMD3<T, SIMD3<T, Width>::widthImpl>;
+    using Data = Point3DData<T>;
+    using DataPad = Point3DDataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD3Def::widthImpl;
     using BaseDef = typename SIMD3Def::BaseDef;

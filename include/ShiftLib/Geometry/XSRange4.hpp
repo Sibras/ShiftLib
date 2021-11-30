@@ -68,6 +68,9 @@ public:
     }
 };
 
+template<typename T>
+using Range4DataPad = Range4Data<T>;
+
 /** Range4 type used to store minimum and maximum values for four different specific ranges. */
 template<typename T, SIMDWidth Width = widthSIMD<T>>
 class Range4
@@ -75,6 +78,8 @@ class Range4
 public:
     using Type = T;
     using SIMD4Def = SIMD4<T, SIMD4<T, Width>::widthImpl>;
+    using Data = Range4Data<T>;
+    using DataPad = Range4DataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD4Def::widthImpl;
     using BaseDef = typename SIMD4Def::BaseDef;

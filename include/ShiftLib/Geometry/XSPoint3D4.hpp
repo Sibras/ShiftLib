@@ -212,6 +212,8 @@ class Point3D4
 public:
     using Type = T;
     using Point3D4Def = typename InternData<Packed>::Point3D4Intern;
+    using Data = Point3D4Data<T, Packed>;
+    using DataPad = Point3D4DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D4Def::widthImpl;
     static constexpr bool packed = Packed;

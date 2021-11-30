@@ -124,6 +124,8 @@ class AABoundingBox
 public:
     using Type = T;
     using Point3DDef = Point3D<T, Point3D<T, Width>::widthImpl>;
+    using Data = AABoundingBoxData<T>;
+    using DataPad = AABoundingBoxDataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3DDef::widthImpl;
     using InBaseDef = typename Point3DDef::InBaseDef;

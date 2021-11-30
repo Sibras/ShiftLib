@@ -216,6 +216,8 @@ public:
     using QuaternionDef = Quaternion<T, Width>;
     using InternalData = InternData<Matrix>;
     static constexpr SIMDWidth widthImpl = InternalData::widthImpl;
+    using Data = TransformData<T, Matrix>;
+    using DataPad = TransformDataPad<T, Matrix>;
     using BaseDef = typename InternalData::BaseDef;
     using InBaseDef = typename InternalData::InBaseDef;
     using SIMD3Def = typename InternalData::SIMD3Def;

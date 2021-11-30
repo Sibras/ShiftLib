@@ -212,6 +212,8 @@ class Vector3D4
 public:
     using Type = T;
     using Vector3D4Def = typename InternData<Packed>::Vector3D4Intern;
+    using Data = Vector3D4Data<T, Packed>;
+    using DataPad = Vector3D4DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Vector3D4Def::widthImpl;
     static constexpr bool packed = Packed;

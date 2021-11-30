@@ -200,6 +200,8 @@ class Vector3D2
 public:
     using Type = T;
     using Vector3D2Def = typename InternData<Packed>::Vector3D2Intern;
+    using Data = Vector3D2Data<T, Packed>;
+    using DataPad = Vector3D2DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Vector3D2Def::widthImpl;
     static constexpr bool packed = Packed;

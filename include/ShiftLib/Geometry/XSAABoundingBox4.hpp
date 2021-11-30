@@ -84,6 +84,8 @@ class AABoundingBox4
 public:
     using Type = T;
     using Point3D4Def = Point3D4<T, Point3D4<T, Width, Packed>::widthImpl, Packed>;
+    using Data = AABoundingBox4Data<T, Packed>;
+    using DataPad = AABoundingBox4DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D4Def::widthImpl;
     static constexpr bool packed = Packed;

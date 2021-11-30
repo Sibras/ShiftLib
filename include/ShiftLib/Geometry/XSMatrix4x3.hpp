@@ -173,6 +173,8 @@ class Matrix4x3
 public:
     using Type = T;
     using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, Width>::widthImpl>;
+    using Data = Matrix4x3Data<T>;
+    using DataPad = Matrix4x3DataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD3x4Def::widthImpl;
     using BaseDef = typename SIMD3x4Def::BaseDef;

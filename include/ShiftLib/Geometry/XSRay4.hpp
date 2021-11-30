@@ -21,8 +21,6 @@
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
-class SIMD4;
-template<typename T, SIMDWidth Width>
 class Ray;
 
 /**
