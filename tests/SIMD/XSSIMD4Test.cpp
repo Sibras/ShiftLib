@@ -61,12 +61,13 @@ TYPED_TEST_NS2(SIMD4, TESTISA(SIMD4), SIMD4)
     // Test that the classes size matches the expected internal representation
     if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
-            assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+            assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
         } else {
-            assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+            assertType<typename TestType::InternalData::Type,
+                typename TestData128<typename TestFixture::TypeInt>::Type>();
         }
     } else {
-        assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+        assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
     }
 
     //  Constructor Test

@@ -104,12 +104,14 @@ class SIMDInBase : public NoExport::SIMDData<T, 1, 0, Width>
 
 public:
     using Type = T;
-    using Data = NoExport::SIMDData<T, 1, 0, Width>;
+    using InternalData = NoExport::SIMDData<T, 1, 0, Width>;
+    using Data = SIMDInBaseData<T>;
+    using DataPad = SIMDInBaseDataPad<T>;
     static constexpr SIMDWidth width = Width;
-    static constexpr SIMDWidth widthImpl = Data::width;
+    static constexpr SIMDWidth widthImpl = InternalData::width;
     static constexpr uint32 numValues = 1;
     static constexpr uint32 size = 1;
-    using Data::SIMDData;
+    using InternalData::SIMDData;
 
     /** Default constructor. */
     XS_FUNCTION SIMDInBase() noexcept = default;

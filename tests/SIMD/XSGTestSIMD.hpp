@@ -517,7 +517,7 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 {
     if (testValue(param.getValue(), v1)) {
         // Check that all elements are identical in SIMD
-        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::Data::width ==
+        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::InternalData::width ==
             XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth::B16) {
             if (!(((const T*)&(param.values))[0] == ((const T*)&(param.values))[1] &&
                     ((const T*)&(param.values))[1] == ((const T*)&(param.values))[2] &&
@@ -525,7 +525,7 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
                 return ::testing::AssertionFailure();
             }
         }
-        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::Data::width ==
+        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::InternalData::width ==
             XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth::B32) {
             if (!(((const T*)&(param.values))[0] == ((const T*)&(param.values))[1] &&
                     ((const T*)&(param.values))[1] == ((const T*)&(param.values))[2] &&
@@ -537,7 +537,7 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
                 return ::testing::AssertionFailure();
             }
         }
-        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::Data::width ==
+        if constexpr (XS_OVERRIDE_SHIFT_NS::Shift::SIMDBase<T, Width>::InternalData::width ==
             XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth::B64) {
             if (!(((const T*)&(param.values))[0] == ((const T*)&(param.values))[1] &&
                     ((const T*)&(param.values))[1] == ((const T*)&(param.values))[2] &&

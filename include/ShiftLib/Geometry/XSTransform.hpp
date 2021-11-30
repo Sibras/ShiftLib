@@ -214,11 +214,11 @@ public:
     static constexpr SIMDWidth width = Width;
     using Matrix4x3Def = Matrix4x3<T, Width>;
     using QuaternionDef = Quaternion<T, Width>;
-    using Data = InternData<Matrix>;
-    static constexpr SIMDWidth widthImpl = Data::widthImpl;
-    using BaseDef = typename Data::BaseDef;
-    using InBaseDef = typename Data::InBaseDef;
-    using SIMD3Def = typename Data::SIMD3Def;
+    using InternalData = InternData<Matrix>;
+    static constexpr SIMDWidth widthImpl = InternalData::widthImpl;
+    using BaseDef = typename InternalData::BaseDef;
+    using InBaseDef = typename InternalData::InBaseDef;
+    using SIMD3Def = typename InternalData::SIMD3Def;
     using Point3DDef = Point3D<T, widthImpl>;
     template<bool Packed>
     using Point3D2Def = Point3D2<T, widthImpl, Packed>;
@@ -230,7 +230,7 @@ public:
     template<bool Packed>
     using Vector3D4Def = Vector3D4<T, widthImpl, Packed>;
 
-    Data data;
+    InternalData data;
 
     /** Default constructor. */
     XS_FUNCTION Transform() noexcept = default;

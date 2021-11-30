@@ -22,7 +22,7 @@ namespace Shift {
  * Gets whether the internal implementation of 2 SIMD objects is identical.
  */
 template<typename T, typename T2>
-inline constexpr bool sameImpl = isSame<typename T::Data::Type, typename T2::Data::Type>;
+inline constexpr bool sameImpl = isSame<typename T::InternalData::Type, typename T2::InternalData::Type>;
 
 template<typename T, typename T2>
 using requireSameImpl = require<sameImpl<T, T2>>;

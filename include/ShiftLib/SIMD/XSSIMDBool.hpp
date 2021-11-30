@@ -26,8 +26,8 @@ class Bool2 : public NoExport::SIMDBoolData<2, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<2, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<2, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool2() = default;
@@ -333,8 +333,8 @@ class Bool3 : public NoExport::SIMDBoolData<3, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<3, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<3, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool3() = default;
@@ -645,8 +645,8 @@ class Bool3x2 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<6, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<6, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool3x2() = default;
@@ -1002,8 +1002,8 @@ class Bool4 : public NoExport::SIMDBoolData<4, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<4, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<4, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool4() = default;
@@ -1305,8 +1305,8 @@ class Bool6 : public NoExport::SIMDBoolData<6, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<6, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<6, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool6() = default;
@@ -1632,8 +1632,8 @@ class Bool8 : public NoExport::SIMDBoolData<8, IsSIMD>
 {
 public:
     static constexpr bool usingSIMD = IsSIMD;
-    using Data = NoExport::SIMDBoolData<8, IsSIMD>;
-    using Data::SIMDBoolData;
+    using InternalData = NoExport::SIMDBoolData<8, IsSIMD>;
+    using InternalData::SIMDBoolData;
 
     /** Default constructor. */
     XS_FUNCTION Bool8() = default;

@@ -107,24 +107,26 @@ class SIMD2 : public NoExport::SIMDData<T, 2, 0, Width>
 
 public:
     using Type = T;
-    using Data = NoExport::SIMDData<T, 2, 0, Width>;
+    using InternalData = NoExport::SIMDData<T, 2, 0, Width>;
+    using Data = SIMD2Data<T>;
+    using DataPad = SIMD2DataPad<T>;
     static constexpr SIMDWidth width = Width;
-    static constexpr SIMDWidth widthImpl = Data::width;
+    static constexpr SIMDWidth widthImpl = InternalData::width;
     static constexpr uint32 numValues = 2;
-    static constexpr uint32 size = Data::size;
+    static constexpr uint32 size = InternalData::size;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
-    using Data::SIMDData;
+    using InternalData::SIMDData;
 
     /** Dual Mask object used to store 2 different masks at once. */
     class Mask : public NoExport::SIMDMaskData<T, 2, 0, Width>
     {
     public:
         using Type = T;
-        using Data = NoExport::SIMDMaskData<T, 2, 0, Width>;
+        using InternalData = NoExport::SIMDMaskData<T, 2, 0, Width>;
         static constexpr SIMDWidth width = Width;
-        static constexpr SIMDWidth widthImpl = Data::width;
-        using Data::SIMDMaskData;
+        static constexpr SIMDWidth widthImpl = InternalData::width;
+        using InternalData::SIMDMaskData;
         using Bool = Bool2<hasSIMD<T> && (Width > SIMDWidth::Scalar)>;
 
         /** Default constructor. */

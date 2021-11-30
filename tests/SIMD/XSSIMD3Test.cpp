@@ -62,14 +62,15 @@ TYPED_TEST_NS2(SIMD3, TESTISA(SIMD3), SIMD3)
     if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 3>();
-            assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+            assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
         } else {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 4>();
-            assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+            assertType<typename TestType::InternalData::Type,
+                typename TestData128<typename TestFixture::TypeInt>::Type>();
         }
     } else {
         assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 3>();
-        assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+        assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
     }
 
     //  Constructor Test

@@ -167,11 +167,13 @@ class SIMD16 : public NoExport::SIMDData<T, 16, 0, Width>
 
 public:
     using Type = T;
-    using Data = NoExport::SIMDData<T, 16, 0, Width>;
+    using InternalData = NoExport::SIMDData<T, 16, 0, Width>;
+    using Data = SIMD16Data<T>;
+    using DataPad = SIMD16DataPad<T>;
     static constexpr SIMDWidth width = Width;
-    static constexpr SIMDWidth widthImpl = Data::width;
+    static constexpr SIMDWidth widthImpl = InternalData::width;
     static constexpr uint32 numValues = 16;
-    static constexpr uint32 size = Data::size;
+    static constexpr uint32 size = InternalData::size;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
@@ -179,7 +181,7 @@ public:
     using SIMD8Def = SIMD8<T, SIMD8<T, widthImpl>::widthImpl>;
     using SIMD12Def = SIMD12<T, SIMD12<T, widthImpl>::widthImpl>;
     using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, widthImpl>::widthImpl>;
-    using Data::SIMDData;
+    using InternalData::SIMDData;
 
     /** Default constructor. */
     XS_FUNCTION SIMD16() noexcept = default;

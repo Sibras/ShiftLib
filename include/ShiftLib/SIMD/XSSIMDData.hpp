@@ -312,8 +312,8 @@ public:
     using Type = T;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = Size;
-    using Data = SIMDDataType<Type, false, size>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, false, size>;
+    using InternalData::SIMDDataType;
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width, typename = void>
@@ -323,8 +323,8 @@ public:
     using Type = bool;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = Size;
-    using Data = SIMDDataType<Type, false, size>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, false, size>;
+    using InternalData::SIMDDataType;
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width, typename = void>
@@ -334,8 +334,8 @@ public:
     using Type = uint32;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = Size;
-    using Data = SIMDDataType<Type, false, size>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, false, size>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, bool SIMD, typename = void>
@@ -344,8 +344,8 @@ class SIMDBoolData : public SIMDDataType<bool, false, Size>
 public:
     using Type = bool;
     static constexpr uint32 size = Size;
-    using Data = SIMDDataType<Type, false, size>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, false, size>;
+    using InternalData::SIMDDataType;
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -356,8 +356,8 @@ public:
     using Type = T;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = 1;
-    using Data = SIMDDataType1<Type, false>;
-    using Data::SIMDDataType1;
+    using InternalData = SIMDDataType1<Type, false>;
+    using InternalData::SIMDDataType1;
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -368,8 +368,8 @@ public:
     using Type = bool;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = 1;
-    using Data = SIMDDataType1<Type, false>;
-    using Data::SIMDDataType1;
+    using InternalData = SIMDDataType1<Type, false>;
+    using InternalData::SIMDDataType1;
 };
 
 template<typename T, uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -380,8 +380,8 @@ public:
     using Type = uint32;
     static constexpr SIMDWidth width = SIMDWidth::Scalar;
     static constexpr uint32 size = 1;
-    using Data = SIMDDataType1<Type, false>;
-    using Data::SIMDDataType1;
+    using InternalData = SIMDDataType1<Type, false>;
+    using InternalData::SIMDDataType1;
 };
 
 #if XS_ISA == XS_X86
@@ -395,8 +395,8 @@ public:
     using Type = __m128;
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4;
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -416,8 +416,8 @@ public:
 #        endif
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4;
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -429,8 +429,8 @@ public:
     using Type = __m128i;
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4;
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -442,8 +442,8 @@ public:
     using Type = __m128;
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4 * (((Size + Pad) + 3) / 4);
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -464,8 +464,8 @@ public:
 #        endif
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4 * (((Size + Pad) + 3) / 4);
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -477,8 +477,8 @@ public:
     using Type = __m128i;
     static constexpr SIMDWidth width = SIMDWidth::B16;
     static constexpr uint32 size = 4 * (((Size + Pad) + 3) / 4);
-    using Data = SIMDDataType<Type, true, size / 4>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 4>;
+    using InternalData::SIMDDataType;
 };
 #    endif
 #    if XS_ARCH_AVX
@@ -491,8 +491,8 @@ public:
     using Type = __m256;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8;
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -512,8 +512,8 @@ public:
 #        endif
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8;
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -525,8 +525,8 @@ public:
     using Type = __m256i;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8;
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -539,8 +539,8 @@ public:
     using Type2 = __m128;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 12;
-    using Data = SIMDDataType2<Type, Type2, true>;
-    using Data::SIMDDataType2;
+    using InternalData = SIMDDataType2<Type, Type2, true>;
+    using InternalData::SIMDDataType2;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -563,8 +563,8 @@ public:
 #        endif
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 12;
-    using Data = SIMDDataType2<Type, Type2, true>;
-    using Data::SIMDDataType2;
+    using InternalData = SIMDDataType2<Type, Type2, true>;
+    using InternalData::SIMDDataType2;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -577,8 +577,8 @@ public:
     using Type2 = __m128i;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 12;
-    using Data = SIMDDataType2<Type, Type2, true>;
-    using Data::SIMDDataType2;
+    using InternalData = SIMDDataType2<Type, Type2, true>;
+    using InternalData::SIMDDataType2;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -590,8 +590,8 @@ public:
     using Type = __m256;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8 * (((Size + Pad) + 7) / 8);
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -612,8 +612,8 @@ public:
 #        endif
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8 * ((Size + Pad) + 7) / 8;
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -625,8 +625,8 @@ public:
     using Type = __m256i;
     static constexpr SIMDWidth width = SIMDWidth::B32;
     static constexpr uint32 size = 8 * (((Size + Pad) + 7) / 8);
-    using Data = SIMDDataType<Type, true, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 8>;
+    using InternalData::SIMDDataType;
 };
 #    endif
 
@@ -640,8 +640,8 @@ public:
     using Type = __m512;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16;
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -653,8 +653,8 @@ public:
     using Type = __mmask16;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16;
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -666,8 +666,8 @@ public:
     using Type = __m512i;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16;
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -679,8 +679,8 @@ public:
     using Type = __m512;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16 * (((Size + Pad) + 15) / 16);
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -692,8 +692,8 @@ public:
     using Type = __mmask16;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16 * (((Size + Pad) + 15) / 16);
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 
 template<uint32 Size, uint32 Pad, SIMDWidth Width>
@@ -705,8 +705,8 @@ public:
     using Type = __m512i;
     static constexpr SIMDWidth width = SIMDWidth::B64;
     static constexpr uint32 size = 16 * (((Size + Pad) + 15) / 16);
-    using Data = SIMDDataType<Type, true, size / 16>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, true, size / 16>;
+    using InternalData::SIMDDataType;
 };
 #    endif
 
@@ -716,8 +716,8 @@ class SIMDBoolData<Size, true> : public SIMDDataType<uint8, false, Size / 8>
 public:
     using Type = uint8;
     static constexpr uint32 size = Size;
-    using Data = SIMDDataType<Type, false, size / 8>;
-    using Data::SIMDDataType;
+    using InternalData = SIMDDataType<Type, false, size / 8>;
+    using InternalData::SIMDDataType;
 };
 #endif
 } // namespace Shift::NoExport

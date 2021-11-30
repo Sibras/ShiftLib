@@ -56,14 +56,15 @@ TYPED_TEST_NS2(SIMD2, TESTISA(SIMD2), SIMD2)
     if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 2>();
-            assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+            assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
         } else {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 4>();
-            assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+            assertType<typename TestType::InternalData::Type,
+                typename TestData128<typename TestFixture::TypeInt>::Type>();
         }
     } else {
         assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 2>();
-        assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+        assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
     }
 
     static_assert(TestType::widthImpl == TestType::BaseDef::widthImpl);

@@ -61,29 +61,33 @@ TYPED_TEST_NS2(SIMD3x2, TESTISA(SIMD3x2), SIMD3x2)
     if constexpr (XS_ARCH_AVX) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 6>();
-            assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+            assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
         } else if constexpr (TestFixture::width == SIMDWidth::B16) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 8>();
-            assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+            assertType<typename TestType::InternalData::Type,
+                typename TestData128<typename TestFixture::TypeInt>::Type>();
         } else {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 8>();
             if constexpr (isSame<typename TestFixture::TypeInt, float32> || XS_ARCH_AVX2) {
-                assertType<typename TestType::Data::Type, typename TestData256<typename TestFixture::TypeInt>::Type>();
+                assertType<typename TestType::InternalData::Type,
+                    typename TestData256<typename TestFixture::TypeInt>::Type>();
             } else {
-                assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+                assertType<typename TestType::InternalData::Type,
+                    typename TestData128<typename TestFixture::TypeInt>::Type>();
             }
         }
     } else if constexpr (XS_ARCH_SSE) {
         if constexpr (TestFixture::width == SIMDWidth::Scalar) {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 6>();
-            assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+            assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
         } else {
             assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 8>();
-            assertType<typename TestType::Data::Type, typename TestData128<typename TestFixture::TypeInt>::Type>();
+            assertType<typename TestType::InternalData::Type,
+                typename TestData128<typename TestFixture::TypeInt>::Type>();
         }
     } else {
         assertSize<TestType, sizeof(typename TestFixture::TypeInt) * 6>();
-        assertType<typename TestType::Data::Type, typename TestFixture::TypeInt>();
+        assertType<typename TestType::InternalData::Type, typename TestFixture::TypeInt>();
     }
 
     //  Constructor Test

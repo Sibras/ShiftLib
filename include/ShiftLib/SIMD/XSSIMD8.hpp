@@ -130,28 +130,30 @@ class SIMD8 : public NoExport::SIMDData<T, 8, 0, Width>
 
 public:
     using Type = T;
-    using Data = NoExport::SIMDData<T, 8, 0, Width>;
+    using InternalData = NoExport::SIMDData<T, 8, 0, Width>;
+    using Data = SIMD8Data<T>;
+    using DataPad = SIMD8DataPad<T>;
     static constexpr SIMDWidth width = Width;
-    static constexpr SIMDWidth widthImpl = Data::width;
+    static constexpr SIMDWidth widthImpl = InternalData::width;
     static constexpr uint32 numValues = 8;
-    static constexpr uint32 size = Data::size;
+    static constexpr uint32 size = InternalData::size;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
     using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
     using SIMD6Def = SIMD6<T, SIMD6<T, widthImpl>::widthImpl>;
     using SIMD3x2Def = SIMD3x2<T, SIMD3x2<T, widthImpl>::widthImpl>;
-    using Data::SIMDData;
+    using InternalData::SIMDData;
 
     /** Oct Mask object used to store 8 different masks at once. */
     class Mask : public NoExport::SIMDMaskData<T, 8, 0, Width>
     {
     public:
         using Type = T;
-        using Data = NoExport::SIMDMaskData<T, 8, 0, Width>;
+        using InternalData = NoExport::SIMDMaskData<T, 8, 0, Width>;
         static constexpr SIMDWidth width = Width;
-        static constexpr SIMDWidth widthImpl = Data::width;
-        using Data::SIMDMaskData;
+        static constexpr SIMDWidth widthImpl = InternalData::width;
+        using InternalData::SIMDMaskData;
         using Bool = Bool8<hasSIMD<T> && (Width > SIMDWidth::Scalar)>;
 
         /** Default constructor. */
@@ -660,10 +662,10 @@ public:
     {
     public:
         using Type = T;
-        using Data = NoExport::SIMDShuffleData<T, 8, 0, Width>;
+        using InternalData = NoExport::SIMDShuffleData<T, 8, 0, Width>;
         static constexpr SIMDWidth width = Width;
-        static constexpr SIMDWidth widthImpl = Data::width;
-        using Data::SIMDShuffleData;
+        static constexpr SIMDWidth widthImpl = InternalData::width;
+        using InternalData::SIMDShuffleData;
 
         /** Default constructor. */
         XS_FUNCTION Shuffle() noexcept = default;
