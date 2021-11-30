@@ -498,6 +498,96 @@ public:
                 maskFunc.template finalExpression<InBaseDef, SIMDMasker3<2>>(val);
             }
         }
+
+        /**
+         * And 2 Masks.
+         * @param mask1 The first mask.
+         * @param mask2 Mask to and with the first one.
+         * @returns The result of the operation.
+         */
+        XS_INLINE friend Mask operator&(const Mask mask1, const Mask mask2) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    return Mask(_kand_mask8(mask1.values, mask2.values));
+                } else {
+                    return Mask(_mm_and_ps(mask1.values, mask2.values));
+                }
+            } else
+#endif
+            {
+                return Mask(
+                    mask1.values0 & mask2.values0, mask1.values1 & mask2.values1, mask1.values2 & mask2.values2);
+            }
+        }
+
+        /**
+         * Or 2 Masks.
+         * @param mask1 The first mask.
+         * @param mask2 Mask to or with the first one.
+         * @returns The result of the operation.
+         */
+        XS_INLINE friend Mask operator|(const Mask mask1, const Mask mask2) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    return Mask(_kor_mask8(mask1.values, mask2.values));
+                } else {
+                    return Mask(_mm_or_ps(mask1.values, mask2.values));
+                }
+            } else
+#endif
+            {
+                return Mask(
+                    mask1.values0 | mask2.values0, mask1.values1 | mask2.values1, mask1.values2 | mask2.values2);
+            }
+        }
+
+        /**
+         * Xor 2 Masks.
+         * @param mask1 The first mask.
+         * @param mask2 Mask to xor with the first one.
+         * @returns The result of the operation.
+         */
+        XS_INLINE friend Mask operator^(const Mask mask1, const Mask mask2) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    return Mask(_kxor_mask8(mask1.values, mask2.values));
+                } else {
+                    return Mask(_mm_xor_ps(mask1.values, mask2.values));
+                }
+            } else
+#endif
+            {
+                return Mask(
+                    mask1.values0 ^ mask2.values0, mask1.values1 ^ mask2.values1, mask1.values2 ^ mask2.values2);
+            }
+        }
+
+        /**
+         * Not a Mask.
+         * @param mask The mask.
+         * @returns The result of the operation.
+         */
+        XS_INLINE friend Mask operator~(const Mask mask) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    return Mask(_knot_mask8(mask.values));
+                } else {
+                    return Mask(_mm_xor_ps(mask.values, _mm_cmpeq_ps(mask.values, mask.values)));
+                }
+            } else
+#endif
+            {
+                return Mask(~mask.values0, ~mask.values1, ~mask.values2);
+            }
+        }
     };
 
     /** Tri shuffle class used to store shuffle information for SIMD3s. */
@@ -3278,103 +3368,6 @@ XS_INLINE SIMD3<T, Width> operator~(const SIMD3<T, Width>& other) noexcept
             return SIMD3<T, Width>(
                 Shift::bitNot(other.values0), Shift::bitNot(other.values1), Shift::bitNot(other.values2));
         }
-    }
-}
-
-/**
- * And 2 Masks.
- * @param mask1 The first mask.
- * @param mask2 Mask to and with the first one.
- * @returns The result of the operation.
- */
-template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD3<T, Width>::Mask operator&(
-    const typename SIMD3<T, Width>::Mask& mask1, const typename SIMD3<T, Width>::Mask& mask2) noexcept
-{
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-            return SIMD3<T, Width>::Mask(_kand_mask8(mask1.values, mask2.values));
-        } else {
-            return SIMD3<T, Width>::Mask(_mm_and_ps(mask1.values, mask2.values));
-        }
-    } else
-#endif
-    {
-        return SIMD3<T, Width>::Mask(
-            mask1.values0 & mask2.values0, mask1.values1 & mask2.values1, mask1.values2 & mask2.values2);
-    }
-}
-
-/**
- * Or 2 Masks.
- * @param mask1 The first mask.
- * @param mask2 Mask to or with the first one.
- * @returns The result of the operation.
- */
-template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD3<T, Width>::Mask operator|(
-    const typename SIMD3<T, Width>::Mask& mask1, const typename SIMD3<T, Width>::Mask& mask2) noexcept
-{
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-            return SIMD3<T, Width>::Mask(_kor_mask8(mask1.values, mask2.values));
-        } else {
-            return SIMD3<T, Width>::Mask(_mm_or_ps(mask1.values, mask2.values));
-        }
-    } else
-#endif
-    {
-        return SIMD3<T, Width>::Mask(
-            mask1.values0 | mask2.values0, mask1.values1 | mask2.values1, mask1.values2 | mask2.values2);
-    }
-}
-
-/**
- * Xor 2 Masks.
- * @param mask1 The first mask.
- * @param mask2 Mask to xor with the first one.
- * @returns The result of the operation.
- */
-template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD3<T, Width>::Mask operator^(
-    const typename SIMD3<T, Width>::Mask& mask1, const typename SIMD3<T, Width>::Mask& mask2) noexcept
-{
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-            return SIMD3<T, Width>::Mask(_kxor_mask8(mask1.values, mask2.values));
-        } else {
-            return SIMD3<T, Width>::Mask(_mm_xor_ps(mask1.values, mask2.values));
-        }
-    } else
-#endif
-    {
-        return SIMD3<T, Width>::Mask(
-            mask1.values0 ^ mask2.values0, mask1.values1 ^ mask2.values1, mask1.values2 ^ mask2.values2);
-    }
-}
-
-/**
- * Not a Mask.
- * @param mask The mask.
- * @returns The result of the operation.
- */
-template<typename T, SIMDWidth Width>
-XS_INLINE typename SIMD3<T, Width>::Mask operator~(const typename SIMD3<T, Width>::Mask& mask) noexcept
-{
-#if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-            return SIMD3<T, Width>::Mask(_knot_mask8(mask.values));
-        } else {
-            return SIMD3<T, Width>::Mask(_mm_xor_ps(mask.values, _mm_cmpeq_ps(mask.values, mask.values)));
-        }
-    } else
-#endif
-    {
-        return SIMD3<T, Width>::Mask(~mask.values0, ~mask.values1, ~mask.values2);
     }
 }
 } // namespace Shift

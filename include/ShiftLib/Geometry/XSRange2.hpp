@@ -301,14 +301,14 @@ public:
     XS_INLINE typename SIMD2Def::Mask isWithinRange(const SIMD2Def& values) const noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
-            const SIMD4Def data4(values.values); // Avoid constructor duplication v2
+            const SIMD4Def data4(values); // Avoid constructor duplication v2
             const typename SIMD4Def::Mask mask4(
                 data4.template shuffle<0, 0, 1, 1>().template negate<true, true, false, false>().lessThanMask(
                     this->minMax));
             return mask4.template getMask2<1>() & mask4.template getMask2<0>();
         } else {
             return (this->minMax.template getValue2<0>().lessThanMask(values)) &
-                (SIMD2Def(values).lessThanMask(this->minMax.template getValue2<1>()));
+                (values.lessThanMask(this->minMax.template getValue2<1>()));
         }
     }
 
