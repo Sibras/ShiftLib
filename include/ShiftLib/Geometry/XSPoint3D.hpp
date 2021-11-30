@@ -28,7 +28,7 @@ public:
     SIMD3Data<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Point3DData() noexcept = default;
+    XS_INLINE Point3DData() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -36,7 +36,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Point3DData(const Point3D<T, Width>& other) noexcept
+    XS_INLINE explicit Point3DData(const Point3D<T, Width>& other) noexcept
         : values(other.values)
     {}
 
@@ -48,7 +48,7 @@ public:
      * @param y Points pre-calculated y value.
      * @param z Points pre-calculated z value.
      */
-    XS_FUNCTION void setData(T x, T y, T z) noexcept
+    XS_INLINE void setData(T x, T y, T z) noexcept
     {
         this->values.setData(x, y, z);
     }
@@ -59,7 +59,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Point3D<T, Width>& other) noexcept
+    XS_INLINE void store(const Point3D<T, Width>& other) noexcept
     {
         this->values.store(other.values);
     }
@@ -70,7 +70,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Point3D<T, Width> load() const noexcept
+    XS_INLINE Point3D<T, Width> load() const noexcept
     {
         return Point3D<T, Width>(this->values.template load<Point3D<T, Width>::widthImpl>());
     }
@@ -83,7 +83,7 @@ public:
     SIMD3DataPad<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Point3DDataPad() noexcept = default;
+    XS_INLINE Point3DDataPad() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -91,7 +91,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Point3DDataPad(const Point3D<T, Width>& other) noexcept
+    XS_INLINE explicit Point3DDataPad(const Point3D<T, Width>& other) noexcept
         : values(other.values)
     {}
 
@@ -103,7 +103,7 @@ public:
      * @param y Points pre-calculated y value.
      * @param z Points pre-calculated z value.
      */
-    XS_FUNCTION void setData(T x, T y, T z) noexcept
+    XS_INLINE void setData(T x, T y, T z) noexcept
     {
         this->values.setData(x, y, z);
     }
@@ -114,7 +114,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Point3D<T, Width>& other) noexcept
+    XS_INLINE void store(const Point3D<T, Width>& other) noexcept
     {
         this->values.store(other.values);
     }
@@ -125,7 +125,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Point3D<T, Width> load() const noexcept
+    XS_INLINE Point3D<T, Width> load() const noexcept
     {
         return Point3D<T, Width>(this->values.template load<Point3D<T, Width>::widthImpl>());
     }
@@ -151,33 +151,33 @@ public:
     SIMD3Def values;
 
     /** Default constructor. */
-    XS_FUNCTION Point3D() noexcept = default;
+    XS_INLINE Point3D() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Point3D(const Point3D& other) = default;
+    XS_INLINE Point3D(const Point3D& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Point3D(Point3D&& other) noexcept = default;
+    XS_INLINE Point3D(Point3D&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Point3D& operator=(const Point3D& other) = default;
+    XS_INLINE Point3D& operator=(const Point3D& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Point3D& operator=(Point3D&& other) noexcept = default;
+    XS_INLINE Point3D& operator=(Point3D&& other) noexcept = default;
 
     /**
      * Construct a 3-D point from x, y, and z elements.
@@ -185,7 +185,7 @@ public:
      * @param y The y value.
      * @param z The z value.
      */
-    XS_FUNCTION Point3D(T x, T y, T z) noexcept
+    XS_INLINE Point3D(T x, T y, T z) noexcept
         : values(x, y, z)
     {}
 
@@ -193,7 +193,7 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param value Value to set all point elements to.
      */
-    XS_FUNCTION explicit Point3D(T value) noexcept
+    XS_INLINE explicit Point3D(T value) noexcept
         : values(value)
     {}
 
@@ -201,7 +201,7 @@ public:
      * Construct a 3-D point from a SIMD3.
      * @param values The 3 values.
      */
-    XS_FUNCTION explicit Point3D(const SIMD3Def& values) noexcept
+    XS_INLINE explicit Point3D(const SIMD3Def& values) noexcept
         : values(values)
     {}
 
@@ -209,7 +209,7 @@ public:
      * Function to build a 3-D point with all elements set to 0.
      * @returns Newly constructed Point3D with required attributes.
      */
-    XS_FUNCTION static Point3D Zero() noexcept
+    XS_INLINE static Point3D Zero() noexcept
     {
         return Point3D(SIMD3Def::Zero());
     }
@@ -218,7 +218,7 @@ public:
      * Function to build a 3-D point with all elements set to 1.
      * @returns Newly constructed Point3D with required attributes.
      */
-    XS_FUNCTION static Point3D One() noexcept
+    XS_INLINE static Point3D One() noexcept
     {
         return Point3D(SIMD3Def::One());
     }
@@ -230,7 +230,7 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const noexcept
+    XS_INLINE InBaseDef getValueInBase() const noexcept
     {
         return this->values.template getValueInBase<Index>();
     }
@@ -242,7 +242,7 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const noexcept
+    XS_INLINE BaseDef getValue() const noexcept
     {
         return this->values.template getValue<Index>();
     }
@@ -253,7 +253,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(InBaseDef value) noexcept
+    XS_INLINE void setValue(InBaseDef value) noexcept
     {
         this->values.template setValue<Index>(value);
     }
@@ -264,7 +264,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(BaseDef value) noexcept
+    XS_INLINE void setValue(BaseDef value) noexcept
     {
         this->values.template setValue<Index>(value);
     }
@@ -277,7 +277,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width> operator+(
+XS_INLINE Point3D<T, Width> operator+(
     const Point3D<T, Width>& point, const typename Point3D<T, Width>::Vector3DDef& vector) noexcept
 {
     return Point3D<T, Width>(point.values + vector.values);
@@ -290,7 +290,7 @@ XS_FUNCTION Point3D<T, Width> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION typename Point3D<T, Width>::Vector3DDef operator-(
+XS_INLINE typename Point3D<T, Width>::Vector3DDef operator-(
     const Point3D<T, Width>& point1, const Point3D<T, Width>& point2) noexcept
 {
     return typename Point3D<T, Width>::Vector3DDef(point1.values - point2.values);
@@ -303,7 +303,7 @@ XS_FUNCTION typename Point3D<T, Width>::Vector3DDef operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width> operator-(
+XS_INLINE Point3D<T, Width> operator-(
     const Point3D<T, Width>& point, const typename Point3D<T, Width>::Vector3DDef& vector) noexcept
 {
     return Point3D<T, Width>(point.values - vector.values);
@@ -316,7 +316,7 @@ XS_FUNCTION Point3D<T, Width> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width> operator*(
+XS_INLINE Point3D<T, Width> operator*(
     const Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept
 {
     return Point3D<T, Width>(point.values * value);
@@ -329,7 +329,7 @@ XS_FUNCTION Point3D<T, Width> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width>& operator+=(
+XS_INLINE Point3D<T, Width>& operator+=(
     Point3D<T, Width>& point, const typename Point3D<T, Width>::Vector3DDef& vector) noexcept
 {
     point.values += vector.values;
@@ -343,7 +343,7 @@ XS_FUNCTION Point3D<T, Width>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width>& operator-=(
+XS_INLINE Point3D<T, Width>& operator-=(
     Point3D<T, Width>& point, const typename Point3D<T, Width>::Vector3DDef& vector) noexcept
 {
     point.values -= vector.values;
@@ -357,7 +357,7 @@ XS_FUNCTION Point3D<T, Width>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Point3D<T, Width>& operator*=(Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept
+XS_INLINE Point3D<T, Width>& operator*=(Point3D<T, Width>& point, typename Point3D<T, Width>::BaseDef value) noexcept
 {
     point.values *= value;
     return point;

@@ -36,7 +36,7 @@ public:
     SIMD3x3Data<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix3x3Data() noexcept = default;
+    XS_INLINE Matrix3x3Data() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -44,7 +44,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Matrix3x3Data(const Matrix3x3<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix3x3Data(const Matrix3x3<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -62,7 +62,7 @@ public:
      * @param fC2R1 The second element of the third column of the matrix.
      * @param fC2R2 The third element of the third column of the matrix.
      */
-    XS_FUNCTION void setData(T fC0R0, T fC0R1, T fC0R2, T fC1R0, T fC1R1, T fC1R2, T fC2R0, T fC2R1, T fC2R2) noexcept
+    XS_INLINE void setData(T fC0R0, T fC0R1, T fC0R2, T fC1R0, T fC1R1, T fC1R2, T fC2R0, T fC2R1, T fC2R2) noexcept
     {
         this->values.setData(fC0R0, fC0R1, fC0R2, fC1R0, fC1R1, fC1R2, fC2R0, fC2R1, fC2R2);
     }
@@ -73,7 +73,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Matrix3x3<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix3x3<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -84,7 +84,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Matrix3x3<T, Width> load() const noexcept
+    XS_INLINE Matrix3x3<T, Width> load() const noexcept
     {
         return Matrix3x3<T, Width>(this->values.template load<Matrix3x3<T, Width>::widthImpl>());
     }
@@ -97,7 +97,7 @@ public:
     SIMD3x3DataPad<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix3x3DataPad() noexcept = default;
+    XS_INLINE Matrix3x3DataPad() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -105,7 +105,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Matrix3x3DataPad(const Matrix3x3<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix3x3DataPad(const Matrix3x3<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -123,7 +123,7 @@ public:
      * @param fC2R1 The second element of the third column of the matrix.
      * @param fC2R2 The third element of the third column of the matrix.
      */
-    XS_FUNCTION void setData(T fC0R0, T fC0R1, T fC0R2, T fC1R0, T fC1R1, T fC1R2, T fC2R0, T fC2R1, T fC2R2) noexcept
+    XS_INLINE void setData(T fC0R0, T fC0R1, T fC0R2, T fC1R0, T fC1R1, T fC1R2, T fC2R0, T fC2R1, T fC2R2) noexcept
     {
         this->values.setData(fC0R0, fC0R1, fC0R2, fC1R0, fC1R1, fC1R2, fC2R0, fC2R1, fC2R2);
     }
@@ -134,7 +134,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Matrix3x3<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix3x3<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -145,7 +145,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Matrix3x3<T, Width> load() const noexcept
+    XS_INLINE Matrix3x3<T, Width> load() const noexcept
     {
         return Matrix3x3<T, Width>(this->values.template load<Matrix3x3<T, Width>::widthImpl>());
     }
@@ -187,39 +187,39 @@ public:
     SIMD3x3Def columns;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix3x3() noexcept = default;
+    XS_INLINE Matrix3x3() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Matrix3x3(const Matrix3x3& other) = default;
+    XS_INLINE Matrix3x3(const Matrix3x3& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Matrix3x3(Matrix3x3&& other) noexcept = default;
+    XS_INLINE Matrix3x3(Matrix3x3&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Matrix3x3& operator=(const Matrix3x3& other) = default;
+    XS_INLINE Matrix3x3& operator=(const Matrix3x3& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Matrix3x3& operator=(Matrix3x3&& other) noexcept = default;
+    XS_INLINE Matrix3x3& operator=(Matrix3x3&& other) noexcept = default;
 
     /**
      * Construct a 3x3 matrix from a SIMD3x3.
      * @param values The 3 columns of the matrix.
      */
-    XS_FUNCTION explicit Matrix3x3(const SIMD3x3Def& values) noexcept
+    XS_INLINE explicit Matrix3x3(const SIMD3x3Def& values) noexcept
         : columns(values)
     {}
 
@@ -229,7 +229,7 @@ public:
      * @param column1 The second column of the matrix.
      * @param column2 The third column of the matrix.
      */
-    XS_FUNCTION Matrix3x3(const SIMD3Def& column0, const SIMD3Def& column1, const SIMD3Def& column2) noexcept
+    XS_INLINE Matrix3x3(const SIMD3Def& column0, const SIMD3Def& column1, const SIMD3Def& column2) noexcept
         : columns(column0, column1, column2)
     {}
 
@@ -245,8 +245,8 @@ public:
      * @param col2Row1 The second element of the third column of the matrix.
      * @param col2Row2 The third element of the third column of the matrix.
      */
-    XS_FUNCTION Matrix3x3(T col0Row0, T col0Row1, T col0Row2, T col1Row0, T col1Row1, T col1Row2, T col2Row0,
-        T col2Row1, T col2Row2) noexcept
+    XS_INLINE Matrix3x3(T col0Row0, T col0Row1, T col0Row2, T col1Row0, T col1Row1, T col1Row2, T col2Row0, T col2Row1,
+        T col2Row2) noexcept
         : columns(col0Row0, col0Row1, col0Row2, col1Row0, col1Row1, col1Row2, col2Row0, col2Row1, col2Row2)
     {}
 
@@ -254,7 +254,7 @@ public:
      * Constructor to build a 3x3 Identity Matrix.
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 Identity() noexcept
+    XS_INLINE static Matrix3x3 Identity() noexcept
     {
         return Matrix3x3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
     }
@@ -264,7 +264,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix4x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 UniformScale(InBaseDef scale) noexcept
+    XS_INLINE static Matrix3x3 UniformScale(InBaseDef scale) noexcept
     {
         SIMD3Def scale3(SIMD3Def::Zero());
         scale3.template setValue<0>(scale);
@@ -276,7 +276,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 Scale(const SIMD3Def& scale) noexcept
+    XS_INLINE static Matrix3x3 Scale(const SIMD3Def& scale) noexcept
     {
         using SIMD4Def = SIMD4<T, SIMD4<T, widthImpl>::widthImpl>;
         const SIMD4Def scale4(scale, SIMD4Def::BaseDef::Zero());
@@ -289,7 +289,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationX(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x3 RotationX(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -312,7 +312,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationY(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x3 RotationY(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -335,7 +335,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationZ(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x3 RotationZ(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -358,7 +358,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix3x3 with required attributes.
      */
-    XS_FUNCTION static Matrix3x3 RotationAxis(const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x3 RotationAxis(const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept
     {
         // The equivalent matrix for a rotation around an axis can be described by:
         //      xx(1-c)+ s xy(1-c)-zs xz(1-c)+ys
@@ -395,7 +395,7 @@ public:
      * @returns SIMD3Def containing the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD3Def getColumn() const noexcept
+    XS_INLINE SIMD3Def getColumn() const noexcept
     {
         return this->columns.template getValue3<Index>();
     }
@@ -406,7 +406,7 @@ public:
      * @returns SIMD3Def containing the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD3Def getRow() const noexcept
+    XS_INLINE SIMD3Def getRow() const noexcept
     {
         // Note: this is not well optimised as it is only intended for viewing contents
         return this->columns.transpose().template getValue3<Index>();
@@ -418,7 +418,7 @@ public:
      * @param column The new column values.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setColumn(const SIMD3Def& column) noexcept
+    XS_INLINE void setColumn(const SIMD3Def& column) noexcept
     {
         this->columns.template setValue3<Index>(column);
     }
@@ -429,7 +429,7 @@ public:
      * @param matrix2 Second matrix to add.
      * @returns Result of operation.
      */
-    XS_FUNCTION Matrix3x3 mad(const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) const noexcept
+    XS_INLINE Matrix3x3 mad(const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) const noexcept
     {
         if constexpr (numValues<T, SIMD3x3Def::widthImpl> >= 6) {
             SIMD3x3Def ret(matrix1.columns.template shuffle3<2, 2, 2>().mad(
@@ -451,7 +451,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transform(const Point3DDef& point) const noexcept
     {
         SIMD3Def ret(this->columns.template getValue3<0>() * point.values.template getValue<0>());
         ret = this->columns.template getValue3<1>().template mad<false>(point.values.template getValue<1>(), ret);
@@ -464,7 +464,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transform(const Vector3DDef& vector) const noexcept
     {
         // Transforming a vector is the same as transforming a point
         return Vector3DDef(this->transform(Point3DDef(vector.values)).values);
@@ -477,7 +477,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
     {
         if constexpr (numValues<T, SIMD3x3Def::widthImpl> >= 6 && !Packed) {
             auto ret(point.points.template shuffle3<0, 0, 0>() * this->columns.template getValue3x2<0, 0>());
@@ -501,7 +501,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
     {
         // Transforming a vector is the same as transforming a point
         return Vector3D2Def<Packed>(this->transform(Point3D2Def<Packed>(vector.vectors)).points);
@@ -514,7 +514,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
     {
         if constexpr (numValues<T, SIMD3x3Def::widthImpl> >= 12 && !Packed) {
             // TODO: Avoid ugly cast
@@ -555,7 +555,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
     {
         // Transforming a vector is the same as transforming a point
         return Vector3D4Def<Packed>(this->transform(Point3D4Def<Packed>(vector.vectors)).points);
@@ -566,7 +566,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transpose transformed point.
      */
-    XS_FUNCTION Point3DDef transformTransposed(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transformTransposed(const Point3DDef& point) const noexcept
     {
         return this->transpose().transform(point);
     }
@@ -576,7 +576,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transpose transformed vector.
      */
-    XS_FUNCTION Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept
     {
         // Transforming a vector is the same as transforming a point
         return Vector3DDef(this->transformTransposed(Point3DDef(vector.values)).values);
@@ -586,7 +586,7 @@ public:
      * Determine the transpose of a matrix.
      * @returns A new transposed matrix.
      */
-    XS_FUNCTION Matrix3x3 transpose() const noexcept
+    XS_INLINE Matrix3x3 transpose() const noexcept
     {
         return Matrix3x3(this->columns.transpose());
     }
@@ -595,7 +595,7 @@ public:
      * Determine the inverse of a matrix.
      * @returns A new inverse matrix.
      */
-    XS_FUNCTION Matrix3x3 inverse() const noexcept
+    XS_INLINE Matrix3x3 inverse() const noexcept
     {
         // Determine adjoint transpose matrix
         SIMD3x3Def adjoint(this->columns.template shuffleH3<1, 2, 0>().template shuffle3<1, 2, 0>().msub(
@@ -616,7 +616,7 @@ public:
      * Determine the determinant of an matrix.
      * @returns The determinant in a BaseDef.
      */
-    XS_FUNCTION BaseDef determinant() const noexcept
+    XS_INLINE BaseDef determinant() const noexcept
     {
         const typename SIMD3x3Def::SIMD3x2Def det(
             this->columns.template getValue3x2<1, 2>().template shuffle3<1, 2, 0>() *
@@ -630,7 +630,7 @@ public:
      * Determine the determinant of an matrix.
      * @returns The determinant in a InBaseDef.
      */
-    XS_FUNCTION InBaseDef determinantInBase() const noexcept
+    XS_INLINE InBaseDef determinantInBase() const noexcept
     {
         const typename SIMD3x3Def::SIMD3x2Def det(
             this->columns.template getValue3x2<1, 2>().template shuffle3<1, 2, 0>() *
@@ -645,7 +645,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 postRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -670,7 +670,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 postRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -695,7 +695,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -720,7 +720,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -746,7 +746,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -772,7 +772,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x3Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -798,7 +798,7 @@ public:
      * @param scale The amount to scale along X/Y/Z-axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 postScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix3x3 postScale(const SIMD3Def& scale) const noexcept
     {
         return Matrix3x3(this->columns.component3(scale));
     }
@@ -808,7 +808,7 @@ public:
      * @param scale The 3 scale values for each axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 preScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix3x3 preScale(const SIMD3Def& scale) const noexcept
     {
         return Matrix3x3(this->columns * scale);
     }
@@ -818,7 +818,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix3x3 uniformScale(BaseDef scale) const noexcept
+    XS_INLINE Matrix3x3 uniformScale(BaseDef scale) const noexcept
     {
         return Matrix3x3(this->columns * scale);
     }
@@ -831,8 +831,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width> operator+(
-    const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width> operator+(const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     return Matrix3x3<T, Width>(matrix1.columns + matrix2.columns);
 }
@@ -844,8 +843,7 @@ XS_FUNCTION Matrix3x3<T, Width> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width> operator-(
-    const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width> operator-(const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     return Matrix3x3<T, Width>(matrix1.columns - matrix2.columns);
 }
@@ -857,8 +855,7 @@ XS_FUNCTION Matrix3x3<T, Width> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width> operator*(
-    const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width> operator*(const Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     if constexpr (numValues<T, Matrix3x3<T, Width>::SIMD3x3Def::widthImpl> >= 6) {
         typename Matrix3x3<T, Width>::SIMD3x3Def ret(
@@ -884,7 +881,7 @@ XS_FUNCTION Matrix3x3<T, Width> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width>& operator+=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width>& operator+=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     matrix1.columns += matrix2.columns;
     return matrix1;
@@ -897,7 +894,7 @@ XS_FUNCTION Matrix3x3<T, Width>& operator+=(Matrix3x3<T, Width>& matrix1, const 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width>& operator-=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width>& operator-=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     matrix1.columns -= matrix2.columns;
     return matrix1;
@@ -910,7 +907,7 @@ XS_FUNCTION Matrix3x3<T, Width>& operator-=(Matrix3x3<T, Width>& matrix1, const 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix3x3<T, Width>& operator*=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x3<T, Width>& operator*=(Matrix3x3<T, Width>& matrix1, const Matrix3x3<T, Width>& matrix2) noexcept
 {
     matrix1 = matrix1 * matrix2;
     return matrix1;

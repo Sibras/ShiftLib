@@ -51,40 +51,40 @@ public:
     Vector3D4Def directions; /**< The values for the directions of each of the 4 rays. */
 
     /** Default constructor. */
-    XS_FUNCTION Ray4() noexcept = default;
+    XS_INLINE Ray4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Ray4(const Ray4& other) = default;
+    XS_INLINE Ray4(const Ray4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Ray4(Ray4&& other) noexcept = default;
+    XS_INLINE Ray4(Ray4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Ray4& operator=(const Ray4& other) = default;
+    XS_INLINE Ray4& operator=(const Ray4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Ray4& operator=(Ray4&& other) noexcept = default;
+    XS_INLINE Ray4& operator=(Ray4&& other) noexcept = default;
 
     /**
      * Construct a ray4 in structure of arrays format.
      * @param origins    The new origin values for the 4 rays.
      * @param directions The new direction values for the 4 rays.
      */
-    XS_FUNCTION Ray4(const Point3D4Def& origins, const Vector3D4Def& directions) noexcept
+    XS_INLINE Ray4(const Point3D4Def& origins, const Vector3D4Def& directions) noexcept
         : origins(origins)
         , directions(directions)
     {}
@@ -96,7 +96,7 @@ public:
      * @param ray2 The third ray.
      * @param ray3 The fourth ray.
      */
-    XS_FUNCTION Ray4(const RayDef& ray0, const RayDef& ray1, const RayDef& ray2, const RayDef& ray3) noexcept
+    XS_INLINE Ray4(const RayDef& ray0, const RayDef& ray1, const RayDef& ray2, const RayDef& ray3) noexcept
         : origins(ray0.origin, ray1.origin, ray2.origin, ray3.origin)
         , directions(ray0.direction, ray1.direction, ray2.direction, ray3.direction)
     {}
@@ -105,7 +105,7 @@ public:
      * Construct a ray4 by duplicating a single ray.
      * @param ray The ray.
      */
-    XS_FUNCTION Ray4(const RayDef& ray) noexcept
+    XS_INLINE Ray4(const RayDef& ray) noexcept
         : origins(ray.origin)
         , directions(ray.direction)
     {}
@@ -115,7 +115,7 @@ public:
      * @param dist The number of units to move along each ray.
      * @returns The Point3D4 at the specified distance along each ray.
      */
-    XS_FUNCTION Point3D4Def pointAlongRay(const SIMD4Def& dist) const noexcept
+    XS_INLINE Point3D4Def pointAlongRay(const SIMD4Def& dist) const noexcept
     {
         return this->directions.mad(dist, this->origins);
     }

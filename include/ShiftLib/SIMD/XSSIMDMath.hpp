@@ -29,7 +29,7 @@ namespace Shift {
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T reciprocal(const T& value) noexcept
+XS_INLINE T reciprocal(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -129,7 +129,7 @@ XS_FUNCTION T reciprocal(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T ceil(const T& value) noexcept
+XS_INLINE T ceil(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -206,7 +206,7 @@ XS_FUNCTION T ceil(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T floor(const T& value) noexcept
+XS_INLINE T floor(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -283,7 +283,7 @@ XS_FUNCTION T floor(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T trunc(const T& value) noexcept
+XS_INLINE T trunc(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -360,7 +360,7 @@ XS_FUNCTION T trunc(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T sqrt(const T& value) noexcept
+XS_INLINE T sqrt(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -437,7 +437,7 @@ XS_FUNCTION T sqrt(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T rsqrt(const T& value) noexcept
+XS_INLINE T rsqrt(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -574,7 +574,7 @@ XS_FUNCTION T rsqrt(const T& value) noexcept
  * @returns Value(s) containing the binary exponential of the input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T exp2(const T& value) noexcept
+XS_INLINE T exp2(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -713,7 +713,7 @@ XS_FUNCTION T exp2(const T& value) noexcept
  * @returns Value(s) containing the exponential of the input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T exp(const T& value) noexcept
+XS_INLINE T exp(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -833,7 +833,7 @@ XS_FUNCTION T exp(const T& value) noexcept
  * @returns Value(s) containing the binary logarithm of the input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T log2(const T& value) noexcept
+XS_INLINE T log2(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -972,7 +972,7 @@ XS_FUNCTION T log2(const T& value) noexcept
  * @returns Value(s) containing the logarithm of the input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T log(const T& value) noexcept
+XS_INLINE T log(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -1093,7 +1093,7 @@ XS_FUNCTION T log(const T& value) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T pow(const T& value, const T& other) noexcept
+XS_INLINE T pow(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -1269,7 +1269,7 @@ XS_FUNCTION T pow(const T& value, const T& other) noexcept
  * @returns Result of operation.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T powr(const T& value, const T& other) noexcept
+XS_INLINE T powr(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -1432,7 +1432,7 @@ XS_FUNCTION T powr(const T& value, const T& other) noexcept
  * @returns Value(s) containing the input values to the power of the second input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32> && (T::numValues >= 2)>>
-XS_FUNCTION T pow(const T& value, const typename T::BaseDef other) noexcept
+XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -1586,7 +1586,7 @@ XS_FUNCTION T pow(const T& value, const typename T::BaseDef other) noexcept
  * @returns Value(s) containing the input values to the power of the second input.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32> && (T::numValues >= 2)>>
-XS_FUNCTION T powr(const T& value, const typename T::BaseDef other) noexcept
+XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16)) {
@@ -1738,7 +1738,7 @@ XS_FUNCTION T powr(const T& value, const typename T::BaseDef other) noexcept
  * @returns Value(s) containing the sined value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T sin(const T& value) noexcept
+XS_INLINE T sin(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -1888,7 +1888,7 @@ XS_FUNCTION T sin(const T& value) noexcept
  * @returns Value(s) containing the cosined value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T cos(const T& value) noexcept
+XS_INLINE T cos(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2009,7 +2009,7 @@ XS_FUNCTION T cos(const T& value) noexcept
  * @returns Value(s) containing the tangented value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T tan(const T& value) noexcept
+XS_INLINE T tan(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2198,7 +2198,7 @@ XS_FUNCTION T tan(const T& value) noexcept
  * @returns Value(s) containing the sine value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T sincos(const T& value, T& cosReturn) noexcept
+XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2414,7 +2414,7 @@ XS_FUNCTION T sincos(const T& value, T& cosReturn) noexcept
  * @returns Value(s) containing the arcsined value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T asin(const T& value) noexcept
+XS_INLINE T asin(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2537,7 +2537,7 @@ XS_FUNCTION T asin(const T& value) noexcept
  * @returns Value(s) containing the arccosined value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T acos(const T& value) noexcept
+XS_INLINE T acos(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2663,7 +2663,7 @@ XS_FUNCTION T acos(const T& value) noexcept
  * @returns Value(s) containing the arctangented value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T atan(const T& value) noexcept
+XS_INLINE T atan(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&
@@ -2825,7 +2825,7 @@ XS_FUNCTION T atan(const T& value) noexcept
  * @returns Value(s) containing the angle (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
-XS_FUNCTION T atan2(const T& value, const T& other) noexcept
+XS_INLINE T atan2(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (hasSIMD512<typename T::Type> && (T::widthImpl >= SIMDWidth::B64) && (T::size == 16) &&

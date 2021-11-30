@@ -39,40 +39,40 @@ public:
     Vector3DDef direction; /**< The direction the ray is travelling. */
 
     /** Default constructor. */
-    XS_FUNCTION Ray() noexcept = default;
+    XS_INLINE Ray() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Ray(const Ray& other) = default;
+    XS_INLINE Ray(const Ray& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Ray(Ray&& other) noexcept = default;
+    XS_INLINE Ray(Ray&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Ray& operator=(const Ray& other) = default;
+    XS_INLINE Ray& operator=(const Ray& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Ray& operator=(Ray&& other) noexcept = default;
+    XS_INLINE Ray& operator=(Ray&& other) noexcept = default;
 
     /**
      * Construct a ray from its member variables.
      * @param origin    The point to use as the rays origin.
      * @param direction The vector to use as the rays direction.
      */
-    XS_FUNCTION Ray(const Point3DDef& origin, const Vector3DDef& direction) noexcept
+    XS_INLINE Ray(const Point3DDef& origin, const Vector3DDef& direction) noexcept
         : origin(origin)
         , direction(direction)
     {}
@@ -82,7 +82,7 @@ public:
      * @param dist The number of units to move along the ray.
      * @returns The 3-D point at the specified distance along the ray.
      */
-    XS_FUNCTION Point3DDef pointAlongRay(InBaseDef dist) const noexcept
+    XS_INLINE Point3DDef pointAlongRay(InBaseDef dist) const noexcept
     {
         return this->direction.mad(dist, this->origin);
     }

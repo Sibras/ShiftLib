@@ -19,6 +19,7 @@
 
 #    define XS_OVERRIDE_SHIFT_NS TESTISA(Range2Test)
 #    define XS_TESTING_RANGE2
+#    define XS_TESTING_BOOL
 #    include "Geometry/XSGTestGeometry.hpp"
 using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
@@ -42,6 +43,11 @@ TYPED_TEST_SUITE(TESTISA(Range2), Range2TestTypes);
 TYPED_TEST_NS2(Range2, TESTISA(Range2), Range2)
 {
     using TestType = typename TestFixture::Type;
+
+    TestType test1(TestType::SIMD4Def(1.0f, 3.0f, 3.0f, 5.0f));
+
+    ASSERT_PRED3(assertBool2<TestType::SIMD2Def::Mask::Bool::usingSIMD>,
+        test1.isWithinRange(TestType::SIMD2Def(10.0f, 4.0f)).getBool2(), true, false);
     // TODO:************
 }
 #endif

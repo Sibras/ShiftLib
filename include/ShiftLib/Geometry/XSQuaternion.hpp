@@ -31,7 +31,7 @@ public:
     SIMD4Data<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION QuaternionData() noexcept = default;
+    XS_INLINE QuaternionData() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -39,7 +39,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit QuaternionData(const Quaternion<T, Width>& other) noexcept
+    XS_INLINE explicit QuaternionData(const Quaternion<T, Width>& other) noexcept
         : values(other.values)
     {}
 
@@ -52,7 +52,7 @@ public:
      * @param z The third element of the vector component of the quaternion.
      * @param w The scalar component of the quaternion.
      */
-    XS_FUNCTION void setData(T x, T y, T z, T w) noexcept
+    XS_INLINE void setData(T x, T y, T z, T w) noexcept
     {
         this->values.setData(x, y, z, w);
     }
@@ -63,7 +63,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Quaternion<T, Width>& other) noexcept
+    XS_INLINE void store(const Quaternion<T, Width>& other) noexcept
     {
         this->values.store(other.values);
     }
@@ -74,7 +74,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Quaternion<T, Width> load() const noexcept
+    XS_INLINE Quaternion<T, Width> load() const noexcept
     {
         return Quaternion<T, Width>(this->values.template load<Quaternion<T, Width>::widthImpl>());
     }
@@ -118,39 +118,39 @@ public:
     SIMD4Def values;
 
     /** Default constructor. */
-    XS_FUNCTION Quaternion() noexcept = default;
+    XS_INLINE Quaternion() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Quaternion(const Quaternion& other) = default;
+    XS_INLINE Quaternion(const Quaternion& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Quaternion(Quaternion&& other) noexcept = default;
+    XS_INLINE Quaternion(Quaternion&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Quaternion& operator=(const Quaternion& other) = default;
+    XS_INLINE Quaternion& operator=(const Quaternion& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Quaternion& operator=(Quaternion&& other) noexcept = default;
+    XS_INLINE Quaternion& operator=(Quaternion&& other) noexcept = default;
 
     /**
      * Construct a Quaternion from a SIMD4.
      * @param values Input SIMD4.
      */
-    XS_FUNCTION explicit Quaternion(const SIMD4Def& values) noexcept
+    XS_INLINE explicit Quaternion(const SIMD4Def& values) noexcept
         : values(values)
     {}
 
@@ -161,7 +161,7 @@ public:
      * @param z The third element of the vector component of the quaternion.
      * @param w The scalar component of the quaternion.
      */
-    XS_FUNCTION Quaternion(T x, T y, T z, T w) noexcept
+    XS_INLINE Quaternion(T x, T y, T z, T w) noexcept
         : values(x, y, z, w)
     {}
 
@@ -171,7 +171,7 @@ public:
      * M00+M11+M22>1). If not special orthogonal then need to use static function instead.
      * @param matrix Reference to matrix to copy.
      */
-    XS_FUNCTION explicit Quaternion(const Matrix3x3Def& matrix) noexcept
+    XS_INLINE explicit Quaternion(const Matrix3x3Def& matrix) noexcept
     {
         // Uses special method that is only applicable if the input matrix is special orthogonal (m00+m11+m22>1)
         //   Q.w = sqrt( 1.0 + m00 + m11 + m22 )
@@ -217,7 +217,7 @@ public:
      * Construct a Matrix3x3 from a Quaternion.
      * @return Newly constructed object.
      */
-    XS_FUNCTION explicit operator Matrix3x3Def() const noexcept
+    XS_INLINE explicit operator Matrix3x3Def() const noexcept
     {
         // The matrix equivalent of a quaternion is described by the following:
         //         [1-2yy-2zz        2yx-2zw         2yw+2zx ]
@@ -267,7 +267,7 @@ public:
      * Constructor to build a Identity Quaternion.
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion Identity() noexcept
+    XS_INLINE static Quaternion Identity() noexcept
     {
         return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
     }
@@ -277,7 +277,7 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationX(BaseDef rotation) noexcept
+    XS_INLINE static Quaternion RotationX(BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         SIMD2Def sinCos;
@@ -297,7 +297,7 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationY(BaseDef rotation) noexcept
+    XS_INLINE static Quaternion RotationY(BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         SIMD2Def sinCos;
@@ -317,7 +317,7 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationZ(BaseDef rotation) noexcept
+    XS_INLINE static Quaternion RotationZ(BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         SIMD2Def sinCos;
@@ -338,7 +338,7 @@ public:
      * @param rotation The amount to rotate the quaternion by (in radians).
      * @returns Newly constructed Quaternion with required attributes.
      */
-    XS_FUNCTION static Quaternion RotationAxis(const Vector3DDef& axis, BaseDef rotation) noexcept
+    XS_INLINE static Quaternion RotationAxis(const Vector3DDef& axis, BaseDef rotation) noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -352,7 +352,7 @@ public:
      * @param matrix Reference to matrix to copy.
      * @returns An Quaternion.
      */
-    XS_FUNCTION static Quaternion Matrix3x3(const Matrix3x3Def& matrix) noexcept
+    XS_INLINE static Quaternion Matrix3x3(const Matrix3x3Def& matrix) noexcept
     {
         // This uses standard matrix convert method given by:
         //          ( [ 1 + m00 - m11 - m22 ] )
@@ -425,7 +425,7 @@ public:
      * @returns InBaseDef containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getValueInBase() const noexcept
+    XS_INLINE InBaseDef getValueInBase() const noexcept
     {
         return this->values.template getValueInBase<Index>();
     }
@@ -437,7 +437,7 @@ public:
      * @returns SIMDBase containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getValue() const noexcept
+    XS_INLINE BaseDef getValue() const noexcept
     {
         return this->values.template getValue<Index>();
     }
@@ -448,7 +448,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(InBaseDef value) noexcept
+    XS_INLINE void setValue(InBaseDef value) noexcept
     {
         this->values.template setValue<Index>(value);
     }
@@ -459,7 +459,7 @@ public:
      * @param value The new value.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setValue(BaseDef value) noexcept
+    XS_INLINE void setValue(BaseDef value) noexcept
     {
         this->values.template setValue<Index>(value);
     }
@@ -470,7 +470,7 @@ public:
      * @param other2 Second quaternion to add.
      * @returns Result of operation.
      */
-    XS_FUNCTION Quaternion mad(const Quaternion& other1, const Quaternion& other2) const noexcept
+    XS_INLINE Quaternion mad(const Quaternion& other1, const Quaternion& other2) const noexcept
     {
         SIMD4Def ret(this->values.template shuffle<2, 0, 1, 2>().msub(
             other1.values.template shuffle<1, 2, 0, 2>(), other2.values));
@@ -485,7 +485,7 @@ public:
      * Compute the square of the length of a quaternion.
      * @returns Squared length of vector stored in BaseDef.
      */
-    XS_FUNCTION BaseDef lengthSqr() const noexcept
+    XS_INLINE BaseDef lengthSqr() const noexcept
     {
         return this->values.lengthSqr();
     }
@@ -494,7 +494,7 @@ public:
      * Compute the length of a quaternion.
      * @returns Length of quaternion stored in BaseDef.
      */
-    XS_FUNCTION BaseDef length() const noexcept
+    XS_INLINE BaseDef length() const noexcept
     {
         return this->values.length();
     }
@@ -503,7 +503,7 @@ public:
      * Compute the square of the length of a quaternion.
      * @returns Squared length of quaternion stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthSqrInBase() const noexcept
+    XS_INLINE InBaseDef lengthSqrInBase() const noexcept
     {
         return this->values.lengthSqrInBase();
     }
@@ -512,7 +512,7 @@ public:
      * Compute the length of a quaternion.
      * @returns Length of quaternion stored in InBaseDef.
      */
-    XS_FUNCTION InBaseDef lengthInBase() const noexcept
+    XS_INLINE InBaseDef lengthInBase() const noexcept
     {
         return this->values.lengthInBase();
     }
@@ -522,7 +522,7 @@ public:
      * @note The result is unpredictable when all elements of quaternion are at or near zero.
      * @returns A new quaternion corresponding to the normalised quaternion.
      */
-    XS_FUNCTION Quaternion normalize() noexcept
+    XS_INLINE Quaternion normalize() noexcept
     {
         return Quaternion(this->values.normalize());
     }
@@ -532,7 +532,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transform(const Point3DDef& point) const noexcept
     {
         // Transforming a point by a quaternion requires converting the quaternion back into a matrix3x3
         // and then performing the transformation using that.
@@ -573,7 +573,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transform(const Vector3DDef& vector) const noexcept
     {
         // Transforming a vector by a quaternion is the same as transforming a point
         return Vector3DDef(this->transform(Point3DDef(vector.values)).values);
@@ -586,7 +586,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
     {
         XS_ASSERT(this->lengthInBase().getValue() > 0.999f);
         using SIMD3Def = typename SIMD4Def::SIMD3Def;
@@ -613,7 +613,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
     {
         // Transforming a vector by a quaternion is the same as transforming a point
         return Vector3D2Def<Packed>(this->transform(Point3D2Def<Packed>(vector.vectors)).points);
@@ -626,7 +626,7 @@ public:
      * @returns A new transformed point.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
     {
         XS_ASSERT(this->lengthInBase().getValue() > 0.999f);
         using SIMD3Def = typename SIMD4Def::SIMD3Def;
@@ -653,7 +653,7 @@ public:
      * @returns A new transformed vector.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
     {
         // Transforming a vector by a quaternion is the same as transforming a point
         return Vector3D4Def<Packed>(this->transform(Point3D4Def<Packed>(vector.vectors)).points);
@@ -663,7 +663,7 @@ public:
      * Determine the inverse of a quaternion.
      * @returns A new inverse quaternion.
      */
-    XS_FUNCTION Quaternion inverse() const noexcept
+    XS_INLINE Quaternion inverse() const noexcept
     {
         return Quaternion(this->values.template negate<true, true, true, false>());
     }
@@ -673,7 +673,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateX(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion postRotateX(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -688,7 +688,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateY(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion postRotateY(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -703,7 +703,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion postRotateZ(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion postRotateZ(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -718,7 +718,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateX(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion preRotateX(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -733,7 +733,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateY(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion preRotateY(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos(rotation * BaseDef(T{0.5}), cos));
@@ -748,7 +748,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated quaternion.
      */
-    XS_FUNCTION Quaternion preRotateZ(BaseDef rotation) const noexcept
+    XS_INLINE Quaternion preRotateZ(BaseDef rotation) const noexcept
     {
         BaseDef cos;
         const BaseDef sin(sincos((rotation * BaseDef(T{0.5})), cos));
@@ -766,7 +766,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width> operator+(
+XS_INLINE Quaternion<T, Width> operator+(
     const Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     return Quaternion<T, Width>(other1.values + other2.values);
@@ -779,7 +779,7 @@ XS_FUNCTION Quaternion<T, Width> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width> operator-(
+XS_INLINE Quaternion<T, Width> operator-(
     const Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     return Quaternion<T, Width>(other1.values - other2.values);
@@ -792,7 +792,7 @@ XS_FUNCTION Quaternion<T, Width> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width> operator*(
+XS_INLINE Quaternion<T, Width> operator*(
     const Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     // Multiplication of 2 quaternions P and Q result in the following where each quaternion is represented
@@ -815,7 +815,7 @@ XS_FUNCTION Quaternion<T, Width> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width>& operator+=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
+XS_INLINE Quaternion<T, Width>& operator+=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     other1.values += other2.values;
     return other1;
@@ -828,7 +828,7 @@ XS_FUNCTION Quaternion<T, Width>& operator+=(Quaternion<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width>& operator-=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
+XS_INLINE Quaternion<T, Width>& operator-=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     other1.values -= other2.values;
     return other1;
@@ -841,7 +841,7 @@ XS_FUNCTION Quaternion<T, Width>& operator-=(Quaternion<T, Width>& other1, const
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Quaternion<T, Width>& operator*=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
+XS_INLINE Quaternion<T, Width>& operator*=(Quaternion<T, Width>& other1, const Quaternion<T, Width>& other2) noexcept
 {
     other1 = other1 * other2;
     return other1;

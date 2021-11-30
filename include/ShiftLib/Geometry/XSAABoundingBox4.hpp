@@ -30,7 +30,7 @@ public:
     Point3D4Data<T, Packed> maxPoints;
 
     /** Default constructor. */
-    XS_FUNCTION AABoundingBox4Data() noexcept = default;
+    XS_INLINE AABoundingBox4Data() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -38,7 +38,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit AABoundingBox4Data(const AABoundingBox4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit AABoundingBox4Data(const AABoundingBox4<T, Width, Packed>& other) noexcept
         : minPoints(other.minPoints)
         , maxPoints(other.maxPoints)
     {}
@@ -49,7 +49,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const AABoundingBox4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const AABoundingBox4<T, Width, Packed>& other) noexcept
     {
         this->minPoints.store(other.minPoints);
         this->maxPoints.store(other.maxPoints);
@@ -61,7 +61,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION AABoundingBox4<T, Width, Packed> load() const noexcept
+    XS_INLINE AABoundingBox4<T, Width, Packed> load() const noexcept
     {
         return AABoundingBox4<T, Width, Packed>(
             this->minPoints.template load<AABoundingBox4<T, Width, Packed>::widthImpl>(),
@@ -94,40 +94,40 @@ public:
     Point3D4Def maxPoints; /**< The max values of each of the 4 bounding boxes */
 
     /** Default constructor. */
-    XS_FUNCTION AABoundingBox4() noexcept = default;
+    XS_INLINE AABoundingBox4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION AABoundingBox4(const AABoundingBox4& other) = default;
+    XS_INLINE AABoundingBox4(const AABoundingBox4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION AABoundingBox4(AABoundingBox4&& other) noexcept = default;
+    XS_INLINE AABoundingBox4(AABoundingBox4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION AABoundingBox4& operator=(const AABoundingBox4& other) = default;
+    XS_INLINE AABoundingBox4& operator=(const AABoundingBox4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION AABoundingBox4& operator=(AABoundingBox4&& other) noexcept = default;
+    XS_INLINE AABoundingBox4& operator=(AABoundingBox4&& other) noexcept = default;
 
     /**
      * Construct a boundingBox4 in structure of arrays format.
      * @param minValues The new min values for the 4 BBs.
      * @param maxValues The new max values for the 4 BBs.
      */
-    XS_FUNCTION AABoundingBox4(const Point3D4Def& minValues, const Point3D4Def& maxValues) noexcept
+    XS_INLINE AABoundingBox4(const Point3D4Def& minValues, const Point3D4Def& maxValues) noexcept
         : minPoints(minValues)
         , maxPoints(maxValues)
     {
@@ -144,7 +144,7 @@ public:
      * @param box2 The third bounding box.
      * @param box3 The fourth bounding box.
      */
-    XS_FUNCTION AABoundingBox4(
+    XS_INLINE AABoundingBox4(
         const AABBDef& box0, const AABBDef& box1, const AABBDef& box2, const AABBDef& box3) noexcept
         : minPoints(box0.minPoint, box1.minPoint, box2.minPoint, box3.minPoint)
         , maxPoints(box0.maxPoint, box1.maxPoint, box2.maxPoint, box3.maxPoint)
@@ -154,7 +154,7 @@ public:
      * Construct a boundingBox4 from a single regular bounding boxes.
      * @param box The first bounding box.
      */
-    XS_FUNCTION explicit AABoundingBox4(const AABBDef& box) noexcept
+    XS_INLINE explicit AABoundingBox4(const AABBDef& box) noexcept
         : minPoints(box.minPoint)
         , maxPoints(box.maxPoint)
     {}
@@ -163,7 +163,7 @@ public:
      * Extends the original boundingBox4 to incorporate the new points.
      * @param points The bounding points to extend around.
      */
-    XS_FUNCTION void extend(const Point3D4Def& points) noexcept
+    XS_INLINE void extend(const Point3D4Def& points) noexcept
     {
         this->minPoints = Point3D4Def(this->minPoints.points.min(points.points));
         this->maxPoints = Point3D4Def(this->maxPoints.points.max(points.points));
@@ -173,7 +173,7 @@ public:
      * Extends the original boundingBox4 to incorporate the additional ones.
      * @param box The bounding boxes to add to the originals.
      */
-    XS_FUNCTION void extend(const AABoundingBox4& box) noexcept
+    XS_INLINE void extend(const AABoundingBox4& box) noexcept
     {
         this->minPoints = Point3D4Def(this->minPoints.points.min(box.minPoints.points));
         this->maxPoints = Point3D4Def(this->maxPoints.points.max(box.maxPoints.points));
@@ -183,7 +183,7 @@ public:
      * Calculates the Surface Area of a boundingBox4.
      * @returns The surface area of the boxes in floating point.
      */
-    XS_FUNCTION SIMD4Def surfaceArea() const noexcept
+    XS_INLINE SIMD4Def surfaceArea() const noexcept
     {
         // calculate size of bounding box
         auto size(this->maxPoints.points - this->minPoints.points);

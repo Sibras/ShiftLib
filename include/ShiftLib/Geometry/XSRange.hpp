@@ -28,7 +28,7 @@ public:
     SIMD2Data<T> minMax;
 
     /** Default constructor. */
-    XS_FUNCTION RangeData() noexcept = default;
+    XS_INLINE RangeData() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -36,7 +36,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit RangeData(const Range<T, Width>& other) noexcept
+    XS_INLINE explicit RangeData(const Range<T, Width>& other) noexcept
     {
         store(other);
     }
@@ -47,7 +47,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Range<T, Width>& other) noexcept
+    XS_INLINE void store(const Range<T, Width>& other) noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             this->minMax.store(other.minMax.template negate<true, false>());
@@ -62,7 +62,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Range<T, Width> load() const noexcept
+    XS_INLINE Range<T, Width> load() const noexcept
     {
         return Range<T, Width>(this->minMax.template load<Range<T, Width>::widthImpl>());
     }
@@ -83,39 +83,39 @@ public:
     SIMD2Def minMax;
 
     /** Default constructor. */
-    XS_FUNCTION Range() noexcept = default;
+    XS_INLINE Range() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Range(const Range& other) = default;
+    XS_INLINE Range(const Range& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Range(Range&& other) noexcept = default;
+    XS_INLINE Range(Range&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Range& operator=(const Range& other) = default;
+    XS_INLINE Range& operator=(const Range& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Range& operator=(Range&& other) noexcept = default;
+    XS_INLINE Range& operator=(Range&& other) noexcept = default;
 
     /**
      * Construct a range from its member variable.
      * @param f2MinMax The minimum and maximum value of the range.
      */
-    XS_FUNCTION explicit Range(const SIMD2Def& f2MinMax)
+    XS_INLINE explicit Range(const SIMD2Def& f2MinMax)
         : minMax(f2MinMax)
     {
         if constexpr (Width > SIMDWidth::Scalar) {
@@ -128,7 +128,7 @@ public:
      * @param min The minimum value.
      * @param max The maximum value.
      */
-    XS_FUNCTION Range(T min, T max)
+    XS_INLINE Range(T min, T max)
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             this->minMax = SIMD2<T>(-min, max);
@@ -141,7 +141,7 @@ public:
      * Returns the ranges minimum value.
      * @returns The minimum value return as a InBaseDef.
      */
-    XS_FUNCTION InBaseDef getMinInBase() const noexcept
+    XS_INLINE InBaseDef getMinInBase() const noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             return this->minMax.template negate<true, false>().template getValueInBase<0>();
@@ -154,7 +154,7 @@ public:
      * Returns the ranges maximum value.
      * @returns The maximum value return as a InBaseDef.
      */
-    XS_FUNCTION InBaseDef getMaxInBase() const noexcept
+    XS_INLINE InBaseDef getMaxInBase() const noexcept
     {
         return minMax.template getValueInBase<1>();
     }
@@ -163,7 +163,7 @@ public:
      * Returns the ranges minimum value.
      * @returns The minimum value return as a SIMDBase.
      */
-    XS_FUNCTION BaseDef getMin() const noexcept
+    XS_INLINE BaseDef getMin() const noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             return this->minMax.template negate<true, false>().template getValue<0>();
@@ -176,7 +176,7 @@ public:
      * Returns the ranges maximum value.
      * @returns The maximum value return as a SIMDBase.
      */
-    XS_FUNCTION BaseDef getMax() const noexcept
+    XS_INLINE BaseDef getMax() const noexcept
     {
         return minMax.template getValue<1>();
     }
@@ -185,7 +185,7 @@ public:
      * Gets the length of the range.
      * @returns The length.
      */
-    XS_FUNCTION InBaseDef getLength() const noexcept
+    XS_INLINE InBaseDef getLength() const noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             return this->minMax.haddInBase();
@@ -198,7 +198,7 @@ public:
      * Sets the minimum value.
      * @param min The new minimum.
      */
-    XS_FUNCTION void setMin(InBaseDef min)
+    XS_INLINE void setMin(InBaseDef min)
     {
         this->minMax.template setValue<0>(min);
         if constexpr (Width > SIMDWidth::Scalar) {
@@ -210,7 +210,7 @@ public:
      * Sets the maximum value.
      * @param max The new maximum.
      */
-    XS_FUNCTION void setMax(InBaseDef max)
+    XS_INLINE void setMax(InBaseDef max)
     {
         this->minMax.template setValue<1>(max);
     }
@@ -220,7 +220,7 @@ public:
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION bool isWithinRange(BaseDef value) const noexcept
+    XS_INLINE bool isWithinRange(BaseDef value) const noexcept
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             return this->minMax.lessThanMask(SIMD2Def(value).template negate<true, false>()).getNone();
@@ -233,7 +233,7 @@ public:
      * Clips the minimum value to the largest from 2 ranges.
      * @param other The second range to clip to.
      */
-    XS_FUNCTION void clipMin(const Range& other)
+    XS_INLINE void clipMin(const Range& other)
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             this->minMax.template blend<true, false>(this->minMax.min(other.minMax));
@@ -247,7 +247,7 @@ public:
      * Clips the maximum value to the smallest from 2 ranges.
      * @param other The second range to clip to.
      */
-    XS_FUNCTION void clipMax(const Range& other)
+    XS_INLINE void clipMax(const Range& other)
     {
         if constexpr (Width > SIMDWidth::Scalar) {
             this->minMax.template blend<false, true>(this->minMax.min(other.minMax));

@@ -31,7 +31,7 @@ public:
     T value;
 
     /** Default constructor. */
-    XS_FUNCTION SIMDBaseData() noexcept = default;
+    XS_INLINE SIMDBaseData() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -39,7 +39,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit SIMDBaseData(SIMDBase<T, Width> other) noexcept
+    XS_INLINE explicit SIMDBaseData(SIMDBase<T, Width> other) noexcept
     {
         store(other);
     }
@@ -50,7 +50,7 @@ public:
      * This removes the necessity to load and then store.
      * @param other The pre-calculated value.
      */
-    XS_FUNCTION void setData(T other) noexcept
+    XS_INLINE void setData(T other) noexcept
     {
         value = other;
     }
@@ -61,7 +61,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(SIMDBase<T, Width> other) noexcept
+    XS_INLINE void store(SIMDBase<T, Width> other) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -83,7 +83,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION SIMDBase<T, Width> load() const noexcept
+    XS_INLINE SIMDBase<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -127,39 +127,39 @@ public:
     using InternalData::SIMDData;
 
     /** Default constructor. */
-    XS_FUNCTION SIMDBase() noexcept = default;
+    XS_INLINE SIMDBase() noexcept = default;
 
     /**
      * Constructor
      * @param other The other.
      */
-    XS_FUNCTION SIMDBase(const SIMDBase& other) = default;
+    XS_INLINE SIMDBase(const SIMDBase& other) = default;
 
     /**
      * Constructor
      * @param [in,out] other The other.
      */
-    XS_FUNCTION SIMDBase(SIMDBase&& other) noexcept = default;
+    XS_INLINE SIMDBase(SIMDBase&& other) noexcept = default;
 
     /**
      * Assignment operator
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION SIMDBase& operator=(const SIMDBase& other) = default;
+    XS_INLINE SIMDBase& operator=(const SIMDBase& other) = default;
 
     /**
      * Move assignment operator
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION SIMDBase& operator=(SIMDBase&& other) noexcept = default;
+    XS_INLINE SIMDBase& operator=(SIMDBase&& other) noexcept = default;
 
     /**
      * Construct from a value.
      * @param val The value.
      */
-    XS_FUNCTION explicit SIMDBase(T val) noexcept
+    XS_INLINE explicit SIMDBase(T val) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -181,7 +181,7 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_FUNCTION explicit SIMDBase(SIMDBase<T, Width2> other) noexcept
+    XS_INLINE explicit SIMDBase(SIMDBase<T, Width2> other) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar) && (Width2 > SIMDWidth::Scalar)) {
@@ -233,7 +233,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION explicit SIMDBase(InBaseDef other) noexcept
+    XS_INLINE explicit SIMDBase(InBaseDef other) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -258,7 +258,7 @@ public:
      * Convert to SIMDInBase
      * @returns Newly constructed type..
      */
-    XS_FUNCTION explicit operator InBaseDef() const noexcept
+    XS_INLINE explicit operator InBaseDef() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -278,7 +278,7 @@ public:
      * Constructor to build set to 0.
      * @returns Newly constructed object with required attributes.
      */
-    XS_FUNCTION static SIMDBase Zero() noexcept
+    XS_INLINE static SIMDBase Zero() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -298,7 +298,7 @@ public:
      * Constructor to build set to 1.
      * @returns Newly constructed object with required attributes.
      */
-    XS_FUNCTION static SIMDBase One() noexcept
+    XS_INLINE static SIMDBase One() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -318,7 +318,7 @@ public:
      * Access the object as a normal value.
      * @returns The value.
      */
-    XS_FUNCTION T getValue() const noexcept
+    XS_INLINE T getValue() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -342,7 +342,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMDBase mad(SIMDBase other1, SIMDBase other2) const noexcept
+    XS_INLINE SIMDBase mad(SIMDBase other1, SIMDBase other2) const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -378,7 +378,7 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_FUNCTION SIMDBase msub(SIMDBase other1, SIMDBase other2) const noexcept
+    XS_INLINE SIMDBase msub(SIMDBase other1, SIMDBase other2) const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -413,7 +413,7 @@ public:
      * @param other The second object whose sign to check.
      * @returns Result of operation.
      */
-    XS_FUNCTION SIMDBase sign(SIMDBase other) const noexcept
+    XS_INLINE SIMDBase sign(SIMDBase other) const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -433,7 +433,7 @@ public:
      * Compute the absolute value of this object.
      * @returns Result of operation.
      */
-    XS_FUNCTION SIMDBase abs() const noexcept
+    XS_INLINE SIMDBase abs() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -454,7 +454,7 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_FUNCTION SIMDBase max(SIMDBase other) const noexcept
+    XS_INLINE SIMDBase max(SIMDBase other) const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -474,7 +474,7 @@ public:
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_FUNCTION SIMDBase min(SIMDBase other) const noexcept
+    XS_INLINE SIMDBase min(SIMDBase other) const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -497,7 +497,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator++(SIMDBase<T, Width>& other) noexcept
+XS_INLINE SIMDBase<T, Width>& operator++(SIMDBase<T, Width>& other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -520,7 +520,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator++(SIMDBase<T, Width>& other) noexcept
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator++(SIMDBase<T, Width>& other, int32) noexcept
+XS_INLINE SIMDBase<T, Width> operator++(SIMDBase<T, Width>& other, int32) noexcept
 {
     const auto ret = other;
 #if XS_ISA == XS_X86
@@ -544,7 +544,7 @@ XS_FUNCTION SIMDBase<T, Width> operator++(SIMDBase<T, Width>& other, int32) noex
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator--(SIMDBase<T, Width>& other) noexcept
+XS_INLINE SIMDBase<T, Width>& operator--(SIMDBase<T, Width>& other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -567,7 +567,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator--(SIMDBase<T, Width>& other) noexcept
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator--(SIMDBase<T, Width>& other, int32) noexcept
+XS_INLINE SIMDBase<T, Width> operator--(SIMDBase<T, Width>& other, int32) noexcept
 {
     const auto ret = other;
 #if XS_ISA == XS_X86
@@ -592,7 +592,7 @@ XS_FUNCTION SIMDBase<T, Width> operator--(SIMDBase<T, Width>& other, int32) noex
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator+(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator+(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -615,7 +615,7 @@ XS_FUNCTION SIMDBase<T, Width> operator+(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator-(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -638,7 +638,7 @@ XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator*(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator*(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -661,7 +661,7 @@ XS_FUNCTION SIMDBase<T, Width> operator*(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator/(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator/(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -683,7 +683,7 @@ XS_FUNCTION SIMDBase<T, Width> operator/(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other) noexcept
+XS_INLINE SIMDBase<T, Width> operator-(SIMDBase<T, Width> other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -706,7 +706,7 @@ XS_FUNCTION SIMDBase<T, Width> operator-(SIMDBase<T, Width> other) noexcept
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -730,7 +730,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator+=(SIMDBase<T, Width>& other1, SIMDBase<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -754,7 +754,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator-=(SIMDBase<T, Width>& other1, SIMDBase<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -778,7 +778,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator*=(SIMDBase<T, Width>& other1, SIMDBase<
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -802,7 +802,7 @@ XS_FUNCTION SIMDBase<T, Width>& operator/=(SIMDBase<T, Width>& other1, SIMDBase<
  * @returns true if the parameters are considered equivalent.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator==(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE bool operator==(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -827,7 +827,7 @@ XS_FUNCTION bool operator==(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2
  * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE bool operator<=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -852,7 +852,7 @@ XS_FUNCTION bool operator<=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2
  * @returns true if the first parameter is less than the second.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator<(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE bool operator<(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -877,7 +877,7 @@ XS_FUNCTION bool operator<(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2)
  * @returns true if the parameters are not considered equivalent.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION bool operator!=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE bool operator!=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -904,7 +904,7 @@ XS_FUNCTION bool operator!=(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator&(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator&(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -933,7 +933,7 @@ XS_FUNCTION SIMDBase<T, Width> operator&(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator|(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator|(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -962,7 +962,7 @@ XS_FUNCTION SIMDBase<T, Width> operator|(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator^(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
+XS_INLINE SIMDBase<T, Width> operator^(SIMDBase<T, Width> other1, SIMDBase<T, Width> other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -990,7 +990,7 @@ XS_FUNCTION SIMDBase<T, Width> operator^(SIMDBase<T, Width> other1, SIMDBase<T, 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION SIMDBase<T, Width> operator~(SIMDBase<T, Width> other) noexcept
+XS_INLINE SIMDBase<T, Width> operator~(SIMDBase<T, Width> other) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {

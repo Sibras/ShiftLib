@@ -30,7 +30,7 @@ public:
     SIMD4Data<T> max;
 
     /** Default constructor. */
-    XS_FUNCTION Range4Data() noexcept = default;
+    XS_INLINE Range4Data() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -38,7 +38,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Range4Data(const Range4<T, Width>& other) noexcept
+    XS_INLINE explicit Range4Data(const Range4<T, Width>& other) noexcept
         : min(other.mins)
         , max(other.maxs)
     {}
@@ -49,7 +49,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Range4<T, Width>& other) noexcept
+    XS_INLINE void store(const Range4<T, Width>& other) noexcept
     {
         this->min.store(other.mins);
         this->max.store(other.maxs);
@@ -61,7 +61,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Range4<T, Width> load() const noexcept
+    XS_INLINE Range4<T, Width> load() const noexcept
     {
         return Range4<T, Width>(this->min.template load<Range4<T, Width>::widthImpl>(),
             this->max.template load<Range4<T, Width>::widthImpl>());
@@ -85,40 +85,40 @@ public:
     SIMD4Def maxs;
 
     /** Default constructor. */
-    XS_FUNCTION Range4() noexcept = default;
+    XS_INLINE Range4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Range4(const Range4& other) = default;
+    XS_INLINE Range4(const Range4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Range4(Range4&& other) noexcept = default;
+    XS_INLINE Range4(Range4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Range4& operator=(const Range4& other) = default;
+    XS_INLINE Range4& operator=(const Range4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Range4& operator=(Range4&& other) noexcept = default;
+    XS_INLINE Range4& operator=(Range4&& other) noexcept = default;
 
     /**
      * Construct a range4 from its member variables.
      * @param mins The minimum 4 values of the range.
      * @param maxs The maximum 4 values of the range.
      */
-    XS_FUNCTION Range4(const SIMD4Def& mins, const SIMD4Def& maxs)
+    XS_INLINE Range4(const SIMD4Def& mins, const SIMD4Def& maxs)
         : mins(mins)
         , maxs(maxs)
     {}
@@ -127,7 +127,7 @@ public:
      * Construct a range4 from a single range.
      * @param range Input range to copy.
      */
-    XS_FUNCTION explicit Range4(const RangeDef& range)
+    XS_INLINE explicit Range4(const RangeDef& range)
         : mins(range.getMin())
         , maxs(range.getMax())
     {}
@@ -138,7 +138,7 @@ public:
      * @returns The specified range.
      */
     template<uint32_t Index>
-    XS_FUNCTION RangeDef getRange() const noexcept
+    XS_INLINE RangeDef getRange() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         return RangeDef(XSFloat2(this->mins.template getValueInBase<0>(), this->maxs.template getValueInBase<0>()));
@@ -150,7 +150,7 @@ public:
      * @returns The minimum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMinInBase() const noexcept
+    XS_INLINE InBaseDef getMinInBase() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         return this->mins.template getValueInBase<0>();
@@ -162,7 +162,7 @@ public:
      * @returns The maximum value return as a InBaseDef.
      */
     template<uint32_t Index>
-    XS_FUNCTION InBaseDef getMaxInBase() const noexcept
+    XS_INLINE InBaseDef getMaxInBase() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         return this->maxs.template getValueInBase<0>();
@@ -174,7 +174,7 @@ public:
      * @returns The minimum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMin() const noexcept
+    XS_INLINE BaseDef getMin() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         return this->mins.template getValue<Index>();
@@ -186,7 +186,7 @@ public:
      * @returns The maximum value return as a SIMDBase.
      */
     template<uint32_t Index>
-    XS_FUNCTION BaseDef getMax() const noexcept
+    XS_INLINE BaseDef getMax() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         return this->maxs.template getValue<Index>();
@@ -196,7 +196,7 @@ public:
      * Gets the length of each range.
      * @returns The length.
      */
-    XS_FUNCTION SIMD4Def getLength() const noexcept
+    XS_INLINE SIMD4Def getLength() const noexcept
     {
         return (this->maxs - this->mins);
     }
@@ -207,7 +207,7 @@ public:
      * @param min The new minimum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMin(BaseDef min)
+    XS_INLINE void setMin(BaseDef min)
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         this->mins.template setValue<Index>(min);
@@ -219,7 +219,7 @@ public:
      * @param max The new maximum.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setMax(BaseDef max)
+    XS_INLINE void setMax(BaseDef max)
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
         this->maxs.template setValue<Index + 2>(max);
@@ -229,7 +229,7 @@ public:
      * Sets the minimum value of all range elements.
      * @param min The new minimum.
      */
-    XS_FUNCTION void setMin4(BaseDef min)
+    XS_INLINE void setMin4(BaseDef min)
     {
         this->mins = SIMD4Def(min);
     }
@@ -238,7 +238,7 @@ public:
      * Sets the maximum value of all range elements.
      * @param max The new maximum.
      */
-    XS_FUNCTION void setMaxQuad(BaseDef max)
+    XS_INLINE void setMaxQuad(BaseDef max)
     {
         this->maxs = SIMD4Def(max);
     }
@@ -248,7 +248,7 @@ public:
      * @param value The value to check.
      * @returns If the value is within the range.
      */
-    XS_FUNCTION typename SIMD4Def::Mask isWithinRange(BaseDef value) const noexcept
+    XS_INLINE typename SIMD4Def::Mask isWithinRange(BaseDef value) const noexcept
     {
         return (this->mins.lessThanMask(value)) & (SIMD4Def(value).lessThanMask(this->maxs));
     }
@@ -258,7 +258,7 @@ public:
      * @param values The values to check.
      * @returns If the values are within the range.
      */
-    XS_FUNCTION typename SIMD4Def::Mask isWithinRange(const SIMD4Def& values) const noexcept
+    XS_INLINE typename SIMD4Def::Mask isWithinRange(const SIMD4Def& values) const noexcept
     {
         return (this->mins.lessThanMask(values)) & (SIMD4Def(values).lessThanMask(this->maxs));
     }
@@ -267,7 +267,7 @@ public:
      * Clips the minimum values to the largest from 2 ranges.
      * @param range The second range to clip to.
      */
-    XS_FUNCTION void clipMin(const Range4& range)
+    XS_INLINE void clipMin(const Range4& range)
     {
         this->mins = this->mins.max(range.mins);
     }
@@ -276,7 +276,7 @@ public:
      * Clips the maximum values to the smallest from 2 ranges.
      * @param range The second range to clip to.
      */
-    XS_FUNCTION void clipMax(const Range4& range)
+    XS_INLINE void clipMax(const Range4& range)
     {
         this->maxs = this->maxs.min(range.maxs);
     }

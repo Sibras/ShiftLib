@@ -30,39 +30,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool2() = default;
+    XS_INLINE Bool2() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool2(const Bool2& other) = default;
+    XS_INLINE Bool2(const Bool2& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool2(Bool2&& other) noexcept = default;
+    XS_INLINE Bool2(Bool2&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool2& operator=(const Bool2& other) = default;
+    XS_INLINE Bool2& operator=(const Bool2& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool2& operator=(Bool2&& other) noexcept = default;
+    XS_INLINE Bool2& operator=(Bool2&& other) noexcept = default;
 
     /**
      * Construct a bool2 from an unsigned int.
      * @param bool2 The bool2 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool2(uint8 bool2) noexcept
+    XS_INLINE constexpr explicit Bool2(uint8 bool2) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -80,7 +80,7 @@ public:
      * @param bool0 the first boolean value.
      * @param bool1 the second boolean value.
      */
-    XS_FUNCTION constexpr Bool2(bool bool0, bool bool1) noexcept
+    XS_INLINE constexpr Bool2(bool bool0, bool bool1) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -97,7 +97,7 @@ public:
      * Constructor to build a Bool2 with all elements set to True.
      * @returns Newly constructed Bool2 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool2 True() noexcept
+    XS_INLINE static constexpr Bool2 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -113,7 +113,7 @@ public:
      * Constructor to build a Bool2 with all elements set to False.
      * @returns Newly constructed Bool2 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool2 False() noexcept
+    XS_INLINE static constexpr Bool2 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -135,7 +135,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 2)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
@@ -154,7 +154,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 2)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
@@ -173,7 +173,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 2)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
@@ -190,7 +190,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -209,7 +209,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -228,7 +228,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() noexcept
     {
         return !getAny();
     }
@@ -241,7 +241,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 1).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 2);
 #if XS_ISA == XS_X86
@@ -258,7 +258,7 @@ public:
      * Set a bool element of a bool2 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 1).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 2);
 #if XS_ISA == XS_X86
@@ -275,7 +275,7 @@ public:
      * Set a bool element of a bool2 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 1).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 2);
 #if XS_ISA == XS_X86
@@ -292,7 +292,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -311,7 +311,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -337,39 +337,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool3() = default;
+    XS_INLINE Bool3() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool3(const Bool3& other) = default;
+    XS_INLINE Bool3(const Bool3& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool3(Bool3&& other) noexcept = default;
+    XS_INLINE Bool3(Bool3&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool3& operator=(const Bool3& other) = default;
+    XS_INLINE Bool3& operator=(const Bool3& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool3& operator=(Bool3&& other) noexcept = default;
+    XS_INLINE Bool3& operator=(Bool3&& other) noexcept = default;
 
     /**
      * Construct a bool3 from an unsigned int.
      * @param bool3 The bool3 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool3(uint8 bool3) noexcept
+    XS_INLINE constexpr explicit Bool3(uint8 bool3) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -389,7 +389,7 @@ public:
      * @param bool1 the second boolean value.
      * @param bool2 the third boolean value.
      */
-    XS_FUNCTION constexpr Bool3(bool bool0, bool bool1, bool bool2) noexcept
+    XS_INLINE constexpr Bool3(bool bool0, bool bool1, bool bool2) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -408,7 +408,7 @@ public:
      * Constructor to build a Bool3 with all elements set to True.
      * @returns Newly constructed Bool3 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool3 True() noexcept
+    XS_INLINE static constexpr Bool3 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -424,7 +424,7 @@ public:
      * Constructor to build a Bool3 with all elements set to False.
      * @returns Newly constructed Bool3 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool3 False() noexcept
+    XS_INLINE static constexpr Bool3 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -446,7 +446,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 3)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
@@ -465,7 +465,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 3)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
@@ -484,7 +484,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 3)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
@@ -501,7 +501,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -520,7 +520,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -539,7 +539,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() noexcept
     {
         return !getAny();
     }
@@ -552,7 +552,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 2).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
@@ -569,7 +569,7 @@ public:
      * Set a bool element of a bool3 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 2).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
@@ -586,7 +586,7 @@ public:
      * Set a bool element of a bool3 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 2).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
@@ -603,7 +603,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -622,7 +622,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -649,39 +649,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool3x2() = default;
+    XS_INLINE Bool3x2() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool3x2(const Bool3x2& other) = default;
+    XS_INLINE Bool3x2(const Bool3x2& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool3x2(Bool3x2&& other) noexcept = default;
+    XS_INLINE Bool3x2(Bool3x2&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool3x2& operator=(const Bool3x2& other) = default;
+    XS_INLINE Bool3x2& operator=(const Bool3x2& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool3x2& operator=(Bool3x2&& other) noexcept = default;
+    XS_INLINE Bool3x2& operator=(Bool3x2&& other) noexcept = default;
 
     /**
      * Construct a bool3x2 from an unsigned int.
      * @param bool3x2 The bool3x2 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool3x2(uint8 bool3x2) noexcept
+    XS_INLINE constexpr explicit Bool3x2(uint8 bool3x2) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -703,7 +703,7 @@ public:
      * @param bool30 The first integer value for first 3 booleans.
      * @param bool31 The second integer value for first 3 booleans.
      */
-    XS_FUNCTION constexpr explicit Bool3x2(uint8 bool30, uint8 bool31) noexcept
+    XS_INLINE constexpr explicit Bool3x2(uint8 bool30, uint8 bool31) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -729,7 +729,7 @@ public:
      * @param bool4 the fifth boolean value.
      * @param bool5 the sixth boolean value.
      */
-    XS_FUNCTION constexpr Bool3x2(bool bool0, bool bool1, bool bool2, bool bool3, bool bool4, bool bool5) noexcept
+    XS_INLINE constexpr Bool3x2(bool bool0, bool bool1, bool bool2, bool bool3, bool bool4, bool bool5) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -752,7 +752,7 @@ public:
      * Constructor to build a Bool3x2 with all elements set to True.
      * @returns Newly constructed Bool3x2 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool3x2 True() noexcept
+    XS_INLINE static constexpr Bool3x2 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -768,7 +768,7 @@ public:
      * Constructor to build a Bool3x2 with all elements set to False.
      * @returns Newly constructed Bool3x2 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool3x2 False() noexcept
+    XS_INLINE static constexpr Bool3x2 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -790,7 +790,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -810,7 +810,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -830,7 +830,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -848,7 +848,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -867,7 +867,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -886,7 +886,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() noexcept
     {
         return !getAny();
     }
@@ -899,7 +899,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 5).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -917,7 +917,7 @@ public:
      * Set a bool element of a bool3x2 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 5).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -935,7 +935,7 @@ public:
      * Set a bool element of a bool3x2 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 5).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -953,7 +953,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -978,7 +978,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1006,39 +1006,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool4() = default;
+    XS_INLINE Bool4() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool4(const Bool4& other) = default;
+    XS_INLINE Bool4(const Bool4& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool4(Bool4&& other) noexcept = default;
+    XS_INLINE Bool4(Bool4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool4& operator=(const Bool4& other) = default;
+    XS_INLINE Bool4& operator=(const Bool4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool4& operator=(Bool4&& other) noexcept = default;
+    XS_INLINE Bool4& operator=(Bool4&& other) noexcept = default;
 
     /**
      * Construct a bool4 from an unsigned int.
      * @param bool4 The bool4 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool4(uint8 bool4) noexcept
+    XS_INLINE constexpr explicit Bool4(uint8 bool4) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1060,7 +1060,7 @@ public:
      * @param bool2 the third boolean value.
      * @param bool3 the fourth boolean value.
      */
-    XS_FUNCTION constexpr Bool4(bool bool0, bool bool1, bool bool2, bool bool3) noexcept
+    XS_INLINE constexpr Bool4(bool bool0, bool bool1, bool bool2, bool bool3) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1080,7 +1080,7 @@ public:
      * Constructor to build a Bool4 with all elements set to True.
      * @returns Newly constructed Bool4 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool4 True() noexcept
+    XS_INLINE static constexpr Bool4 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1096,7 +1096,7 @@ public:
      * Constructor to build a Bool4 with all elements set to False.
      * @returns Newly constructed Bool4 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool4 False() noexcept
+    XS_INLINE static constexpr Bool4 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1118,7 +1118,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 4)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
@@ -1137,7 +1137,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 4)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
@@ -1156,7 +1156,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 4)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
@@ -1173,7 +1173,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() const noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1189,7 +1189,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() const noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1205,7 +1205,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() const noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -1218,7 +1218,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 3).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
@@ -1235,7 +1235,7 @@ public:
      * Set a bool element of a bool4 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 3).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
@@ -1252,7 +1252,7 @@ public:
      * Set a bool element of a bool4 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 3).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 4);
 #if XS_ISA == XS_X86
@@ -1269,7 +1269,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() const noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1285,7 +1285,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1309,39 +1309,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool6() = default;
+    XS_INLINE Bool6() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool6(const Bool6& other) = default;
+    XS_INLINE Bool6(const Bool6& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool6(Bool6&& other) noexcept = default;
+    XS_INLINE Bool6(Bool6&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool6& operator=(const Bool6& other) = default;
+    XS_INLINE Bool6& operator=(const Bool6& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool6& operator=(Bool6&& other) noexcept = default;
+    XS_INLINE Bool6& operator=(Bool6&& other) noexcept = default;
 
     /**
      * Construct a bool6 from an unsigned int.
      * @param bool6 The bool6 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool6(uint8 bool6) noexcept
+    XS_INLINE constexpr explicit Bool6(uint8 bool6) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1367,7 +1367,7 @@ public:
      * @param bool4 the fifth boolean value.
      * @param bool5 the sixth boolean value.
      */
-    XS_FUNCTION constexpr Bool6(bool bool0, bool bool1, bool bool2, bool bool3, bool bool4, bool bool5) noexcept
+    XS_INLINE constexpr Bool6(bool bool0, bool bool1, bool bool2, bool bool3, bool bool4, bool bool5) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1390,7 +1390,7 @@ public:
      * Constructor to build a Bool6 with all elements set to True.
      * @returns Newly constructed Bool6 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool6 True() noexcept
+    XS_INLINE static constexpr Bool6 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1406,7 +1406,7 @@ public:
      * Constructor to build a Bool6 with all elements set to False.
      * @returns Newly constructed Bool6 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool6 False() noexcept
+    XS_INLINE static constexpr Bool6 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1428,7 +1428,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -1447,7 +1447,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -1466,7 +1466,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 6)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
 #if XS_ISA == XS_X86
@@ -1483,7 +1483,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1502,7 +1502,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1521,7 +1521,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() noexcept
     {
         return !getAny();
     }
@@ -1534,7 +1534,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 5).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -1551,7 +1551,7 @@ public:
      * Set a bool element of a bool6 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 5).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -1568,7 +1568,7 @@ public:
      * Set a bool element of a bool6 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 5).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 6);
 #if XS_ISA == XS_X86
@@ -1585,7 +1585,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1608,7 +1608,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1636,39 +1636,39 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_FUNCTION Bool8() = default;
+    XS_INLINE Bool8() = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_FUNCTION Bool8(const Bool8& other) = default;
+    XS_INLINE Bool8(const Bool8& other) = default;
 
     /**
      * Move constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Bool8(Bool8&& other) noexcept = default;
+    XS_INLINE Bool8(Bool8&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool8& operator=(const Bool8& other) = default;
+    XS_INLINE Bool8& operator=(const Bool8& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Bool8& operator=(Bool8&& other) noexcept = default;
+    XS_INLINE Bool8& operator=(Bool8&& other) noexcept = default;
 
     /**
      * Construct a bool8 from an unsigned int.
      * @param bool8 The bool8 integer value.
      */
-    XS_FUNCTION constexpr explicit Bool8(uint8 bool8) noexcept
+    XS_INLINE constexpr explicit Bool8(uint8 bool8) noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1698,7 +1698,7 @@ public:
      * @param bool6 the seventh boolean value.
      * @param bool7 the eighth boolean value.
      */
-    XS_FUNCTION constexpr Bool8(
+    XS_INLINE constexpr Bool8(
         bool bool0, bool bool1, bool bool2, bool bool3, bool bool4, bool bool5, bool bool6, bool bool7) noexcept
     {
 #if XS_ISA == XS_X86
@@ -1725,7 +1725,7 @@ public:
      * Constructor to build a Bool8 with all elements set to True.
      * @returns Newly constructed Bool8 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool8 True() noexcept
+    XS_INLINE static constexpr Bool8 True() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1741,7 +1741,7 @@ public:
      * Constructor to build a Bool8 with all elements set to False.
      * @returns Newly constructed Bool8 with required attributes.
      */
-    XS_FUNCTION static constexpr Bool8 False() noexcept
+    XS_INLINE static constexpr Bool8 False() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1763,7 +1763,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 8)
-    XS_FUNCTION bool getBool() const noexcept
+    XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
@@ -1782,7 +1782,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 8)
-    XS_FUNCTION constexpr void setBoolTrue() noexcept
+    XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
@@ -1801,7 +1801,7 @@ public:
      */
     template<uint32 Index>
     XS_REQUIRES(Index < 8)
-    XS_FUNCTION constexpr void setBoolFalse() noexcept
+    XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
@@ -1818,7 +1818,7 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAny() const noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1835,7 +1835,7 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getAll() const noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1852,7 +1852,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_FUNCTION constexpr bool getNone() const noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -1865,7 +1865,7 @@ public:
      * @param index The index of the bool to return (must be between 0 and 7).
      * @returns The requested bool.
      */
-    XS_FUNCTION bool getBool(uint32 index) const noexcept
+    XS_INLINE bool getBool(uint32 index) const noexcept
     {
         XS_ASSERT(index < 8);
 #if XS_ISA == XS_X86
@@ -1882,7 +1882,7 @@ public:
      * Set a bool element of a bool8 to true dynamically.
      * @param index The index of the bool to set (must be between 0 and 7).
      */
-    XS_FUNCTION void setBoolTrue(uint32 index) noexcept
+    XS_INLINE void setBoolTrue(uint32 index) noexcept
     {
         XS_ASSERT(index < 8);
 #if XS_ISA == XS_X86
@@ -1899,7 +1899,7 @@ public:
      * Set a bool element of a bool8 to false dynamically.
      * @param index The index of the bool to set (must be between 0 and 7).
      */
-    XS_FUNCTION void setBoolFalse(uint32 index) noexcept
+    XS_INLINE void setBoolFalse(uint32 index) noexcept
     {
         XS_ASSERT(index < 8);
 #if XS_ISA == XS_X86
@@ -1916,7 +1916,7 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_FUNCTION uint32 indexOfFirstValid() const noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
@@ -1942,7 +1942,7 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_FUNCTION constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {

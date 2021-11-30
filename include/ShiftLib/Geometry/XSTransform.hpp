@@ -44,7 +44,7 @@ public:
     InternData<Matrix> data;
 
     /** Default constructor. */
-    XS_FUNCTION TransformData() noexcept = default;
+    XS_INLINE TransformData() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -52,7 +52,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit TransformData(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE explicit TransformData(const Transform<T, Width, Matrix>& other) noexcept
     {
         store(other);
     }
@@ -63,7 +63,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE void store(const Transform<T, Width, Matrix>& other) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix.store(other.data.matrix);
@@ -81,7 +81,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Transform<T, Width, Matrix> load() const noexcept
+    XS_INLINE Transform<T, Width, Matrix> load() const noexcept
     {
         if constexpr (Matrix) {
             return Transform<T, Width, Matrix>(
@@ -118,7 +118,7 @@ public:
     InternData<Matrix> data;
 
     /** Default constructor. */
-    XS_FUNCTION TransformDataPad() noexcept = default;
+    XS_INLINE TransformDataPad() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -126,7 +126,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit TransformDataPad(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE explicit TransformDataPad(const Transform<T, Width, Matrix>& other) noexcept
     {
         store(other);
     }
@@ -137,7 +137,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE void store(const Transform<T, Width, Matrix>& other) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix.store(other.data.matrix);
@@ -154,7 +154,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Transform<T, Width, Matrix> load() const noexcept
+    XS_INLINE Transform<T, Width, Matrix> load() const noexcept
     {
         if constexpr (Matrix) {
             return Transform<T, Width, Matrix>(
@@ -233,39 +233,39 @@ public:
     InternalData data;
 
     /** Default constructor. */
-    XS_FUNCTION Transform() noexcept = default;
+    XS_INLINE Transform() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Transform(const Transform& other) = default;
+    XS_INLINE Transform(const Transform& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Transform(Transform&& other) noexcept = default;
+    XS_INLINE Transform(Transform&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Transform& operator=(const Transform& other) = default;
+    XS_INLINE Transform& operator=(const Transform& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Transform& operator=(Transform&& other) noexcept = default;
+    XS_INLINE Transform& operator=(Transform&& other) noexcept = default;
 
     /**
      * Construct a transform from a Matrix4x3.
      * @param matrix The new transform transform.
      */
-    XS_FUNCTION explicit Transform(const Matrix4x3Def& matrix) noexcept
+    XS_INLINE explicit Transform(const Matrix4x3Def& matrix) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix = matrix;
@@ -282,7 +282,7 @@ public:
      * @param translation The new translation component.
      * @param scale       The new scale component.
      */
-    XS_FUNCTION Transform(const QuaternionDef& quaternion, const Vector3DDef& translation, BaseDef scale) noexcept
+    XS_INLINE Transform(const QuaternionDef& quaternion, const Vector3DDef& translation, BaseDef scale) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix = Matrix4x3Def(quaternion, translation).postUniformScale(scale);
@@ -297,7 +297,7 @@ public:
      * Constructor to build a Identity Matrix.
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform Identity() noexcept
+    XS_INLINE static Transform Identity() noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::Identity());
@@ -311,7 +311,7 @@ public:
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform Translation(const SIMD3Def& translation) noexcept
+    XS_INLINE static Transform Translation(const SIMD3Def& translation) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::Translation(translation));
@@ -325,7 +325,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform UniformScale(InBaseDef scale) noexcept
+    XS_INLINE static Transform UniformScale(InBaseDef scale) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::UniformScale(scale));
@@ -339,7 +339,7 @@ public:
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationX(InBaseDef rotation) noexcept
+    XS_INLINE static Transform RotationX(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::RotationX(rotation));
@@ -353,7 +353,7 @@ public:
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationY(InBaseDef rotation) noexcept
+    XS_INLINE static Transform RotationY(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::RotationY(rotation));
@@ -367,7 +367,7 @@ public:
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationZ(InBaseDef rotation) noexcept
+    XS_INLINE static Transform RotationZ(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::RotationZ(rotation));
@@ -382,7 +382,7 @@ public:
      * @param rotation The amount to rotate the transform by (in radians).
      * @returns Newly constructed Transform with required attributes.
      */
-    XS_FUNCTION static Transform RotationAxis(const Vector3DDef& axis, InBaseDef rotation) noexcept
+    XS_INLINE static Transform RotationAxis(const Vector3DDef& axis, InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
             return Transform(Matrix4x3Def::RotationAxis(axis, rotation));
@@ -396,7 +396,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transform(const Point3DDef& point) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(point);
@@ -411,7 +411,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transform(const Vector3DDef& vector) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(vector);
@@ -426,7 +426,7 @@ public:
      * @returns The new transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(point);
@@ -443,7 +443,7 @@ public:
      * @returns The new transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(vector);
@@ -458,7 +458,7 @@ public:
      * @returns The new transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(point);
@@ -475,7 +475,7 @@ public:
      * @returns The new transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
     {
         if constexpr (Matrix) {
             return this->data.matrix.transform(vector);
@@ -488,7 +488,7 @@ public:
      * Determine the inverse of a transform.
      * @returns A new inverse transform.
      */
-    XS_FUNCTION Transform inverse() const noexcept
+    XS_INLINE Transform inverse() const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.inverse());
@@ -502,7 +502,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateX(InBaseDef rotation) const noexcept
+    XS_INLINE Transform postRotateX(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.postRotateX(rotation));
@@ -516,7 +516,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateY(InBaseDef rotation) const noexcept
+    XS_INLINE Transform postRotateY(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.postRotateY(rotation));
@@ -530,7 +530,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postRotateZ(InBaseDef rotation) const noexcept
+    XS_INLINE Transform postRotateZ(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.postRotateZ(rotation));
@@ -544,7 +544,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateX(InBaseDef rotation) const noexcept
+    XS_INLINE Transform preRotateX(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.preRotateX(rotation));
@@ -561,7 +561,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateY(InBaseDef rotation) const noexcept
+    XS_INLINE Transform preRotateY(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.preRotateY(rotation));
@@ -578,7 +578,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preRotateZ(InBaseDef rotation) const noexcept
+    XS_INLINE Transform preRotateZ(InBaseDef rotation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.preRotateZ(rotation));
@@ -595,7 +595,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Transform postUniformScale(BaseDef scale) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.postUniformScale(scale));
@@ -609,7 +609,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Transform preUniformScale(BaseDef scale) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.preUniformScale(scale));
@@ -624,7 +624,7 @@ public:
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform postTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Transform postTranslate(const SIMD3Def& translation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.postTranslate(translation));
@@ -640,7 +640,7 @@ public:
      * @param translation The 3 translate values for each axis.
      * @returns The rotated transform.
      */
-    XS_FUNCTION Transform preTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Transform preTranslate(const SIMD3Def& translation) const noexcept
     {
         if constexpr (Matrix) {
             return Transform(this->data.matrix.preTranslate(translation));
@@ -658,7 +658,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_FUNCTION Transform<T, Width, Matrix> operator*(
+XS_INLINE Transform<T, Width, Matrix> operator*(
     const Transform<T, Width, Matrix>& transform1, const Transform<T, Width, Matrix>& transform2) noexcept
 {
     if constexpr (Matrix) {
@@ -691,7 +691,7 @@ XS_FUNCTION Transform<T, Width, Matrix> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_FUNCTION Transform<T, Width, Matrix>& operator*=(
+XS_INLINE Transform<T, Width, Matrix>& operator*=(
     Transform<T, Width, Matrix>& transform1, const Transform<T, Width, Matrix>& transform2) noexcept
 {
     if constexpr (Matrix) {

@@ -41,7 +41,7 @@ public:
     typename InternData<Packed>::Vector3D4InternData values;
 
     /** Default constructor. */
-    XS_FUNCTION Vector3D4Data() noexcept = default;
+    XS_INLINE Vector3D4Data() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -49,7 +49,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Vector3D4Data(const Vector3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit Vector3D4Data(const Vector3D4<T, Width, Packed>& other) noexcept
         : values(other.vectors)
     {}
 
@@ -70,8 +70,7 @@ public:
      * @param v2Z The Z value of the third vector.
      * @param v3Z The Z value of the fourth vector.
      */
-    XS_FUNCTION void setData(
-        T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
+    XS_INLINE void setData(T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
     {
         if constexpr (!Packed) {
             this->values.setData(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, v3X, v3Y, v3Z);
@@ -86,7 +85,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Vector3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const Vector3D4<T, Width, Packed>& other) noexcept
     {
         this->values.store(other.vectors);
     }
@@ -97,7 +96,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Vector3D4<T, Width, Packed> load() const noexcept
+    XS_INLINE Vector3D4<T, Width, Packed> load() const noexcept
     {
         return Vector3D4<T, Width, Packed>(this->values.template load<Vector3D4<T, Width, Packed>::widthImpl>());
     }
@@ -122,7 +121,7 @@ public:
     typename InternData<Packed>::Vector3D4InternData values;
 
     /** Default constructor. */
-    XS_FUNCTION Vector3D4DataPad() noexcept = default;
+    XS_INLINE Vector3D4DataPad() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -130,7 +129,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Vector3D4DataPad(const Vector3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit Vector3D4DataPad(const Vector3D4<T, Width, Packed>& other) noexcept
         : values(other.vectors)
     {}
 
@@ -151,8 +150,7 @@ public:
      * @param v2Z The Z value of the third vector.
      * @param v3Z The Z value of the fourth vector.
      */
-    XS_FUNCTION void setData(
-        T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
+    XS_INLINE void setData(T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
     {
         if constexpr (!Packed) {
             this->values.setData(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, v3X, v3Y, v3Z);
@@ -167,7 +165,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Vector3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const Vector3D4<T, Width, Packed>& other) noexcept
     {
         this->values.store(other.vectors);
     }
@@ -178,7 +176,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Vector3D4<T, Width, Packed> load() const noexcept
+    XS_INLINE Vector3D4<T, Width, Packed> load() const noexcept
     {
         return Vector3D4<T, Width, Packed>(this->values.template load<Vector3D4<T, Width, Packed>::widthImpl>());
     }
@@ -228,40 +226,40 @@ public:
     Vector3D4Def vectors;
 
     /** Default constructor. */
-    XS_FUNCTION Vector3D4() noexcept = default;
+    XS_INLINE Vector3D4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Vector3D4(const Vector3D4& other) = default;
+    XS_INLINE Vector3D4(const Vector3D4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Vector3D4(Vector3D4&& other) noexcept = default;
+    XS_INLINE Vector3D4(Vector3D4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Vector3D4& operator=(const Vector3D4& other) = default;
+    XS_INLINE Vector3D4& operator=(const Vector3D4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Vector3D4& operator=(Vector3D4&& other) noexcept = default;
+    XS_INLINE Vector3D4& operator=(Vector3D4&& other) noexcept = default;
 
     /**
      * Construct a vector3d4 from 2 vector2s.
      * @param vector0 The first vector2.
      * @param vector1 The second vector2.
      */
-    XS_FUNCTION Vector3D4(const Vector3D2Def& vector0, const Vector3D2Def& vector1) noexcept
+    XS_INLINE Vector3D4(const Vector3D2Def& vector0, const Vector3D2Def& vector1) noexcept
         : vectors(vector0.vectors, vector1.vectors)
     {}
 
@@ -272,7 +270,7 @@ public:
      * @param vector2 The third vector.
      * @param vector3 The fourth vector.
      */
-    XS_FUNCTION Vector3D4(const Vector3DDef& vector0, const Vector3DDef& vector1, const Vector3DDef& vector2,
+    XS_INLINE Vector3D4(const Vector3DDef& vector0, const Vector3DDef& vector1, const Vector3DDef& vector2,
         const Vector3DDef& vector3) noexcept
         : vectors(vector0.values, vector1.values, vector2.values, vector3.values)
     {}
@@ -281,7 +279,7 @@ public:
      * Construct a vector3d4 from a single vector.
      * @param vector The vector.
      */
-    XS_FUNCTION explicit Vector3D4(const Vector3DDef& vector) noexcept
+    XS_INLINE explicit Vector3D4(const Vector3DDef& vector) noexcept
         : vectors(vector.values)
     {}
 
@@ -300,7 +298,7 @@ public:
      * @param v2Z The Z value of the third vector.
      * @param v3Z The Z value of the fourth vector.
      */
-    XS_FUNCTION Vector3D4(T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
+    XS_INLINE Vector3D4(T v0X, T v1X, T v2X, T v3X, T v0Y, T v1Y, T v2Y, T v3Y, T v0Z, T v1Z, T v2Z, T v3Z) noexcept
     {
         if constexpr (!Packed) {
             vectors = Vector3D4Def(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, v3X, v3Y, v3Z);
@@ -313,7 +311,7 @@ public:
      * Construct a vector3d4 from a SIMD12.
      * @param values The SIMD12.
      */
-    XS_FUNCTION explicit Vector3D4(const SIMD12Def& values) noexcept
+    XS_INLINE explicit Vector3D4(const SIMD12Def& values) noexcept
         : vectors(values)
     {}
 
@@ -321,7 +319,7 @@ public:
      * Construct a vector3d4 from a SIMD3x4.
      * @param values The SIMD3x4.
      */
-    XS_FUNCTION explicit Vector3D4(const SIMD3x4Def& values) noexcept
+    XS_INLINE explicit Vector3D4(const SIMD3x4Def& values) noexcept
         : vectors(values)
     {}
 
@@ -331,7 +329,7 @@ public:
      * @returns Vector3D containing the desired value.
      */
     template<uint32_t Index>
-    XS_FUNCTION Vector3DDef getVector() const noexcept
+    XS_INLINE Vector3DDef getVector() const noexcept
     {
         return Vector3DDef(this->vectors.template getValue3<Index>());
     }
@@ -342,7 +340,7 @@ public:
      * @param vector The new vector.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setVector(const Vector3DDef& vector) noexcept
+    XS_INLINE void setVector(const Vector3DDef& vector) noexcept
     {
         this->vectors.template setValue3<Index>(vector.values);
     }
@@ -353,7 +351,7 @@ public:
      * @param vector Second vector to add.
      * @returns The result of the operation.
      */
-    XS_FUNCTION Vector3D4 mad(const SIMD4Def& value, const Vector3D4& vector) const noexcept
+    XS_INLINE Vector3D4 mad(const SIMD4Def& value, const Vector3D4& vector) const noexcept
     {
         return Vector3D4(this->vectors.mad(value, vector.vectors));
     }
@@ -362,7 +360,7 @@ public:
      * Compute the square of the length of a 3-D vector4.
      * @returns The result of the operation.
      */
-    XS_FUNCTION SIMD4Def lengthSqr() const noexcept
+    XS_INLINE SIMD4Def lengthSqr() const noexcept
     {
         return this->vectors.lengthSqr3();
     }
@@ -371,7 +369,7 @@ public:
      * Compute the length of a 3-D vector4.
      * @returns The result of the operation.
      */
-    XS_FUNCTION SIMD4Def length() const noexcept
+    XS_INLINE SIMD4Def length() const noexcept
     {
         return this->vectors.length3();
     }
@@ -381,7 +379,7 @@ public:
      * @note The result is unpredictable when all elements of vector are at or near zero.
      * @returns A new vector corresponding to the normalised vector.
      */
-    XS_FUNCTION Vector3D4 normalize() const noexcept
+    XS_INLINE Vector3D4 normalize() const noexcept
     {
         return Vector3D4(this->vectors.normalize3());
     }
@@ -391,7 +389,7 @@ public:
      * @param vector The second vector3d4.
      * @returns SIMD4Def containing the dot product of each stored vector.
      */
-    XS_FUNCTION SIMD4Def dot3(const Vector3D4& vector) const noexcept
+    XS_INLINE SIMD4Def dot3(const Vector3D4& vector) const noexcept
     {
         return this->vectors.dot3(vector.vectors);
     }
@@ -402,7 +400,7 @@ public:
      * @param vector The second vector3d4.
      * @returns Vector3D4 containing the cross product of each stored vector.
      */
-    XS_FUNCTION Vector3D4 cross3(const Vector3D4& vector) const noexcept
+    XS_INLINE Vector3D4 cross3(const Vector3D4& vector) const noexcept
     {
         return Vector3D4(this->vectors.cross3(vector.vectors));
     }
@@ -415,7 +413,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors + vector2.values);
@@ -428,7 +426,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors + vector2.vectors);
@@ -441,7 +439,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator+(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator+(
+XS_INLINE Vector3D4<T, Width, Packed> operator+(
     const Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors + vector2.vectors);
@@ -454,7 +452,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors - vector2.values);
@@ -467,7 +465,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors - vector2.vectors);
@@ -480,7 +478,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator-(
+XS_INLINE Vector3D4<T, Width, Packed> operator-(
     const Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors - vector2.vectors);
@@ -493,7 +491,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
+XS_INLINE Vector3D4<T, Width, Packed> operator*(
     const Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector.vectors * value);
@@ -506,7 +504,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
+XS_INLINE Vector3D4<T, Width, Packed> operator*(
     const Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::SIMD4Def& value) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector.vectors * value);
@@ -519,7 +517,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors * vector2.values);
@@ -532,7 +530,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Packed>& vector1,
+XS_INLINE Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Packed>& vector1,
     const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors * vector2.vectors);
@@ -545,7 +543,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
+XS_INLINE Vector3D4<T, Width, Packed> operator*(
     const Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector1.vectors * vector2.vectors);
@@ -558,7 +556,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator/(
+XS_INLINE Vector3D4<T, Width, Packed> operator/(
     const Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector.vectors / value);
@@ -571,7 +569,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator/(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator/(
+XS_INLINE Vector3D4<T, Width, Packed> operator/(
     const Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::SIMD4Def& value) noexcept
 {
     return Vector3D4<T, Width, Packed>(vector.vectors / value);
@@ -583,7 +581,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator/(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector) noexcept
+XS_INLINE Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Packed>& vector) noexcept
 {
     return Vector3D4<T, Width, Packed>(-vector.vectors);
 }
@@ -595,7 +593,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed> operator-(const Vector3D4<T, Width, Pack
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator+=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     vector1.vectors += vector2.values;
@@ -609,7 +607,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator+=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     vector1.vectors += vector2.vectors;
@@ -623,7 +621,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator+=(
     Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     vector1.vectors += vector2.vectors;
@@ -637,7 +635,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator-=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     vector1.vectors -= vector2.values;
@@ -651,7 +649,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator-=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     vector1.vectors -= vector2.vectors;
@@ -665,7 +663,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator-=(
     Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     vector1.vectors -= vector2.vectors;
@@ -679,7 +677,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator*=(
     Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors *= value;
@@ -693,7 +691,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator*=(
     Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::SIMD4Def& value) noexcept
 {
     vector.vectors *= value;
@@ -707,7 +705,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator*=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3DDef& vector2) noexcept
 {
     vector1.vectors *= vector2.values;
@@ -721,7 +719,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator*=(
     Vector3D4<T, Width, Packed>& vector1, const typename Vector3D4<T, Width, Packed>::Vector3D2Def& vector2) noexcept
 {
     vector1.vectors *= vector2.vectors;
@@ -735,7 +733,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator*=(
     Vector3D4<T, Width, Packed>& vector1, const Vector3D4<T, Width, Packed>& vector2) noexcept
 {
     vector1.vectors *= vector2.vectors;
@@ -749,7 +747,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator*=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator/=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator/=(
     Vector3D4<T, Width, Packed>& vector, typename Vector3D4<T, Width, Packed>::BaseDef value) noexcept
 {
     vector.vectors /= value;
@@ -763,7 +761,7 @@ XS_FUNCTION Vector3D4<T, Width, Packed>& operator/=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_FUNCTION Vector3D4<T, Width, Packed>& operator/=(
+XS_INLINE Vector3D4<T, Width, Packed>& operator/=(
     Vector3D4<T, Width, Packed>& vector, const typename Vector3D4<T, Width, Packed>::SIMD4Def& value) noexcept
 {
     vector.vectors /= value;

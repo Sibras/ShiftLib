@@ -29,7 +29,7 @@ public:
     SIMD16Data<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix4x4Data() noexcept = default;
+    XS_INLINE Matrix4x4Data() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -37,7 +37,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Matrix4x4Data(const Matrix4x4<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix4x4Data(const Matrix4x4<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -62,7 +62,7 @@ public:
      * @param col3Row2 The third element of the fourth column of the matrix.
      * @param col3Row3 The fourth element of the fourth column of the matrix.
      */
-    XS_FUNCTION void setData(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2,
+    XS_INLINE void setData(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2,
         T col1Row3, T col2Row0, T col2Row1, T col2Row2, T col2Row3, T col3Row0, T col3Row1, T col3Row2,
         T col3Row3) noexcept
     {
@@ -76,7 +76,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Matrix4x4<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix4x4<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -87,7 +87,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Matrix4x4<T, Width> load() const noexcept
+    XS_INLINE Matrix4x4<T, Width> load() const noexcept
     {
         return Matrix4x4<T, Width>(this->values.template load<Matrix4x4<T, Width>::widthImpl>());
     }
@@ -100,7 +100,7 @@ public:
     SIMD16DataPad<T> values;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix4x4DataPad() noexcept = default;
+    XS_INLINE Matrix4x4DataPad() noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -108,7 +108,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION explicit Matrix4x4DataPad(const Matrix4x4<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix4x4DataPad(const Matrix4x4<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -133,7 +133,7 @@ public:
      * @param col3Row2 The third element of the fourth column of the matrix.
      * @param col3Row3 The fourth element of the fourth column of the matrix.
      */
-    XS_FUNCTION void setData(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2,
+    XS_INLINE void setData(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2,
         T col1Row3, T col2Row0, T col2Row1, T col2Row2, T col2Row3, T col3Row0, T col3Row1, T col3Row2,
         T col3Row3) noexcept
     {
@@ -147,7 +147,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION void store(const Matrix4x4<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix4x4<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -158,7 +158,7 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width>
-    XS_FUNCTION Matrix4x4<T, Width> load() const noexcept
+    XS_INLINE Matrix4x4<T, Width> load() const noexcept
     {
         return Matrix4x4<T, Width>(this->values.template load<Matrix4x4<T, Width>::widthImpl>());
     }
@@ -203,39 +203,39 @@ public:
     SIMD4x4Def columns;
 
     /** Default constructor. */
-    XS_FUNCTION Matrix4x4() noexcept = default;
+    XS_INLINE Matrix4x4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Matrix4x4(const Matrix4x4& other) = default;
+    XS_INLINE Matrix4x4(const Matrix4x4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Matrix4x4(Matrix4x4&& other) noexcept = default;
+    XS_INLINE Matrix4x4(Matrix4x4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Matrix4x4& operator=(const Matrix4x4& other) = default;
+    XS_INLINE Matrix4x4& operator=(const Matrix4x4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Matrix4x4& operator=(Matrix4x4&& other) noexcept = default;
+    XS_INLINE Matrix4x4& operator=(Matrix4x4&& other) noexcept = default;
 
     /**
      * Construct a 4x4 matrix from a SIMD16.
      * @param values The 4 columns of the matrix.
      */
-    XS_FUNCTION explicit Matrix4x4(const SIMD4x4Def& values) noexcept
+    XS_INLINE explicit Matrix4x4(const SIMD4x4Def& values) noexcept
         : columns(values)
     {}
 
@@ -246,7 +246,7 @@ public:
      * @param column2 The third column of the matrix.
      * @param column3 The fourth column of the matrix.
      */
-    XS_FUNCTION Matrix4x4(
+    XS_INLINE Matrix4x4(
         const SIMD4Def& column0, const SIMD4Def& column1, const SIMD4Def& column2, const SIMD4Def& column3) noexcept
         : columns(column0, column1, column2, column3)
     {}
@@ -270,9 +270,8 @@ public:
      * @param col3Row2 The third element of the fourth column of the matrix.
      * @param col3Row3 The fourth element of the fourth column of the matrix.
      */
-    XS_FUNCTION Matrix4x4(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2,
-        T col1Row3, T col2Row0, T col2Row1, T col2Row2, T col2Row3, T col3Row0, T col3Row1, T col3Row2,
-        T col3Row3) noexcept
+    XS_INLINE Matrix4x4(T col0Row0, T col0Row1, T col0Row2, T col0Row3, T col1Row0, T col1Row1, T col1Row2, T col1Row3,
+        T col2Row0, T col2Row1, T col2Row2, T col2Row3, T col3Row0, T col3Row1, T col3Row2, T col3Row3) noexcept
         : columns(col0Row0, col0Row1, col0Row2, col0Row3, col1Row0, col1Row1, col1Row2, col1Row3, col2Row0, col2Row1,
               col2Row2, col2Row3, col3Row0, col3Row1, col3Row2, col3Row3)
     {}
@@ -281,7 +280,7 @@ public:
      * Construct from a Matrix3x3.
      * @param matrix Reference to matrix to copy.
      */
-    XS_FUNCTION explicit Matrix4x4(const Matrix3x3Def& matrix) noexcept
+    XS_INLINE explicit Matrix4x4(const Matrix3x3Def& matrix) noexcept
         : columns(Matrix4x3Def::SIMD3x4Def::SIMD12Def(
                       matrix.columns, Matrix4x3Def::SIMD3x4Def::SIMD12Def::SIMD3Def::Zero()),
               SIMD4Def(0.0f, 0.0f, 0.0f, 1.0f))
@@ -292,7 +291,7 @@ public:
      * @param matrix Reference to matrix to copy.
      * @param row3   The fourth row of the matrix.
      */
-    XS_FUNCTION explicit Matrix4x4(const Matrix4x3Def& matrix, const SIMD4Def& row3) noexcept
+    XS_INLINE explicit Matrix4x4(const Matrix4x3Def& matrix, const SIMD4Def& row3) noexcept
         : columns(matrix.columns, row3)
     {}
 
@@ -300,7 +299,7 @@ public:
      * Construct from a Quaternion.
      * @param quaternion Reference to quaternion to copy.
      */
-    XS_FUNCTION explicit Matrix4x4(const QuaternionDef& quaternion) noexcept
+    XS_INLINE explicit Matrix4x4(const QuaternionDef& quaternion) noexcept
     {
         // The matrix equivalent of a quaternion is described by the following:
         //         [1-2yy-2zz        2yx-2zw         2yw+2zx ]
@@ -370,7 +369,7 @@ public:
      * Construct from a Matrix4x4.
      * @return Newly constructed object.
      */
-    XS_FUNCTION explicit operator Matrix3x3Def() const noexcept
+    XS_INLINE explicit operator Matrix3x3Def() const noexcept
     {
         return Matrix3x3Def(this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>());
     }
@@ -379,7 +378,7 @@ public:
      * Constructor to build a 4x4 Identity Matrix.
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 Identity() noexcept
+    XS_INLINE static Matrix4x4 Identity() noexcept
     {
         return Matrix4x4(
             1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -390,7 +389,7 @@ public:
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 Translation(const SIMD3Def& translation) noexcept
+    XS_INLINE static Matrix4x4 Translation(const SIMD3Def& translation) noexcept
     {
         return Matrix4x4(
             SIMD4x4Def(SIMD4x4Def::SIMD12Def(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f),
@@ -402,7 +401,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix4x3 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 UniformScale(InBaseDef scale) noexcept
+    XS_INLINE static Matrix4x4 UniformScale(InBaseDef scale) noexcept
     {
         SIMD4Def scale4(SIMD4Def::Zero());
         scale4.template setValue<0>(scale);
@@ -415,7 +414,7 @@ public:
      * @param scale The amount to scale in the X/Y/Z direction.
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 Scale(const SIMD3Def& scale) noexcept
+    XS_INLINE static Matrix4x4 Scale(const SIMD3Def& scale) noexcept
     {
         const SIMD4Def scale4(scale, SIMD4Def::BaseDef::Zero());
         return Matrix4x4(scale4.template shuffle<0, 3, 3, 3>(), scale4.template shuffle<3, 1, 3, 3>(),
@@ -427,7 +426,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationX(typename SIMD4Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix4x4 RotationX(typename SIMD4Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -451,7 +450,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationY(typename SIMD4Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix4x4 RotationY(typename SIMD4Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -474,7 +473,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationZ(typename SIMD4Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix4x4 RotationZ(typename SIMD4Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD4Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -498,7 +497,7 @@ public:
      * @param rotation The amount to rotate the matrix by (in radians).
      * @returns Newly constructed Matrix4x4 with required attributes.
      */
-    XS_FUNCTION static Matrix4x4 RotationAxis(const Vector3DDef& axis, typename SIMD4Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix4x4 RotationAxis(const Vector3DDef& axis, typename SIMD4Def::BaseDef rotation) noexcept
     {
         // The equivalent matrix for a rotation around an axis can be described by:
         //      xx(1-c)+ s xy(1-c)-zs xz(1-c)+ys
@@ -553,7 +552,7 @@ public:
      * @returns SIMD4Def containing the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD4Def getColumn() const noexcept
+    XS_INLINE SIMD4Def getColumn() const noexcept
     {
         return this->columns.template getValue4<Index>();
     }
@@ -564,7 +563,7 @@ public:
      * @returns SIMD4Def containing the desired values.
      */
     template<uint32_t Index>
-    XS_FUNCTION SIMD4Def getRow() const noexcept
+    XS_INLINE SIMD4Def getRow() const noexcept
     {
         // Note: this is not well optimised as it is only intended for viewing contents
         return this->columns.transpose4().template getValue4<Index>();
@@ -576,7 +575,7 @@ public:
      * @param column The new column values.
      */
     template<uint32_t Index>
-    XS_FUNCTION void setColumn(const SIMD4Def& column) noexcept
+    XS_INLINE void setColumn(const SIMD4Def& column) noexcept
     {
         this->columns.template setValue4<Index>(column);
     }
@@ -587,7 +586,7 @@ public:
      * @param matrix2 Second matrix to add.
      * @returns Result of operation.
      */
-    XS_FUNCTION Matrix4x4 mad(const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) const noexcept
+    XS_INLINE Matrix4x4 mad(const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) const noexcept
     {
         if constexpr (numValues<T, SIMD4x4Def::widthImpl> >= 16) {
             SIMD4x4Def ret(matrix1.columns.template shuffle4<3, 3, 3, 3>().mad(
@@ -624,7 +623,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transform(const Point3DDef& point) const noexcept
     {
         SIMD4Def ret(this->columns.template getValue4<0>().mad(
             point.values.template getValue<0>(), this->columns.template getValue4<3>()));
@@ -639,7 +638,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transformed vector.
      */
-    XS_FUNCTION Vector3DDef transform(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transform(const Vector3DDef& vector) const noexcept
     {
         SIMD3Def ret(
             this->columns.template getValue4<0>().template getValue3<0, 1, 2>() * vector.values.template getValue<0>());
@@ -656,7 +655,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transform(const Point3D2Def<Packed>& point) const noexcept
     {
         using SIMD8Def = typename SIMD4x4Def::SIMD8Def;
         if constexpr (numValues<T, SIMD4x4Def::widthImpl> >= 8 && !Packed) {
@@ -687,7 +686,7 @@ public:
      * @returns New transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D2Def<Packed> transform(const Vector3D2Def<Packed>& vector) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def::SIMD3x3Def mat3(
             this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>());
@@ -712,7 +711,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transform(const Point3D4Def<Packed>& point) const noexcept
     {
         if constexpr (numValues<T, SIMD4x4Def::widthImpl> >= 16 && !Packed) {
             SIMD4x4Def ret(SIMD4x4Def::template Shuffle4<0, 0, 0, 0>(point.points)
@@ -750,7 +749,7 @@ public:
      * @returns New transformed vectors.
      */
     template<bool Packed>
-    XS_FUNCTION Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
+    XS_INLINE Vector3D4Def<Packed> transform(const Vector3D4Def<Packed>& vector) const noexcept
     {
         if constexpr (numValues<T, SIMD4x4Def::SIMD3x4Def::SIMD3x3Def::widthImpl> >= 12 && !Packed) {
             const typename SIMD4x4Def::SIMD3x4Def mat43(this->columns.template getValue3x4<0, 1, 2>());
@@ -783,7 +782,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transformAffine(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transformAffine(const Point3DDef& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def val(this->columns.template getValue3x4<0, 1, 2>());
         SIMD3Def ret(val.template getValue3<0>().mad(point.values.template getValue<0>(), val.template getValue3<3>()));
@@ -797,7 +796,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transformAffine(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transformAffine(const Point3D2Def<Packed>& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def val(this->columns.template getValue3x4<0, 1, 2>());
         if constexpr (numValues<T, SIMD4x4Def::SIMD3x4Def::widthImpl> >= 6 && !Packed) {
@@ -821,7 +820,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transformAffine(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transformAffine(const Point3D4Def<Packed>& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def val(this->columns.template getValue3x4<0, 1, 2>());
         if constexpr (numValues<T, SIMD4x4Def::SIMD3x4Def::widthImpl> >= 12 && !Packed) {
@@ -852,7 +851,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transformed point.
      */
-    XS_FUNCTION Point3DDef transform3x3(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transform3x3(const Point3DDef& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def::SIMD3x3Def mat3(
             this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>());
@@ -868,7 +867,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D2Def<Packed> transform3x3(const Point3D2Def<Packed>& point) const noexcept
+    XS_INLINE Point3D2Def<Packed> transform3x3(const Point3D2Def<Packed>& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def::SIMD3x3Def mat3(
             this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>());
@@ -892,7 +891,7 @@ public:
      * @returns New transformed points.
      */
     template<bool Packed>
-    XS_FUNCTION Point3D4Def<Packed> transform3x3(const Point3D4Def<Packed>& point) const noexcept
+    XS_INLINE Point3D4Def<Packed> transform3x3(const Point3D4Def<Packed>& point) const noexcept
     {
         if constexpr (numValues<T, SIMD4x4Def::SIMD3x4Def::SIMD3x3Def::widthImpl> >= 12 && !Packed) {
             const typename SIMD4x4Def::SIMD3x4Def mat43(this->columns.template getValue3x4<0, 1, 2>());
@@ -923,7 +922,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transpose transformed point.
      */
-    XS_FUNCTION Point3DDef transformTransposed(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transformTransposed(const Point3DDef& point) const noexcept
     {
         return this->transpose().transform(point);
     }
@@ -933,7 +932,7 @@ public:
      * @param vector The vector to be transformed.
      * @returns A new transpose transformed vector.
      */
-    XS_FUNCTION Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept
+    XS_INLINE Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept
     {
         return this->transpose().transform(vector);
     }
@@ -944,7 +943,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transpose transformed point.
      */
-    XS_FUNCTION Point3DDef transformTransposedAffine(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transformTransposedAffine(const Point3DDef& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def mat43(this->columns.transpose4().template getValue3x4<0, 1, 2>());
         SIMD3Def ret(
@@ -959,7 +958,7 @@ public:
      * @param point The point to be transformed.
      * @returns A new transpose transformed point.
      */
-    XS_FUNCTION Point3DDef transformTransposed3x3(const Point3DDef& point) const noexcept
+    XS_INLINE Point3DDef transformTransposed3x3(const Point3DDef& point) const noexcept
     {
         const typename SIMD4x4Def::SIMD3x4Def::SIMD3x3Def mat3(
             this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>().transpose());
@@ -972,7 +971,7 @@ public:
      * Determine the transpose of a matrix.
      * @returns A new transposed matrix.
      */
-    XS_FUNCTION Matrix4x4 transpose() const noexcept
+    XS_INLINE Matrix4x4 transpose() const noexcept
     {
         return Matrix4x4(this->columns.transpose4());
     }
@@ -981,7 +980,7 @@ public:
      * Determine the inverse of a matrix.
      * @returns A new inverse matrix.
      */
-    XS_FUNCTION Matrix4x4 inverse() const noexcept
+    XS_INLINE Matrix4x4 inverse() const noexcept
     {
         // Determine inverse using Matrix partitioning such that
         // M=    [ P   Q ]
@@ -1065,7 +1064,7 @@ public:
      * @note Optimised based on the statement that the matrix is affine (i.e. row4 = 0,0,0,1).
      * @returns A new inverse matrix.
      */
-    XS_FUNCTION Matrix4x4 inverseAffine() const noexcept
+    XS_INLINE Matrix4x4 inverseAffine() const noexcept
     {
         // Inverse of affine matrix M=[    A     b ]  can be determined using:
         //                           [  0,..0   1 ]
@@ -1104,7 +1103,7 @@ public:
      * orthogonal unit vectors). These matrices are found in pure rotation matrices.
      * @returns A new inverse matrix.
      */
-    XS_FUNCTION Matrix4x4 inverseOrthogonal() const noexcept
+    XS_INLINE Matrix4x4 inverseOrthogonal() const noexcept
     {
         return this->transpose();
     }
@@ -1113,7 +1112,7 @@ public:
      * Determine the determinant of an matrix.
      * @returns The determinant in a BaseDef.
      */
-    XS_FUNCTION BaseDef determinant() const noexcept
+    XS_INLINE BaseDef determinant() const noexcept
     {
         using SIMD12Def = typename SIMD4x4Def::SIMD12Def;
         const SIMD12Def cols(this->columns.template getValue4x3<1, 2, 3>());
@@ -1141,7 +1140,7 @@ public:
      * Determine the determinant of an matrix.
      * @returns The determinant in a InBaseDef.
      */
-    XS_FUNCTION InBaseDef determinantInBase() const noexcept
+    XS_INLINE InBaseDef determinantInBase() const noexcept
     {
         using SIMD12Def = typename SIMD4x4Def::SIMD12Def;
         const SIMD12Def cols(this->columns.template getValue4x3<1, 2, 3>());
@@ -1170,7 +1169,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateX(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 postRotateX(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1197,7 +1196,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateY(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 postRotateY(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1224,7 +1223,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postRotateZ(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 postRotateZ(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1251,7 +1250,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateX(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 preRotateX(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1278,7 +1277,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateY(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 preRotateY(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1305,7 +1304,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preRotateZ(typename SIMD4Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix4x4 preRotateZ(typename SIMD4Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD4x4Def::SIMD8Def;
         using BaseDef4 = typename SIMD4Def::BaseDef;
@@ -1332,7 +1331,7 @@ public:
      * @param scale The amount to scale along X/Y/Z-axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix4x4 postScale(const SIMD3Def& scale) const noexcept
     {
         return Matrix4x4(SIMD4x4Def(this->columns.template getValue4x3<0, 1, 2>() * scale, this->getColumn<3>()));
     }
@@ -1342,7 +1341,7 @@ public:
      * @param scale The 3 scale values for each axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix4x4 preScale(const SIMD3Def& scale) const noexcept
     {
         return Matrix4x4(this->columns * SIMD4Def(scale, SIMD4Def::BaseDef::One()));
     }
@@ -1352,7 +1351,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Matrix4x4 postUniformScale(BaseDef scale) const noexcept
     {
         return Matrix4x4(SIMD4x4Def(this->columns.template getValue4x3<0, 1, 2>() * scale, this->getColumn<3>()));
     }
@@ -1362,7 +1361,7 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Matrix4x4 preUniformScale(BaseDef scale) const noexcept
     {
         if constexpr (numValues<T, SIMD4x4Def::widthImpl> >= 16) {
             return Matrix4x4(
@@ -1380,7 +1379,7 @@ public:
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 postTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Matrix4x4 postTranslate(const SIMD3Def& translation) const noexcept
     {
         const SIMD4Def ret((this->columns.template getValue4x3<0, 1, 2>() * translation).add4());
         return Matrix4x4(SIMD4x4Def(this->columns.template getValue4x3<0, 1, 2>(), this->getColumn<3>() + ret));
@@ -1391,7 +1390,7 @@ public:
      * @param translation The 3 translate values for each axis.
      * @returns The rotated matrix.
      */
-    XS_FUNCTION Matrix4x4 preTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Matrix4x4 preTranslate(const SIMD3Def& translation) const noexcept
     {
         const SIMD4Def f4Translate(translation, SIMD4Def::BaseDef::Zero());
         return Matrix4x4(this->columns.template shuffle4<3, 3, 3, 3>().mad(f4Translate, this->columns));
@@ -1405,8 +1404,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width> operator+(
-    const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width> operator+(const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     return Matrix4x4<T, Width>(matrix1.columns + matrix2.columns);
 }
@@ -1418,8 +1416,7 @@ XS_FUNCTION Matrix4x4<T, Width> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width> operator-(
-    const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width> operator-(const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     return Matrix4x4<T, Width>(matrix1.columns - matrix2.columns);
 }
@@ -1431,8 +1428,7 @@ XS_FUNCTION Matrix4x4<T, Width> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width> operator*(
-    const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width> operator*(const Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     if constexpr (numValues<T, Matrix4x4<T, Width>::SIMD4x4Def::widthImpl> >= 16) {
         typename Matrix4x4<T, Width>::SIMD4x4Def ret(
@@ -1471,7 +1467,7 @@ XS_FUNCTION Matrix4x4<T, Width> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width>& operator+=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width>& operator+=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     matrix1 = matrix1 + matrix2;
     return matrix1;
@@ -1484,7 +1480,7 @@ XS_FUNCTION Matrix4x4<T, Width>& operator+=(Matrix4x4<T, Width>& matrix1, const 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width>& operator-=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width>& operator-=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     matrix1 = matrix1 - matrix2;
     return matrix1;
@@ -1497,7 +1493,7 @@ XS_FUNCTION Matrix4x4<T, Width>& operator-=(Matrix4x4<T, Width>& matrix1, const 
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_FUNCTION Matrix4x4<T, Width>& operator*=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
+XS_INLINE Matrix4x4<T, Width>& operator*=(Matrix4x4<T, Width>& matrix1, const Matrix4x4<T, Width>& matrix2) noexcept
 {
     matrix1 = matrix1 * matrix2;
     return matrix1;

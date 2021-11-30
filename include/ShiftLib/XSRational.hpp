@@ -31,13 +31,13 @@ public:
     T denominator;
 
     /** Default constructor. */
-    XS_FUNCTION RationalData() noexcept = default;
+    XS_INLINE RationalData() noexcept = default;
 
     /**
      * Construct from non-data type.
      * @param other The non-data type to construct from.
      */
-    XS_FUNCTION explicit RationalData(Rational<T> other) noexcept
+    XS_INLINE explicit RationalData(Rational<T> other) noexcept
         : numerator(other.numerator)
         , denominator(other.denominator)
     {}
@@ -49,7 +49,7 @@ public:
      * @param value1 The numerator.
      * @param value2 The denominator.
      */
-    XS_FUNCTION void setData(T value1, T value2) noexcept
+    XS_INLINE void setData(T value1, T value2) noexcept
     {
         this->numerator = value1;
         this->denominator = value2;
@@ -59,7 +59,7 @@ public:
      * Save to memory.
      * @param other The object to store.
      */
-    XS_FUNCTION void store(Rational<T> other) noexcept
+    XS_INLINE void store(Rational<T> other) noexcept
     {
         this->numerator = other.numerator;
         this->denominator = other.denominator;
@@ -69,7 +69,7 @@ public:
      * Load from memory.
      * @returns The loaded object.
      */
-    XS_FUNCTION Rational<T> load() const noexcept
+    XS_INLINE Rational<T> load() const noexcept
     {
         return Rational<T>(this->numerator, this->denominator);
     }
@@ -87,40 +87,40 @@ public:
     T denominator;
 
     /** Default constructor. */
-    XS_FUNCTION Rational() noexcept = default;
+    XS_INLINE Rational() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_FUNCTION Rational(const Rational& other) = default;
+    XS_INLINE Rational(const Rational& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_FUNCTION Rational(Rational&& other) noexcept = default;
+    XS_INLINE Rational(Rational&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Rational& operator=(const Rational& other) = default;
+    XS_INLINE Rational& operator=(const Rational& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_FUNCTION Rational& operator=(Rational&& other) noexcept = default;
+    XS_INLINE Rational& operator=(Rational&& other) noexcept = default;
 
     /**
      * Construct a Rational from its member components.
      * @param value1 The numerator.
      * @param value2 The denominator.
      */
-    XS_FUNCTION Rational(T value1, T value2) noexcept
+    XS_INLINE Rational(T value1, T value2) noexcept
         : numerator(value1)
         , denominator(value2)
     {
@@ -136,7 +136,7 @@ public:
      * @returns Newly constructed type.
      */
     template<typename T2 = promote<T>>
-    XS_FUNCTION static Rational Reduce(const T2 numerator, const T2 denominator)
+    XS_INLINE static Rational Reduce(const T2 numerator, const T2 denominator)
     {
         static_assert(sizeof(T2) >= sizeof(Type) || isSameAny<T, Int128, UInt128>);
         if (denominator == 0) {
@@ -180,7 +180,7 @@ public:
      * @return Newly constructed type.
      */
     template<typename T2 = promote<T>>
-    XS_FUNCTION static Rational Reduce(const Rational<T2> other)
+    XS_INLINE static Rational Reduce(const Rational<T2> other)
     {
         return Reduce<T2>(other.numerator, other.denominator);
     }
@@ -189,7 +189,7 @@ public:
      * Construct a Rational from a float.
      * @param value The float value.
      */
-    XS_FUNCTION explicit Rational(const float32 value) noexcept
+    XS_INLINE explicit Rational(const float32 value) noexcept
     {
         int32 exponent;
         [[maybe_unused]] auto ignore = frexpf(value, &exponent);
@@ -202,7 +202,7 @@ public:
      * Construct a Rational from a double.
      * @param value The double value.
      */
-    XS_FUNCTION explicit Rational(const float64 value) noexcept
+    XS_INLINE explicit Rational(const float64 value) noexcept
     {
         int32 exponent;
         [[maybe_unused]] auto ignore = frexp(value, &exponent);
@@ -215,7 +215,7 @@ public:
      * Access the Rational as a normal float.
      * @returns Regular float containing the desired value.
      */
-    XS_FUNCTION float32 getFloat() const noexcept
+    XS_INLINE float32 getFloat() const noexcept
     {
         return static_cast<float32>(this->numerator) / static_cast<float32>(this->denominator);
     }
@@ -224,7 +224,7 @@ public:
      * Access the Rational as a normal double.
      * @returns Regular double containing the desired value.
      */
-    XS_FUNCTION float64 getDouble() const noexcept
+    XS_INLINE float64 getDouble() const noexcept
     {
         return static_cast<float64>(this->numerator) / static_cast<float64>(this->denominator);
     }
@@ -233,7 +233,7 @@ public:
      * Access the Rational as a normal integer.
      * @returns Regular int containing the desired value.
      */
-    XS_FUNCTION int32_t getInt() const noexcept
+    XS_INLINE int32_t getInt() const noexcept
     {
         return static_cast<int32_t>(this->numerator / this->denominator);
     }
@@ -242,7 +242,7 @@ public:
      * Access the Rational as a normal integer.
      * @returns Regular int containing the desired value.
      */
-    XS_FUNCTION int64_t getLong() const noexcept
+    XS_INLINE int64_t getLong() const noexcept
     {
         return static_cast<int64_t>(this->numerator / this->denominator);
     }
@@ -251,7 +251,7 @@ public:
      * Reciprocal (1/rational) of rational
      * @returns The result of the operation.
      */
-    XS_FUNCTION Rational reciprocal() const noexcept
+    XS_INLINE Rational reciprocal() const noexcept
     {
         if constexpr (isSigned<T>) {
             return Rational<T>(sign<T>(this->denominator, this->numerator), abs<T>(this->numerator));
@@ -269,7 +269,7 @@ public:
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator+(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T> operator+(Rational<T> other1, Rational<T> other2) noexcept
 {
     return Rational<T>::template Reduce<promote<T>>(
         mul<T>(other1.numerator, other2.denominator) + mul<T>(other2.numerator, other1.denominator),
@@ -284,7 +284,7 @@ XS_FUNCTION Rational<T> operator+(Rational<T> other1, Rational<T> other2) noexce
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator-(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T> operator-(Rational<T> other1, Rational<T> other2) noexcept
 {
     return Rational<T>::template Reduce<toSigned<promote<T>>>(
         static_cast<toSigned<promote<T>>>(
@@ -300,7 +300,7 @@ XS_FUNCTION Rational<T> operator-(Rational<T> other1, Rational<T> other2) noexce
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator*(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T> operator*(Rational<T> other1, Rational<T> other2) noexcept
 {
     return Rational<T>::template Reduce<promote<T>>(
         mul<T>(other1.numerator, other2.numerator), mul<T>(other1.denominator, other2.denominator));
@@ -314,7 +314,7 @@ XS_FUNCTION Rational<T> operator*(Rational<T> other1, Rational<T> other2) noexce
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator/(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T> operator/(Rational<T> other1, Rational<T> other2) noexcept
 {
     return other1 * other2.reciprocal();
 }
@@ -326,7 +326,7 @@ XS_FUNCTION Rational<T> operator/(Rational<T> other1, Rational<T> other2) noexce
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T> operator-(Rational<T> other) noexcept
+XS_INLINE Rational<T> operator-(Rational<T> other) noexcept
 {
     // Unary minus is allowed to make it possible to define uint max as -1
     return Rational<T>(static_cast<T>(-static_cast<toSigned<T>>(other.numerator)), other.denominator);
@@ -340,7 +340,7 @@ XS_FUNCTION Rational<T> operator-(Rational<T> other) noexcept
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T>& operator+=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 + other2;
     return other1;
@@ -354,7 +354,7 @@ XS_FUNCTION Rational<T>& operator+=(Rational<T>& other1, Rational<T> other2) noe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T>& operator-=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 - other2;
     return other1;
@@ -368,7 +368,7 @@ XS_FUNCTION Rational<T>& operator-=(Rational<T>& other1, Rational<T> other2) noe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T>& operator*=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 * other2;
     return other1;
@@ -382,7 +382,7 @@ XS_FUNCTION Rational<T>& operator*=(Rational<T>& other1, Rational<T> other2) noe
  * @returns The result of the operation.
  */
 template<typename T>
-XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, Rational<T> other2) noexcept
+XS_INLINE Rational<T>& operator/=(Rational<T>& other1, Rational<T> other2) noexcept
 {
     other1 = other1 / other2;
     return other1;
@@ -396,7 +396,7 @@ XS_FUNCTION Rational<T>& operator/=(Rational<T>& other1, Rational<T> other2) noe
  * @returns true if the parameters are considered equivalent.
  */
 template<typename T>
-XS_FUNCTION bool operator==(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE bool operator==(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (other1.numerator == other2.numerator) & (other1.denominator == other2.denominator);
 }
@@ -409,7 +409,7 @@ XS_FUNCTION bool operator==(Rational<T> other1, Rational<T> other2) noexcept
  * @returns true if the first parameter is less than or equal to the second.
  */
 template<typename T>
-XS_FUNCTION bool operator<=(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE bool operator<=(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (mul<T>(other1.numerator, other2.denominator) <= mul<T>(other1.denominator, other2.numerator));
 }
@@ -422,7 +422,7 @@ XS_FUNCTION bool operator<=(Rational<T> other1, Rational<T> other2) noexcept
  * @returns true if the first parameter is less than the second.
  */
 template<typename T>
-XS_FUNCTION bool operator<(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE bool operator<(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (mul<T>(other1.numerator, other2.denominator) < mul<T>(other1.denominator, other2.numerator));
 }
@@ -435,7 +435,7 @@ XS_FUNCTION bool operator<(Rational<T> other1, Rational<T> other2) noexcept
  * @returns true if the parameters are not considered equivalent.
  */
 template<typename T>
-XS_FUNCTION bool operator!=(Rational<T> other1, Rational<T> other2) noexcept
+XS_INLINE bool operator!=(Rational<T> other1, Rational<T> other2) noexcept
 {
     return (other1.numerator != other2.numerator) | (other1.denominator != other2.denominator);
 }
