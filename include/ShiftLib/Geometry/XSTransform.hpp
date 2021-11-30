@@ -80,7 +80,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Transform<T, Width, Matrix> load() const noexcept
     {
         if constexpr (Matrix) {
@@ -153,7 +153,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Transform<T, Width, Matrix> load() const noexcept
     {
         if constexpr (Matrix) {
@@ -179,7 +179,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>, bool Matrix = false>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Matrix = false>
 class Transform
 {
     template<bool IsMatrix>

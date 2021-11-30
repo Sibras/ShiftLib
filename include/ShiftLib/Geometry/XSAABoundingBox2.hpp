@@ -60,7 +60,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE AABoundingBox2<T, Width, Packed> load() const noexcept
     {
         return AABoundingBox2<T, Width, Packed>(
@@ -107,7 +107,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE AABoundingBox2<T, Width, Packed> load() const noexcept
     {
         return AABoundingBox2<T, Width, Packed>(
@@ -122,7 +122,7 @@ public:
  * @tparam Width Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>, bool Packed = false>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
 class AABoundingBox2
 {
 public:

@@ -97,7 +97,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Point3D4<T, Width, Packed> load() const noexcept
     {
         return Point3D4<T, Width, Packed>(this->values.template load<Point3D4<T, Width, Packed>::widthImpl>());
@@ -177,7 +177,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Point3D4<T, Width, Packed> load() const noexcept
     {
         return Point3D4<T, Width, Packed>(this->values.template load<Point3D4<T, Width, Packed>::widthImpl>());
@@ -190,7 +190,7 @@ public:
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>, bool Packed = false>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
 class Point3D4
 {
     template<bool IsPacked>

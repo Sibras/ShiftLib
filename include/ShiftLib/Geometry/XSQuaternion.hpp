@@ -73,7 +73,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Quaternion<T, Width> load() const noexcept
     {
         return Quaternion<T, Width>(this->values.template load<Quaternion<T, Width>::widthImpl>());
@@ -93,7 +93,7 @@ using QuaternionDataPad = QuaternionData<T>;
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
 class Quaternion
 {
 public:

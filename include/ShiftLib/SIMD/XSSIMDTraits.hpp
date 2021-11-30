@@ -67,6 +67,31 @@ inline constexpr SIMDWidth widthSIMD = hasSIMD512<T> ?
     SIMDWidth::B64 :
     (hasSIMD256<T> ? SIMDWidth::B32 : (hasSIMD128<T> ? SIMDWidth::B16 : SIMDWidth::Scalar));
 
+#ifdef XS_NODEFAULTB64
+constexpr bool noDefaultB64 = true;
+#else
+constexpr bool noDefaultB64 = false;
+#endif
+#ifdef XS_NODEFAULTB32
+constexpr bool noDefaultB32 = true;
+#else
+constexpr bool noDefaultB32 = false;
+#endif
+#ifdef XS_NODEFAULTB16
+constexpr bool noDefaultB16 = true;
+#else
+constexpr bool noDefaultB16 = false;
+#endif
+/**
+ * Query the width available by the current compiled implementation limited by any requested default values.
+ * Defining either XS_NODEFAULTB64, XS_NODEFAULTB32 or XS_NODEFAULTB16 will limit the default sime width.
+ */
+template<typename T>
+inline constexpr SIMDWidth defaultWidthSIMD = hasSIMD512<T> && !noDefaultB64 ?
+    SIMDWidth::B64 :
+    (hasSIMD256<T> && !noDefaultB32 ? SIMDWidth::B32 :
+                                      (hasSIMD128<T> && !noDefaultB16 ? SIMDWidth::B16 : SIMDWidth::Scalar));
+
 /**
  * Gets maximum alignment required to store requested number of elements based on the current available SIMD widths.
  */

@@ -69,7 +69,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Vector3D<T, Width> load() const noexcept
     {
         return Vector3D<T, Width>(this->values.template load<Vector3D<T, Width>::widthImpl>());
@@ -124,7 +124,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Vector3D<T, Width> load() const noexcept
     {
         return Vector3D<T, Width>(this->values.template load<Vector3D<T, Width>::widthImpl>());
@@ -138,7 +138,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
 class Vector3D
 {
 public:

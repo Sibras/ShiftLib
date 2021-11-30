@@ -103,7 +103,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE SIMD8<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
@@ -122,7 +122,7 @@ public:
 template<typename T>
 using SIMD8DataPad = SIMD8Data<T>;
 
-template<typename T, SIMDWidth Width = widthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
 class SIMD8 : public NoExport::SIMDData<T, 8, 0, Width>
 {
     static_assert(

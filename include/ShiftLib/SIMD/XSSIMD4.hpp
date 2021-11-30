@@ -88,7 +88,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE SIMD4<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
@@ -105,7 +105,7 @@ public:
 template<typename T>
 using SIMD4DataPad = SIMD4Data<T>;
 
-template<typename T, SIMDWidth Width = widthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
 class SIMD4 : public NoExport::SIMDData<T, 4, 0, Width>
 {
     static_assert(
@@ -4175,7 +4175,7 @@ XS_INLINE SIMD4<T, Width> operator&(const SIMD4<T, Width>& other1, const SIMD4<T
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD4(_mm_and_ps(other1.values, other2.values));
+        return SIMD4<T, Width>(_mm_and_ps(other1.values, other2.values));
     } else
 #endif
     {

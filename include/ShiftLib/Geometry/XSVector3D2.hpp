@@ -89,7 +89,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Vector3D2<T, Width, Packed> load() const noexcept
     {
         return Vector3D2<T, Width, Packed>(this->values.template load<Vector3D2<T, Width, Packed>::widthImpl>());
@@ -163,7 +163,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width>
+    template<SIMDWidth Width = defaultWidthSIMD<T>>
     XS_INLINE Vector3D2<T, Width, Packed> load() const noexcept
     {
         return Vector3D2<T, Width, Packed>(this->values.template load<Vector3D2<T, Width, Packed>::widthImpl>());
@@ -178,7 +178,7 @@ public:
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = widthSIMD<T>, bool Packed = false>
+template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
 class Vector3D2
 {
     template<bool IsPacked>
