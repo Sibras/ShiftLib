@@ -241,11 +241,19 @@ public:
 
     /**
      * Construct a iterator from an array and index.
-     * @param array The array to iterator from.
+     * @param array The array to build from.
      * @param index The array index.
      */
     XS_INLINE ConstIterator(const T* XS_RESTRICT const array, const uint0 index) noexcept
         : pointer(const_cast<T*>(&(array[index])))
+    {}
+
+    /**
+     * Construct a const iterator from an non-const iterator.
+     * @param other The iterator.
+     */
+    XS_INLINE ConstIterator(const Iterator<T> other) noexcept // NOLINT(google-explicit-constructor)
+        : pointer(other.pointer)
     {}
 
     /**

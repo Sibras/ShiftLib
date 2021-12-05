@@ -29,7 +29,7 @@ namespace Shift {
 template<typename T, uint0 TAlign>
 class AllocRegionHeapHandle;
 
-template<typename T, uint0 TAlign = alignof(T)>
+template<typename T, uint0 TAlign = 0>
 class AllocRegionHeap
 {
 public:

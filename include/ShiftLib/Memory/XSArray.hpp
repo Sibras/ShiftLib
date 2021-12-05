@@ -726,7 +726,7 @@ public:
      * adds extra memory copies based on size of array.
      * @param iterator The offset iterator of the location the element should be removed from.
      */
-    XS_INLINE void remove(const TypeConstIteratorOffset& iterator) noexcept
+    XS_INLINE void remove(const TypeIteratorOffset& iterator) noexcept
     {
         // Determine location
         T* XS_RESTRICT index2 = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
@@ -748,7 +748,7 @@ public:
      * @param start The offset iterator of the location the elements should be removed from.
      * @param end   The offset iterator of the location the elements should be removed till (non inclusive).
      */
-    XS_INLINE void remove(const TypeConstIteratorOffset& start, const TypeConstIteratorOffset& end) noexcept
+    XS_INLINE void remove(const TypeIteratorOffset& start, const TypeIteratorOffset& end) noexcept
     {
         // Move any elements down
         T* XS_RESTRICT startIndex =
@@ -1343,7 +1343,7 @@ public:
     XS_INLINE TypeIteratorOffset iteratorIncrement(const TypeIteratorOffset& iterator) noexcept
     {
         XS_ASSERT(iterator.pointerOffset != getSize());
-        return ConstIteratorOffsetTypeOffsetIterator(iterator.pointerOffset + sizeof(T));
+        return TypeIteratorOffset(iterator.pointerOffset + sizeof(T));
     }
 
     /**
@@ -1354,7 +1354,7 @@ public:
     XS_INLINE TypeConstIteratorOffset iteratorIncrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset != getSize());
-        return ConstIteratorOffsetTypeConstOffsetIterator(iterator.pointerOffset + sizeof(T));
+        return TypeConstIteratorOffset(iterator.pointerOffset + sizeof(T));
     }
 
     /**
@@ -1365,7 +1365,7 @@ public:
     XS_INLINE TypeIterator iteratorDecrement(const TypeIterator& iterator) noexcept
     {
         XS_ASSERT(iterator != begin());
-        return ConstIteratorOffsetTypeIterator(iterator.pointer - 1);
+        return TypeIterator(iterator.pointer - 1);
     }
 
     /**
@@ -1387,7 +1387,7 @@ public:
     XS_INLINE TypeIteratorOffset iteratorDecrement(const TypeIteratorOffset& iterator) noexcept
     {
         XS_ASSERT(iterator.pointerOffset != 0);
-        return ConstIteratorOffsetTypeOffsetIterator(iterator.pointerOffset - sizeof(T));
+        return TypeIteratorOffset(iterator.pointerOffset - sizeof(T));
     }
 
     /**
@@ -1398,7 +1398,7 @@ public:
     XS_INLINE TypeConstIteratorOffset iteratorDecrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset != 0);
-        return ConstIteratorOffsetTypeConstOffsetIterator(iterator.pointerOffset - sizeof(T));
+        return TypeConstIteratorOffset(iterator.pointerOffset - sizeof(T));
     }
 
     /**
@@ -1513,9 +1513,30 @@ public:
      * @param iterator The iterator to check if valid.
      * @return Boolean signaling if valid or not.
      */
+    XS_INLINE bool isValid(const TypeIterator& iterator) const noexcept
+    {
+        return iterator.pointer >= handle.pointer & iterator.pointer < nextElement;
+    }
+
+    /**
+     * Check if an iterator is valid within array.
+     * @param iterator The iterator to check if valid.
+     * @return Boolean signaling if valid or not.
+     */
     XS_INLINE bool isValid(const TypeConstIterator& iterator) const noexcept
     {
         return iterator.pointer >= handle.pointer & iterator.pointer < nextElement;
+    }
+
+    /**
+     * Check if an iterator is valid within array.
+     * @param iterator The offset iterator to check if valid.
+     * @return Boolean signaling if valid or not.
+     */
+    XS_INLINE bool isValid(const TypeIteratorOffset& iterator) const noexcept
+    {
+        return iterator.pointerOffset <
+            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
     }
 
     /**

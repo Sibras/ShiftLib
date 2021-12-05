@@ -1149,7 +1149,7 @@ struct Conditional<false, T, T2>
 } // namespace NoExport
 
 /**
- * Conditional choose a type.
+ * Conditionally choose a type.
  */
 template<bool B, class T, class T2>
 using conditional = typename NoExport::Conditional<B, T, T2>::type;
