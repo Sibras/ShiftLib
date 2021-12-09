@@ -25,9 +25,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
     
     # Set the install location to the source location if not currently specified
-    if("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
-        message("Installing into source folder")
-        set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install CACHE PATH "..." FORCE)
+    if("${CMAKE_INSTALL_PREFIX}" STREQUAL "" OR CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        if(DEFINED ENV_VCPKG_ROOT)
+            message("Installing into vcpkg install folder")
+            set(CMAKE_INSTALL_PREFIX ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} CACHE PATH "..." FORCE)
+        else()
+            message("Installing into binary folder")
+            set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install CACHE PATH "..." FORCE)
+        endif()
     endif()
 
     # Use folder structure for arranging files within IDEs
@@ -62,7 +67,7 @@ endif()
 # Add in the library code
 add_library(ShiftLib INTERFACE)
 
-target_sources(ShiftLib INTERFACE
+target_sources(ShiftLib INTERFACE    
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSArchitecture.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSConfig.h>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSCompiler.h>"
@@ -139,7 +144,21 @@ target_include_directories(ShiftLib
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" REGULAR_EXPRESSION "*.h")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" REGULAR_EXPRESSION "*.hpp")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" REGULAR_EXPRESSION "*.cpp")
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" REGULAR_EXPRESSION "*.inl")
+
+add_library(ShiftLib::ShiftLib ALIAS ShiftLib)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${PROJECT_BINARY_DIR}/ShiftLibConfigVersion.cmake"
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShiftLibConfig.cmake.in"
+    "${PROJECT_BINARY_DIR}/ShiftLibConfig.cmake"
+    INSTALL_DESTINATION share/ShiftLib
+)
 
 include(GNUInstallDirs)
 install(TARGETS ShiftLib
@@ -147,27 +166,23 @@ install(TARGETS ShiftLib
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(EXPORT ShiftLibTargets
     FILE ShiftLibTargets.cmake
     NAMESPACE ShiftLib::
-    DESTINATION lib/cmake/ShiftLib
-)
-add_library(ShiftLib::ShiftLib ALIAS ShiftLib)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ShiftLibConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion
+    DESTINATION share/ShiftLib
 )
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ShiftLibConfig.cmake.in" ShiftLibConfig.cmake @ONLY)
-install(FILES ShiftLibConfig.cmake ShiftLibConfigVersion.cmake
-    DESTINATION lib/cmake/ShiftLib
+install(FILES
+    "${PROJECT_BINARY_DIR}/ShiftLibConfig.cmake"
+    "${PROJECT_BINARY_DIR}/ShiftLibConfigVersion.cmake"
+    DESTINATION share/ShiftLib
 )
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Add tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
