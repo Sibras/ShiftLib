@@ -21,7 +21,7 @@
 #include "SIMD/XSSIMD3x4.hpp"
 
 namespace Shift {
-template<typename T, SIMDWidth Width, bool Packed>
+template<typename T, bool Packed, SIMDWidth Width>
 class Point3D4;
 
 template<typename T, bool Packed = false>
@@ -77,7 +77,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit Point3D4Data(const Point3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit Point3D4Data(const Point3D4<T, Packed, Width>& other) noexcept
         : values(other.points)
     {}
 
@@ -113,7 +113,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Point3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const Point3D4<T, Packed, Width>& other) noexcept
     {
         this->values.store(other.points);
     }
@@ -123,10 +123,10 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
-    XS_INLINE Point3D4<T, Width, Packed> load() const noexcept
+    template<SIMDWidth Width = defaultWidthSIMD512<T>>
+    XS_INLINE Point3D4<T, Packed, Width> load() const noexcept
     {
-        return Point3D4<T, Width, Packed>(this->values.template load<Point3D4<T, Width, Packed>::widthImpl>());
+        return Point3D4<T, Packed, Width>(this->values.template load<Point3D4<T, Packed, Width>::widthImpl>());
     }
 };
 
@@ -183,7 +183,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit Point3D4DataPad(const Point3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit Point3D4DataPad(const Point3D4<T, Packed, Width>& other) noexcept
         : values(other.points)
     {}
 
@@ -219,7 +219,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Point3D4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const Point3D4<T, Packed, Width>& other) noexcept
     {
         this->values.store(other.points);
     }
@@ -229,10 +229,10 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
-    XS_INLINE Point3D4<T, Width, Packed> load() const noexcept
+    template<SIMDWidth Width = defaultWidthSIMD512<T>>
+    XS_INLINE Point3D4<T, Packed, Width> load() const noexcept
     {
-        return Point3D4<T, Width, Packed>(this->values.template load<Point3D4<T, Width, Packed>::widthImpl>());
+        return Point3D4<T, Packed, Width>(this->values.template load<Point3D4<T, Packed, Width>::widthImpl>());
     }
 };
 
@@ -242,7 +242,7 @@ public:
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
+template<typename T, bool Packed = false, SIMDWidth Width = defaultWidthSIMD512<T>>
 class Point3D4
 {
     template<bool IsPacked>
@@ -274,10 +274,10 @@ public:
     using SIMD12Def = typename InternData<Packed>::SIMD12Def;
     using SIMD3x4Def = typename InternData<Packed>::SIMD3x4Def;
     using Point3DDef = Point3D<T, Point3D<T, widthImpl>::widthImpl>;
-    using Point3D2Def = Point3D2<T, Point3D2<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Point3D2Def = Point3D2<T, Packed, Point3D2<T, Packed, widthImpl>::widthImpl>;
     using Vector3DDef = Vector3D<T, Vector3D<T, widthImpl>::widthImpl>;
-    using Vector3D2Def = Vector3D2<T, Vector3D2<T, widthImpl, Packed>::widthImpl, Packed>;
-    using Vector3D4Def = Vector3D4<T, Width, packed>; // Note: must be Width as operators don't support mixing widths
+    using Vector3D2Def = Vector3D2<T, Packed, Vector3D2<T, Packed, widthImpl>::widthImpl>;
+    using Vector3D4Def = Vector3D4<T, Packed, Width>; // Note: must be Width as operators don't support mixing widths
 
     Point3D4Def points;
 
@@ -316,7 +316,7 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_INLINE explicit Point3D4(const Point3D4<T, Width2, Packed>& other) noexcept
+    XS_INLINE explicit Point3D4(const Point3D4<T, Packed, Width2>& other) noexcept
         : points(other.points)
     {}
 
@@ -420,10 +420,10 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator+(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3DDef& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator+(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3DDef& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points + vector.values);
+    return Point3D4<T, Packed, Width>(point.points + vector.values);
 }
 
 /**
@@ -433,10 +433,10 @@ XS_INLINE Point3D4<T, Width, Packed> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator+(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D2Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator+(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D2Def& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points + vector.vectors);
+    return Point3D4<T, Packed, Width>(point.points + vector.vectors);
 }
 
 /**
@@ -446,10 +446,10 @@ XS_INLINE Point3D4<T, Width, Packed> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator+(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D4Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator+(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D4Def& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points + vector.vectors);
+    return Point3D4<T, Packed, Width>(point.points + vector.vectors);
 }
 
 /**
@@ -459,10 +459,10 @@ XS_INLINE Point3D4<T, Width, Packed> operator+(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
-    const Point3D4<T, Width, Packed>& point1, const typename Point3D4<T, Width, Packed>::Point3DDef& point2) noexcept
+XS_INLINE typename Point3D4<T, Packed, Width>::Vector3D4Def operator-(
+    const Point3D4<T, Packed, Width>& point1, const typename Point3D4<T, Packed, Width>::Point3DDef& point2) noexcept
 {
-    return typename Point3D4<T, Width, Packed>::Vector3D4Def(point1.points - point2.values);
+    return typename Point3D4<T, Packed, Width>::Vector3D4Def(point1.points - point2.values);
 }
 
 /**
@@ -472,10 +472,10 @@ XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
-    const Point3D4<T, Width, Packed>& point1, const typename Point3D4<T, Width, Packed>::Point3D2Def& point2) noexcept
+XS_INLINE typename Point3D4<T, Packed, Width>::Vector3D4Def operator-(
+    const Point3D4<T, Packed, Width>& point1, const typename Point3D4<T, Packed, Width>::Point3D2Def& point2) noexcept
 {
-    return typename Point3D4<T, Width, Packed>::Vector3D4Def(point1.points - point2.points);
+    return typename Point3D4<T, Packed, Width>::Vector3D4Def(point1.points - point2.points);
 }
 
 /**
@@ -485,10 +485,10 @@ XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
-    const Point3D4<T, Width, Packed>& point1, const Point3D4<T, Width, Packed>& point2) noexcept
+XS_INLINE typename Point3D4<T, Packed, Width>::Vector3D4Def operator-(
+    const Point3D4<T, Packed, Width>& point1, const Point3D4<T, Packed, Width>& point2) noexcept
 {
-    return typename Point3D4<T, Width, Packed>::Vector3D4Def(point1.points - point2.points);
+    return typename Point3D4<T, Packed, Width>::Vector3D4Def(point1.points - point2.points);
 }
 
 /**
@@ -498,10 +498,10 @@ XS_INLINE typename Point3D4<T, Width, Packed>::Vector3D4Def operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator-(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3DDef& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator-(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3DDef& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points - vector.values);
+    return Point3D4<T, Packed, Width>(point.points - vector.values);
 }
 
 /**
@@ -511,10 +511,10 @@ XS_INLINE Point3D4<T, Width, Packed> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator-(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D2Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator-(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D2Def& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points - vector.vectors);
+    return Point3D4<T, Packed, Width>(point.points - vector.vectors);
 }
 
 /**
@@ -524,10 +524,10 @@ XS_INLINE Point3D4<T, Width, Packed> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed> operator-(
-    const Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D4Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width> operator-(
+    const Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D4Def& vector) noexcept
 {
-    return Point3D4<T, Width, Packed>(point.points - vector.vectors);
+    return Point3D4<T, Packed, Width>(point.points - vector.vectors);
 }
 
 /**
@@ -537,8 +537,8 @@ XS_INLINE Point3D4<T, Width, Packed> operator-(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator+=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3DDef& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator+=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3DDef& vector) noexcept
 {
     point.points += vector.values;
     return point;
@@ -551,8 +551,8 @@ XS_INLINE Point3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator+=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D2Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator+=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D2Def& vector) noexcept
 {
     point.points += vector.vectors;
     return point;
@@ -565,8 +565,8 @@ XS_INLINE Point3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator+=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D4Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator+=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D4Def& vector) noexcept
 {
     point.points += vector.vectors;
     return point;
@@ -579,8 +579,8 @@ XS_INLINE Point3D4<T, Width, Packed>& operator+=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator-=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3DDef& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator-=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3DDef& vector) noexcept
 {
     point.points -= vector.values;
     return point;
@@ -593,8 +593,8 @@ XS_INLINE Point3D4<T, Width, Packed>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator-=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D2Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator-=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D2Def& vector) noexcept
 {
     point.points -= vector.vectors;
     return point;
@@ -607,8 +607,8 @@ XS_INLINE Point3D4<T, Width, Packed>& operator-=(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Packed>
-XS_INLINE Point3D4<T, Width, Packed>& operator-=(
-    Point3D4<T, Width, Packed>& point, const typename Point3D4<T, Width, Packed>::Vector3D4Def& vector) noexcept
+XS_INLINE Point3D4<T, Packed, Width>& operator-=(
+    Point3D4<T, Packed, Width>& point, const typename Point3D4<T, Packed, Width>::Vector3D4Def& vector) noexcept
 {
     point.points -= vector.vectors;
     return point;

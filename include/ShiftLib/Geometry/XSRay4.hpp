@@ -30,13 +30,13 @@ class Ray;
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
+template<typename T, bool Packed = false, SIMDWidth Width = defaultWidthSIMD512<T>>
 class Ray4
 {
 public:
     using Type = T;
-    using Point3D4Def = Point3D4<T, Point3D4<T, Width, Packed>::widthImpl, Packed>;
-    using Vector3D4Def = Vector3D4<T, Vector3D4<T, Width, Packed>::widthImpl, Packed>;
+    using Point3D4Def = Point3D4<T, Packed, Point3D4<T, Packed, Width>::widthImpl>;
+    using Vector3D4Def = Vector3D4<T, Packed, Vector3D4<T, Packed, Width>::widthImpl>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D4Def::widthImpl;
     static constexpr bool packed = Packed;
@@ -83,7 +83,7 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_INLINE explicit Ray4(const Ray4<T, Width2>& other) noexcept
+    XS_INLINE explicit Ray4(const Ray4<T, Packed, Width2>& other) noexcept
         : origins(other.origins)
         , directions(other.directions)
     {}

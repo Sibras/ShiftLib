@@ -112,7 +112,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD128<T>>
     XS_INLINE SIMDInBase<T, Width> load() const noexcept
     {
         return SIMDInBase<T, Width>(value);
@@ -122,7 +122,7 @@ public:
 template<typename T>
 using SIMDInBaseDataPad = SIMDInBaseData<T>;
 
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD128<T>>
 class SIMDInBase : public NoExport::SIMDData<T, 1, 0, Width>
 {
     static_assert(

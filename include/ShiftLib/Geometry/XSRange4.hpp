@@ -86,7 +86,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD128<T>>
     XS_INLINE Range4<T, Width> load() const noexcept
     {
         return Range4<T, Width>(this->min.template load<Range4<T, Width>::widthImpl>(),
@@ -98,7 +98,7 @@ template<typename T>
 using Range4DataPad = Range4Data<T>;
 
 /** Range4 type used to store minimum and maximum values for four different specific ranges. */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD128<T>>
 class Range4
 {
 public:

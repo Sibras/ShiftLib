@@ -35,9 +35,9 @@ public:
     static constexpr bool packed = T::packed;
 };
 
-using Ray4TestTypes = ::testing::Types<Ray4<float, SIMDWidth::Scalar, true>, Ray4<float, SIMDWidth::Scalar, false>,
-    Ray4<float, SIMDWidth::B16, true>, Ray4<float, SIMDWidth::B16, false>, Ray4<float, SIMDWidth::B32, true>,
-    Ray4<float, SIMDWidth::B32, false>, Ray4<float, SIMDWidth::B64, true>, Ray4<float, SIMDWidth::B64, false>>;
+using Ray4TestTypes = ::testing::Types<Ray4<float, true, SIMDWidth::Scalar>, Ray4<float, false, SIMDWidth::Scalar>,
+    Ray4<float, true, SIMDWidth::B16>, Ray4<float, false, SIMDWidth::B16>, Ray4<float, true, SIMDWidth::B32>,
+    Ray4<float, false, SIMDWidth::B32>, Ray4<float, true, SIMDWidth::B64>, Ray4<float, false, SIMDWidth::B64>>;
 
 TYPED_TEST_SUITE(TESTISA(Ray4), Ray4TestTypes);
 

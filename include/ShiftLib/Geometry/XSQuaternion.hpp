@@ -99,7 +99,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD128<T>>
     XS_INLINE Quaternion<T, Width> load() const noexcept
     {
         return Quaternion<T, Width>(this->values.template load<Quaternion<T, Width>::widthImpl>());
@@ -119,7 +119,7 @@ using QuaternionDataPad = QuaternionData<T>;
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD128<T>>
 class Quaternion
 {
 public:
@@ -133,14 +133,14 @@ public:
     using InBaseDef = typename SIMD4Def::InBaseDef;
     using Point3DDef = Point3D<T, Point3D<T, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Point3D2Def = Point3D2<T, Point3D2<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Point3D2Def = Point3D2<T, Packed, Point3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Point3D4Def = Point3D4<T, Point3D4<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Point3D4Def = Point3D4<T, Packed, Point3D4<T, Packed, widthImpl>::widthImpl>;
     using Vector3DDef = Vector3D<T, Vector3D<T, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Vector3D2Def = Vector3D2<T, Vector3D2<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Vector3D2Def = Vector3D2<T, Packed, Vector3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Vector3D4Def = Vector3D4<T, Vector3D4<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Vector3D4Def = Vector3D4<T, Packed, Vector3D4<T, Packed, widthImpl>::widthImpl>;
     using Matrix3x3Def = Matrix3x3<T, Matrix3x3<T, widthImpl>::widthImpl>;
 
     SIMD4Def values;

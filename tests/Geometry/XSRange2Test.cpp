@@ -47,7 +47,7 @@ TYPED_TEST_NS2(Range2, TESTISA(Range2), Range2)
     TestType test1(TestType::SIMD4Def(1.0f, 3.0f, 3.0f, 5.0f));
 
     ASSERT_PRED3(assertBool2<TestType::SIMD2Def::Mask::Bool::usingSIMD>,
-        test1.isWithinRange(TestType::SIMD2Def(10.0f, 4.0f)).getBool2(), true, false);
+        test1.isWithinRange(TestType::SIMD2Def(10.0f, 4.0f)).getBool2(), false, true);
     // TODO:************
 }
 #endif

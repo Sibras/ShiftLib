@@ -112,7 +112,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD512<T>>
     XS_INLINE Matrix4x4<T, Width> load() const noexcept
     {
         return Matrix4x4<T, Width>(this->values.template load<Matrix4x4<T, Width>::widthImpl>());
@@ -209,7 +209,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD512<T>>
     XS_INLINE Matrix4x4<T, Width> load() const noexcept
     {
         return Matrix4x4<T, Width>(this->values.template load<Matrix4x4<T, Width>::widthImpl>());
@@ -226,7 +226,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD512<T>>
 class Matrix4x4
 {
 public:
@@ -242,14 +242,14 @@ public:
     using SIMD3Def = typename SIMD4Def::SIMD3Def;
     using Point3DDef = Point3D<T, Point3D<T, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Point3D2Def = Point3D2<T, Point3D2<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Point3D2Def = Point3D2<T, Packed, Point3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Point3D4Def = Point3D4<T, Point3D4<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Point3D4Def = Point3D4<T, Packed, Point3D4<T, Packed, widthImpl>::widthImpl>;
     using Vector3DDef = Vector3D<T, Vector3D<T, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Vector3D2Def = Vector3D2<T, Vector3D2<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Vector3D2Def = Vector3D2<T, Packed, Vector3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
-    using Vector3D4Def = Vector3D4<T, Vector3D4<T, widthImpl, Packed>::widthImpl, Packed>;
+    using Vector3D4Def = Vector3D4<T, Packed, Vector3D4<T, Packed, widthImpl>::widthImpl>;
     using Matrix4x3Def = Matrix4x3<T, Matrix4x3<T, widthImpl>::widthImpl>;
     using Matrix3x3Def = Matrix3x3<T, Matrix3x3<T, widthImpl>::widthImpl>;
     using QuaternionDef = Quaternion<T, Quaternion<T, widthImpl>::widthImpl>;

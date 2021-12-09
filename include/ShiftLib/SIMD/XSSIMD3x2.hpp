@@ -137,7 +137,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD256<T>>
     XS_INLINE SIMD3x2<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
@@ -255,7 +255,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD256<T>>
     XS_INLINE SIMD3x2<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
@@ -271,7 +271,7 @@ public:
     }
 };
 
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD256<T>>
 class SIMD3x2 : public NoExport::SIMDData<T, 6, 2, Width>
 {
     static_assert(

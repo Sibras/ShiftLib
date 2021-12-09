@@ -212,46 +212,46 @@ TYPED_TEST_NS2(Matrix3x3, TESTISA(M3x3), Matrix3x3)
 
     typename TestType::template Point3D2Def<false> testPoint1 =
         TestType::template Point3D2Def<false>(5.234f, 10.0f, 1.836f, 4.0f, -5.2789f, 7.0f);
-    ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, TestType::template Point3D2Def<false>::width, false>),
+    ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, false, TestType::template Point3D2Def<false>::width>),
         test2.transform(testPoint1), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f);
 
     typename TestType::template Point3D2Def<true> testPoint1B =
         TestType::template Point3D2Def<true>(5.234f, 10.0f, 1.836f, 4.0f, -5.2789f, 7.0f);
-    ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, TestType::template Point3D2Def<true>::width, true>),
+    ASSERT_PRED7((assertPoint3D2<typename TestFixture::TypeInt, true, TestType::template Point3D2Def<true>::width>),
         test2.transform(testPoint1B), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f);
 
     typename TestType::template Vector3D2Def<false> testVec2 =
         TestType::template Vector3D2Def<false>(5.234f, 10.0f, 1.836f, 4.0f, -5.2789f, 7.0f);
-    ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestType::template Vector3D2Def<false>::width, false>),
+    ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, false, TestType::template Vector3D2Def<false>::width>),
         test2.transform(testVec2), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f);
 
     typename TestType::template Vector3D2Def<true> testVec2B =
         TestType::template Vector3D2Def<true>(5.234f, 10.0f, 1.836f, 4.0f, -5.2789f, 7.0f);
-    ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, TestType::template Vector3D2Def<true>::width, true>),
+    ASSERT_PRED7((assertVector3D2<typename TestFixture::TypeInt, true, TestType::template Vector3D2Def<true>::width>),
         test2.transform(testVec2B), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f);
 
     typename TestType::template Point3D4Def<false> testPoint2 = TestType::template Point3D4Def<false>(
         5.234f, 10.0f, 1.6f, 1.9f, 1.836f, 4.0f, -1.5f, 1.8f, -5.2789f, 7.0f, 1.4f, -1.5f);
-    ASSERT_PRED13((assertPoint3D4<typename TestFixture::TypeInt, TestType::template Point3D4Def<false>::width, false>),
+    ASSERT_PRED13((assertPoint3D4<typename TestFixture::TypeInt, false, TestType::template Point3D4Def<false>::width>),
         test2.transform(testPoint2), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f, 18.3f, -22.99f, 57.47f,
         20.55f, -14.85f, -54.13f);
 
     typename TestType::template Point3D4Def<true> testPoint2B = TestType::template Point3D4Def<true>(
         5.234f, 10.0f, 1.6f, 1.9f, 1.836f, 4.0f, -1.5f, 1.8f, -5.2789f, 7.0f, 1.4f, -1.5f);
-    ASSERT_PRED13((assertPoint3D4<typename TestFixture::TypeInt, TestType::template Point3D4Def<true>::width, true>),
+    ASSERT_PRED13((assertPoint3D4<typename TestFixture::TypeInt, true, TestType::template Point3D4Def<true>::width>),
         test2.transform(testPoint2B), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f, 18.3f, -22.99f, 57.47f,
         20.55f, -14.85f, -54.13f);
 
     typename TestType::template Vector3D4Def<false> testVec3 = TestType::template Vector3D4Def<false>(
         5.234f, 10.0f, 1.6f, 1.9f, 1.836f, 4.0f, -1.5f, 1.8f, -5.2789f, 7.0f, 1.4f, -1.5f);
     ASSERT_PRED13(
-        (assertVector3D4<typename TestFixture::TypeInt, TestType::template Vector3D4Def<false>::width, false>),
+        (assertVector3D4<typename TestFixture::TypeInt, false, TestType::template Vector3D4Def<false>::width>),
         test2.transform(testVec3), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f, 18.3f, -22.99f, 57.47f,
         20.55f, -14.85f, -54.13f);
 
     typename TestType::template Vector3D4Def<true> testVec3B = TestType::template Vector3D4Def<true>(
         5.234f, 10.0f, 1.6f, 1.9f, 1.836f, 4.0f, -1.5f, 1.8f, -5.2789f, 7.0f, 1.4f, -1.5f);
-    ASSERT_PRED13((assertVector3D4<typename TestFixture::TypeInt, TestType::template Vector3D4Def<true>::width, true>),
+    ASSERT_PRED13((assertVector3D4<typename TestFixture::TypeInt, true, TestType::template Vector3D4Def<true>::width>),
         test2.transform(testVec3B), 55.2973f, -50.9828f, -173.595f, 116.0f, -99.2f, 240.2f, 18.3f, -22.99f, 57.47f,
         20.55f, -14.85f, -54.13f);
 

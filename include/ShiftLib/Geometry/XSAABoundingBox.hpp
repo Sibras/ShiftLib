@@ -85,7 +85,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD128<T>>
     XS_INLINE AABoundingBox<T, Width> load() const noexcept
     {
         return AABoundingBox<T, Width>(this->minPoint.template load<AABoundingBox<T, Width>::widthImpl>(),
@@ -157,7 +157,7 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
+    template<SIMDWidth Width = defaultWidthSIMD128<T>>
     XS_INLINE AABoundingBox<T, Width> load() const noexcept
     {
         return AABoundingBox<T, Width>(this->minPoint.template load<AABoundingBox<T, Width>::widthImpl>(),
@@ -170,7 +170,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>>
+template<typename T, SIMDWidth Width = defaultWidthSIMD128<T>>
 class AABoundingBox
 {
 public:

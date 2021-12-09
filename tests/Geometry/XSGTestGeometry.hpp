@@ -436,8 +436,8 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 #endif
 
 #ifdef XS_TESTING_AABB2
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
-::testing::AssertionResult assertAABB2(const XS_OVERRIDE_SHIFT_NS::Shift::AABoundingBox2<T, Width, Packed>& param, T v0,
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
+::testing::AssertionResult assertAABB2(const XS_OVERRIDE_SHIFT_NS::Shift::AABoundingBox2<T, Packed, Width>& param, T v0,
     T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
 {
     auto val0 = param.minPoints.template getPoint<0>();
@@ -463,8 +463,8 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
 #endif
 
 #ifdef XS_TESTING_AABB4
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
-::testing::AssertionResult assertAABB4(const XS_OVERRIDE_SHIFT_NS::Shift::AABoundingBox4<T, Width, Packed>& param, T v0,
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
+::testing::AssertionResult assertAABB4(const XS_OVERRIDE_SHIFT_NS::Shift::AABoundingBox4<T, Packed, Width>& param, T v0,
     T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11, T v12, T v13, T v14, T v15, T v16, T v17, T v18,
     T v19, T v20, T v21, T v22, T v23)
 {
@@ -520,9 +520,9 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 #endif
 
 #ifdef XS_TESTING_POINT3D2
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 ::testing::AssertionResult assertPoint3D2(
-    const XS_OVERRIDE_SHIFT_NS::Shift::Point3D2<T, Width, Packed>& param, T v0, T v1, T v2, T v3, T v4, T v5)
+    const XS_OVERRIDE_SHIFT_NS::Shift::Point3D2<T, Packed, Width>& param, T v0, T v1, T v2, T v3, T v4, T v5)
 {
     auto val0 = param.template getPoint<0>();
     auto val1 = param.template getPoint<1>();
@@ -539,8 +539,8 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
 #endif
 
 #ifdef XS_TESTING_POINT3D4
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
-::testing::AssertionResult assertPoint3D4(const XS_OVERRIDE_SHIFT_NS::Shift::Point3D4<T, Width, Packed>& param, T v0,
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
+::testing::AssertionResult assertPoint3D4(const XS_OVERRIDE_SHIFT_NS::Shift::Point3D4<T, Packed, Width>& param, T v0,
     T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
 {
     auto val0 = param.template getPoint<0>();
@@ -724,8 +724,8 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 #endif
 
 #ifdef XS_TESTING_RAY2
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
-::testing::AssertionResult assertRay2(const XS_OVERRIDE_SHIFT_NS::Shift::Ray2<T, Width, Packed>& param, T v0, T v1,
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
+::testing::AssertionResult assertRay2(const XS_OVERRIDE_SHIFT_NS::Shift::Ray2<T, Packed, Width>& param, T v0, T v1,
     T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
 {
     auto val0 = param.origins.template getPoint<0>();
@@ -769,9 +769,9 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 #endif
 
 #ifdef XS_TESTING_VECTOR3D2
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 ::testing::AssertionResult assertVector3D2(
-    const XS_OVERRIDE_SHIFT_NS::Shift::Vector3D2<T, Width, Packed>& param, T v0, T v1, T v2, T v3, T v4, T v5)
+    const XS_OVERRIDE_SHIFT_NS::Shift::Vector3D2<T, Packed, Width>& param, T v0, T v1, T v2, T v3, T v4, T v5)
 {
     auto val0 = param.template getVector<0>();
     auto val1 = param.template getVector<1>();
@@ -788,8 +788,8 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
 #endif
 
 #ifdef XS_TESTING_VECTOR3D4
-template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width, bool Packed>
-::testing::AssertionResult assertVector3D4(const XS_OVERRIDE_SHIFT_NS::Shift::Vector3D4<T, Width, Packed>& param, T v0,
+template<typename T, bool Packed, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
+::testing::AssertionResult assertVector3D4(const XS_OVERRIDE_SHIFT_NS::Shift::Vector3D4<T, Packed, Width>& param, T v0,
     T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
 {
     auto val0 = param.template getVector<0>();

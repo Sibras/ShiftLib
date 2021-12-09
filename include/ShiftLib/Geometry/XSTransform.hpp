@@ -21,7 +21,7 @@
 #include "Geometry/XSVector3D4.hpp"
 
 namespace Shift {
-template<typename T, SIMDWidth Width, bool Matrix>
+template<typename T, bool Matrix, SIMDWidth Width>
 class Transform;
 
 template<typename T, bool Matrix>
@@ -78,7 +78,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit TransformData(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE explicit TransformData(const Transform<T, Matrix, Width>& other) noexcept
     {
         store(other);
     }
@@ -89,7 +89,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE void store(const Transform<T, Matrix, Width>& other) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix.store(other.data.matrix);
@@ -106,18 +106,18 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
-    XS_INLINE Transform<T, Width, Matrix> load() const noexcept
+    template<SIMDWidth Width = Matrix ? defaultWidthSIMD512<T> : defaultWidthSIMD128<T>>
+    XS_INLINE Transform<T, Matrix, Width> load() const noexcept
     {
         if constexpr (Matrix) {
-            return Transform<T, Width, Matrix>(
-                this->data.matrix.template load<Transform<T, Width, Matrix>::Matrix4x3Def::widthImpl>());
+            return Transform<T, Matrix, Width>(
+                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix4x3Def::widthImpl>());
         } else {
-            const typename Transform<T, Width, Matrix>::QuaternionDef quaternion(this->data.quaternion.load());
+            const typename Transform<T, Matrix, Width>::QuaternionDef quaternion(this->data.quaternion.load());
             // Pack in single float4 for faster load/store
             const SIMD4<T, Width> translateScale(this->data.translationScale.template load<Width>());
-            return Transform<T, Width, Matrix>(quaternion,
-                typename Transform<T, Width, Matrix>::Vector3DDef(translateScale.template getValue3<0, 1, 2>()),
+            return Transform<T, Matrix, Width>(quaternion,
+                typename Transform<T, Matrix, Width>::Vector3DDef(translateScale.template getValue3<0, 1, 2>()),
                 translateScale.template getValue<3>());
         }
     }
@@ -178,7 +178,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit TransformDataPad(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE explicit TransformDataPad(const Transform<T, Matrix, Width>& other) noexcept
     {
         store(other);
     }
@@ -189,7 +189,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Transform<T, Width, Matrix>& other) noexcept
+    XS_INLINE void store(const Transform<T, Matrix, Width>& other) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix.store(other.data.matrix);
@@ -205,17 +205,17 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
-    XS_INLINE Transform<T, Width, Matrix> load() const noexcept
+    template<SIMDWidth Width = Matrix ? defaultWidthSIMD512<T> : defaultWidthSIMD128<T>>
+    XS_INLINE Transform<T, Matrix, Width> load() const noexcept
     {
         if constexpr (Matrix) {
-            return Transform<T, Width, Matrix>(
-                this->data.matrix.template load<Transform<T, Width, Matrix>::Matrix4x3Def::widthImpl>());
+            return Transform<T, Matrix, Width>(
+                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix4x3Def::widthImpl>());
         } else {
-            return Transform<T, Width, Matrix>(
-                this->data.quaternion.template load<Transform<T, Width, Matrix>::QuaternionDef::widthImpl>(),
-                this->data.translation.template load<Transform<T, Width, Matrix>::Vector3DDef::widthImpl>(),
-                this->data.scale.template load<Transform<T, Width, Matrix>::BaseDef::widthImpl>());
+            return Transform<T, Matrix, Width>(
+                this->data.quaternion.template load<Transform<T, Matrix, Width>::QuaternionDef::widthImpl>(),
+                this->data.translation.template load<Transform<T, Matrix, Width>::Vector3DDef::widthImpl>(),
+                this->data.scale.template load<Transform<T, Matrix, Width>::BaseDef::widthImpl>());
         }
     }
 };
@@ -231,7 +231,7 @@ public:
  * @tparam T     Generic type parameter.
  * @tparam Width Type of SIMD being used.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Matrix = false>
+template<typename T, bool Matrix = false, SIMDWidth Width = Matrix ? defaultWidthSIMD512<T> : defaultWidthSIMD128<T>>
 class Transform
 {
     template<bool IsMatrix>
@@ -729,8 +729,8 @@ public:
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix> operator*(
-    const Transform<T, Width, Matrix>& transform1, const Transform<T, Width, Matrix>& transform2) noexcept
+XS_INLINE Transform<T, Matrix, Width> operator*(
+    const Transform<T, Matrix, Width>& transform1, const Transform<T, Matrix, Width>& transform2) noexcept
 {
     if constexpr (Matrix) {
         return Transform(transform1.data.matrix * transform2.data.matrix);
@@ -741,17 +741,17 @@ XS_INLINE Transform<T, Width, Matrix> operator*(
         // on transform2;
 
         // Pre Rotate transform1 by transform2
-        const typename Transform<T, Width, Matrix>::QuaternionDef temp(
+        const typename Transform<T, Matrix, Width>::QuaternionDef temp(
             transform1.data.quaternion * transform2.data.quaternion);
-        typename Transform<T, Width, Matrix>::Vector3DDef translate(
+        typename Transform<T, Matrix, Width>::Vector3DDef translate(
             transform2.data.quaternion.transform(transform1.data.translation));
 
         // Pre Scale transform1 by transform2 and add new translation to existing
-        translate = translate.mad(typename Transform<T, Width, Matrix>::Vector3DDef::BaseDef(transform2.data.scale),
+        translate = translate.mad(typename Transform<T, Matrix, Width>::Vector3DDef::BaseDef(transform2.data.scale),
             transform2.data.translation);
 
         return Transform(temp, translate,
-            typename Transform<T, Width, Matrix>::BaseDef(transform2.data.scale * transform1.data.scale));
+            typename Transform<T, Matrix, Width>::BaseDef(transform2.data.scale * transform1.data.scale));
     }
 }
 
@@ -762,8 +762,8 @@ XS_INLINE Transform<T, Width, Matrix> operator*(
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width, bool Matrix>
-XS_INLINE Transform<T, Width, Matrix>& operator*=(
-    Transform<T, Width, Matrix>& transform1, const Transform<T, Width, Matrix>& transform2) noexcept
+XS_INLINE Transform<T, Matrix, Width>& operator*=(
+    Transform<T, Matrix, Width>& transform1, const Transform<T, Matrix, Width>& transform2) noexcept
 {
     if constexpr (Matrix) {
         transform1.data.matrix *= transform2.data.matrix;
@@ -774,7 +774,7 @@ XS_INLINE Transform<T, Width, Matrix>& operator*=(
 
         // Pre Scale transform1 by transform2 and add new translation to existing
         transform1.data.translation = transform1.data.translation.mad(
-            typename Transform<T, Width, Matrix>::Vector3DDef::BaseDef(transform2.data.scale),
+            typename Transform<T, Matrix, Width>::Vector3DDef::BaseDef(transform2.data.scale),
             transform2.data.translation);
         transform1.data.scale *= transform2.data.scale;
     }

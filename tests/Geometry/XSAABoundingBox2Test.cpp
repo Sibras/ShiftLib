@@ -34,11 +34,12 @@ public:
     static constexpr bool packed = T::packed;
 };
 
-using AABB2TestTypes = ::testing::Types<AABoundingBox2<float, SIMDWidth::Scalar, true>,
-    AABoundingBox2<float, SIMDWidth::Scalar, false>, AABoundingBox2<float, SIMDWidth::B16, true>,
-    AABoundingBox2<float, SIMDWidth::B16, false>, AABoundingBox2<float, SIMDWidth::B32, true>,
-    AABoundingBox2<float, SIMDWidth::B32,
-        false> /*, AABoundingBox2<float, SIMDWidth::B64, true>, AABoundingBox2<float, SIMDWidth::B64, false>*/>;
+using AABB2TestTypes = ::testing::Types<AABoundingBox2<float, true, SIMDWidth::Scalar>,
+    AABoundingBox2<float, false, SIMDWidth::Scalar>, AABoundingBox2<float, true, SIMDWidth::B16>,
+    AABoundingBox2<float, false, SIMDWidth::B16>, AABoundingBox2<float, true, SIMDWidth::B32>,
+    AABoundingBox2<float, false,
+        SIMDWidth::
+            B32> /*, AABoundingBox2<float, true, SIMDWidth::B64>, AABoundingBox2<float, false, SIMDWidth::B64>*/>;
 
 TYPED_TEST_SUITE(TESTISA(AABB2), AABB2TestTypes);
 
@@ -54,7 +55,7 @@ TYPED_TEST_NS2(AABB2, TESTISA(AABB2), AABB2)
                      TestType::Point3D2Def::Point3DDef(TypeInt{10}, TypeInt{4}, TypeInt{7})),
             TestType::Point3D2Def(TestType::Point3D2Def::Point3DDef(TypeInt{11}, TypeInt{14}, TypeInt{9}),
                 TestType::Point3D2Def::Point3DDef(TypeInt{11}, TypeInt{14}, TypeInt{9})));
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test1,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test1,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{10}, TypeInt{4}, TypeInt{7},
         TypeInt{11}, TypeInt{14}, TypeInt{9});
 
@@ -63,13 +64,13 @@ TYPED_TEST_NS2(AABB2, TESTISA(AABB2), AABB2)
                      TestType::Point3D2Def::Point3DDef(TypeInt{2}, TypeInt{25}, TypeInt{18})),
             TestType::Point3D2Def(TestType::Point3D2Def::Point3DDef(TypeInt{11}, TypeInt{14}, TypeInt{9}),
                 TestType::Point3D2Def::Point3DDef(TypeInt{3}, TypeInt{38}, TypeInt{27})));
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test2,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test2,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     TestType test3 = TestType(TestType::AABBDef(TestType::AABBDef::Point3DDef(TypeInt{10}, TypeInt{4}, TypeInt{7}),
         TestType::AABBDef::Point3DDef(TypeInt{11}, TypeInt{14}, TypeInt{9})));
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test3,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test3,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{10}, TypeInt{4}, TypeInt{7},
         TypeInt{11}, TypeInt{14}, TypeInt{9});
 
@@ -77,41 +78,41 @@ TYPED_TEST_NS2(AABB2, TESTISA(AABB2), AABB2)
                                   TestType::AABBDef::Point3DDef(TypeInt{11}, TypeInt{14}, TypeInt{9})),
         TestType::AABBDef(TestType::AABBDef::Point3DDef(TypeInt{2}, TypeInt{25}, TypeInt{18}),
             TestType::AABBDef::Point3DDef(TypeInt{3}, TypeInt{38}, TypeInt{27})));
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test4,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test4,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     //  Load/Store Test
     AABoundingBox2Data<typename TestFixture::TypeInt, TestFixture::packed> data(test2);
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test2,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test2,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     data.store(test2);
     test2 = data.template load<TestType::width>();
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test2,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test2,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     AABoundingBox2DataPad<typename TestFixture::TypeInt, TestFixture::packed> dataPad(test2);
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test2,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test2,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     dataPad.store(test2);
     test2 = dataPad.template load<TestType::width>();
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test2,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test2,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{25}, TypeInt{18},
         TypeInt{3}, TypeInt{38}, TypeInt{27});
 
     test1.extend(test2);
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test1,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test1,
         TypeInt{10}, TypeInt{4}, TypeInt{7}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{4}, TypeInt{7},
         TypeInt{11}, TypeInt{38}, TypeInt{27});
 
     test1.extend(TestType::Point3D2Def(TestType::Point3D2Def::Point3DDef(TypeInt{2}, TypeInt{1}, TypeInt{1}),
         TestType::Point3D2Def::Point3DDef(TypeInt{2}, TypeInt{1}, TypeInt{1})));
-    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::width, TestFixture::packed>), test1,
+    ASSERT_PRED13((assertAABB2<typename TestFixture::TypeInt, TestFixture::packed, TestFixture::width>), test1,
         TypeInt{2}, TypeInt{1}, TypeInt{1}, TypeInt{11}, TypeInt{14}, TypeInt{9}, TypeInt{2}, TypeInt{1}, TypeInt{1},
         TypeInt{11}, TypeInt{38}, TypeInt{27});
 }

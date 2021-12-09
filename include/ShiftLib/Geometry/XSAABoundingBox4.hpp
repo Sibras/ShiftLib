@@ -19,7 +19,7 @@
 #include "Geometry/XSPoint3D4.hpp"
 
 namespace Shift {
-template<typename T, SIMDWidth Width, bool Packed>
+template<typename T, bool Packed, SIMDWidth Width>
 class AABoundingBox4;
 
 template<typename T, bool Packed = false>
@@ -64,7 +64,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit AABoundingBox4Data(const AABoundingBox4<T, Width, Packed>& other) noexcept
+    XS_INLINE explicit AABoundingBox4Data(const AABoundingBox4<T, Packed, Width>& other) noexcept
         : minPoints(other.minPoints)
         , maxPoints(other.maxPoints)
     {}
@@ -75,7 +75,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const AABoundingBox4<T, Width, Packed>& other) noexcept
+    XS_INLINE void store(const AABoundingBox4<T, Packed, Width>& other) noexcept
     {
         this->minPoints.store(other.minPoints);
         this->maxPoints.store(other.maxPoints);
@@ -86,12 +86,12 @@ public:
      * @tparam Width Type of SIMD being used.
      * @returns The loaded object.
      */
-    template<SIMDWidth Width = defaultWidthSIMD<T>>
-    XS_INLINE AABoundingBox4<T, Width, Packed> load() const noexcept
+    template<SIMDWidth Width = defaultWidthSIMD512<T>>
+    XS_INLINE AABoundingBox4<T, Packed, Width> load() const noexcept
     {
-        return AABoundingBox4<T, Width, Packed>(
-            this->minPoints.template load<AABoundingBox4<T, Width, Packed>::widthImpl>(),
-            this->maxPoints.template load<AABoundingBox4<T, Width, Packed>::widthImpl>());
+        return AABoundingBox4<T, Packed, Width>(
+            this->minPoints.template load<AABoundingBox4<T, Packed, Width>::widthImpl>(),
+            this->maxPoints.template load<AABoundingBox4<T, Packed, Width>::widthImpl>());
     }
 };
 
@@ -104,12 +104,12 @@ using AABoundingBox4DataPad = AABoundingBox4Data<T, Packed>;
  * @tparam Width  Type of SIMD being used.
  * @tparam Packed Type of storage used for internal data.
  */
-template<typename T, SIMDWidth Width = defaultWidthSIMD<T>, bool Packed = false>
+template<typename T, bool Packed = false, SIMDWidth Width = defaultWidthSIMD512<T>>
 class AABoundingBox4
 {
 public:
     using Type = T;
-    using Point3D4Def = Point3D4<T, Point3D4<T, Width, Packed>::widthImpl, Packed>;
+    using Point3D4Def = Point3D4<T, Packed, Point3D4<T, Packed, Width>::widthImpl>;
     using Data = AABoundingBox4Data<T, Packed>;
     using DataPad = AABoundingBox4DataPad<T, Packed>;
     static constexpr SIMDWidth width = Width;
@@ -156,7 +156,7 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_INLINE explicit AABoundingBox4(const AABoundingBox4<T, Width2>& other) noexcept
+    XS_INLINE explicit AABoundingBox4(const AABoundingBox4<T, Packed, Width2>& other) noexcept
         : minPoints(other.minPoints)
         , maxPoints(other.maxPoints)
     {}
