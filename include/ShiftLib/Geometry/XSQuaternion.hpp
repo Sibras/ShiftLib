@@ -34,6 +34,32 @@ public:
     XS_INLINE QuaternionData() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE QuaternionData(const QuaternionData& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE QuaternionData(QuaternionData&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE QuaternionData& operator=(const QuaternionData& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE QuaternionData& operator=(QuaternionData&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.

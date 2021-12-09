@@ -31,6 +31,32 @@ public:
     XS_INLINE RangeData() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE RangeData(const RangeData& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE RangeData(RangeData&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE RangeData& operator=(const RangeData& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE RangeData& operator=(RangeData&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.

@@ -31,6 +31,32 @@ public:
     XS_INLINE Vector3DData() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Vector3DData(const Vector3DData& other) = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Vector3DData(Vector3DData&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Vector3DData& operator=(const Vector3DData& other) = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Vector3DData& operator=(Vector3DData&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.
@@ -38,6 +64,16 @@ public:
     template<SIMDWidth Width>
     XS_INLINE explicit Vector3DData(const Vector3D<T, Width>& other) noexcept
         : values(other.values)
+    {}
+
+    /**
+     * Construct from member variables.
+     * @param value0In The first pre-calculated value.
+     * @param value1In The second pre-calculated value.
+     * @param value2In The third pre-calculated value.
+     */
+    XS_INLINE Vector3DData(T&& value0In, T&& value1In, T&& value2In)
+        : values(forward<T>(value0In), forward<T>(value1In), forward<T>(value2In))
     {}
 
     /**
@@ -86,6 +122,32 @@ public:
     XS_INLINE Vector3DDataPad() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Vector3DDataPad(const Vector3DDataPad& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Vector3DDataPad(Vector3DDataPad&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Vector3DDataPad& operator=(const Vector3DDataPad& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Vector3DDataPad& operator=(Vector3DDataPad&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.
@@ -93,6 +155,16 @@ public:
     template<SIMDWidth Width>
     XS_INLINE explicit Vector3DDataPad(const Vector3D<T, Width>& other) noexcept
         : values(other.values)
+    {}
+
+    /**
+     * Construct from member variables.
+     * @param value0In The first pre-calculated value.
+     * @param value1In The second pre-calculated value.
+     * @param value2In The third pre-calculated value.
+     */
+    XS_INLINE Vector3DDataPad(T&& value0In, T&& value1In, T&& value2In)
+        : values(forward<T>(value0In), forward<T>(value1In), forward<T>(value2In))
     {}
 
     /**
@@ -163,8 +235,8 @@ public:
     XS_INLINE Vector3D(const Vector3D& other) = default;
 
     /**
-     * Constructor.
-     * @param [in,out] other The other.
+     * Forwarding Constructor.
+     * @param other The other.
      */
     XS_INLINE Vector3D(Vector3D&& other) noexcept = default;
 
@@ -177,7 +249,7 @@ public:
 
     /**
      * Move assignment operator.
-     * @param [in,out] other The other.
+     * @param other The other.
      * @returns A shallow copy of this object.
      */
     XS_INLINE Vector3D& operator=(Vector3D&& other) noexcept = default;

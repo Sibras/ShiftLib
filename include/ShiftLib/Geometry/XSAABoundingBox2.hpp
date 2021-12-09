@@ -33,6 +33,32 @@ public:
     XS_INLINE AABoundingBox2Data() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE AABoundingBox2Data(const AABoundingBox2Data& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE AABoundingBox2Data(AABoundingBox2Data&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE AABoundingBox2Data& operator=(const AABoundingBox2Data& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE AABoundingBox2Data& operator=(AABoundingBox2Data&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.
@@ -78,6 +104,32 @@ public:
 
     /** Default constructor. */
     XS_INLINE AABoundingBox2DataPad() noexcept = default;
+
+    /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE AABoundingBox2DataPad(const AABoundingBox2DataPad& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE AABoundingBox2DataPad(AABoundingBox2DataPad&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE AABoundingBox2DataPad& operator=(const AABoundingBox2DataPad& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE AABoundingBox2DataPad& operator=(AABoundingBox2DataPad&& other) noexcept = default;
 
     /**
      * Construct from non-data type.

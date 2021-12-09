@@ -35,6 +35,32 @@ public:
     XS_INLINE SIMD2Data() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE SIMD2Data(const SIMD2Data& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE SIMD2Data(SIMD2Data&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE SIMD2Data& operator=(const SIMD2Data& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE SIMD2Data& operator=(SIMD2Data&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.
@@ -44,6 +70,16 @@ public:
     {
         store(other);
     }
+
+    /**
+     * Construct from member variables.
+     * @param value0In The first pre-calculated value.
+     * @param value1In The second pre-calculated value.
+     */
+    XS_INLINE SIMD2Data(T&& value0In, T&& value1In)
+        : value0(forward<T>(value0In))
+        , value1(forward<T>(value1In))
+    {}
 
     /**
      * Directly set the contents this object.
@@ -500,8 +536,8 @@ public:
     XS_INLINE SIMD2(const SIMD2& other) = default;
 
     /**
-     * Constructor.
-     * @param [in,out] other The other.
+     * Forwarding Constructor.
+     * @param other The other.
      */
     XS_INLINE SIMD2(SIMD2&& other) noexcept = default;
 
@@ -514,7 +550,7 @@ public:
 
     /**
      * Move assignment operator.
-     * @param [in,out] other The other.
+     * @param other The other.
      * @returns A shallow copy of this object.
      */
     XS_INLINE SIMD2& operator=(SIMD2&& other) noexcept = default;

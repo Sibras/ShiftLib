@@ -39,6 +39,32 @@ public:
     XS_INLINE Matrix3x3Data() noexcept = default;
 
     /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Matrix3x3Data(const Matrix3x3Data& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Matrix3x3Data(Matrix3x3Data&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Matrix3x3Data& operator=(const Matrix3x3Data& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Matrix3x3Data& operator=(Matrix3x3Data&& other) noexcept = default;
+
+    /**
      * Construct from non-data type.
      * @tparam Width Type of SIMD being used.
      * @param other The non-data type to construct from.
@@ -98,6 +124,32 @@ public:
 
     /** Default constructor. */
     XS_INLINE Matrix3x3DataPad() noexcept = default;
+
+    /**
+     * Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Matrix3x3DataPad(const Matrix3x3DataPad& other) noexcept = default;
+
+    /**
+     * Forwarding Constructor.
+     * @param other The other.
+     */
+    XS_INLINE Matrix3x3DataPad(Matrix3x3DataPad&& other) noexcept = default;
+
+    /**
+     * Assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Matrix3x3DataPad& operator=(const Matrix3x3DataPad& other) noexcept = default;
+
+    /**
+     * Move assignment operator.
+     * @param other The other.
+     * @returns A shallow copy of this object.
+     */
+    XS_INLINE Matrix3x3DataPad& operator=(Matrix3x3DataPad&& other) noexcept = default;
 
     /**
      * Construct from non-data type.
