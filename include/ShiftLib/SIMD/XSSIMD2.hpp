@@ -556,6 +556,30 @@ public:
     XS_INLINE SIMD2& operator=(SIMD2&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit SIMD2(const SIMD2<T, Width2>& other) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar) && (Width2 > SIMDWidth::Scalar)) {
+            this->values = other.values;
+        } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            *this = SIMD2(other.values0, other.values1);
+        } else if constexpr (Width2 > SIMDWidth::Scalar) {
+            this->values0 = other.template getValueInBase<0>().getValue();
+            this->values1 = other.template getValueInBase<1>().getValue();
+        } else
+#endif
+        {
+            this->values0 = other.values0;
+            this->values1 = other.values1;
+        }
+    }
+
+    /**
      * Construct from 2 values.
      * @param other0 The first value.
      * @param other1 The second value.
@@ -587,30 +611,6 @@ public:
         {
             this->values0 = val;
             this->values1 = val;
-        }
-    }
-
-    /**
-     * Constructor.
-     * @tparam Width2 Type of SIMD being used.
-     * @param other The other.
-     */
-    template<SIMDWidth Width2>
-    XS_INLINE explicit SIMD2(const SIMD2<T, Width2>& other) noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar) && (Width2 > SIMDWidth::Scalar)) {
-            this->values = other.values;
-        } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-            *this = SIMD2(other.values0, other.values1);
-        } else if constexpr (Width2 > SIMDWidth::Scalar) {
-            this->values0 = other.template getValueInBase<0>().getValue();
-            this->values1 = other.template getValueInBase<1>().getValue();
-        } else
-#endif
-        {
-            this->values0 = other.values0;
-            this->values1 = other.values1;
         }
     }
 

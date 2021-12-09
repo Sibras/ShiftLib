@@ -182,26 +182,6 @@ public:
     XS_INLINE SIMDBase& operator=(SIMDBase&& other) noexcept = default;
 
     /**
-     * Construct from a value.
-     * @param val The value.
-     */
-    XS_INLINE explicit SIMDBase(T val) noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            this->values = _mm512_set1_ps(val);
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            this->values = _mm256_set1_ps(val);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values = _mm_set1_ps(val);
-        } else
-#endif
-        {
-            this->value = val;
-        }
-    }
-
-    /**
      * Constructor.
      * @tparam Width2 Type of SIMD being used.
      * @param other The other.
@@ -252,6 +232,26 @@ public:
 #endif
         {
             this->value = other.value;
+        }
+    }
+
+    /**
+     * Construct from a value.
+     * @param val The value.
+     */
+    XS_INLINE explicit SIMDBase(T val) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            this->values = _mm512_set1_ps(val);
+        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            this->values = _mm256_set1_ps(val);
+        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            this->values = _mm_set1_ps(val);
+        } else
+#endif
+        {
+            this->value = val;
         }
     }
 

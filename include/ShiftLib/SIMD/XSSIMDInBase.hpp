@@ -169,22 +169,6 @@ public:
     XS_INLINE SIMDInBase& operator=(SIMDInBase&& other) noexcept = default;
 
     /**
-     * Construct from a value.
-     * @param val The value.
-     */
-    XS_INLINE explicit SIMDInBase(T val) noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
-            this->values = _mm_set_ss(val);
-        } else
-#endif
-        {
-            this->value = val;
-        }
-    }
-
-    /**
      * Constructor.
      * @tparam Width2 Type of SIMD being used.
      * @param other The other.
@@ -199,6 +183,22 @@ public:
 #endif
         {
             this->value = other.value;
+        }
+    }
+
+    /**
+     * Construct from a value.
+     * @param val The value.
+     */
+    XS_INLINE explicit SIMDInBase(T val) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set_ss(val);
+        } else
+#endif
+        {
+            this->value = val;
         }
     }
 

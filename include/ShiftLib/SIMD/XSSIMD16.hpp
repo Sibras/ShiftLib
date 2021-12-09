@@ -239,6 +239,147 @@ public:
     XS_INLINE SIMD16& operator=(SIMD16&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit SIMD16(const SIMD16<T, Width2>& other) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar) && (Width2 > SIMDWidth::Scalar)) {
+            if constexpr (isSame<T, float32> && (Width == SIMDWidth::B16) && (Width2 == SIMDWidth::B16)) {
+                this->values0 = other.values0;
+                this->values1 = other.values1;
+                this->values2 = other.values2;
+                this->values3 = other.values3;
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width == SIMDWidth::B16) &&
+                (Width2 == SIMDWidth::B32)) {
+                this->values0 = _mm256_castps256_ps128(other.values0);
+                this->values1 = _mm256_extractf128_ps(other.values0, 1);
+                this->values2 = _mm256_castps256_ps128(other.values1);
+                this->values3 = _mm256_extractf128_ps(other.values1, 1);
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width == SIMDWidth::B32) &&
+                (Width2 == SIMDWidth::B16)) {
+                this->values0 = _mm256_set_m128(other.values1, other.values0);
+                this->values1 = _mm256_set_m128(other.values3, other.values2);
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width == SIMDWidth::B32) &&
+                (Width2 == SIMDWidth::B32)) {
+                this->values0 = other.values0;
+                this->values1 = other.values1;
+            } else if constexpr (isSame<T, float32> && (Width == SIMDWidth::B16) && (Width2 >= SIMDWidth::B64)) {
+                this->values0 = _mm512_extractf32x4_ps(other.values, 0);
+                this->values1 = _mm512_extractf32x4_ps(other.values, 1);
+                this->values2 = _mm512_extractf32x4_ps(other.values, 2);
+                this->values3 = _mm512_extractf32x4_ps(other.values, 3);
+            } else if constexpr (isSame<T, float32> && (Width == SIMDWidth::B32) && (Width2 >= SIMDWidth::B64)) {
+                this->values0 = _mm512_extractf32x8_ps(other.values, 0);
+                this->values1 = _mm512_extractf32x8_ps(other.values, 1);
+            } else if constexpr (isSame<T, float32> && (Width >= SIMDWidth::B64) && (Width2 == SIMDWidth::B16)) {
+                this->values = _mm512_insertf32x8(_mm512_castps256_ps512(_mm256_set_m128(other.values1, other.values0)),
+                    _mm256_set_m128(other.values3, other.values2), 1);
+            } else if constexpr (isSame<T, float32> && (Width >= SIMDWidth::B64) && (Width2 == SIMDWidth::B32)) {
+                this->values = _mm512_insertf32x8(_mm512_castps256_ps512(other.values0), other.values1, 1);
+            } else if constexpr (isSame<T, float32> && (Width >= SIMDWidth::B64) && (Width2 >= SIMDWidth::B64)) {
+                this->values = other.values;
+            }
+        } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_set_ps(other.values15, other.values14, other.values13, other.values12,
+                    other.values11, other.values10, other.values9, other.values8, other.values7, other.values6,
+                    other.values5, other.values4, other.values3, other.values2, other.values1, other.values0);
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width == SIMDWidth::B32)) {
+                this->values0 = _mm256_set_ps(other.values7, other.values6, other.values5, other.values4, other.values3,
+                    other.values2, other.values1, other.values0);
+                this->values1 = _mm256_set_ps(other.values15, other.values14, other.values13, other.values12,
+                    other.values11, other.values10, other.values9, other.values8);
+            } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width == SIMDWidth::B16)) {
+                this->values0 = _mm_set_ps(other.values3, other.values2, other.values1, other.values0);
+                this->values1 = _mm_set_ps(other.values7, other.values6, other.values5, other.values4);
+                this->values2 = _mm_set_ps(other.values11, other.values10, other.values9, other.values8);
+                this->values3 = _mm_set_ps(other.values15, other.values14, other.values13, other.values12);
+            }
+        } else if constexpr (Width2 > SIMDWidth::Scalar) {
+            if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width2 >= SIMDWidth::B64)) {
+                this->values0 = _mm_cvtss_f32(_mm512_castps512_ps128(other.values));
+                this->values1 = _mm_cvtss_f32(_mm_shuffle3311_ps(_mm512_castps512_ps128(other.values)));
+                this->values2 = _mm_cvtss_f32(_mm_shuffle3232_ps(_mm512_castps512_ps128(other.values)));
+                this->values3 = _mm_cvtss_f32(_mm_shuffle3333_ps(_mm512_castps512_ps128(other.values)));
+                const auto hi = _mm512_extractf32x4_ps(other.values, 1);
+                this->values4 = _mm_cvtss_f32(hi);
+                this->values5 = _mm_cvtss_f32(_mm_shuffle3311_ps(hi));
+                this->values6 = _mm_cvtss_f32(_mm_shuffle3232_ps(hi));
+                this->values7 = _mm_cvtss_f32(_mm_shuffle3333_ps(hi));
+                const auto hi2 = _mm512_extractf32x4_ps(other.values, 2);
+                this->values8 = _mm_cvtss_f32(hi2);
+                this->values9 = _mm_cvtss_f32(_mm_shuffle3311_ps(hi2));
+                this->values10 = _mm_cvtss_f32(_mm_shuffle3232_ps(hi2));
+                this->values11 = _mm_cvtss_f32(_mm_shuffle3333_ps(hi2));
+                const auto hi3 = _mm512_extractf32x4_ps(other.values, 3);
+                this->values12 = _mm_cvtss_f32(hi3);
+                this->values13 = _mm_cvtss_f32(_mm_shuffle3311_ps(hi3));
+                this->values14 = _mm_cvtss_f32(_mm_shuffle3232_ps(hi3));
+                this->values15 = _mm_cvtss_f32(_mm_shuffle3333_ps(hi3));
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width2 == SIMDWidth::B32)) {
+                this->values0 = _mm_cvtss_f32(_mm256_castps256_ps128(other.values0));
+                this->values1 = _mm_cvtss_f32(_mm_shuffle3311_ps(_mm256_castps256_ps128(other.values0)));
+                this->values2 = _mm_cvtss_f32(_mm_shuffle3232_ps(_mm256_castps256_ps128(other.values0)));
+                this->values3 = _mm_cvtss_f32(_mm_shuffle3333_ps(_mm256_castps256_ps128(other.values0)));
+                const auto hi = _mm256_extractf128_ps(other.values0, 1);
+                this->values4 = _mm_cvtss_f32(hi);
+                this->values5 = _mm_cvtss_f32(_mm_shuffle3311_ps(hi));
+                this->values6 = _mm_cvtss_f32(_mm_shuffle3232_ps(hi));
+                this->values7 = _mm_cvtss_f32(_mm_shuffle3333_ps(hi));
+                this->values8 = _mm_cvtss_f32(_mm256_castps256_ps128(other.values1));
+                this->values9 = _mm_cvtss_f32(_mm_shuffle3311_ps(_mm256_castps256_ps128(other.values1)));
+                this->values10 = _mm_cvtss_f32(_mm_shuffle3232_ps(_mm256_castps256_ps128(other.values1)));
+                this->values11 = _mm_cvtss_f32(_mm_shuffle3333_ps(_mm256_castps256_ps128(other.values1)));
+                const auto hi2 = _mm256_extractf128_ps(other.values1, 2);
+                this->values12 = _mm_cvtss_f32(hi2);
+                this->values13 = _mm_cvtss_f32(_mm_shuffle3311_ps(hi2));
+                this->values14 = _mm_cvtss_f32(_mm_shuffle3232_ps(hi2));
+                this->values15 = _mm_cvtss_f32(_mm_shuffle3333_ps(hi2));
+            } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width2 == SIMDWidth::B16)) {
+                this->values0 = _mm_cvtss_f32(other.values0);
+                this->values1 = _mm_cvtss_f32(_mm_shuffle3311_ps(other.values0)); //(x,x,x,1)
+                this->values2 = _mm_cvtss_f32(_mm_shuffle3232_ps(other.values0)); //(x,x,x,2)
+                this->values3 = _mm_cvtss_f32(_mm_shuffle3333_ps(other.values0)); //(x,x,x,3)
+                this->values4 = _mm_cvtss_f32(other.values1);
+                this->values5 = _mm_cvtss_f32(_mm_shuffle3311_ps(other.values1));
+                this->values6 = _mm_cvtss_f32(_mm_shuffle3232_ps(other.values1));
+                this->values7 = _mm_cvtss_f32(_mm_shuffle3333_ps(other.values1));
+                this->values8 = _mm_cvtss_f32(other.values2);
+                this->values9 = _mm_cvtss_f32(_mm_shuffle3311_ps(other.values2));
+                this->values10 = _mm_cvtss_f32(_mm_shuffle3232_ps(other.values2));
+                this->values11 = _mm_cvtss_f32(_mm_shuffle3333_ps(other.values2));
+                this->values12 = _mm_cvtss_f32(other.values3);
+                this->values13 = _mm_cvtss_f32(_mm_shuffle3311_ps(other.values3));
+                this->values14 = _mm_cvtss_f32(_mm_shuffle3232_ps(other.values3));
+                this->values15 = _mm_cvtss_f32(_mm_shuffle3333_ps(other.values3));
+            }
+        } else
+#endif
+        {
+            this->values0 = other.values0;
+            this->values1 = other.values1;
+            this->values2 = other.values2;
+            this->values3 = other.values3;
+            this->values4 = other.values4;
+            this->values5 = other.values5;
+            this->values6 = other.values6;
+            this->values7 = other.values7;
+            this->values8 = other.values8;
+            this->values9 = other.values9;
+            this->values10 = other.values10;
+            this->values11 = other.values11;
+            this->values12 = other.values12;
+            this->values13 = other.values13;
+            this->values14 = other.values14;
+            this->values15 = other.values15;
+        }
+    }
+
+    /**
      * Construct a from 16 different values.
      * @param value0  The first value.
      * @param value1  The second value.
