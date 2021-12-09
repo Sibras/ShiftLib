@@ -953,7 +953,7 @@ public:
     XS_INLINE SIMD3& operator=(SIMD3&& other) noexcept = default;
 
     /**
-     * Construct from 4 different values.
+     * Construct from 3 different values.
      * @param value0 The first value.
      * @param value1 The second value.
      * @param value2 The third value.
@@ -1009,6 +1009,27 @@ public:
     }
 
     /**
+     * Construct from 3 different values.
+     * @param value0 The first value.
+     * @param value1 The second value.
+     * @param value2 The third value.
+     */
+    XS_INLINE SIMD3(BaseDef value0, BaseDef value1, BaseDef value2) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            this->values = _mm_move_ss(value1.values, value0.values);
+            this->values = _mm_movelh_ps(this->values, value2.values);
+        } else
+#endif
+        {
+            this->values0 = value0.value;
+            this->values1 = value1.value;
+            this->values2 = value2.value;
+        }
+    }
+
+    /**
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
@@ -1035,7 +1056,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values = _mm_movelh_ps(other0.values, other1.values); //(x,0,1,0)
+            this->values = _mm_movelh_ps(other0.values, other1.values);
         } else
 #endif
         {

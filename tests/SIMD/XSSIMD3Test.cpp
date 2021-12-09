@@ -91,6 +91,9 @@ TYPED_TEST_NS2(SIMD3, TESTISA(SIMD3), SIMD3)
     TestType test5 = TestType(TestType::BaseDef(-2.15f));
     ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::width>), test5, -2.15f, -2.15f, -2.15f);
 
+    TestType test3a = TestType(TestType::BaseDef(5.234f), TestType::BaseDef(1.836f), TestType::BaseDef(-5.2789f));
+    ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::width>), test3a, 5.234f, 1.836f, -5.2789f);
+
     TestType test6 = TestType(TestType::InBaseDef(0.2f));
     ASSERT_PRED4((assertSIMD3<typename TestFixture::TypeInt, TestFixture::width>), test6, 0.2f, 0.2f, 0.2f);
 
