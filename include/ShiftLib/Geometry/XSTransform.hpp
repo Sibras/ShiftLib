@@ -316,6 +316,23 @@ public:
     XS_INLINE Transform& operator=(Transform&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Transform(const Transform<T, Width2>& other) noexcept
+    {
+        if constexpr (Matrix) {
+            this->data.matrix = Matrix4x3Def(other.data.matrix);
+        } else {
+            this->data.quaternion = QuaternionDef(other.data.quaternion);
+            this->data.translation = SIMD3Def(other.data.translation);
+            this->data.scale = BaseDef(other.data.scale);
+        }
+    }
+
+    /**
      * Construct a transform from a Matrix4x3.
      * @param matrix The new transform transform.
      */

@@ -146,6 +146,16 @@ public:
     XS_INLINE Range2& operator=(Range2&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Range2(const Range2<T, Width2>& other) noexcept
+        : minMax(other.minMax)
+    {}
+
+    /**
      * Construct a range2 from its member variables.
      * @param minMax The minimum 2 values followed by the maximum 2 values of the range.
      */

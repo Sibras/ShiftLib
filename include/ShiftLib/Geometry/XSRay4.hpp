@@ -78,6 +78,17 @@ public:
     XS_INLINE Ray4& operator=(Ray4&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Ray4(const Ray4<T, Width2>& other) noexcept
+        : origins(other.origins)
+        , directions(other.directions)
+    {}
+
+    /**
      * Construct a ray4 in structure of arrays format.
      * @param origins    The new origin values for the 4 rays.
      * @param directions The new direction values for the 4 rays.

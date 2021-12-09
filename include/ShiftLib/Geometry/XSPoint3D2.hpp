@@ -297,6 +297,16 @@ public:
     XS_INLINE Point3D2& operator=(Point3D2&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Point3D2(const Point3D2<T, Width2, Packed>& other) noexcept
+        : points(other.points)
+    {}
+
+    /**
      * Construct a point3d2 from a SIMD6.
      * @param values The SIMD6.
      */

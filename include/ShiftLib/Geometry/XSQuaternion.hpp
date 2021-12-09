@@ -175,6 +175,16 @@ public:
     XS_INLINE Quaternion& operator=(Quaternion&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Quaternion(const Quaternion<T, Width2>& other) noexcept
+        : values(other.values)
+    {}
+
+    /**
      * Construct a Quaternion from a SIMD4.
      * @param values Input SIMD4.
      */

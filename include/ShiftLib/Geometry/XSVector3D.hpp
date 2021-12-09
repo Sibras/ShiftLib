@@ -255,6 +255,16 @@ public:
     XS_INLINE Vector3D& operator=(Vector3D&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Vector3D(const Vector3D<T, Width2>& other) noexcept
+        : values(other.values)
+    {}
+
+    /**
      * Construct a 3-D vector from x, y, and z elements.
      * @param x The x value.
      * @param y The y value.

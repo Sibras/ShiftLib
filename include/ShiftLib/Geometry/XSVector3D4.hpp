@@ -309,6 +309,16 @@ public:
     XS_INLINE Vector3D4& operator=(Vector3D4&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Vector3D4(const Vector3D4<T, Width2, Packed>& other) noexcept
+        : vectors(other.vectors)
+    {}
+
+    /**
      * Construct a vector3d4 from 2 vector2s.
      * @param vector0 The first vector2.
      * @param vector1 The second vector2.

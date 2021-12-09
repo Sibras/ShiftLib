@@ -279,6 +279,16 @@ public:
     XS_INLINE Matrix4x3& operator=(Matrix4x3&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit Matrix4x3(const Matrix4x3<T, Width2>& other) noexcept
+        : columns(other.columns)
+    {}
+
+    /**
      * Construct a 4x3 matrix from a SIMD3x4.
      * @param values The 3 columns of the matrix.
      */

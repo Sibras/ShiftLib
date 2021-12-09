@@ -215,6 +215,17 @@ public:
     XS_INLINE AABoundingBox& operator=(AABoundingBox&& other) noexcept = default;
 
     /**
+     * Constructor.
+     * @tparam Width2 Type of SIMD being used.
+     * @param other The other.
+     */
+    template<SIMDWidth Width2>
+    XS_INLINE explicit AABoundingBox(const AABoundingBox<T, Width2>& other) noexcept
+        : minPoint(other.minPoint)
+        , maxPoint(other.maxPoint)
+    {}
+
+    /**
      * Construct a bounding box from its member variables.
      * @param minValues The new min values for the BB.
      * @param maxValues The new max values for the BB.
