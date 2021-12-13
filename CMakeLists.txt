@@ -128,6 +128,7 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArrayView.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSDArray.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSPArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSString.hpp>"
 )
 
@@ -240,6 +241,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/Memory/XSMemoryTest.cpp
         tests/Memory/XSArrayTest.cpp
         tests/Memory/XSDArrayTest.cpp
+        tests/Memory/XSPArrayTest.cpp
         tests/Memory/XSStringTest.cpp
     )
     

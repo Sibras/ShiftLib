@@ -33,8 +33,8 @@ public:
     using TypeConstIterator = typename IArray::TypeConstIterator;
     using TypeIteratorOffset = typename IArray::TypeIteratorOffset;
     using TypeConstIteratorOffset = typename IArray::TypeConstIteratorOffset;
-    using Handle = typename Alloc::Handle;
-    using Allocator = Alloc;
+    using Handle = typename IArray::Handle;
+    using Allocator = typename IArray::Allocator;
 
     T* XS_RESTRICT endAllocated = nullptr; /**< Pointer to end of allocated memory */
 
@@ -225,14 +225,10 @@ public:
 
     /**
      * Move assignment operator.
-     * @tparam T2     Type of element stored within array2.
-     * @tparam Alloc2 Type of allocator use to allocate elements of type T2.
      * @param array DArray object to assign to this one.
      * @return The result of the operation.
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowAssignable<T, T2>>>
-    XS_REQUIRES((isNothrowAssignable<T, T2>))
-    XS_INLINE DArray& operator=(DArray<T2, Alloc2>&& array) noexcept
+    XS_INLINE DArray& operator=(DArray&& array) noexcept
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         this->IArray::operator=(forward<IArray>(array));
@@ -242,10 +238,14 @@ public:
 
     /**
      * Move assignment operator.
+     * @tparam T2     Type of element stored within array2.
+     * @tparam Alloc2 Type of allocator use to allocate elements of type T2.
      * @param array DArray object to assign to this one.
      * @return The result of the operation.
      */
-    XS_INLINE DArray& operator=(DArray&& array) noexcept
+    template<typename T2, typename Alloc2, typename = require<isNothrowAssignable<T, T2>>>
+    XS_REQUIRES((isNothrowAssignable<T, T2>))
+    XS_INLINE DArray& operator=(DArray<T2, Alloc2>&& array) noexcept
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         this->IArray::operator=(forward<IArray>(array));

@@ -42,6 +42,9 @@ public:
 
     using Handle = AllocRegionHeapHandle<T, TAlign>;
 
+    template<typename T2, uint0 T2Align = 0>
+    using Allocator = AllocRegionHeap<T2, T2Align>;
+
     template<uint0 InputAlign, uint0 SystemAlign, typename T2>
     static constexpr T2 AlignTypeToSystem(const T2 size) noexcept
     {
@@ -234,6 +237,7 @@ class AllocRegionHeapHandle
 {
 public:
     using Allocator = AllocRegionHeap<T, TAlign>;
+
     static constexpr uint0 align = Allocator::align;
     static constexpr uint0 isResizable = true;
 

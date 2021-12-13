@@ -26,6 +26,9 @@ class AllocRegionStack
 {
 public:
     using Handle = AllocRegionStackHandle<T, Number>;
+
+    template<typename T2, uint0 Number2>
+    using Allocator = AllocRegionStack<T2, Number2>;
 };
 
 template<typename T, uint0 Number>

@@ -129,7 +129,6 @@ public:
     using IArray::cend;
     using IArray::findFirst;
     using IArray::findLast;
-    using IArray::getData;
     using IArray::getLength;
     using IArray::getSize;
     using IArray::indexOfFirst;
