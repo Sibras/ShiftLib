@@ -94,6 +94,10 @@ TYPED_TEST_NS2(Matrix4x4, TESTISA(M4x4), Matrix4x4)
     ASSERT_PRED10((assertMatrix3x3<typename TestFixture::TypeInt, TestType::Matrix3x3Def::widthImpl>), test2B, 11.1f,
         0.2f, 0.6f, -11.1f, 3.3f, -0.2f, 2.3f, -4.5f, 33.6f);
 
+    typename TestType::Matrix4x3Def test2C = TestType::Matrix4x3Def(test2);
+    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestType::Matrix4x3Def::widthImpl>), test2C, 11.1f,
+        0.2f, 0.6f, 9.1f, -11.1f, 3.3f, -0.2f, 2.8f, 2.3f, -4.5f, 33.6f, -92.1f);
+
     //  Preset Constructor Test
     TestType test4 = TestType::Identity();
     ASSERT_PRED17((assertMatrix4x4<typename TestFixture::TypeInt, TestFixture::width>), test4, 1.0f, 0.0f, 0.0f, 0.0f,

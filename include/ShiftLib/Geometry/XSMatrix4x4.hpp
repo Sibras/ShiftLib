@@ -430,12 +430,21 @@ public:
     }
 
     /**
-     * Construct from a Matrix4x4.
+     * Construct a Matrix3x3 from a Matrix4x4.
      * @return Newly constructed object.
      */
     XS_INLINE explicit operator Matrix3x3Def() const noexcept
     {
         return Matrix3x3Def(this->columns.template getValue3x4<0, 1, 2>().template getValue3x3<0, 1, 2>());
+    }
+
+    /**
+     * Construct a Matrix4x3 from a Matrix4x4.
+     * @return Newly constructed object.
+     */
+    XS_INLINE explicit operator Matrix4x3Def() const noexcept
+    {
+        return Matrix4x3Def(this->columns.template getValue3x4<0, 1, 2>());
     }
 
     /**
@@ -463,7 +472,7 @@ public:
     /**
      * Constructor to build a 4x4 Matrix with fixed uniform scale.
      * @param scale The amount to scale in the X/Y/Z direction.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix4x4 with required attributes.
      */
     XS_INLINE static Matrix4x4 UniformScale(InBaseDef scale) noexcept
     {

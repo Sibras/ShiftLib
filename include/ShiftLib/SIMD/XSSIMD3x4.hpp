@@ -2800,7 +2800,6 @@ public:
 
     /**
      * Transpose the internal SIMD3s.
-     * @note This assumes that the 4th elements of each SIMD3 are (0,0,0,1) respectively.
      * @returns A new SIMD12 corresponding to the transposed values.
      */
     XS_INLINE SIMD12Def transpose() const noexcept

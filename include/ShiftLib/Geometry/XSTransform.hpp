@@ -275,14 +275,14 @@ public:
     using SIMD3Def = typename InternalData::SIMD3Def;
     using Point3DDef = Point3D<T, widthImpl>;
     template<bool Packed>
-    using Point3D2Def = Point3D2<T, widthImpl, Packed>;
+    using Point3D2Def = Point3D2<T, Packed, widthImpl>;
     template<bool Packed>
-    using Point3D4Def = Point3D4<T, widthImpl, Packed>;
+    using Point3D4Def = Point3D4<T, Packed, widthImpl>;
     using Vector3DDef = Vector3D<T, widthImpl>;
     template<bool Packed>
-    using Vector3D2Def = Vector3D2<T, widthImpl, Packed>;
+    using Vector3D2Def = Vector3D2<T, Packed, widthImpl>;
     template<bool Packed>
-    using Vector3D4Def = Vector3D4<T, widthImpl, Packed>;
+    using Vector3D4Def = Vector3D4<T, Packed, widthImpl>;
 
     InternalData data;
 
@@ -321,7 +321,7 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_INLINE explicit Transform(const Transform<T, Width2>& other) noexcept
+    XS_INLINE explicit Transform(const Transform<T, Matrix, Width2>& other) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix = Matrix4x3Def(other.data.matrix);

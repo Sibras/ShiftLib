@@ -62,11 +62,8 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
     ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
-    typename TestType::Matrix4x4Def mx4Test2 = TestType::Matrix4x4Def(TestType::SIMD4Def(11.1f, -11.1f, 2.3f, 8.0f),
-        TestType::SIMD4Def(0.2f, 3.3f, -4.5f, 9.0f), TestType::SIMD4Def(0.6f, -0.2f, 33.6f, 2.0f),
-        TestType::SIMD4Def(9.1f, 2.8f, -92.1f, 4.0f));
-
-    TestType test2 = TestType(mx4Test2);
+    TestType test2 = TestType(TestType::SIMD3Def(11.1f, -11.1f, 2.3f), TestType::SIMD3Def(0.2f, 3.3f, -4.5f),
+        TestType::SIMD3Def(0.6f, -0.2f, 33.6f), TestType::SIMD3Def(9.1f, 2.8f, -92.1f));
     ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test2, 11.1f, 0.2f, 0.6f, 9.1f,
         -11.1f, 3.3f, -0.2f, 2.8f, 2.3f, -4.5f, 33.6f, -92.1f);
 
@@ -293,23 +290,16 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
         test2.transformTransposed(testPoint3), 0.0473674f, 0.0571539f, -0.323355f);
 
     //  Conversion Test
-    typename TestType::Matrix4x4Def mx44Test16 = test2.transpose();
-    ASSERT_PRED17((assertMatrix4x4<typename TestFixture::TypeInt, TestType::Matrix4x4Def::width>), mx44Test16, 11.1f,
-        -11.1f, 2.3f, 0.0f, 0.2f, 3.3f, -4.5f, 0.0f, 0.6f, -0.2f, 33.6f, 0.0f, 9.1f, 2.8f, -92.1f, 1.0f);
-
     ASSERT_PRED4((assertVector3D<typename TestFixture::TypeInt, TestType::Vector3DDef::width>),
-        mx44Test16.transform(testVec1), 82.7f, -16.3f, 240.4f);
+        test2.transformTransposed(testVec1), 82.7f, -16.3f, 240.4f);
 
     ASSERT_PRED4((assertPoint3D<typename TestFixture::TypeInt, TestType::Point3DDef::width>),
-        mx44Test16.transform(testPoint3), 0.0473674f, 0.0571539f, -0.323355f);
+        test2.transformTransposed(testPoint3), 0.0473674f, 0.0571539f, -0.323355f);
 
     TestType test17 = test2.inverse();
     ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test17, 0.0832744f,
         -0.00713261f, -0.0015295f, -0.878693f, 0.282049f, 0.281352f, -0.00336187f, -3.66406f, 0.032074f, 0.0381693f,
         0.0294164f, 2.3105f);
-
-    ASSERT_PRED2(
-        (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), mx4Test2.determinant(), -41450.1f);
 
     ASSERT_PRED2(
         (assertSIMDBase<typename TestFixture::TypeInt, TestType::BaseDef::width>), test2.determinant(), 1320.69f);

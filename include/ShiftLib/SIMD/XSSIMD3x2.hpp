@@ -910,11 +910,11 @@ public:
             }
         } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-                this->values = _mm256_set_ps(T{0}, other.values5, other.values4, other.values3, T{0}, other.values2,
+                this->values = _mm256_set_ps(0.0f, other.values5, other.values4, other.values3, 0.0f, other.values2,
                     other.values1, other.values0);
             } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-                this->values0 = _mm_set_ps(T{0}, other.values2, other.values1, other.values0);
-                this->values1 = _mm_set_ps(T{0}, other.values5, other.values4, other.values3);
+                this->values0 = _mm_set_ps(0.0f, other.values2, other.values1, other.values0);
+                this->values1 = _mm_set_ps(0.0f, other.values5, other.values4, other.values3);
             }
         } else if constexpr (Width2 > SIMDWidth::Scalar) {
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width2 >= SIMDWidth::B32)) {

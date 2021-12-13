@@ -21,8 +21,6 @@
 namespace Shift {
 template<typename T, SIMDWidth Width>
 class Matrix4x3;
-template<typename T, SIMDWidth Width>
-class Matrix4x4;
 
 template<typename T>
 class Matrix4x3Data
@@ -243,7 +241,6 @@ public:
     using Vector3D2Def = Vector3D2<T, Packed, Vector3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
     using Vector3D4Def = Vector3D4<T, Packed, Vector3D4<T, Packed, widthImpl>::widthImpl>;
-    using Matrix4x4Def = Matrix4x4<T, Matrix4x4<T, widthImpl>::widthImpl>;
     using Matrix3x3Def = Matrix3x3<T, Matrix3x3<T, widthImpl>::widthImpl>;
     using QuaternionDef = Quaternion<T, Quaternion<T, widthImpl>::widthImpl>;
 
@@ -327,14 +324,6 @@ public:
         T col2Row2, T col3Row0, T col3Row1, T col3Row2) noexcept
         : columns(col0Row0, col0Row1, col0Row2, col1Row0, col1Row1, col1Row2, col2Row0, col2Row1, col2Row2, col3Row0,
               col3Row1, col3Row2)
-    {}
-
-    /**
-     * Construct from a Matrix4x4.
-     * @param matrix Reference to matrix to copy.
-     */
-    XS_INLINE explicit Matrix4x3(const Matrix4x4Def& matrix) noexcept
-        : columns(matrix.columns.template getValue3x4<0, 1, 2>())
     {}
 
     /**
@@ -524,7 +513,7 @@ public:
     /**
      * Get a column of a Matrix4x3.
      * @tparam Index The index of the column to retrieve (must be between 0 and 3).
-     * @returns SIMD3Defcontaining the desired values.
+     * @returns SIMD3Def containing the desired values.
      */
     template<uint32_t Index>
     XS_INLINE SIMD3Def getColumn() const noexcept
@@ -542,7 +531,7 @@ public:
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
         // Note: this is not well optimised as it is only intended for viewing contents
-        return this->transpose().columns.template getValue4<Index>();
+        return this->columns.transpose().template getValue4<Index>();
     }
 
     /**
@@ -754,7 +743,11 @@ public:
      */
     XS_INLINE Point3DDef transformTransposed(const Point3DDef& point) const noexcept
     {
-        return this->transpose().transform(point);
+        auto transpose = this->columns.transpose();
+        SIMD4Def ret(transpose.template getValue4<0>() * point.template getValue<0>());
+        ret = transpose.template getValue4<1>().template mad<false>(point.template getValue<1>(), ret);
+        ret = transpose.template getValue4<2>().template mad<false>(point.template getValue<2>(), ret);
+        return Point3DDef(ret.template getValue3<0, 1, 2>() / (ret.template getValue<3>() + SIMD4Def::BaseDef::One()));
     }
 
     /**
@@ -764,17 +757,12 @@ public:
      */
     XS_INLINE Vector3DDef transformTransposed(const Vector3DDef& vector) const noexcept
     {
-        return this->transpose().transform(vector);
-    }
-
-    /**
-     * Determine the transpose of a matrix.
-     * @returns A new transposed matrix.
-     */
-    XS_INLINE Matrix4x4Def transpose() const noexcept
-    {
-        return Matrix4x4Def(Matrix4x4Def::SIMD4x4Def(
-            this->columns.transpose(), Matrix4x4Def::SIMD4x4Def::SIMD4Def(0.0f, 0.0f, 0.0f, 1.0f)));
+        auto transpose = this->columns.transpose();
+        SIMD3Def ret(transpose.template getValue4<0>().template getValue3<0, 1, 2>() * vector.template getValue<0>());
+        ret = transpose.template getValue4<1>().template getValue3<0, 1, 2>().template mad<false>(
+            vector.template getValue<1>(), ret);
+        return Vector3DDef(transpose.template getValue4<2>().template getValue3<0, 1, 2>().template mad<false>(
+            vector.template getValue<2>(), ret));
     }
 
     /**
@@ -924,12 +912,12 @@ public:
      */
     XS_INLINE Matrix4x3 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
     {
-        using SIMD4x2Def = typename Matrix4x4Def::SIMD4x4Def::SIMD8Def;
+        using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
         const BaseDef3 sin(sincos(rotation, cos));
-        typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
+        auto ret(this->columns.transpose());
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<1, 2>(
                 ret.template getValue4x2<1, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
@@ -941,7 +929,7 @@ public:
                 ret.template getValue4x2<1, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<2, 1>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<true, false>())));
         }
-        return Matrix4x3(Matrix4x4Def(ret).transpose());
+        return Matrix4x3(SIMD3x4Def(ret));
     }
 
     /**
@@ -951,12 +939,12 @@ public:
      */
     XS_INLINE Matrix4x3 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
     {
-        using SIMD4x2Def = typename Matrix4x4Def::SIMD4x4Def::SIMD8Def;
+        using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
         const BaseDef3 sin(sincos(rotation, cos));
-        typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
+        auto ret(this->columns.transpose());
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<0, 2>(
                 ret.template getValue4x2<0, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
@@ -968,7 +956,7 @@ public:
                 ret.template getValue4x2<0, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<2, 0>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<false, true>())));
         }
-        return Matrix4x3(Matrix4x4Def(ret).transpose());
+        return Matrix4x3(SIMD3x4Def(ret));
     }
 
     /**
@@ -978,12 +966,12 @@ public:
      */
     XS_INLINE Matrix4x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
     {
-        using SIMD4x2Def = typename Matrix4x4Def::SIMD4x4Def::SIMD8Def;
+        using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
         // Use R*M = transpose(transpose(M)*transpose(R))
         BaseDef3 cos;
         const BaseDef3 sin(sincos(rotation, cos));
-        typename Matrix4x4Def::SIMD4x4Def ret(this->transpose().columns);
+        auto ret(this->columns.transpose());
         if constexpr (widthImpl > SIMDWidth::Scalar) {
             ret.template setValue4x2<0, 1>(
                 ret.template getValue4x2<0, 1>().template mad<false>(SIMD4x2Def::BaseDef(cos),
@@ -995,7 +983,7 @@ public:
                 ret.template getValue4x2<0, 1>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<1, 0>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<true, false>())));
         }
-        return Matrix4x3(Matrix4x4Def(ret).transpose());
+        return Matrix4x3(SIMD3x4Def(ret));
     }
 
     /**

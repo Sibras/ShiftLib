@@ -404,16 +404,16 @@ public:
         } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B64)) {
                 this->values =
-                    _mm512_set_ps(T{0}, T{0}, T{0}, T{0}, T{0}, other.values8, other.values7, other.values6, T{0},
-                        other.values5, other.values4, other.values3, T{0}, other.values2, other.values1, other.values0);
+                    _mm512_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, other.values8, other.values7, other.values6, 0.0f,
+                        other.values5, other.values4, other.values3, 0.0f, other.values2, other.values1, other.values0);
             } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width == SIMDWidth::B32)) {
-                this->values0 = _mm256_set_ps(T{0}, other.values5, other.values4, other.values3, 0.0f, other.values2,
+                this->values0 = _mm256_set_ps(0.0f, other.values5, other.values4, other.values3, 0.0f, other.values2,
                     other.values1, other.values0);
-                this->values1 = _mm_set_ps(T{0}, other.values8, other.values7, other.values6);
+                this->values1 = _mm_set_ps(0.0f, other.values8, other.values7, other.values6);
             } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width == SIMDWidth::B16)) {
-                this->values0 = _mm_set_ps(T{0}, other.values2, other.values1, other.values0);
-                this->values1 = _mm_set_ps(T{0}, other.values5, other.values4, other.values3);
-                this->values2 = _mm_set_ps(T{0}, other.values8, other.values7, other.values6);
+                this->values0 = _mm_set_ps(0.0f, other.values2, other.values1, other.values0);
+                this->values1 = _mm_set_ps(0.0f, other.values5, other.values4, other.values3);
+                this->values2 = _mm_set_ps(0.0f, other.values8, other.values7, other.values6);
             }
         } else if constexpr (Width2 > SIMDWidth::Scalar) {
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width2 >= SIMDWidth::B64)) {
