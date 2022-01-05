@@ -512,7 +512,7 @@ public:
                             _mm256_castsi256_si128(norm), _MM_SHUFFLE(2, 3, 0, 1)));
                 } else if constexpr (hasISAFeature<ISAFeature::AVX2>) {
                     // Swap holds a 1 (or 4 in non AVX) if the mask is positive or 0 if it is negative. When Norm is
-                    // Xored with 0 it has no effect but the binary xor with 1 results in the sequence 2,3,0,1 which is
+                    // Xor with 0 it has no effect but the binary xor with 1 results in the sequence 2,3,0,1 which is
                     // what we want in order to swap the top and bottom half
                     const __m256i norm = _mm256_set_epi32(3, 2, 1, 0, 3, 2, 1, 0);
                     const __m256i swap = _mm256_and_si256(
@@ -524,9 +524,9 @@ public:
                 } else {
                     const __m128i norm = _mm_set_epi32(3, 2, 1, 0);
                     const __m128i swap = _mm_shuffle1111_epi32(norm);
-                    const __m256i maski = _mm256_castps_si256(mask.values);
-                    const __m128i swap1 = _mm_and_si128(swap, _mm256_castsi256_si128(maski));
-                    const __m128i swap2 = _mm_and_si128(swap, _mm256_extractf128_si256(maski, 1));
+                    const __m256i maskI = _mm256_castps_si256(mask.values);
+                    const __m128i swap1 = _mm_and_si128(swap, _mm256_castsi256_si128(maskI));
+                    const __m128i swap2 = _mm_and_si128(swap, _mm256_extractf128_si256(maskI, 1));
                     return Shuffle(
                         _mm256_insertf128_si256(_mm256_castsi128_si256(_mm_xor_si128(
                                                     _mm_shuffle_epi32(swap1, _MM_SHUFFLE(1, 1, 0, 0)), norm)),
@@ -626,7 +626,7 @@ public:
                             _mm256_castsi256_si128(norm), _MM_SHUFFLE(1, 0, 3, 2)));
                 } else if constexpr (hasISAFeature<ISAFeature::AVX2>) {
                     // Swap holds a 2 (or 8 in non AVX) if the mask is positive or 0 if it is negative. When Norm is
-                    // Xored with 0 it has no effect but the binary xor with 2 results in the sequence 1,0,3,2 which is
+                    // Xor with 0 it has no effect but the binary xor with 2 results in the sequence 1,0,3,2 which is
                     // what we want in order to swap the top and bottom half
                     const __m256i norm = _mm256_set_epi32(3, 2, 1, 0, 3, 2, 1, 0);
                     __m128i swap = _mm_shuffle2222_epi32(_mm256_castsi256_si128(norm));
@@ -844,7 +844,7 @@ public:
      * @param value5  The sixth value.
      * @param value6  The seventh value.
      * @param value7  The eighth value.
-     * @param value12 The ninth value.
+     * @param value8  The ninth value.
      * @param value9  The tenth value.
      * @param value10 The eleventh value.
      * @param value11 The twelfth value.
@@ -4304,26 +4304,6 @@ public:
     }
 
     /**
-     * Returns binary logarithm of each element in the object.
-     * @returns Object containing the binary logarithm of the input.
-     */
-    XS_INLINE SIMD12 log2() const noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD12(NoExport::log2f16(this->values));
-        } else if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B32)) {
-        } else if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B16)) {
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B16)) {
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        } else
-#endif
-        {
-        }
-    }
-
-    /**
      * Extracts an element from a object at an index and inserts it into another object at a specified index. This
      * performs the same operation on each internal SIMD2.
      * @tparam Index0 The index in the first object to insert the element (range is 0-1).
@@ -4456,14 +4436,19 @@ public:
         } else
 #endif
         {
-            return SIMD12(SIMD3Def(this->values0, this->values4, this->values8)
-                              .template insert<Index0, Index1>(SIMD3Def(other.values0, other.values4, other.values8)),
-                SIMD3Def(this->values1, this->values5, this->values9)
-                    .template insert<Index0, Index1>(SIMD3Def(other.values1, other.values5, other.values9)),
-                SIMD3Def(this->values2, this->values6, this->values10)
-                    .template insert<Index0, Index1>(SIMD3Def(other.values2, other.values6, other.values10)),
-                SIMD3Def(this->values3, this->values7, this->values11)
-                    .template insert<Index0, Index1>(SIMD3Def(other.values3, other.values7, other.values11)));
+
+            return SIMD12(Index0 != 0 ? this->values0 : (&other.values0)[Index1 * 4],
+                Index0 != 0 ? this->values1 : (&other.values0)[Index1 * 4 + 1],
+                Index0 != 0 ? this->values2 : (&other.values0)[Index1 * 4 + 2],
+                Index0 != 0 ? this->values3 : (&other.values0)[Index1 * 4 + 3],
+                Index0 != 1 ? this->values4 : (&other.values0)[Index1 * 4],
+                Index0 != 1 ? this->values5 : (&other.values0)[Index1 * 4 + 1],
+                Index0 != 1 ? this->values6 : (&other.values0)[Index1 * 4 + 2],
+                Index0 != 1 ? this->values7 : (&other.values0)[Index1 * 4 + 3],
+                Index0 != 2 ? this->values8 : (&other.values0)[Index1 * 4],
+                Index0 != 2 ? this->values9 : (&other.values0)[Index1 * 4 + 1],
+                Index0 != 2 ? this->values10 : (&other.values0)[Index1 * 4 + 2],
+                Index0 != 2 ? this->values11 : (&other.values0)[Index1 * 4 + 3]);
         }
     }
 

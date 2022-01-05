@@ -251,9 +251,9 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool2<true>(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool2(static_cast<uint8>(_cvtmask8_u32(this->values)));
                 } else {
-                    return Bool2<true>(static_cast<uint8>(_mm_movemask_ps(this->values)));
+                    return Bool2(static_cast<uint8>(_mm_movemask_ps(this->values)));
                 }
             } else
 #endif
@@ -368,7 +368,7 @@ public:
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask2Function(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -413,12 +413,12 @@ public:
          *  void finalExpression(const MaskType& final) {
          *      Masker::toType(m_return) = final; }
          *  };
-         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).mask3ElseFunction<SRGBToRGBMask>(maskFunction);
+         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).maskElseFunction<SRGBToRGBMask>(maskFunction);
          * @tparam MaskOperator The masking function type.
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask2ElseFunction(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskElseFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -429,12 +429,12 @@ public:
             } else
 #endif
             {
-                auto val = (this->values0) ? maskFunc.template expression1<InBaseDef, SIMDMasker2<T, Width, 0>>() :
-                                             maskFunc.template expression2<InBaseDef, SIMDMasker2<T, Width, 0>>();
-                maskFunc.template finalExpression<InBaseDef, SIMDMasker2<T, Width, 0>>(val);
-                val = (this->values1) ? maskFunc.template expression1<InBaseDef, SIMDMasker2<T, Width, 1>>() :
-                                        maskFunc.template expression2<InBaseDef, SIMDMasker2<T, Width, 1>>();
-                maskFunc.template finalExpression<InBaseDef, SIMDMasker2<T, Width, 1>>(val);
+                auto val = (this->values0) ? maskFunc.template expression1<InBaseDef, SIMDMasker2<0>>() :
+                                             maskFunc.template expression2<InBaseDef, SIMDMasker2<0>>();
+                maskFunc.template finalExpression<InBaseDef, SIMDMasker2<0>>(val);
+                val = (this->values1) ? maskFunc.template expression1<InBaseDef, SIMDMasker2<1>>() :
+                                        maskFunc.template expression2<InBaseDef, SIMDMasker2<1>>();
+                maskFunc.template finalExpression<InBaseDef, SIMDMasker2<1>>(val);
             }
         }
 

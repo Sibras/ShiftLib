@@ -279,7 +279,7 @@ public:
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
     using InternalData::SIMDData;
 
-    /** Tri Mask object used to store 3 different masks at once. */
+    /** Mask object used to store 3 different masks at once. */
     class Mask : public NoExport::SIMDMaskData<T, 3, 0, Width>
     {
     public:
@@ -380,9 +380,9 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool3<true>(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool3(static_cast<uint8>(_cvtmask8_u32(this->values)));
                 } else {
-                    return Bool3<true>(static_cast<uint8>(_mm_movemask_ps(this->values)));
+                    return Bool3(static_cast<uint8>(_mm_movemask_ps(this->values)));
                 }
             } else
 #endif
@@ -498,7 +498,7 @@ public:
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask3Function(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -547,12 +547,12 @@ public:
          *  void finalExpression(const MaskType& final) {
          *      Masker::toType(m_return) = final; }
          *  };
-         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).mask3ElseFunction<SRGBToRGBMask>(maskFunction);
+         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).maskElseFunction<SRGBToRGBMask>(maskFunction);
          * @tparam MaskOperator The masking function type.
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask3ElseFunction(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskElseFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -666,7 +666,7 @@ public:
         }
     };
 
-    /** Tri shuffle class used to store shuffle information for SIMD3s. */
+    /** Shuffle class used to store shuffle information for SIMD3s. */
     class Shuffle : public NoExport::SIMDShuffleData<T, 3, 0, Width>
     {
     public:
@@ -707,29 +707,29 @@ public:
 
         /**
          * Construct a shuffle from its member variables.
-         * @param shuff0 Input integer representation of the first shuffle value (must be between 0 and 2).
-         * @param shuff1 Input integer representation of the second shuffle value (must be between 0 and 2).
-         * @param shuff2 Input integer representation of the third shuffle value (must be between 0 and 2).
+         * @param shuffle0 Input integer representation of the first shuffle value (must be between 0 and 2).
+         * @param shuffle1 Input integer representation of the second shuffle value (must be between 0 and 2).
+         * @param shuffle2 Input integer representation of the third shuffle value (must be between 0 and 2).
          */
-        XS_INLINE Shuffle(uint32 shuff0, uint32 shuff1, uint32 shuff2) noexcept
+        XS_INLINE Shuffle(uint32 shuffle0, uint32 shuffle1, uint32 shuffle2) noexcept
         {
-            XS_ASSERT(shuff0 < 3);
-            XS_ASSERT(shuff1 < 3);
-            XS_ASSERT(shuff2 < 3);
+            XS_ASSERT(shuffle0 < 3);
+            XS_ASSERT(shuffle1 < 3);
+            XS_ASSERT(shuffle2 < 3);
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
-                    this->values = _mm_set_epi32(3, shuff2, shuff1, shuff0);
+                    this->values = _mm_set_epi32(3, shuffle2, shuffle1, shuffle0);
                 } else {
-                    this->values = _mm_set_epi32(3, (shuff2 * 0x04040404) + 0x03020100,
-                        (shuff1 * 0x04040404) + 0x03020100, (shuff0 * 0x04040404) + 0x03020100);
+                    this->values = _mm_set_epi32(3, (shuffle2 * 0x04040404) + 0x03020100,
+                        (shuffle1 * 0x04040404) + 0x03020100, (shuffle0 * 0x04040404) + 0x03020100);
                 }
             } else
 #endif
             {
-                this->values0 = shuff0;
-                this->values1 = shuff1;
-                this->values2 = shuff2;
+                this->values0 = shuffle0;
+                this->values1 = shuffle1;
+                this->values2 = shuffle2;
             }
         }
 
@@ -801,7 +801,7 @@ public:
          * @param rotate Number of times to rotate (must be between 0 and 2).
          * @returns Newly constructed Shuffle with required attributes.
          */
-        XS_INLINE static Shuffle RotateLeft(uint32 rotate) noexcept
+        XS_INLINE static Shuffle RotateLeft(const uint32 rotate) noexcept
         {
             XS_ASSERT(rotate < 3);
 #if XS_ISA == XS_X86
@@ -842,7 +842,7 @@ public:
          * @param rotate Number of times to rotate (must be between 0 and 2).
          * @returns Newly constructed Shuffle with required attributes.
          */
-        XS_INLINE static Shuffle RotateRight(uint32 rotate) noexcept
+        XS_INLINE static Shuffle RotateRight(const uint32 rotate) noexcept
         {
             XS_ASSERT(rotate < 3);
 #if XS_ISA == XS_X86
@@ -1098,7 +1098,7 @@ public:
      * @param other1 The new value to insert.
      * @param index  The position to insert the new value (must be between 0 and 2).
      */
-    XS_INLINE SIMD3(const SIMD2Def& other0, InBaseDef other1, uint32 index) noexcept
+    XS_INLINE SIMD3(const SIMD2Def& other0, InBaseDef other1, const uint32 index) noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
@@ -2673,9 +2673,8 @@ public:
             } else if constexpr (Index0 >= 3 && Index1 < 3 && Index2 >= 3) {
                 if constexpr (Index1 == 1) {
                     return SIMD3(_mm_blend_ps(this->values,
-                        (other.shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3,
-                                  Index2 - 3>()
-                                .values),
+                        other.shuffle<Index0 - 3, (XS_SHUFF128_DONTCARE_1_02(Index0 - 3, Index2 - 3)) % 3, Index2 - 3>()
+                            .values,
                         _MM_BLEND(0, 1, 0, 1)));
                 } else {
                     return SIMD3(_mm_shuffle_ps(
@@ -2685,8 +2684,8 @@ public:
             } else if constexpr (Index0 < 3 && Index1 >= 3 && Index2 >= 3) {
                 if constexpr (Index0 == 0) {
                     return SIMD3(_mm_blend_ps(this->values,
-                        (other.shuffle<XS_SHUFF128_DONTCARE_0_12(Index1 - 3, Index2 - 3), Index1 - 3, Index2 - 3>()
-                                .values),
+                        other.shuffle<XS_SHUFF128_DONTCARE_0_12(Index1 - 3, Index2 - 3), Index1 - 3, Index2 - 3>()
+                            .values,
                         _MM_BLEND(0, 1, 1, 0)));
                 } else {
                     return SIMD3(_mm_shuffle_ps(

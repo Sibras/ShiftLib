@@ -411,16 +411,16 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool8<true>(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool8(static_cast<uint8>(_cvtmask8_u32(this->values)));
                 } else {
-                    return Bool8<true>(static_cast<uint8>(_mm256_movemask_ps(this->values)));
+                    return Bool8(static_cast<uint8>(_mm256_movemask_ps(this->values)));
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool8<true>(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
+                    return Bool8(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
                         static_cast<uint8>(_cvtmask8_u32(this->values1)));
                 } else {
-                    return Bool8<true>(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
+                    return Bool8(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
                         static_cast<uint8>(_mm_movemask_ps(this->values1)));
                 }
             } else
@@ -559,7 +559,7 @@ public:
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask8Function(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
@@ -639,12 +639,12 @@ public:
          *  void finalExpression(const MaskType& final) {
          *      Masker::toType(m_return) = final; }
          *  };
-         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).mask3ElseFunction<SRGBToRGBMask>(maskFunction);
+         *  SRGB.lessOrEqualMask(BaseDef(0.04045)).maskElseFunction<SRGBToRGBMask>(maskFunction);
          * @tparam MaskOperator The masking function type.
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask8ElseFunction(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskElseFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -843,52 +843,53 @@ public:
 
         /**
          * Construct a shuffle from its member variables.
-         * @param shuff0 Input integer representation of the first shuffle value (must be between 0 and 7).
-         * @param shuff1 Input integer representation of the second shuffle value (must be between 0 and 7).
-         * @param shuff2 Input integer representation of the third shuffle value (must be between 0 and 7).
-         * @param shuff3 Input integer representation of the fourth shuffle value (must be between 0 and 7).
-         * @param shuff4 Input integer representation of the fifth shuffle value (must be between 0 and 7).
-         * @param shuff5 Input integer representation of the sixth shuffle value (must be between 0 and 7).
-         * @param shuff6 Input integer representation of the seventh shuffle value (must be between 0 and 7).
-         * @param shuff7 Input integer representation of the eighth shuffle value (must be between 0 and 7).
+         * @param shuffle0 Input integer representation of the first shuffle value (must be between 0 and 7).
+         * @param shuffle1 Input integer representation of the second shuffle value (must be between 0 and 7).
+         * @param shuffle2 Input integer representation of the third shuffle value (must be between 0 and 7).
+         * @param shuffle3 Input integer representation of the fourth shuffle value (must be between 0 and 7).
+         * @param shuffle4 Input integer representation of the fifth shuffle value (must be between 0 and 7).
+         * @param shuffle5 Input integer representation of the sixth shuffle value (must be between 0 and 7).
+         * @param shuffle6 Input integer representation of the seventh shuffle value (must be between 0 and 7).
+         * @param shuffle7 Input integer representation of the eighth shuffle value (must be between 0 and 7).
          */
-        XS_INLINE Shuffle(uint32 shuff0, uint32 shuff1, uint32 shuff2, uint32 shuff3, uint32 shuff4, uint32 shuff5,
-            uint32 shuff6, uint32 shuff7) noexcept
+        XS_INLINE Shuffle(uint32 shuffle0, uint32 shuffle1, uint32 shuffle2, uint32 shuffle3, uint32 shuffle4,
+            uint32 shuffle5, uint32 shuffle6, uint32 shuffle7) noexcept
         {
-            XS_ASSERT(shuff0 < 8);
-            XS_ASSERT(shuff1 < 8);
-            XS_ASSERT(shuff2 < 8);
-            XS_ASSERT(shuff3 < 8);
-            XS_ASSERT(shuff4 < 8);
-            XS_ASSERT(shuff5 < 8);
-            XS_ASSERT(shuff6 < 8);
-            XS_ASSERT(shuff7 < 8);
+            XS_ASSERT(shuffle0 < 8);
+            XS_ASSERT(shuffle1 < 8);
+            XS_ASSERT(shuffle2 < 8);
+            XS_ASSERT(shuffle3 < 8);
+            XS_ASSERT(shuffle4 < 8);
+            XS_ASSERT(shuffle5 < 8);
+            XS_ASSERT(shuffle6 < 8);
+            XS_ASSERT(shuffle7 < 8);
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-                this->values = _mm256_set_epi32(shuff7, shuff6, shuff5, shuff4, shuff3, shuff2, shuff1, shuff0);
+                this->values =
+                    _mm256_set_epi32(shuffle7, shuffle6, shuffle5, shuffle4, shuffle3, shuffle2, shuffle1, shuffle0);
             } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
-                    this->values0 = _mm_set_epi32(shuff3, shuff2, shuff1, shuff0);
-                    this->values1 = _mm_set_epi32(shuff7, shuff6, shuff5, shuff4);
+                    this->values0 = _mm_set_epi32(shuffle3, shuffle2, shuffle1, shuffle0);
+                    this->values1 = _mm_set_epi32(shuffle7, shuffle6, shuffle5, shuffle4);
                 } else {
                     this->values0 =
-                        _mm_set_epi32((shuff3 * 0x04040404) + 0x03020100, (shuff2 * 0x04040404) + 0x03020100,
-                            (shuff1 * 0x04040404) + 0x03020100, (shuff0 * 0x04040404) + 0x03020100);
+                        _mm_set_epi32((shuffle3 * 0x04040404) + 0x03020100, (shuffle2 * 0x04040404) + 0x03020100,
+                            (shuffle1 * 0x04040404) + 0x03020100, (shuffle0 * 0x04040404) + 0x03020100);
                     this->values1 =
-                        _mm_set_epi32((shuff7 * 0x04040404) + 0x03020100, (shuff6 * 0x04040404) + 0x03020100,
-                            (shuff5 * 0x04040404) + 0x03020100, (shuff4 * 0x04040404) + 0x03020100);
+                        _mm_set_epi32((shuffle7 * 0x04040404) + 0x03020100, (shuffle6 * 0x04040404) + 0x03020100,
+                            (shuffle5 * 0x04040404) + 0x03020100, (shuffle4 * 0x04040404) + 0x03020100);
                 }
             } else
 #endif
             {
-                this->values0 = shuff0;
-                this->values1 = shuff1;
-                this->values2 = shuff2;
-                this->values3 = shuff3;
-                this->values4 = shuff4;
-                this->values5 = shuff5;
-                this->values6 = shuff6;
-                this->values7 = shuff7;
+                this->values0 = shuffle0;
+                this->values1 = shuffle1;
+                this->values2 = shuffle2;
+                this->values3 = shuffle3;
+                this->values4 = shuffle4;
+                this->values5 = shuffle5;
+                this->values6 = shuffle6;
+                this->values7 = shuffle7;
             }
         }
 
@@ -2873,11 +2874,12 @@ public:
             return SIMD8(_mm_min_ps(this->values0, other.values), _mm_min_ps(this->values1, other.values));
         } else
 #endif
+        {
             return SIMD8(Shift::min<T>(this->values0, other.value), Shift::min<T>(this->values1, other.value),
                 Shift::min<T>(this->values2, other.value), Shift::min<T>(this->values3, other.value),
                 Shift::min<T>(this->values4, other.value), Shift::min<T>(this->values5, other.value),
                 Shift::min<T>(this->values6, other.value), Shift::min<T>(this->values7, other.value));
-        {}
+        }
     }
 
     /**
@@ -4202,10 +4204,10 @@ public:
                 return SIMD8(_mm256_permutevar8x32_ps(this->values, shuffle.values));
             } else {
                 const __m256i lanes = _mm256_cmpgt_epi32(shuffle.values, _mm256_set1_epi32(0x3));
-                const __m256i shuff0 = _mm256_andnot_si256(lanes, shuffle.values);
-                const __m256i shuff1 = _mm256_and_si256(lanes, shuffle.values);
-                const __m256 low = _mm256_permutevar_ps(_mm256_shuffle32103210_ps(this->values), shuff0);
-                const __m256 hi = _mm256_permutevar_ps(_mm256_shuffle76547654_ps(this->values), shuff1);
+                const __m256i shuffle0 = _mm256_andnot_si256(lanes, shuffle.values);
+                const __m256i shuffle1 = _mm256_and_si256(lanes, shuffle.values);
+                const __m256 low = _mm256_permutevar_ps(_mm256_shuffle32103210_ps(this->values), shuffle0);
+                const __m256 hi = _mm256_permutevar_ps(_mm256_shuffle76547654_ps(this->values), shuffle1);
                 return SIMD8(_mm256_blendv_ps(low, hi, _mm256_castsi256_ps(lanes)));
             }
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
@@ -4219,10 +4221,10 @@ public:
                     res = _mm256_permutevar8x32_ps(val0, val1);
                 } else {
                     const __m256i lanes = _mm256_cmpgt_epi32(val1, _mm256_set1_epi32(0x3));
-                    const __m256i shuff0 = _mm256_andnot_si256(lanes, val1);
-                    const __m256i shuff1 = _mm256_and_si256(lanes, val1);
-                    const __m256 low = _mm256_permutevar_ps(_mm256_shuffle32103210_ps(val0), shuff0);
-                    const __m256 hi = _mm256_permutevar_ps(_mm256_shuffle76547654_ps(val0), shuff1);
+                    const __m256i shuffle0 = _mm256_andnot_si256(lanes, val1);
+                    const __m256i shuffle1 = _mm256_and_si256(lanes, val1);
+                    const __m256 low = _mm256_permutevar_ps(_mm256_shuffle32103210_ps(val0), shuffle0);
+                    const __m256 hi = _mm256_permutevar_ps(_mm256_shuffle76547654_ps(val0), shuffle1);
                     res = _mm256_blendv_ps(low, hi, _mm256_castsi256_ps(lanes));
                 }
                 return SIMD8(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -4233,14 +4235,14 @@ public:
                 const __m128i lanes0 = _mm_cmpgt_epi32(shuffle.values0, lanes);
                 const __m128i lanes1 = _mm_cmpgt_epi32(shuffle.values1, lanes);
                 // Mask out shuffles to each 128bit lane
-                const __m128i shuff00 = _mm_andnot_si128(lanes0, shuffle.values0);
-                const __m128i shuff01 = _mm_andnot_si128(lanes1, shuffle.values1);
-                const __m128i shuff10 = _mm_and_si128(lanes0, shuffle.values0);
-                const __m128i shuff11 = _mm_and_si128(lanes1, shuffle.values1);
-                const __m128i low0 = _mm_shuffle_epi8(_mm_castps_si128(this->values0), shuff00);
-                const __m128i low1 = _mm_shuffle_epi8(_mm_castps_si128(this->values0), shuff01);
-                const __m128i hi0 = _mm_shuffle_epi8(_mm_castps_si128(this->values1), shuff10);
-                const __m128i hi1 = _mm_shuffle_epi8(_mm_castps_si128(this->values1), shuff11);
+                const __m128i shuffle00 = _mm_andnot_si128(lanes0, shuffle.values0);
+                const __m128i shuffle01 = _mm_andnot_si128(lanes1, shuffle.values1);
+                const __m128i shuffle10 = _mm_and_si128(lanes0, shuffle.values0);
+                const __m128i shuffle11 = _mm_and_si128(lanes1, shuffle.values1);
+                const __m128i low0 = _mm_shuffle_epi8(_mm_castps_si128(this->values0), shuffle00);
+                const __m128i low1 = _mm_shuffle_epi8(_mm_castps_si128(this->values0), shuffle01);
+                const __m128i hi0 = _mm_shuffle_epi8(_mm_castps_si128(this->values1), shuffle10);
+                const __m128i hi1 = _mm_shuffle_epi8(_mm_castps_si128(this->values1), shuffle11);
                 return SIMD8(_mm_castsi128_ps(_mm_blendv_epi8(low0, hi0, lanes0)),
                     _mm_castsi128_ps(_mm_blendv_epi8(low1, hi1, lanes1)));
             }

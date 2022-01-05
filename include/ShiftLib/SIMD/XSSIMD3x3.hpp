@@ -1782,10 +1782,10 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            const __m512 mult = _mm512_mul_ps(this->values, other.values);
-            const __m128 lo = _mm512_castps512_ps128(mult);
-            const __m128 hi = _mm512_extractf32x4_ps(mult, 1);
-            const __m128 hi2 = _mm512_extractf32x4_ps(mult, 2);
+            const __m512 mul = _mm512_mul_ps(this->values, other.values);
+            const __m128 lo = _mm512_castps512_ps128(mul);
+            const __m128 hi = _mm512_extractf32x4_ps(mul, 1);
+            const __m128 hi2 = _mm512_extractf32x4_ps(mul, 2);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
             val0 = _mm_shuffle_ps(val0, hi2, _MM_SHUFFLE(0, 0, 0, 2));
@@ -1794,27 +1794,27 @@ public:
             val2 = _mm_shuffle_ps(val1, hi2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 mult0 = _mm256_mul_ps(this->values0, other.values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, other.values1);
-            const __m128 lo = _mm256_castps256_ps128(mult0);
-            const __m128 hi = _mm256_extractf128_ps(mult0, 1);
+            const __m256 mul0 = _mm256_mul_ps(this->values0, other.values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, other.values1);
+            const __m128 lo = _mm256_castps256_ps128(mul0);
+            const __m128 hi = _mm256_extractf128_ps(mul0, 1);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
-            val0 = _mm_shuffle_ps(val0, mult1, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(1, 1, 2, 0));
+            val0 = _mm_shuffle_ps(val0, mul1, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 mult0 = _mm_mul_ps(this->values0, other.values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, other.values1);
-            const __m128 mult2 = _mm_mul_ps(this->values2, other.values2);
-            __m128 val0 = _mm_movehl_ps(mult0, mult1);
-            const __m128 val1 = _mm_movelh_ps(mult0, mult1);
-            val0 = _mm_shuffle_ps(val0, mult2, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(1, 1, 2, 0));
+            const __m128 mul0 = _mm_mul_ps(this->values0, other.values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, other.values1);
+            const __m128 mul2 = _mm_mul_ps(this->values2, other.values2);
+            __m128 val0 = _mm_movehl_ps(mul0, mul1);
+            const __m128 val1 = _mm_movelh_ps(mul0, mul1);
+            val0 = _mm_shuffle_ps(val0, mul2, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else
 #endif
@@ -1910,10 +1910,10 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            const __m512 mult = _mm512_mul_ps(this->values, this->values);
-            const __m128 lo = _mm512_castps512_ps128(mult);
-            const __m128 hi = _mm512_extractf32x4_ps(mult, 1);
-            const __m128 hi2 = _mm512_extractf32x4_ps(mult, 2);
+            const __m512 mul = _mm512_mul_ps(this->values, this->values);
+            const __m128 lo = _mm512_castps512_ps128(mul);
+            const __m128 hi = _mm512_extractf32x4_ps(mul, 1);
+            const __m128 hi2 = _mm512_extractf32x4_ps(mul, 2);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
             val0 = _mm_shuffle_ps(val0, hi2, _MM_SHUFFLE(0, 0, 0, 2));
@@ -1922,27 +1922,27 @@ public:
             val2 = _mm_shuffle_ps(val1, hi2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 mult0 = _mm256_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 lo = _mm256_castps256_ps128(mult0);
-            const __m128 hi = _mm256_extractf128_ps(mult0, 1);
+            const __m256 mul0 = _mm256_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 lo = _mm256_castps256_ps128(mul0);
+            const __m128 hi = _mm256_extractf128_ps(mul0, 1);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
-            val0 = _mm_shuffle_ps(val0, mult1, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(1, 1, 2, 0));
+            val0 = _mm_shuffle_ps(val0, mul1, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 mult0 = _mm_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 mult2 = _mm_mul_ps(this->values2, this->values2);
-            __m128 val0 = _mm_movehl_ps(mult0, mult1);
-            const __m128 val1 = _mm_movelh_ps(mult0, mult1);
-            val0 = _mm_shuffle_ps(val0, mult2, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(1, 1, 2, 0));
+            const __m128 mul0 = _mm_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 mul2 = _mm_mul_ps(this->values2, this->values2);
+            __m128 val0 = _mm_movehl_ps(mul0, mul1);
+            const __m128 val1 = _mm_movelh_ps(mul0, mul1);
+            val0 = _mm_shuffle_ps(val0, mul2, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_add_ps(val0, val2));
         } else
 #endif
@@ -1966,10 +1966,10 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            const __m512 mult = _mm512_mul_ps(this->values, this->values);
-            const __m128 lo = _mm512_castps512_ps128(mult);
-            const __m128 hi = _mm512_extractf32x4_ps(mult, 1);
-            const __m128 hi2 = _mm512_extractf32x4_ps(mult, 2);
+            const __m512 mul = _mm512_mul_ps(this->values, this->values);
+            const __m128 lo = _mm512_castps512_ps128(mul);
+            const __m128 hi = _mm512_extractf32x4_ps(mul, 1);
+            const __m128 hi2 = _mm512_extractf32x4_ps(mul, 2);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
             val0 = _mm_shuffle_ps(val0, hi2, _MM_SHUFFLE(0, 0, 0, 2));
@@ -1978,27 +1978,27 @@ public:
             val2 = _mm_shuffle_ps(val1, hi2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_sqrt_ps(_mm_add_ps(val0, val2)));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 mult0 = _mm256_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 lo = _mm256_castps256_ps128(mult0);
-            const __m128 hi = _mm256_extractf128_ps(mult0, 1);
+            const __m256 mul0 = _mm256_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 lo = _mm256_castps256_ps128(mul0);
+            const __m128 hi = _mm256_extractf128_ps(mul0, 1);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
-            val0 = _mm_shuffle_ps(val0, mult1, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(1, 1, 2, 0));
+            val0 = _mm_shuffle_ps(val0, mul1, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_sqrt_ps(_mm_add_ps(val0, val2)));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 mult0 = _mm_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 mult2 = _mm_mul_ps(this->values2, this->values2);
-            __m128 val0 = _mm_movehl_ps(mult0, mult1);
-            const __m128 val1 = _mm_movelh_ps(mult0, mult1);
-            val0 = _mm_shuffle_ps(val0, mult2, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(1, 1, 2, 0));
+            const __m128 mul0 = _mm_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 mul2 = _mm_mul_ps(this->values2, this->values2);
+            __m128 val0 = _mm_movehl_ps(mul0, mul1);
+            const __m128 val1 = _mm_movelh_ps(mul0, mul1);
+            val0 = _mm_shuffle_ps(val0, mul2, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(2, 2, 3, 1));
             return SIMD3Def(_mm_sqrt_ps(_mm_add_ps(val0, val2)));
         } else
 #endif
@@ -2032,31 +2032,31 @@ public:
             const __m512 val = _mm512_shuffle1_ps(res, _MM_SHUFFLE(0, 0, 0, 0));
             return SIMD3x3(_mm512_div_ps(this->values, val));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            // Faster to use dpps except for multiple sqrt cost
-            const __m256 mult0 = _mm256_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 lo = _mm256_castps256_ps128(mult0);
-            const __m128 hi = _mm256_extractf128_ps(mult0, 1);
+            // Faster to use dp except for multiple sqrt cost
+            const __m256 mul0 = _mm256_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 lo = _mm256_castps256_ps128(mul0);
+            const __m128 hi = _mm256_extractf128_ps(mul0, 1);
             __m128 val0 = _mm_movehl_ps(lo, hi);
             const __m128 val1 = _mm_movelh_ps(lo, hi);
-            val0 = _mm_shuffle_ps(val0, mult1, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(1, 1, 2, 0));
+            val0 = _mm_shuffle_ps(val0, mul1, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult1, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul1, _MM_SHUFFLE(2, 2, 3, 1));
             val0 = _mm_sqrt_ps(_mm_add_ps(val0, val2));
             return SIMD3x3(
                 _mm256_div_ps(this->values0, _mm256_set_m128(_mm_shuffle1111_ps(val0), _mm_shuffle0000_ps(val0))),
                 _mm_div_ps(this->values1, _mm_shuffle2222_ps(val0)));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 mult0 = _mm_mul_ps(this->values0, this->values0);
-            const __m128 mult1 = _mm_mul_ps(this->values1, this->values1);
-            const __m128 mult2 = _mm_mul_ps(this->values2, this->values2);
-            __m128 val0 = _mm_movehl_ps(mult0, mult1);
-            const __m128 val1 = _mm_movelh_ps(mult0, mult1);
-            val0 = _mm_shuffle_ps(val0, mult2, _MM_SHUFFLE(0, 0, 0, 2));
-            __m128 val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(1, 1, 2, 0));
+            const __m128 mul0 = _mm_mul_ps(this->values0, this->values0);
+            const __m128 mul1 = _mm_mul_ps(this->values1, this->values1);
+            const __m128 mul2 = _mm_mul_ps(this->values2, this->values2);
+            __m128 val0 = _mm_movehl_ps(mul0, mul1);
+            const __m128 val1 = _mm_movelh_ps(mul0, mul1);
+            val0 = _mm_shuffle_ps(val0, mul2, _MM_SHUFFLE(0, 0, 0, 2));
+            __m128 val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(1, 1, 2, 0));
             val0 = _mm_add_ps(val0, val2);
-            val2 = _mm_shuffle_ps(val1, mult2, _MM_SHUFFLE(2, 2, 3, 1));
+            val2 = _mm_shuffle_ps(val1, mul2, _MM_SHUFFLE(2, 2, 3, 1));
             val0 = _mm_sqrt_ps(_mm_add_ps(val0, val2));
             return SIMD3x3(_mm_div_ps(this->values0, _mm_shuffle0000_ps(val0)),
                 _mm_div_ps(this->values1, _mm_shuffle1111_ps(val0)),

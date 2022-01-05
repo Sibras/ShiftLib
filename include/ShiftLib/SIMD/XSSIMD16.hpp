@@ -1029,12 +1029,12 @@ public:
                     Index0 * 4 + 1, Index3 * 4, Index2 * 4, Index1 * 4, Index0 * 4),
                 other.values));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m128 vals[3] = {
+            const __m128 values[3] = {
                 _mm256_castps256_ps128(other.values0), _mm256_extractf128_ps(other.values0, 1), other.values1};
-            const __m128 val1 = _mm_unpacklo_ps(vals[Index0], vals[Index1]);
-            const __m128 val2 = _mm_unpacklo_ps(vals[Index2], vals[Index3]);
-            const __m128 val3 = _mm_unpackhi_ps(vals[Index0], vals[Index1]);
-            const __m128 val4 = _mm_unpackhi_ps(vals[Index2], vals[Index3]);
+            const __m128 val1 = _mm_unpacklo_ps(values[Index0], values[Index1]);
+            const __m128 val2 = _mm_unpacklo_ps(values[Index2], values[Index3]);
+            const __m128 val3 = _mm_unpackhi_ps(values[Index0], values[Index1]);
+            const __m128 val4 = _mm_unpackhi_ps(values[Index2], values[Index3]);
             return SIMD16(_mm256_set_m128(_mm_movehl_ps(val2, val1), _mm_movelh_ps(val1, val2)),
                 _mm256_set_m128(_mm_movehl_ps(val4, val3), _mm_movelh_ps(val3, val4)));
         } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {

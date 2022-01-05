@@ -332,8 +332,8 @@
 #            define XS_ARCH_F16C 1
 #        endif
 #        if XS_ARCH_SSE2 || (XS_ARCH == XS_ARCH64)
-#            undef XS_ARCH_SSE3
-#            define XS_ARCH_SSE3 1
+#            undef XS_ARCH_SSE4_2
+#            define XS_ARCH_SSE4_2 1
 #        endif
 #    endif
 

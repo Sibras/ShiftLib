@@ -2742,7 +2742,7 @@ public:
             const __m512 val = _mm512_shuffle1_ps(res, _MM_SHUFFLE(0, 0, 0, 0));
             return SIMD3x4(_mm512_div_ps(this->values, val));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            // Faster to use dpps except for multiple sqrt cost
+            // Faster to use dp except for multiple sqrt cost
             const __m256 mul0 = _mm256_mul_ps(this->values0, this->values0);
             const __m256 mul1 = _mm256_mul_ps(this->values1, this->values1);
             __m256 val0 = _mm256_unpacklo_ps(mul0, mul1);

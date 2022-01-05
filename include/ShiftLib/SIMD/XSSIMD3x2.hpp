@@ -483,16 +483,16 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool3x2<true>(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool3x2(static_cast<uint8>(_cvtmask8_u32(this->values)));
                 } else {
-                    return Bool3x2<true>(static_cast<uint8>(_mm256_movemask_ps(this->values)));
+                    return Bool3x2(static_cast<uint8>(_mm256_movemask_ps(this->values)));
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool3x2<true>(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
+                    return Bool3x2(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
                         static_cast<uint8>(_cvtmask8_u32(this->values1)));
                 } else {
-                    return Bool3x2<true>(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
+                    return Bool3x2(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
                         static_cast<uint8>(_mm_movemask_ps(this->values1)));
                 }
             } else
@@ -630,7 +630,7 @@ public:
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask3x2Function(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
@@ -707,7 +707,7 @@ public:
          * @param [in,out] maskFunc class that contains function to execute as part of masking operation.
          */
         template<typename MaskOperator>
-        XS_INLINE void mask3x2ElseFunction(MaskOperator& maskFunc) const noexcept
+        XS_INLINE void maskElseFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {

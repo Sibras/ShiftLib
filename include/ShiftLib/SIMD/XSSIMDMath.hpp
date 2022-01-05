@@ -632,7 +632,7 @@ XS_INLINE T exp2(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::exp2f8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::exp2f4(value.values0), NoExport::exp2f4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -640,15 +640,15 @@ XS_INLINE T exp2(const T& value) noexcept
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 1)) {
         // get integer component
         __m128 val2;
-        __m128i vali1;
+        __m128i val1I;
         val2 = _mm_round_ps(value.values, FROUND_TRUNC);
-        vali1 = _mm_cvtps_epi32(val2);
+        val1I = _mm_cvtps_epi32(val2);
         // get fractional component
         val2 = _mm_sub_ss(value.values, val2);
         // get exponent part
-        __m128i vali2 = _mm_add_epi32(vali1, _mm_set1_epi32(127));
-        vali2 = _mm_slli_epi32(vali2, 23);
-        const __m128 val3 = _mm_castsi128_ps(vali2);
+        __m128i val2I = _mm_add_epi32(val1I, _mm_set1_epi32(127));
+        val2I = _mm_slli_epi32(val2I, 23);
+        const __m128 val3 = _mm_castsi128_ps(val2I);
 
         /* minimax polynomial fit of 2**x, in range [-0.5, 0.5[ */
         __m128 val4;
@@ -771,7 +771,7 @@ XS_INLINE T exp(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::expf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::expf4(value.values0), NoExport::expf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -891,20 +891,20 @@ XS_INLINE T log2(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::log2f8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::log2f4(value.values0), NoExport::log2f4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
         return T(NoExport::log2f4(value.values));
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 1)) {
         // get exponent part
-        __m128i vali2 = _mm_and_si128(_mm_castps_si128(value.values), _mm_set1_epi32(0x7F800000));
-        vali2 = _mm_srli_epi32(vali2, 23);
-        vali2 = _mm_sub_epi32(vali2, _mm_set1_epi32(127));
-        const __m128 val3 = _mm_cvtepi32_ps(vali2);
+        __m128i val2I = _mm_and_si128(_mm_castps_si128(value.values), _mm_set1_epi32(0x7F800000));
+        val2I = _mm_srli_epi32(val2I, 23);
+        val2I = _mm_sub_epi32(val2I, _mm_set1_epi32(127));
+        const __m128 val3 = _mm_cvtepi32_ps(val2I);
         // get mantissa part
-        const int32 alignas(16) i7Ff[1] = {0x007FFFFF};
-        const __m128 val3B = _mm_and_ps(value.values, _mm_load_ss(reinterpret_cast<const float32*>(i7Ff)));
+        const int32 alignas(16) mantissaMask[1] = {0x007FFFFF};
+        const __m128 val3B = _mm_and_ps(value.values, _mm_load_ss(reinterpret_cast<const float32*>(mantissaMask)));
         const __m128 val4 = _mm_or_ps(val3B, _mm_set_ss(1.0f));
 
         /* Minimax polynomial fit of log2(x)/(x - 1), for x in range [1, 2[ */
@@ -1030,7 +1030,7 @@ XS_INLINE T log(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::logf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::logf4(value.values0), NoExport::logf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1165,7 +1165,7 @@ XS_INLINE T pow(const T& value, const T& other) noexcept
             const __m256 res = NoExport::powf8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::powf4(value.values0, other.values0), NoExport::powf4(value.values1, other.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1341,7 +1341,7 @@ XS_INLINE T powr(const T& value, const T& other) noexcept
             const __m256 res = NoExport::powrf8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::powrf4(value.values0, other.values0), NoExport::powrf4(value.values1, other.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1496,7 +1496,7 @@ XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
             const __m256 res =
                 NoExport::powf8(_mm256_set_m128(value.values1, value.values0), _mm256_broadcastf128_ps(other.values));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::powf4(value.values0, other.values), NoExport::powf4(value.values1, other.values));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1649,7 +1649,7 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
             const __m256 res =
                 NoExport::powrf8(_mm256_set_m128(value.values1, value.values0), _mm256_broadcastf128_ps(other.values));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::powrf4(value.values0, other.values), NoExport::powrf4(value.values1, other.values));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1735,7 +1735,7 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
  * Returns sine of a value(s).
  * @note Current value(s) must have values in radians.
  * @param value Input value(s).
- * @returns Value(s) containing the sined value.
+ * @returns Value(s) containing the sin value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T sin(const T& value) noexcept
@@ -1796,7 +1796,7 @@ XS_INLINE T sin(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::sinf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::sinf4(value.values0), NoExport::sinf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -1885,7 +1885,7 @@ XS_INLINE T sin(const T& value) noexcept
  * Returns cosine of a value(s).
  * @note Current value(s) must have values in radians.
  * @param value Input value(s).
- * @returns Value(s) containing the cosined value.
+ * @returns Value(s) containing the cos value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T cos(const T& value) noexcept
@@ -1946,7 +1946,7 @@ XS_INLINE T cos(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::cosf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::cosf4(value.values0), NoExport::cosf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -2006,7 +2006,7 @@ XS_INLINE T cos(const T& value) noexcept
  * Returns tangent of a value(s).
  * @note Current value(s) must have values in radians.
  * @param value Input value(s).
- * @returns Value(s) containing the tangented value.
+ * @returns Value(s) containing the tan value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T tan(const T& value) noexcept
@@ -2067,7 +2067,7 @@ XS_INLINE T tan(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::tanf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::tanf4(value.values0), NoExport::tanf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -2127,20 +2127,19 @@ XS_INLINE T tan(const T& value) noexcept
             val7 = _mm_or_ps(val7, val5);
 
             return T(val7);
-        } else {
-            const __m128 val10 = _mm_and_ps(valNAbs, val7);
-            const __m128 val11 = _mm_or_ps(_mm_set_ss(3.68935e19f), val10);
-            val2 = _mm_and_ps(val4, val9);
-            val9 = _mm_andnot_ps(val9, val11);
-            val4 = _mm_or_ps(val4, val9);
-
-            val4 = _mm_xor_ps(val4, valNAbs);
-            val7 = _mm_and_ps(val7, val5);
-            val5 = _mm_andnot_ps(val5, val4);
-            val7 = _mm_or_ps(val7, val5);
-
-            return T(val7);
         }
+        const __m128 val10 = _mm_and_ps(valNAbs, val7);
+        const __m128 val11 = _mm_or_ps(_mm_set_ss(3.68935e19f), val10);
+        val2 = _mm_and_ps(val4, val9);
+        val9 = _mm_andnot_ps(val9, val11);
+        val4 = _mm_or_ps(val4, val9);
+
+        val4 = _mm_xor_ps(val4, valNAbs);
+        val7 = _mm_and_ps(val7, val5);
+        val5 = _mm_andnot_ps(val5, val4);
+        val7 = _mm_or_ps(val7, val5);
+
+        return T(val7);
     } else
 #endif
     {
@@ -2194,8 +2193,8 @@ XS_INLINE T tan(const T& value) noexcept
  * @note This is provided because it is much quicker to determine the cosine of value if the sine is already
  * known. Current value(s) must have values in radians.
  * @param value Input value(s).
- * @param [out] cosReturn The cosine return values.
- * @returns Value(s) containing the sine value.
+ * @param [out] cosReturn The cos return values.
+ * @returns Value(s) containing the sin value.
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
@@ -2309,7 +2308,7 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
             cosReturn.values0 = _mm256_castps256_ps128(tempReturn);
             cosReturn.values1 = _mm256_extractf128_ps(tempReturn, 1);
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::sincosf4(value.values0, cosReturn.values0),
                 NoExport::sincosf4(value.values1, cosReturn.values1));
         }
@@ -2411,7 +2410,7 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
 /**
  * Returns arcsine of a value(s).
  * @param value Input value(s).
- * @returns Value(s) containing the arcsined value (result in radians).
+ * @returns Value(s) containing the asin value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T asin(const T& value) noexcept
@@ -2472,7 +2471,7 @@ XS_INLINE T asin(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::asinf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::asinf4(value.values0), NoExport::asinf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -2534,7 +2533,7 @@ XS_INLINE T asin(const T& value) noexcept
 /**
  * Returns arccosine of a value(s).
  * @param value Input value(s).
- * @returns Value(s) containing the arccosined value (result in radians).
+ * @returns Value(s) containing the acos value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T acos(const T& value) noexcept
@@ -2595,7 +2594,7 @@ XS_INLINE T acos(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::acosf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::acosf4(value.values0), NoExport::acosf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -2660,7 +2659,7 @@ XS_INLINE T acos(const T& value) noexcept
 /**
  * Returns arctangent of a value(s).
  * @param value Input value(s).
- * @returns Value(s) containing the arctangented value (result in radians).
+ * @returns Value(s) containing the atan value (result in radians).
  */
 template<typename T, typename = require<isSame<typename T::Type, float32>>>
 XS_INLINE T atan(const T& value) noexcept
@@ -2721,7 +2720,7 @@ XS_INLINE T atan(const T& value) noexcept
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::atanf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::atanf4(value.values0), NoExport::atanf4(value.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
@@ -2897,7 +2896,7 @@ XS_INLINE T atan2(const T& value, const T& other) noexcept
             const __m256 res = NoExport::atan2f8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
-        } else if constexpr (hasSIMD128<typename T::Type>) {
+        } else {
             return T(NoExport::atan2f4(value.values0, other.values0), NoExport::atan2f4(value.values1, other.values1));
         }
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::size == 4)) {
