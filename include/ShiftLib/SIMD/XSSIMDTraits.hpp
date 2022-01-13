@@ -37,7 +37,7 @@ inline constexpr bool hasSIMD512 = hasISAFeature<ISAFeature::AVX512F> ? hasSIMD<
  * Query if 256bit SIMD operations are supported.
  */
 template<typename T>
-inline constexpr bool hasSIMD256 = (isSame<T, float32> && hasISAFeature<ISAFeature::AVX>) ?
+inline constexpr bool hasSIMD256 = (isSame<T, float32> && hasISAFeature<ISAFeature::AVX> && hasSIMD<T>) ?
     true :
     ((hasISAFeature<ISAFeature::AVX2>) ? hasSIMD<T> : false);
 

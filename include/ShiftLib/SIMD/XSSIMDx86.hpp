@@ -24,18 +24,18 @@
 
 namespace Shift {
 #    ifndef _MM_BLEND
-// NOLINTNEXTLINE(clang-diagnostic-reserved-id-macro)
+// NOLINTNEXTLINE(clang-diagnostic-reserved-macro-identifier)
 #        define _MM_BLEND(fp3, fp2, fp1, fp0) (((fp3) << 3) | ((fp2) << 2) | ((fp1) << 1) | ((fp0)))
 #    endif
 
 #    ifndef _MM256_BLEND
-// NOLINTNEXTLINE(clang-diagnostic-reserved-id-macro)
+// NOLINTNEXTLINE(clang-diagnostic-reserved-macro-identifier)
 #        define _MM256_BLEND(fp7, fp6, fp5, fp4, fp3, fp2, fp1, fp0)                                                  \
             (((fp7) << 7) | ((fp6) << 6) | ((fp5) << 5) | ((fp4) << 4) | ((fp3) << 3) | ((fp2) << 2) | ((fp1) << 1) | \
                 ((fp0)))
 #    endif
 #    ifndef _MM256_PERMUTE
-// NOLINTNEXTLINE(clang-diagnostic-reserved-id-macro)
+// NOLINTNEXTLINE(clang-diagnostic-reserved-macro-identifier)
 #        define _MM256_PERMUTE(qf1, qf0) (((qf1) << 4) | (qf0))
 #    endif
 
@@ -58,11 +58,6 @@ namespace Shift {
  * _mm_blend_ps has higher throughput than shufps on Broadwell+/Zen+ but 2B larger opcode
  */
 #    define _mm_shuffle1_ps(m128, iMask) _mm_shuffle_ps(m128, m128, (iMask))
-#    if !XS_ARCH_AVX
-#        undef _mm_broadcast_ss
-#        define _mm_broadcast_ss(float) _mm_shuffle1_ps(_mm_load_ss(float), _MM_SHUFFLE(0, 0, 0, 0))
-#    endif
-
 #    define _mm_shuffle0000_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(0, 0, 0, 0))
 #    define _mm_shuffle1111_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(1, 1, 1, 1))
 #    define _mm_shuffle2222_ps(m128) _mm_shuffle1_ps(m128, _MM_SHUFFLE(2, 2, 2, 2))
@@ -202,8 +197,6 @@ namespace Shift {
 #        define _mm256_broadcastf64_ps(m128) _mm256_broadcast_f32x2(m128)
 #    elif XS_ARCH_AVX2
 #        define _mm256_broadcastf64_ps(m128) _mm256_castpd_ps(_mm256_broadcastsd_pd(_mm_castps_pd(m128)))
-#    else
-#        define _mm256_broadcastf64_ps(m128) _mm256_set_m128(_mm_shuffle1010_ps(m128), _mm_shuffle1010_ps(m128))
 #    endif
 
 /*
@@ -230,7 +223,7 @@ namespace Shift {
 #    define _mm512_broadcastf64_ps(m128) _mm512_broadcast_f32x2(m128)
 #    define _mm512_broadcastf256_ps(m256) _mm512_insertf32x8(_mm512_castps256_ps512(m256), m256, 1)
 
-#    if !XS_ARCH_AVX2
+#    if !XS_ARCH_FMA3
 #        define _mm_fmadd_ss(m128_0, m128_1, m128_2) _mm_add_ss(_mm_mul_ss(m128_0, m128_1), m128_2)
 #        define _mm_fmadd_ps(m128_0, m128_1, m128_2) _mm_add_ps(_mm_mul_ps(m128_0, m128_1), m128_2)
 #        define _mm256_fmadd_ps(m256_0, m256_1, m256_2) _mm256_add_ps(_mm256_mul_ps(m256_0, m256_1), m256_2)
@@ -321,17 +314,80 @@ namespace Shift {
 
 /*
  * _mm_shufflelo_epi16/_mm_shufflehi_epi16 should never be used as identical to shufd.
- * _mm_unpacklo_epi32/_mm_unpackhi_epi32 should always be used as have same speed as shufd but occupy 1B shorter opcode.
- * _mm_broadcastd_epi32 should never be used as shufd has higher throughput on iceLake+/ivybridge- (is same for all
- * others).
+ * _mm_unpacklo_epiX/_mm_unpackhi_epiX should always be used as have same speed as shufd but 1B shorter opcode.
+ * _mm_broadcastd_epi32/_mm_broadcastq_epi64 should never be used as shufd has higher throughput on iceLake+/ivybridge-
+ * (is same for all others).
  * All swizzles are executed on the same port
  */
 #    define _mm_shuffle0000_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(0, 0, 0, 0))
 #    define _mm_shuffle1111_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(1, 1, 1, 1))
 #    define _mm_shuffle2222_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(2, 2, 2, 2))
 #    define _mm_shuffle3333_epi32(m128i) _mm_shuffle_epi32((m128i), _MM_SHUFFLE(3, 3, 3, 3))
+#    define _mm_shuffle1010_epi32(m128i) _mm_unpacklo_epi64(m128i, m128i)
+#    define _mm_shuffle3232_epi32(m128i) _mm_unpackhi_epi64(m128i, m128i)
+#    define _mm_shuffle00_epi64(m128i) _mm_unpacklo_epi64(m128i, m128i)
+#    define _mm_shuffle11_epi64(m128i) _mm_unpackhi_epi64(m128i, m128i)
 
 #    define _mm_shuffle3322_epi32(m128i) _mm_unpackhi_epi32(m128i, m128i)
 #    define _mm_shuffle1100_epi32(m128i) _mm_unpacklo_epi32(m128i, m128i)
+#    define _mm_shuffle32103210_epi16(m128i) _mm_unpacklo_epi64(m128i, m128i)
+#    define _mm_shuffle76547654_epi16(m128i) _mm_unpackhi_epi64(m128i, m128i)
+#    define _mm_shuffle76765454_epi16(m128i) _mm_unpackhi_epi32(m128i, m128i)
+#    define _mm_shuffle32321010_epi16(m128i) _mm_unpacklo_epi32(m128i, m128i)
+#    define _mm_shuffle77665544_epi16(m128i) _mm_unpackhi_epi16(m128i, m128i)
+#    define _mm_shuffle33221100_epi16(m128i) _mm_unpacklo_epi16(m128i, m128i)
+#    define _mm_shufflehi_epi8(m128i) _mm_unpackhi_epi8(m128i, m128i) //
+#    define _mm_shufflelo_epi8(m128i) _mm_unpacklo_epi8(m128i, m128i) // 7766554433221100
+
+#    if !XS_ARCH_AVX2
+#        define _mm_broadcastb_epi8(m128i) _mm_shuffle_epi8(m128i, _mm_setzero_si128())
+#        define _mm_broadcastw_epi16(m128i) _mm_shuffle_epi8(m128i, _mm_set1_epi16(256))
+#    endif
+
+/*
+ * _mm256_shufflelo_epi16/_mm256_shufflehi_epi16 should never be used as identical to shufd.
+ * _mm256_unpacklo_epi32/_mm256_unpackhi_epi32 should always be used as have same speed as shufd but 1B shorter opcode.
+ * _mm256_unpacklo_epi64/_mm256_unpackhi_epi64 should always be used as have same speed as shufd but 1B shorter opcode.
+ * All swizzles are executed on the same port
+ */
+#    define _mm256_shuffle3322_epi32(m256i) _mm256_unpackhi_epi32(m256i, m256i)
+#    define _mm256_shuffle1100_epi32(m256i) _mm256_unpacklo_epi32(m256i, m256i)
+#    define _mm256_shuffle3232_epi32(m256i) _mm256_unpackhi_epi64(m256i, m256i)
+#    define _mm256_shuffle1010_epi32(m256i) _mm256_unpacklo_epi64(m256i, m256i)
+
+#    define _mm256_shuffle32103210_epi32(m256i) \
+        _mm256_inserti128_si256(m256i, _mm256_castsi256_si128(m256i), 1) // inserti128 is faster than perm2x128 on amd
+#    define _mm256_shuffle32107654_epi32(m256i) _mm256_permute2x128_si256(m256i, m256i, _MM256_PERMUTE(0, 1))
+#    define _mm256_shuffle76547654_epi32(m256i) _mm256_permute2x128_si256(m256i, m256i, _MM256_PERMUTE(1, 1))
+#    define _mm256_shuffle10101010_epi32(m256i) _mm256_broadcastq_epi64(m256i)
+
+#    define _mm256_broadcasti128(m128i) _mm256_set_m128i(m128i, m128i)
+#    define _mm256_broadcasti64(m128i) _mm256_broadcastq_epi64(m128i)
+#    define _mm256_broadcasti32(m128i) _mm256_broadcastd_epi32(m128i)
+
+/*
+ * _mm512_shufflelo_epi16/_mm512_shufflehi_epi16 should never be used as identical to shufd.
+ * _mm512_unpacklo_epi32/_mm512_unpackhi_epi32 should always be used as have same speed as shufd but 1B shorter opcode.
+ * _mm512_unpacklo_epi64/_mm256_unpack512_epi64 should always be used as have same speed as shufd but 1B shorter opcode.
+ * _mm512_broadcast_i32x4/_mm512_broadcast_i64x2 should never be used as shuff132x4 is faster.
+ * All swizzles are executed on the same port
+ */
+
+#    define _mm512_shuffle3322_epi32(m512i) _mm512_unpackhi_epi32(m512i, m512i)
+#    define _mm512_shuffle1100_epi32(m512i) _mm512_unpacklo_epi32(m512i, m512i)
+#    define _mm512_shuffle3232_epi32(m512i) _mm512_unpackhi_epi64(m512i, m512i)
+#    define _mm512_shuffle1010_epi32(m512i) _mm512_unpacklo_epi64(m512i, m512i)
+
+#    define _mm512_set_m128i(m128_3i, m128_2i, m128_1i, m128_0i) \
+        _mm512_inserti32x8(                                      \
+            _mm512_castsi256_si512(_mm256_set_m128i(m128_1i, m128_0i)), _mm256_set_m128i(m128_3i, m128_2i), 1)
+#    define _mm512_set_m256i(m256_1i, m256_0i) _mm512_inserti32x8(_mm512_castsi256_si512(m256_0i), m256_1i, 1)
+
+#    define _mm512_broadcasti128(m128i) \
+        _mm512_shuffle_i32x4(_mm512_castsi128_si512(m128i), _mm512_castsi128_si512(m128i), _MM_SHUFFLE(0, 0, 0, 0))
+#    define _mm512_broadcasti32(m128i) _mm512_broadcastd_epi32(m128i)
+#    define _mm512_broadcasti64(m128i) _mm512_broadcastq_epi64(m128i)
+#    define _mm512_broadcasti256(m256i) _mm512_inserti32x8(_mm512_castsi256_si512(m256i), m256i, 1)
+
 } // namespace Shift
 #endif

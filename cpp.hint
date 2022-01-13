@@ -14,3 +14,9 @@
 #define XS_INLINE __forceinline __declspec(noalias)
 #define XS_INLINE __inline __attribute__((always_inline))
 #define XS_INLINE
+#define XS_REQUIRES2(expr)
+#define XS_REQUIRES2(expr) requires(expr)
+#define XS_EXPECT(expr) [[likely]] expr
+#define XS_EXPECT(expr)
+#define XS_EXPECT(expr) __builtin_expect((long)(expr), true)
+#define XS_RESTRICT

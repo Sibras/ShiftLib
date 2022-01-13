@@ -95,8 +95,9 @@ public:
      * @param other14 The fifteenth value.
      * @param other15 The sixteenth value.
      */
-    XS_INLINE void setData(T other0, T other1, T other2, T other3, T other4, T other5, T other6, T other7, T other8,
-        T other9, T other10, T other11, T other12, T other13, T other14, T other15) noexcept
+    XS_INLINE void setData(const T other0, const T other1, const T other2, const T other3, const T other4,
+        const T other5, const T other6, const T other7, const T other8, const T other9, const T other10,
+        const T other11, const T other12, const T other13, const T other14, const T other15) noexcept
     {
         value0 = other0;
         value1 = other1;
@@ -125,16 +126,39 @@ public:
     XS_INLINE void store(const SIMD16<T, Width>& other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            _mm512_store_ps(&value0, other.values);
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            _mm256_store_ps(&value0, other.values0);
-            _mm256_store_ps(&value8, other.values1);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            _mm_store_ps(&value0, other.values0);
-            _mm_store_ps(&value4, other.values1);
-            _mm_store_ps(&value8, other.values2);
-            _mm_store_ps(&value12, other.values3);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                _mm512_store_ps(&value0, other.values);
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                _mm256_store_ps(&value0, other.values0);
+                _mm256_store_ps(&value8, other.values1);
+            } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+                _mm_store_ps(&value0, other.values0);
+                _mm_store_ps(&value4, other.values1);
+                _mm_store_ps(&value8, other.values2);
+                _mm_store_ps(&value12, other.values3);
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            _mm_store_si128(&value0, other.values);
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                _mm256_store_si128(&value0, other.values);
+            } else {
+                _mm_store_si128(&value0, other.values0);
+                _mm_store_si128(&value8, other.values1);
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                _mm512_store_si128(&value0, other.values);
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                _mm256_store_si128(&value0, other.values0);
+                _mm256_store_si128(&value8, other.values1);
+            } else {
+                _mm_store_si128(&value0, other.values0);
+                _mm_store_si128(&value4, other.values1);
+                _mm_store_si128(&value8, other.values2);
+                _mm_store_si128(&value12, other.values3);
+            }
         } else
 #endif
         {
@@ -166,13 +190,30 @@ public:
     XS_INLINE SIMD16<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16<T, Width>(_mm512_load_ps(&value0));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD16<T, Width>(_mm256_load_ps(&value0), _mm256_load_ps(&value8));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD16<T, Width>(
-                _mm_load_ps(&value0), _mm_load_ps(&value4), _mm_load_ps(&value8), _mm_load_ps(&value12));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16<T, Width>(_mm512_load_ps(&value0));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16<T, Width>(_mm256_load_ps(&value0), _mm256_load_ps(&value8));
+            } else {
+                return SIMD16<T, Width>(
+                    _mm_load_ps(&value0), _mm_load_ps(&value4), _mm_load_ps(&value8), _mm_load_ps(&value12));
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16<T, Width>(_mm_load_si128(&value0));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16<T, Width>(_mm256_load_si256(&value0));
+            } else {
+                return SIMD16<T, Width>(_mm_load_si128(&value0), _mm_load_si128(&value3));
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16<T, Width>(_mm256_load_si256(&value0), _mm256_load_si256(&value8));
+            } else {
+                return SISIMD16MD12<T, Width>(_mm_load_si128(&value0), _mm_load_si128(&value4), _mm_load_si128(&value8),
+                    _mm_load_si128(&value12));
+            }
         } else
 #endif
         {
@@ -398,21 +439,80 @@ public:
      * @param value14 The fifteenth value.
      * @param value15 The sixteenth value.
      */
-    XS_INLINE SIMD16(T value0, T value1, T value2, T value3, T value4, T value5, T value6, T value7, T value8, T value9,
-        T value10, T value11, T value12, T value13, T value14, T value15) noexcept
+    XS_INLINE SIMD16(const T value0, const T value1, const T value2, const T value3, const T value4, const T value5,
+        const T value6, const T value7, const T value8, const T value9, const T value10, const T value11,
+        const T value12, const T value13, const T value14, const T value15) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            this->values = _mm512_set_ps(value15, value14, value13, value12, value11, value10, value9, value8, value7,
-                value6, value5, value4, value3, value2, value1, value0);
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            this->values0 = _mm256_set_ps(value7, value6, value5, value4, value3, value2, value1, value0);
-            this->values1 = _mm256_set_ps(value15, value14, value13, value12, value11, value10, value9, value8);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values0 = _mm_set_ps(value3, value2, value1, value0);
-            this->values1 = _mm_set_ps(value7, value6, value5, value4);
-            this->values2 = _mm_set_ps(value11, value10, value9, value8);
-            this->values3 = _mm_set_ps(value15, value14, value13, value12);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_set_ps(static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13),
+                    static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9),
+                    static_cast<T>(value8), static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5),
+                    static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1),
+                    static_cast<T>(value0));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values0 = _mm256_set_ps(static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5),
+                    static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1),
+                    static_cast<T>(value0));
+                this->values1 = _mm256_set_ps(static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13),
+                    static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9),
+                    static_cast<T>(value8));
+            } else {
+                this->values0 = _mm_set_ps(
+                    static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1), static_cast<T>(value0));
+                this->values1 = _mm_set_ps(
+                    static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5), static_cast<T>(value4));
+                this->values2 = _mm_set_ps(
+                    static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9), static_cast<T>(value8));
+                this->values3 = _mm_set_ps(
+                    static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13), static_cast<T>(value12));
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_set_epi32(static_cast<T>(value15), static_cast<T>(value14),
+                    static_cast<T>(value13), static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10),
+                    static_cast<T>(value9), static_cast<T>(value8), static_cast<T>(value7), static_cast<T>(value6),
+                    static_cast<T>(value5), static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2),
+                    static_cast<T>(value1), static_cast<T>(value0));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values0 = _mm256_set_epi32(static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5),
+                    static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1),
+                    static_cast<T>(value0));
+                this->values1 = _mm256_set_epi32(static_cast<T>(value15), static_cast<T>(value14),
+                    static_cast<T>(value13), static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10),
+                    static_cast<T>(value9), static_cast<T>(value8));
+            } else {
+                this->values0 = _mm_set_epi32(
+                    static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1), static_cast<T>(value0));
+                this->values1 = _mm_set_epi32(
+                    static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5), static_cast<T>(value4));
+                this->values2 = _mm_set_epi32(
+                    static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9), static_cast<T>(value8));
+                this->values3 = _mm_set_epi32(
+                    static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13), static_cast<T>(value12));
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values = _mm256_set_epi16(static_cast<T>(value15), static_cast<T>(value14),
+                    static_cast<T>(value13), static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10),
+                    static_cast<T>(value9), static_cast<T>(value8), static_cast<T>(value7), static_cast<T>(value6),
+                    static_cast<T>(value5), static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2),
+                    static_cast<T>(value1), static_cast<T>(value0));
+            } else {
+                this->values0 = _mm_set_epi16(static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5),
+                    static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1),
+                    static_cast<T>(value0));
+                this->values1 = _mm_set_epi16(static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13),
+                    static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9),
+                    static_cast<T>(value8));
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set_epi8(static_cast<T>(value15), static_cast<T>(value14), static_cast<T>(value13),
+                static_cast<T>(value12), static_cast<T>(value11), static_cast<T>(value10), static_cast<T>(value9),
+                static_cast<T>(value8), static_cast<T>(value7), static_cast<T>(value6), static_cast<T>(value5),
+                static_cast<T>(value4), static_cast<T>(value3), static_cast<T>(value2), static_cast<T>(value1),
+                static_cast<T>(value0));
         } else
 #endif
         {
@@ -439,19 +539,42 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param value Value to set all elements to.
      */
-    XS_INLINE explicit SIMD16(T value) noexcept
+    XS_INLINE explicit SIMD16(const T value) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            this->values = _mm512_set1_ps(value);
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            this->values0 = _mm256_set1_ps(value);
-            this->values1 = this->values0;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values0 = _mm_set1_ps(value);
-            this->values1 = this->values0;
-            this->values2 = this->values0;
-            this->values3 = this->values0;
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_set1_ps(static_cast<T>(value));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values0 = _mm256_set1_ps(static_cast<T>(value));
+                this->values1 = this->values0;
+            } else {
+                this->values0 = _mm_set1_ps(static_cast<T>(value));
+                this->values1 = this->values0;
+                this->values2 = this->values0;
+                this->values3 = this->values0;
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_set1_epi32(static_cast<T>(value));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values0 = _mm256_set1_epi32(static_cast<T>(value));
+                this->values1 = this->values0;
+            } else {
+                this->values0 = _mm_set_epi32(static_cast<T>(value));
+                this->values1 = this->values0;
+                this->values2 = this->values0;
+                this->values3 = this->values0;
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values = _mm256_set1_epi16(static_cast<T>(value));
+            } else {
+                this->values0 = _mm_set1_epi16(static_cast<T>(value));
+                this->values1 = this->values0;
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set1_epi8(static_cast<T>(value));
         } else
 #endif
         {
@@ -478,19 +601,30 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_INLINE explicit SIMD16(BaseDef other) noexcept
+    XS_INLINE explicit SIMD16(const BaseDef other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+        if constexpr (isSameAny<T, float32, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = other.values;
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values0 = other.values;
+                this->values1 = other.values;
+            } else {
+                this->values0 = other.values;
+                this->values1 = other.values;
+                this->values2 = other.values;
+                this->values3 = other.values;
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values = other.values;
+            } else {
+                this->values0 = other.values;
+                this->values1 = other.values;
+            }
+        } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values = other.values;
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            this->values0 = other.values;
-            this->values1 = other.values;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values0 = other.values;
-            this->values1 = other.values;
-            this->values2 = other.values;
-            this->values3 = other.values;
         } else
 #endif
         {
@@ -517,24 +651,52 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_INLINE explicit SIMD16(InBaseDef other) noexcept
+    XS_INLINE explicit SIMD16(const InBaseDef other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            this->values = _mm512_broadcastss_ps(other.values);
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasISAFeature<ISAFeature::AVX2>) {
-                this->values0 = _mm256_broadcastss_ps(other.values);
-            } else {
-                const __m128 val = _mm_shuffle0000_ps(other.values);
-                this->values0 = _mm256_broadcastf128_ps(val);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_broadcastss_ps(other.values);
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX2>) {
+                    this->values0 = _mm256_broadcastss_ps(other.values);
+                } else {
+                    const __m128 val = _mm_shuffle0000_ps(other.values);
+                    this->values0 = _mm256_broadcastf128_ps(val);
+                }
+                this->values1 = this->values0;
+            } else if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+                this->values0 = _mm_shuffle0000_ps(other.values);
+                this->values1 = this->values0;
+                this->values2 = this->values0;
+                this->values3 = this->values0;
             }
-            this->values1 = this->values0;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values0 = _mm_shuffle0000_ps(other.values);
-            this->values1 = this->values0;
-            this->values2 = this->values0;
-            this->values3 = this->values0;
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                this->values = _mm512_broadcastd_epi32(other.values);
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX2>) {
+                    this->values0 = _mm256_broadcastd_epi32(other.values);
+                } else {
+                    const __m128i val = _mm_shuffle0000_epi32(other.values);
+                    this->values0 = _mm256_broadcasti128(val);
+                }
+                this->values1 = this->values0;
+            } else {
+                this->values0 = _mm_shuffle0000_epi32(other.values);
+                this->values1 = this->values0;
+                this->values2 = this->values0;
+                this->values3 = this->values0;
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                this->values = _mm256_broadcastw_epi16(other.values);
+            } else {
+                this->values0 = _mm_broadcastw_epi16(other.values);
+                this->values1 = this->values0;
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_broadcastb_epi8(other.values);
         } else
 #endif
         {
@@ -581,7 +743,7 @@ public:
                 _mm_movelh_ps(other2.values, other3.values), _mm_movelh_ps(other0.values, other1.values));
             this->values1 = _mm256_set_m128(
                 _mm_movelh_ps(other6.values, other7.values), _mm_movelh_ps(other4.values, other5.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = _mm_movelh_ps(other0.values, other1.values);
             this->values1 = _mm_movelh_ps(other2.values, other3.values);
             this->values2 = _mm_movelh_ps(other4.values, other5.values);
@@ -626,7 +788,7 @@ public:
                 this->values0 = _mm256_broadcastf128_ps(val);
                 this->values1 = this->values0;
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = _mm_shuffle1010_ps(other.values);
             this->values1 = this->values0;
             this->values2 = this->values0;
@@ -669,7 +831,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             this->values0 = _mm256_set_m128(other1.values, other0.values);
             this->values1 = _mm256_set_m128(other3.values, other2.values);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = other0.values;
             this->values1 = other1.values;
             this->values2 = other2.values;
@@ -708,7 +870,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             this->values0 = _mm256_broadcastf128_ps(other.values);
             this->values1 = this->values0;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = other.values;
             this->values1 = other.values;
             this->values2 = other.values;
@@ -748,7 +910,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             this->values0 = other0.values;
             this->values1 = other1.values;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = other0.values0;
             this->values1 = other0.values1;
             this->values2 = other1.values0;
@@ -787,7 +949,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             this->values0 = other.values;
             this->values1 = other.values;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = other.values0;
             this->values1 = other.values1;
             this->values2 = other.values0;
@@ -827,7 +989,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             this->values0 = other0.values0;
             this->values1 = _mm256_set_m128(other1.values, other0.values1);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = other0.values0;
             this->values1 = other0.values1;
             this->values2 = other0.values2;
@@ -872,7 +1034,7 @@ public:
                 _mm_shuffle1010_ps(other1.values), _mm_shuffle0000_ps(other1.values));
             this->values1 = _mm256_blend_set_m128(other0.values1, _MM256_BLEND(1, 0, 0, 0, 1, 0, 0, 0),
                 _mm_shuffle3232_ps(other1.values), _mm_shuffle2200_ps(other1.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values0 = _mm_insert_ps(other0.values0, other1.values, _MM_MK_INSERTPS_NDX(0, 3, 0));
             this->values1 = _mm_insert_ps(other0.values1, other1.values, _MM_MK_INSERTPS_NDX(1, 3, 0));
             this->values2 = _mm_insert_ps(other0.values2, other1.values, _MM_MK_INSERTPS_NDX(2, 3, 0));
@@ -906,14 +1068,35 @@ public:
     XS_INLINE static SIMD16 Zero() noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_setzero_ps());
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 value = _mm256_setzero_ps();
-            return SIMD16(value, value);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 value = _mm_setzero_ps();
-            return SIMD16(value, value, value, value);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_setzero_ps());
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 value = _mm256_setzero_ps();
+                return SIMD16(value, value);
+            } else {
+                const __m128 value = _mm_setzero_ps();
+                return SIMD16(value, value, value, value);
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_setzero_si512());
+            } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256i value = _mm256_setzero_si256();
+                return SIMD16(value, value);
+            } else {
+                const __m128i value = _mm_setzero_si128();
+                return SIMD16(value, value, value, value);
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_setzero_si256());
+            } else {
+                const __m128i value = _mm_setzero_si128();
+                return SIMD16(value, value);
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_setzero_si128());
         } else
 #endif
         {
@@ -928,14 +1111,35 @@ public:
     XS_INLINE static SIMD16 One() noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_set1_ps(1.0f));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 value = _mm256_set1_ps(1.0f);
-            return SIMD16(value, value);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 value = _mm_set1_ps(1.0f);
-            return SIMD16(value, value, value, value);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_set1_ps(1.0f));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 value = _mm256_set1_ps(1.0f);
+                return SIMD16(value, value);
+            } else {
+                const __m128 value = _mm_set1_ps(1.0f);
+                return SIMD16(value, value, value, value);
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_set1_epi32(1.0));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256i value = _mm256_set1_epi32(1.0);
+                return SIMD16(value, value);
+            } else {
+                const __m128i value = _mm_set1_epi32(1.0);
+                return SIMD16(value, value, value, value);
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_set1_epi32(1.0));
+            } else {
+                const __m128i value = _mm_set1_epi32(1.0);
+                return SIMD16(value, value);
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_set1_epi8(1.0));
         } else
 #endif
         {
@@ -979,7 +1183,7 @@ public:
                 return SIMD16(_mm256_shuffle1_ps(other.values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
                     _mm256_shuffle1_ps(other.values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
                 return SIMD16(_mm_shuffle1010_ps(other.values0), _mm_shuffle1010_ps(other.values1),
                     _mm_shuffle1010_ps(other.values2), _mm_shuffle1010_ps(other.values3));
@@ -1037,7 +1241,7 @@ public:
             const __m128 val4 = _mm_unpackhi_ps(values[Index2], values[Index3]);
             return SIMD16(_mm256_set_m128(_mm_movehl_ps(val2, val1), _mm_movelh_ps(val1, val2)),
                 _mm256_set_m128(_mm_movehl_ps(val4, val3), _mm_movelh_ps(val3, val4)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val1 = _mm_unpacklo_ps((&other.values0)[Index0], (&other.values0)[Index1]);
             const __m128 val2 = _mm_unpacklo_ps((&other.values0)[Index2], (&other.values0)[Index3]);
             const __m128 val3 = _mm_unpackhi_ps((&other.values0)[Index0], (&other.values0)[Index1]);
@@ -1109,7 +1313,7 @@ public:
                 const __m128 val = _mm256_extractf128_ps((&this->values0)[Index / 8], 1);
                 return InBaseDef(_mm_shuffle3333_ps(val));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 4 == 0) {
                 return InBaseDef((&this->values0)[Index / 4]);
             } else if constexpr (Index % 4 == 1) {
@@ -1173,7 +1377,7 @@ public:
                 const __m256 val = _mm256_shuffle1_ps((&this->values0)[Index / 8], _MM_SHUFFLE(3, 3, 3, 3));
                 return BaseDef(_mm256_shuffle76547654_ps(val));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 4 == 0) {
                 return BaseDef(_mm_shuffle0000_ps((&this->values0)[Index / 4]));
             } else if constexpr (Index % 4 == 1) {
@@ -1223,7 +1427,7 @@ public:
                 const __m128 val = _mm256_extractf128_ps((&this->values0)[Index / 4], 1);
                 return SIMD2Def(_mm_shuffle3232_ps(val));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 2 == 0) {
                 return SIMD2Def((&this->values0)[Index / 2]);
             } else {
@@ -1259,7 +1463,7 @@ public:
             } else /*Index % 2 == 1*/ {
                 return SIMD4Def(_mm256_extractf128_ps((&this->values0)[Index / 2], 1));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD4Def((&this->values0)[Index]);
         } else
 #endif
@@ -1288,7 +1492,7 @@ public:
             }
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             return SIMD8Def((&this->values0)[Index]);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def((&this->values0)[Index * 2], (&this->values0)[(Index * 2) + 1]);
         } else
 #endif
@@ -1328,7 +1532,7 @@ public:
             } else {
                 return SIMD8Def(_mm256_permute2f128_ps(this->values0, this->values1, _MM256_PERMUTE(Index1, Index0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def((&this->values0)[Index0], (&this->values0)[Index1]);
         } else
 #endif
@@ -1383,7 +1587,7 @@ public:
                         _mm256_extractf128_ps((&this->values0)[Index2 / 2], 1));
                 }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD12Def((&this->values0)[Index0], (&this->values0)[Index1], (&this->values0)[Index2]);
         } else
 #endif
@@ -1444,7 +1648,7 @@ public:
                 return SIMD3x4Def(_mm256_shuffle1_ps(this->values0, _MM_SHUFFLE(3, Index2, Index1, Index0)),
                     _mm256_shuffle1_ps(this->values1, _MM_SHUFFLE(3, Index2, Index1, Index0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2) {
                 return SIMD3x4Def(this->values0, this->values1, this->values2, this->values3);
             } else if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2) {
@@ -1481,9 +1685,10 @@ public:
      * Set an element of the object.
      * @tparam Index The index of the element to retrieve (range is 0-15).
      * @param other The new value.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue(InBaseDef other) noexcept
+    XS_INLINE SIMD16& setValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 16, "Invalid Index: Index must be <16");
 #if XS_ISA == XS_X86
@@ -1538,7 +1743,7 @@ public:
                 (&this->values0)[Index / 8] = _mm256_blend_ps(
                     (&this->values0)[Index / 8], _mm256_broadcastf128_ps(value), _MM256_BLEND(1, 0, 0, 0, 0, 0, 0, 0));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 4 == 0) {
                 (&this->values0)[Index / 4] = _mm_blend_ss((&this->values0)[Index / 4], other.values);
             } else {
@@ -1550,15 +1755,17 @@ public:
         {
             (&this->values0)[Index] = other.value;
         }
+        return *this;
     }
 
     /**
      * Set an element of the object.
      * @tparam Index The index of the element to retrieve (range is 0-15).
      * @param other The new value.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue(BaseDef other) noexcept
+    XS_INLINE SIMD16& setValue(const BaseDef other) noexcept
     {
         static_assert(Index < 16, "Invalid Index: Index must be <16");
 #if XS_ISA == XS_X86
@@ -1567,7 +1774,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             (&this->values0)[Index / 8] =
                 _mm256_blend_ps((&this->values0)[Index / 8], other.values, (1 << (Index % 8)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 4 == 0) {
                 (&this->values0)[Index / 4] = _mm_blend_ss((&this->values0)[Index / 4], other.values);
             } else {
@@ -1579,15 +1786,17 @@ public:
         {
             (&this->values0)[Index] = other.value;
         }
+        return *this;
     }
 
     /**
      * Set a SIMD2.
      * @tparam Index The index of the element to retrieve (range is 0-7).
      * @param other The new values.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue2(const SIMD2Def& other) noexcept
+    XS_INLINE SIMD16& setValue2(const SIMD2Def& other) noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
 #if XS_ISA == XS_X86
@@ -1625,7 +1834,7 @@ public:
                 (&this->values0)[Index / 4] = _mm256_blend_ps(
                     (&this->values0)[Index / 4], _mm256_broadcastf128_ps(value), _MM256_BLEND(1, 1, 0, 0, 0, 0, 0, 0));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index % 2 == 0) {
                 (&this->values0)[Index / 2] =
                     _mm_shuffle_ps(other.values, (&this->values0)[Index / 2], _MM_SHUFFLE(3, 2, 1, 0));
@@ -1638,15 +1847,17 @@ public:
             (&this->values0)[Index * 2] = other.values0;
             (&this->values0)[Index * 2 + 1] = other.values1;
         }
+        return *this;
     }
 
     /**
      * Set a SIMD4.
      * @tparam Index The index of the element to retrieve (range is 0-3).
      * @param other The new values.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue4(const SIMD4Def& other) noexcept
+    XS_INLINE SIMD16& setValue4(const SIMD4Def& other) noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
 #if XS_ISA == XS_X86
@@ -1664,7 +1875,7 @@ public:
             } else /*Index % 2 == 1*/ {
                 (&this->values0)[Index / 2] = _mm256_insertf128_ps((&this->values0)[Index / 2], other.values, 1);
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             (&this->values0)[Index] = other.values;
         } else
 #endif
@@ -1674,15 +1885,17 @@ public:
             (&this->values0)[Index * 4 + 2] = other.values2;
             (&this->values0)[Index * 4 + 3] = other.values3;
         }
+        return *this;
     }
 
     /**
      * Set a SIMD8.
      * @tparam Index The index of the element to retrieve (range is 0-1).
      * @param other The new values.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue8(const SIMD8Def& other) noexcept
+    XS_INLINE SIMD16& setValue8(const SIMD8Def& other) noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
 #if XS_ISA == XS_X86
@@ -1695,7 +1908,7 @@ public:
             }
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             (&this->values0)[Index] = other.values;
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             (&this->values0)[(Index * 2)] = other.values0;
             (&this->values0)[(Index * 2) + 1] = other.values1;
         } else
@@ -1710,6 +1923,7 @@ public:
             (&this->values0)[Index * 8 + 6] = other.values6;
             (&this->values0)[Index * 8 + 7] = other.values7;
         }
+        return *this;
     }
 
     /**
@@ -1717,9 +1931,10 @@ public:
      * @tparam Index0 The index of the first element to set (range is 0-3).
      * @tparam Index1 The index of the second element to set (range is 0-3)(Index1 != Index0).
      * @param other The new values.
+     * @returns The current object after modification.
      */
     template<uint32 Index0, uint32 Index1>
-    XS_INLINE void setValue4x2(const SIMD8Def& other) noexcept
+    XS_INLINE SIMD16& setValue4x2(const SIMD8Def& other) noexcept
     {
         static_assert(Index0 < 4 && Index1 < 4, "Invalid Index: Indexes must be <4");
         static_assert(Index0 != Index1, "Invalid Index: Indexes must both be unique");
@@ -1768,7 +1983,7 @@ public:
             } else /*Index0 == 3 && Index1 == 2*/ {
                 this->values1 = _mm256_shuffle32107654_ps(other.values);
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             (&this->values0)[Index0] = other.values0;
             (&this->values0)[Index1] = other.values1;
         } else
@@ -1783,6 +1998,7 @@ public:
             (&this->values0)[Index1 * 4 + 2] = other.values6;
             (&this->values0)[Index1 * 4 + 3] = other.values7;
         }
+        return *this;
     }
 
     /**
@@ -1865,7 +2081,7 @@ public:
                             Elem12 ? -0.0f : 0.0f, Elem11 ? -0.0f : 0.0f, Elem10 ? -0.0f : 0.0f, Elem9 ? -0.0f : 0.0f,
                             Elem8 ? -0.0f : 0.0f)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Elem0 && !Elem1 && !Elem2 && !Elem3 && Elem4 && !Elem5 && !Elem6 && !Elem7 && Elem8 &&
                 !Elem9 && !Elem10 && !Elem11 && Elem12 && !Elem13 && !Elem14 && !Elem15) {
                 const __m128 value = _mm_set_ss(-0.0f);
@@ -1987,31 +2203,82 @@ public:
     XS_INLINE SIMD16 mad(const SIMD16& other1, const SIMD16& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, other1.values0, other2.values0),
+                        _mm256_fmadd_ps(this->values1, other1.values1, other2.values1));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values1));
+                }
             } else {
-                return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
+                        _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
+                        _mm_fmadd_ps(this->values2, other1.values2, other2.values2),
+                        _mm_fmadd_ps(this->values3, other1.values3, other2.values3));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values2), other2.values2),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values3), other2.values3));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, other1.values0, other2.values0),
-                    _mm256_fmadd_ps(this->values1, other1.values1, other2.values1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(_mm512_mullo_epi32(this->values, other1.values), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, other1.values1), other2.values1));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values1));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values1), other2.values1),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values2), other2.values2),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values3), other2.values3));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
-                    _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
-                    _mm_fmadd_ps(this->values2, other1.values2, other2.values2),
-                    _mm_fmadd_ps(this->values3, other1.values3, other2.values3));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(_mm256_mullo_epi16(this->values, other1.values), other2.values));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values2), other2.values2),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values3), other2.values3));
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, other1.values0), other2.values0),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, other1.values1), other2.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_cvtepu8_epi16(other1.values)),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                        _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepu8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_cvtepi8_epi16(other1.values)),
+                    _mm256_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                        _mm_cvtepi8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepi8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepi8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2043,34 +2310,85 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_INLINE SIMD16 mad(BaseDef other1, const SIMD16& other2) const noexcept
+    XS_INLINE SIMD16 mad(const BaseDef other1, const SIMD16& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values0),
+                        _mm256_fmadd_ps(this->values1, other1.values, other2.values1));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values0),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values1));
+                }
             } else {
-                return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
+                        _mm_fmadd_ps(this->values1, other1.values, other2.values1),
+                        _mm_fmadd_ps(this->values2, other1.values, other2.values2),
+                        _mm_fmadd_ps(this->values3, other1.values, other2.values3));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values2),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values3));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values0),
-                    _mm256_fmadd_ps(this->values1, other1.values, other2.values1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(_mm512_mullo_epi32(this->values, other1.values), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, other1.values), other2.values0),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, other1.values), other2.values1));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values0),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values1));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values), other2.values1),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values), other2.values2),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values), other2.values3));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
-                    _mm_fmadd_ps(this->values1, other1.values, other2.values1),
-                    _mm_fmadd_ps(this->values2, other1.values, other2.values2),
-                    _mm_fmadd_ps(this->values3, other1.values, other2.values3));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(_mm256_mullo_epi16(this->values, other1.values), other2.values));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values2),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values3));
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, other1.values), other2.values0),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, other1.values), other2.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_cvtepu8_epi16(other1.values)),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                        _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepu8_epi16(other1.values)),
+                    _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_cvtepi8_epi16(other1.values)),
+                    _mm256_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                        _mm_cvtepi8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepi8_epi16(other1.values)),
+                    _mm_cvtepi8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2102,34 +2420,85 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_INLINE SIMD16 mad(const SIMD16& other1, BaseDef other2) const noexcept
+    XS_INLINE SIMD16 mad(const SIMD16& other1, const BaseDef other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(this->values, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, other1.values0, other2.values),
+                        _mm256_fmadd_ps(this->values1, other1.values1, other2.values));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values));
+                }
             } else {
-                return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values),
+                        _mm_fmadd_ps(this->values1, other1.values1, other2.values),
+                        _mm_fmadd_ps(this->values2, other1.values2, other2.values),
+                        _mm_fmadd_ps(this->values3, other1.values3, other2.values));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values2), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values3), other2.values));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, other1.values0, other2.values),
-                    _mm256_fmadd_ps(this->values1, other1.values1, other2.values));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(_mm512_mullo_epi32(this->values, other1.values), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, other1.values0), other2.values),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, other1.values1), other2.values));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values0), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values1), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values2), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values3), other2.values));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values),
-                    _mm_fmadd_ps(this->values1, other1.values1, other2.values),
-                    _mm_fmadd_ps(this->values2, other1.values2, other2.values),
-                    _mm_fmadd_ps(this->values3, other1.values3, other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(_mm256_mullo_epi16(this->values, other1.values), other2.values));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values2), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values3), other2.values));
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, other1.values0), other2.values),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, other1.values1), other2.values));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_cvtepu8_epi16(other1.values)),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                        _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepu8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_cvtepi8_epi16(other1.values)),
+                    _mm256_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                        _mm_cvtepi8_epi16(other2.values));
+                const __m128i ret1 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepi8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2164,34 +2533,90 @@ public:
     XS_INLINE SIMD16 mad(const SIMD4Def& other1, const SIMD4Def& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(
-                    this->values, _mm512_broadcastf128_ps(other1.values), _mm512_broadcastf128_ps(other2.values)));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(
+                        this->values, _mm512_broadcastf128_ps(other1.values), _mm512_broadcastf128_ps(other2.values)));
+                } else {
+                    return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf128_ps(other1.values)),
+                        _mm512_broadcastf128_ps(other2.values)));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 val0 = _mm256_broadcastf128_ps(other1.values);
+                const __m256 val1 = _mm256_broadcastf128_ps(other2.values);
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(
+                        _mm256_fmadd_ps(this->values0, val0, val1), _mm256_fmadd_ps(this->values1, val0, val1));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, val0), val1),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, val0), val1));
+                }
             } else {
-                return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf128_ps(other1.values)),
-                    _mm512_broadcastf128_ps(other2.values)));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values),
+                        _mm_fmadd_ps(this->values1, other1.values, other2.values),
+                        _mm_fmadd_ps(this->values2, other1.values, other2.values),
+                        _mm_fmadd_ps(this->values3, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 val0 = _mm256_broadcastf128_ps(other1.values);
-            const __m256 val1 = _mm256_broadcastf128_ps(other2.values);
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, val0, val1), _mm256_fmadd_ps(this->values1, val0, val1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(_mm512_mullo_epi32(this->values, _mm512_broadcasti128(other1.values)),
+                    _mm512_broadcasti128(other2.values)));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256i val0 = _mm256_broadcasti128(other1.values);
+                const __m256i val1 = _mm256_broadcasti128(other2.values);
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, val0), val1),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, val0), val1));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, val0), val1),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, val0), val1));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values), other2.values),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values), other2.values));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values),
-                    _mm_fmadd_ps(this->values1, other1.values, other2.values),
-                    _mm_fmadd_ps(this->values2, other1.values, other2.values),
-                    _mm_fmadd_ps(this->values3, other1.values, other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(_mm256_mullo_epi16(this->values, _mm256_broadcasti64(other1.values)),
+                    _mm256_broadcasti64(other2.values)));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values));
+                const __m128i val0 = _mm_shuffle00_epi64(other1.values);
+                const __m128i val1 = _mm_shuffle00_epi64(other2.values);
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, val0), val1),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, val0), val1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values),
+                                                         _mm256_broadcasti64(_mm_cvtepu8_epi16(other1.values))),
+                    _mm256_broadcasti64(_mm_cvtepu8_epi16(other2.values)));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i val0 = _mm_cvtepu8_epi16(_mm_shuffle1100_epi32(other1.values));
+                const __m128i val1 = _mm_cvtepu8_epi16(_mm_shuffle1100_epi32(other2.values));
+                const __m128i ret0 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), val0), val1);
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)), val0), val1);
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values),
+                                                         _mm256_broadcasti64(_mm_cvtepu8_epi16(other1.values))),
+                    _mm256_broadcasti64(_mm_cvtepu8_epi16(other2.values)));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i val0 = _mm_cvtepi8_epi16(_mm_shuffle1100_epi32(other1.values));
+                const __m128i val1 = _mm_cvtepi8_epi16(_mm_shuffle1100_epi32(other2.values));
+                const __m128i ret0 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), val0), val1);
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)), val0), val1);
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2226,33 +2651,88 @@ public:
     XS_INLINE SIMD16 mad(const SIMD4Def& other1, const SIMD16& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(this->values, _mm512_broadcastf128_ps(other1.values), other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(this->values, _mm512_broadcastf128_ps(other1.values), other2.values));
+                } else {
+                    return SIMD16(_mm512_add_ps(
+                        _mm512_mul_ps(this->values, _mm512_broadcastf128_ps(other1.values)), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 val = _mm256_broadcastf128_ps(other1.values);
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, val, other2.values0),
+                        _mm256_fmadd_ps(this->values1, val, other2.values1));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, val), other2.values0),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, val), other2.values1));
+                }
             } else {
-                return SIMD16(
-                    _mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf128_ps(other1.values)), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
+                        _mm_fmadd_ps(this->values1, other1.values, other2.values1),
+                        _mm_fmadd_ps(this->values2, other1.values, other2.values2),
+                        _mm_fmadd_ps(this->values3, other1.values, other2.values3));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values2),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values3));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 val = _mm256_broadcastf128_ps(other1.values);
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, val, other2.values0),
-                    _mm256_fmadd_ps(this->values1, val, other2.values1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(
+                    _mm512_mullo_epi32(this->values, _mm512_broadcasti128(other1.values)), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256i val = _mm256_broadcasti128(other1.values);
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, val), other2.values0),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, val), other2.values1));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, val), other2.values0),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, val), other2.values1));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values), other2.values1),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values), other2.values2),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values), other2.values3));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values, other2.values0),
-                    _mm_fmadd_ps(this->values1, other1.values, other2.values1),
-                    _mm_fmadd_ps(this->values2, other1.values, other2.values2),
-                    _mm_fmadd_ps(this->values3, other1.values, other2.values3));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(
+                    _mm256_mullo_epi16(this->values, _mm256_broadcasti64(other1.values)), other2.values));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values), other2.values1),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values), other2.values2),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values), other2.values3));
+                const __m128i val = _mm_shuffle00_epi64(other1.values);
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, val), other2.values0),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, val), other2.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values),
+                                                         _mm256_broadcasti64(_mm_cvtepu8_epi16(other1.values))),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i val = _mm_cvtepu8_epi16(_mm_shuffle1100_epi32(other1.values));
+                const __m128i ret0 = _mm_add_epi16(
+                    _mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), val), _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)), val),
+                        _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values),
+                                                         _mm256_broadcasti64(_mm_cvtepu8_epi16(other1.values))),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i val = _mm_cvtepi8_epi16(_mm_shuffle1100_epi32(other1.values));
+                const __m128i ret0 = _mm_add_epi16(
+                    _mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), val), _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)), val),
+                        _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2287,33 +2767,84 @@ public:
     XS_INLINE SIMD16 mad(const SIMD8Def& other1, const SIMD8Def& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(
-                    this->values, _mm512_broadcastf256_ps(other1.values), _mm512_broadcastf256_ps(other2.values)));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(
+                        this->values, _mm512_broadcastf256_ps(other1.values), _mm512_broadcastf256_ps(other2.values)));
+                } else {
+                    return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf256_ps(other1.values)),
+                        _mm512_broadcastf256_ps(other2.values)));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values),
+                        _mm256_fmadd_ps(this->values1, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values));
+                }
             } else {
-                return SIMD16(_mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf256_ps(other1.values)),
-                    _mm512_broadcastf256_ps(other2.values)));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
+                        _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
+                        _mm_fmadd_ps(this->values2, other1.values0, other2.values0),
+                        _mm_fmadd_ps(this->values3, other1.values1, other2.values1));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values0), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values1), other2.values1));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values),
-                    _mm256_fmadd_ps(this->values1, other1.values, other2.values));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(_mm512_mullo_epi32(this->values, _mm512_broadcasti256(other1.values)),
+                    _mm512_broadcasti256(other2.values)));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, other1.values), other2.values),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, other1.values), other2.values));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values1), other2.values1),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values0), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values1), other2.values1));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
-                    _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
-                    _mm_fmadd_ps(this->values2, other1.values0, other2.values0),
-                    _mm_fmadd_ps(this->values3, other1.values1, other2.values1));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(_mm256_mullo_epi16(this->values, _mm256_broadcasti128(other1.values)),
+                    _mm256_broadcasti128(other2.values)));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values0), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values1), other2.values1));
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, other1.values), other2.values),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, other1.values), other2.values));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i val0 = _mm_cvtepu8_epi16(other1.values);
+            const __m128i val1 = _mm_cvtepu8_epi16(other2.values);
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret =
+                    _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_broadcasti128(val0)),
+                        _mm256_broadcasti128(val1));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), val0), val1);
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)), val0), val1);
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i val0 = _mm_cvtepi8_epi16(other1.values);
+            const __m128i val1 = _mm_cvtepi8_epi16(other2.values);
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret =
+                    _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_broadcasti128(val0)),
+                        _mm256_broadcasti128(val1));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 = _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), val0), val1);
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)), val0), val1);
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2348,32 +2879,85 @@ public:
     XS_INLINE SIMD16 mad(const SIMD8Def& other1, const SIMD16& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmadd_ps(this->values, _mm512_broadcastf256_ps(other1.values), other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmadd_ps(this->values, _mm512_broadcastf256_ps(other1.values), other2.values));
+                } else {
+                    return SIMD16(_mm512_add_ps(
+                        _mm512_mul_ps(this->values, _mm512_broadcastf256_ps(other1.values)), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values0),
+                        _mm256_fmadd_ps(this->values1, other1.values, other2.values1));
+                } else {
+                    return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values0),
+                        _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values1));
+                }
             } else {
-                return SIMD16(
-                    _mm512_add_ps(_mm512_mul_ps(this->values, _mm512_broadcastf256_ps(other1.values)), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
+                        _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
+                        _mm_fmadd_ps(this->values2, other1.values0, other2.values2),
+                        _mm_fmadd_ps(this->values3, other1.values1, other2.values3));
+                } else {
+                    return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
+                        _mm_add_ps(_mm_mul_ps(this->values2, other1.values0), other2.values2),
+                        _mm_add_ps(_mm_mul_ps(this->values3, other1.values1), other2.values3));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmadd_ps(this->values0, other1.values, other2.values0),
-                    _mm256_fmadd_ps(this->values1, other1.values, other2.values1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_add_epi32(
+                    _mm512_mullo_epi32(this->values, _mm512_broadcasti256(other1.values)), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi32(_mm256_mullo_epi32(this->values0, other1.values), other2.values0),
+                    _mm256_add_epi32(_mm256_mullo_epi32(this->values1, other1.values), other2.values1));
             } else {
-                return SIMD16(_mm256_add_ps(_mm256_mul_ps(this->values0, other1.values), other2.values0),
-                    _mm256_add_ps(_mm256_mul_ps(this->values1, other1.values), other2.values1));
+                return SIMD16(_mm_add_epi32(_mm_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values1, other1.values1), other2.values1),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values2, other1.values0), other2.values2),
+                    _mm_add_epi32(_mm_mullo_epi32(this->values3, other1.values1), other2.values3));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmadd_ps(this->values0, other1.values0, other2.values0),
-                    _mm_fmadd_ps(this->values1, other1.values1, other2.values1),
-                    _mm_fmadd_ps(this->values2, other1.values0, other2.values2),
-                    _mm_fmadd_ps(this->values3, other1.values1, other2.values3));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_add_epi16(
+                    _mm256_mullo_epi16(this->values, _mm256_broadcasti128(other1.values)), other2.values));
             } else {
-                return SIMD16(_mm_add_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm_add_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
-                    _mm_add_ps(_mm_mul_ps(this->values2, other1.values0), other2.values2),
-                    _mm_add_ps(_mm_mul_ps(this->values3, other1.values1), other2.values3));
+                return SIMD16(_mm_add_epi16(_mm_mullo_epi16(this->values0, other1.values), other2.values0),
+                    _mm_add_epi16(_mm_mullo_epi16(this->values1, other1.values), other2.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i val = _mm_cvtepu8_epi16(other1.values);
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret =
+                    _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_broadcasti128(val)),
+                        _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 = _mm_add_epi16(
+                    _mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), val), _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)), val),
+                        _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i val = _mm_cvtepi8_epi16(other1.values);
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret =
+                    _mm256_add_epi16(_mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_broadcasti128(val)),
+                        _mm256_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 = _mm_add_epi16(
+                    _mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), val), _mm_cvtepi8_epi16(other2.values));
+                const __m128i ret1 =
+                    _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)), val),
+                        _mm_cvtepi8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2408,31 +2992,82 @@ public:
     XS_INLINE SIMD16 msub(const SIMD16& other1, const SIMD16& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm512_fmsub_ps(this->values, other1.values, other2.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm512_fmsub_ps(this->values, other1.values, other2.values));
+                } else {
+                    return SIMD16(_mm512_sub_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                }
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm256_fmsub_ps(this->values0, other1.values0, other2.values0),
+                        _mm256_fmsub_ps(this->values1, other1.values1, other2.values1));
+                } else {
+                    return SIMD16(_mm256_sub_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm256_sub_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values1));
+                }
             } else {
-                return SIMD16(_mm512_sub_ps(_mm512_mul_ps(this->values, other1.values), other2.values));
+                if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
+                    return SIMD16(_mm_fmsub_ps(this->values0, other1.values0, other2.values0),
+                        _mm_fmsub_ps(this->values1, other1.values1, other2.values1),
+                        _mm_fmsub_ps(this->values2, other1.values2, other2.values2),
+                        _mm_fmsub_ps(this->values3, other1.values3, other2.values3));
+                } else {
+                    return SIMD16(_mm_sub_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
+                        _mm_sub_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
+                        _mm_sub_ps(_mm_mul_ps(this->values2, other1.values2), other2.values2),
+                        _mm_sub_ps(_mm_mul_ps(this->values3, other1.values3), other2.values3));
+                }
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm256_fmsub_ps(this->values0, other1.values0, other2.values0),
-                    _mm256_fmsub_ps(this->values1, other1.values1, other2.values1));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_sub_epi32(_mm512_mullo_epi32(this->values, other1.values), other2.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_sub_epi32(_mm256_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm256_sub_epi32(_mm256_mullo_epi32(this->values1, other1.values1), other2.values1));
             } else {
-                return SIMD16(_mm256_sub_ps(_mm256_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm256_sub_ps(_mm256_mul_ps(this->values1, other1.values1), other2.values1));
+                return SIMD16(_mm_sub_epi32(_mm_mullo_epi32(this->values0, other1.values0), other2.values0),
+                    _mm_sub_epi32(_mm_mullo_epi32(this->values1, other1.values1), other2.values1),
+                    _mm_sub_epi32(_mm_mullo_epi32(this->values2, other1.values2), other2.values2),
+                    _mm_sub_epi32(_mm_mullo_epi32(this->values3, other1.values3), other2.values3));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
-                return SIMD16(_mm_fmsub_ps(this->values0, other1.values0, other2.values0),
-                    _mm_fmsub_ps(this->values1, other1.values1, other2.values1),
-                    _mm_fmsub_ps(this->values2, other1.values2, other2.values2),
-                    _mm_fmsub_ps(this->values3, other1.values3, other2.values3));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_sub_epi16(_mm256_mullo_epi16(this->values, other1.values), other2.values));
             } else {
-                return SIMD16(_mm_sub_ps(_mm_mul_ps(this->values0, other1.values0), other2.values0),
-                    _mm_sub_ps(_mm_mul_ps(this->values1, other1.values1), other2.values1),
-                    _mm_sub_ps(_mm_mul_ps(this->values2, other1.values2), other2.values2),
-                    _mm_sub_ps(_mm_mul_ps(this->values3, other1.values3), other2.values3));
+                return SIMD16(_mm_sub_epi16(_mm_mullo_epi16(this->values0, other1.values0), other2.values0),
+                    _mm_sub_epi16(_mm_mullo_epi16(this->values1, other1.values1), other2.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_sub_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepu8_epi16(this->values), _mm256_cvtepu8_epi16(other1.values)),
+                    _mm256_cvtepu8_epi16(other2.values));
+                return SIMD16(_mm_packus_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                        _mm_cvtepu8_epi16(other2.values));
+                const __m128i ret1 = _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepu8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepu8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packus_epi16(ret0, ret1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T>) {
+                const __m256i ret = _mm256_sub_epi16(
+                    _mm256_mullo_epi16(_mm256_cvtepi8_epi16(this->values), _mm256_cvtepi8_epi16(other1.values)),
+                    _mm256_cvtepi8_epi16(other2.values));
+                return SIMD16(_mm_packs_epi16(_mm256_castsi256_si128(ret), _mm256_extracti128_si256(ret, 1)));
+            } else {
+                const __m128i ret0 =
+                    _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                        _mm_cvtepi8_epi16(other2.values));
+                const __m128i ret1 = _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(_mm_bsrli_si128(this->values, 64)),
+                                                       _mm_cvtepi8_epi16(_mm_bsrli_si128(other1.values, 64))),
+                    _mm_cvtepi8_epi16(_mm_bsrli_si128(other2.values, 64)));
+                return SIMD16(_mm_packs_epi16(ret0, ret1));
             }
         } else
 #endif
@@ -2465,22 +3100,47 @@ public:
      */
     XS_INLINE SIMD16 sign(const SIMD16& other) const noexcept
     {
+        if constexpr (isUnsigned<T>) {
+            return *this;
+        }
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_xor_ps(this->values, _mm512_and_ps(other.values, _mm512_set1_ps(-0.0f))));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 val = _mm256_set1_ps(-0.0f);
-            return SIMD16(_mm256_xor_ps(this->values0, _mm256_and_ps(other.values0, val)),
-                _mm256_xor_ps(this->values1, _mm256_and_ps(other.values1, val)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 val = _mm_set1_ps(-0.0f);
-            return SIMD16(_mm_xor_ps(this->values0, _mm_and_ps(val, other.values0)),
-                _mm_xor_ps(this->values1, _mm_and_ps(val, other.values1)),
-                _mm_xor_ps(this->values2, _mm_and_ps(val, other.values2)),
-                _mm_xor_ps(this->values3, _mm_and_ps(val, other.values3)));
-        } else
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_xor_ps(this->values, _mm512_and_ps(other.values, _mm512_set1_ps(-0.0f))));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 val = _mm256_set1_ps(-0.0f);
+                return SIMD16(_mm256_xor_ps(this->values0, _mm256_and_ps(other.values0, val)),
+                    _mm256_xor_ps(this->values1, _mm256_and_ps(other.values1, val)));
+            } else {
+                const __m128 val = _mm_set1_ps(-0.0f);
+                return SIMD16(_mm_xor_ps(this->values0, _mm_and_ps(val, other.values0)),
+                    _mm_xor_ps(this->values1, _mm_and_ps(val, other.values1)),
+                    _mm_xor_ps(this->values2, _mm_and_ps(val, other.values2)),
+                    _mm_xor_ps(this->values3, _mm_and_ps(val, other.values3)));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm512_sign_epi32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_sign_epi32(this->values0, other.values0), _mm256_sign_epi32(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_sign_epi32(this->values0, other.values0),
+                    _mm_sign_epi32(this->values1, other.values1), _mm_sign_epi32(this->values2, other.values2),
+                    _mm_sign_epi32(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm_sign_epi16(this->values0, other.values0), _mm_sign_epi16(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_sign_epi16(this->values, other.values));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_sign_epi8(this->values, other.values));
+        }
 #endif
-        {
+        else {
             return SIMD16(Shift::sign<T>(this->values0, other.values0), Shift::sign<T>(this->values1, other.values1),
                 Shift::sign<T>(this->values2, other.values2), Shift::sign<T>(this->values3, other.values3),
                 Shift::sign<T>(this->values4, other.values4), Shift::sign<T>(this->values5, other.values5),
@@ -2498,19 +3158,41 @@ public:
      */
     XS_INLINE SIMD16 abs() const noexcept
     {
+        if constexpr (isUnsigned<T>) {
+            return *this;
+        }
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_andnot_ps(_mm512_set1_ps(-0.0f), this->values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            const __m256 val = _mm256_set1_ps(-0.0f);
-            return SIMD16(_mm256_andnot_ps(val, this->values0), _mm256_andnot_ps(val, this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            const __m128 val = _mm_set1_ps(-0.0f);
-            return SIMD16(_mm_andnot_ps(val, this->values0), _mm_andnot_ps(val, this->values1),
-                _mm_andnot_ps(val, this->values2), _mm_andnot_ps(val, this->values3));
-        } else
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_andnot_ps(_mm512_set1_ps(-0.0f), this->values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                const __m256 val = _mm256_set1_ps(-0.0f);
+                return SIMD16(_mm256_andnot_ps(val, this->values0), _mm256_andnot_ps(val, this->values1));
+            } else {
+                const __m128 val = _mm_set1_ps(-0.0f);
+                return SIMD16(_mm_andnot_ps(val, this->values0), _mm_andnot_ps(val, this->values1),
+                    _mm_andnot_ps(val, this->values2), _mm_andnot_ps(val, this->values3));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_abs_epi32(this->values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_abs_epi32(this->values), _mm256_abs_epi32(this->values1));
+            } else {
+                return SIMD16(_mm_abs_epi32(this->values0), _mm_abs_epi32(this->values1), _mm_abs_epi32(this->values2),
+                    _mm_abs_epi32(this->values3));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_abs_epi16(this->values));
+            } else {
+                return SIMD16(_mm_abs_epi16(this->values0), _mm_abs_epi16(this->values1));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_abs_epi8(this->values));
+        }
 #endif
-        {
+        else {
             return SIMD16(Shift::abs<T>(this->values0), Shift::abs<T>(this->values1), Shift::abs<T>(this->values2),
                 Shift::abs<T>(this->values3), Shift::abs<T>(this->values4), Shift::abs<T>(this->values5),
                 Shift::abs<T>(this->values6), Shift::abs<T>(this->values7), Shift::abs<T>(this->values8),
@@ -2528,13 +3210,51 @@ public:
     XS_INLINE SIMD16 max(const SIMD16& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_max_ps(this->values, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD16(_mm256_max_ps(this->values0, other.values0), _mm256_max_ps(this->values1, other.values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD16(_mm_max_ps(this->values0, other.values0), _mm_max_ps(this->values1, other.values1),
-                _mm_max_ps(this->values2, other.values2), _mm_max_ps(this->values3, other.values3));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_ps(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_ps(this->values0, other.values0), _mm256_max_ps(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_max_ps(this->values0, other.values0), _mm_max_ps(this->values1, other.values1),
+                    _mm_max_ps(this->values2, other.values2), _mm_max_ps(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_epu32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_max_epu32(this->values0, other.values0), _mm256_max_epu32(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_max_epu32(this->values0, other.values0), _mm_max_epu32(this->values1, other.values1),
+                    _mm_max_epu32(this->values2, other.values2), _mm_max_epu32(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_epi32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_max_epi32(this->values0, other.values0), _mm256_max_epi32(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_max_epi32(this->values0, other.values0), _mm_max_epi32(this->values1, other.values1),
+                    _mm_max_epi32(this->values2, other.values2), _mm_max_epi32(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_epu16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_max_epu16(this->values0, other.values0), _mm_max_epu16(this->values1, other.values1));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_epi16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_max_epi16(this->values0, other.values0), _mm_max_epi16(this->values1, other.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_max_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_max_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2557,13 +3277,51 @@ public:
     XS_INLINE SIMD16 min(const SIMD16& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_min_ps(this->values, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD16(_mm256_min_ps(this->values0, other.values0), _mm256_min_ps(this->values1, other.values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD16(_mm_min_ps(this->values0, other.values0), _mm_min_ps(this->values1, other.values1),
-                _mm_min_ps(this->values2, other.values2), _mm_min_ps(this->values3, other.values3));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_ps(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_ps(this->values0, other.values0), _mm256_min_ps(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_min_ps(this->values0, other.values0), _mm_min_ps(this->values1, other.values1),
+                    _mm_min_ps(this->values2, other.values2), _mm_min_ps(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_epu32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_min_epu32(this->values0, other.values0), _mm256_min_epu32(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_min_epu32(this->values0, other.values0), _mm_min_epu32(this->values1, other.values1),
+                    _mm_min_epu32(this->values2, other.values2), _mm_min_epu32(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_epi32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_min_epi32(this->values0, other.values0), _mm256_min_epi32(this->values1, other.values1));
+            } else {
+                return SIMD16(_mm_min_epi32(this->values0, other.values0), _mm_min_epi32(this->values1, other.values1),
+                    _mm_min_epi32(this->values2, other.values2), _mm_min_epi32(this->values3, other.values3));
+            }
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_epu16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_min_epu16(this->values0, other.values0), _mm_min_epu16(this->values1, other.values1));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_epi16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_min_epi16(this->values0, other.values0), _mm_min_epi16(this->values1, other.values1));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_min_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_min_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2583,16 +3341,54 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_INLINE SIMD16 max(BaseDef other) const noexcept
+    XS_INLINE SIMD16 max(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_max_ps(this->values, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD16(_mm256_max_ps(this->values0, other.values), _mm256_max_ps(this->values1, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD16(_mm_max_ps(this->values0, other.values), _mm_max_ps(this->values1, other.values),
-                _mm_max_ps(this->values2, other.values), _mm_max_ps(this->values3, other.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_ps(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_ps(this->values0, other.values), _mm256_max_ps(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_max_ps(this->values0, other.values), _mm_max_ps(this->values1, other.values),
+                    _mm_max_ps(this->values2, other.values), _mm_max_ps(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_epu32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_max_epu32(this->values0, other.values), _mm256_max_epu32(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_max_epu32(this->values0, other.values), _mm_max_epu32(this->values1, other.values),
+                    _mm_max_epu32(this->values2, other.values), _mm_max_epu32(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_max_epi32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_max_epi32(this->values0, other.values), _mm256_max_epi32(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_max_epi32(this->values0, other.values), _mm_max_epi32(this->values1, other.values),
+                    _mm_max_epi32(this->values2, other.values), _mm_max_epi32(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_epu16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_max_epu16(this->values0, other.values), _mm_max_epu16(this->values1, other.values));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_max_epi16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_max_epi16(this->values0, other.values), _mm_max_epi16(this->values1, other.values));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_max_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_max_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2612,16 +3408,54 @@ public:
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_INLINE SIMD16 min(BaseDef other) const noexcept
+    XS_INLINE SIMD16 min(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-            return SIMD16(_mm512_min_ps(this->values, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-            return SIMD16(_mm256_min_ps(this->values0, other.values), _mm256_min_ps(this->values1, other.values));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            return SIMD16(_mm_min_ps(this->values0, other.values), _mm_min_ps(this->values1, other.values),
-                _mm_min_ps(this->values2, other.values), _mm_min_ps(this->values3, other.values));
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_ps(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_ps(this->values0, other.values), _mm256_min_ps(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_min_ps(this->values0, other.values), _mm_min_ps(this->values1, other.values),
+                    _mm_min_ps(this->values2, other.values), _mm_min_ps(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_epu32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_min_epu32(this->values0, other.values), _mm256_min_epu32(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_min_epu32(this->values0, other.values), _mm_min_epu32(this->values1, other.values),
+                    _mm_min_epu32(this->values2, other.values), _mm_min_epu32(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMD16(_mm512_min_epi32(this->values, other.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(
+                    _mm256_min_epi32(this->values0, other.values), _mm256_min_epi32(this->values1, other.values));
+            } else {
+                return SIMD16(_mm_min_epi32(this->values0, other.values), _mm_min_epi32(this->values1, other.values),
+                    _mm_min_epi32(this->values2, other.values), _mm_min_epi32(this->values3, other.values));
+            }
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_epu16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_min_epu16(this->values0, other.values), _mm_min_epu16(this->values1, other.values));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMD16(_mm256_min_epi16(this->values, other.values));
+            } else {
+                return SIMD16(_mm_min_epi16(this->values0, other.values), _mm_min_epi16(this->values1, other.values));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_min_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD16(_mm_min_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2650,7 +3484,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             const __m256 val = _mm256_max_ps(this->values0, this->values1);
             return SIMD4Def(_mm_max_ps(_mm256_castps256_ps128(val), _mm256_extractf128_ps(val, 1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_max_ps(this->values0, this->values1);
             const __m128 val1 = _mm_max_ps(this->values2, this->values3);
             return SIMD4Def(_mm_max_ps(val0, val1));
@@ -2684,7 +3518,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             const __m256 val = _mm256_min_ps(this->values0, this->values1);
             return SIMD4Def(_mm_min_ps(_mm256_castps256_ps128(val), _mm256_extractf128_ps(val, 1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_min_ps(this->values0, this->values1);
             const __m128 val1 = _mm_min_ps(this->values2, this->values3);
             return SIMD4Def(_mm_min_ps(val0, val1));
@@ -2716,7 +3550,7 @@ public:
                 _mm256_max_ps(_mm512_castps512_ps256(this->values), _mm512_extractf32x8_ps(this->values, 1)));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             return SIMD8Def(_mm256_max_ps(this->values0, this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_max_ps(this->values0, this->values2), _mm_max_ps(this->values1, this->values3));
         } else
 #endif
@@ -2740,7 +3574,7 @@ public:
                 _mm256_min_ps(_mm512_castps512_ps256(this->values), _mm512_extractf32x8_ps(this->values, 1)));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             return SIMD8Def(_mm256_min_ps(this->values0, this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_min_ps(this->values0, this->values2), _mm_min_ps(this->values1, this->values3));
         } else
 #endif
@@ -2770,7 +3604,7 @@ public:
             val = _mm256_max_ps(_mm256_shuffle32107654_ps(val), val);
             val = _mm256_max_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(1, 0, 3, 2)), val);
             return BaseDef(_mm256_max_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(2, 3, 0, 1)), val));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_max_ps(this->values0, this->values1);
             const __m128 val1 = _mm_max_ps(this->values2, this->values3);
             val0 = _mm_max_ps(val0, val1);
@@ -2815,7 +3649,7 @@ public:
             val = _mm256_min_ps(_mm256_shuffle32107654_ps(val), val);
             val = _mm256_min_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(1, 0, 3, 2)), val);
             return BaseDef(_mm256_min_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(2, 3, 0, 1)), val));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_min_ps(this->values0, this->values1);
             const __m128 val1 = _mm_min_ps(this->values2, this->values3);
             val0 = _mm_min_ps(val0, val1);
@@ -2860,7 +3694,7 @@ public:
             __m128 val1 = _mm_max_ps(_mm256_extractf128_ps(val0, 1), _mm256_castps256_ps128(val0));
             val1 = _mm_max_ps(_mm_shuffle3232_ps(val1), val1);
             return InBaseDef(_mm_max_ss(_mm_shuffle3311_ps(val1), val1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_max_ps(this->values0, this->values1);
             const __m128 val1 = _mm_max_ps(this->values2, this->values3);
             val0 = _mm_max_ps(val0, val1);
@@ -2891,7 +3725,7 @@ public:
             __m128 val1 = _mm_min_ps(_mm256_extractf128_ps(val0, 1), _mm256_castps256_ps128(val0));
             val1 = _mm_min_ps(_mm_shuffle3232_ps(val1), val1);
             return InBaseDef(_mm_min_ss(_mm_shuffle3311_ps(val1), val1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_min_ps(this->values0, this->values1);
             const __m128 val1 = _mm_min_ps(this->values2, this->values3);
             val0 = _mm_min_ps(val0, val1);
@@ -2925,7 +3759,7 @@ public:
             const __m256 val2 = _mm256_shuffle_ps(val0, val1, _MM_SHUFFLE(2, 0, 2, 0));     //(16,14,12,10,06,04,02,00)
             const __m256 val3 = _mm256_shuffle_ps(val0, val1, _MM_SHUFFLE(3, 1, 3, 1));     //(17,15,13,11,07,05,03,01)
             return SIMD8Def(_mm256_max_ps(val2, val3));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_shuffle_ps(this->values0, this->values1, _MM_SHUFFLE(2, 0, 2, 0));
             const __m128 val1 = _mm_shuffle_ps(this->values0, this->values1, _MM_SHUFFLE(3, 1, 3, 1));
             const __m128 val2 = _mm_shuffle_ps(this->values2, this->values3, _MM_SHUFFLE(2, 0, 2, 0));
@@ -2962,7 +3796,7 @@ public:
             const __m256 val2 = _mm256_shuffle_ps(val0, val1, _MM_SHUFFLE(2, 0, 2, 0));     //(16,14,12,10,06,04,02,00)
             const __m256 val3 = _mm256_shuffle_ps(val0, val1, _MM_SHUFFLE(3, 1, 3, 1));     //(17,15,13,11,07,05,03,01)
             return SIMD8Def(_mm256_min_ps(val2, val3));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_shuffle_ps(this->values0, this->values1, _MM_SHUFFLE(2, 0, 2, 0));
             const __m128 val1 = _mm_shuffle_ps(this->values0, this->values1, _MM_SHUFFLE(3, 1, 3, 1));
             const __m128 val2 = _mm_shuffle_ps(this->values2, this->values3, _MM_SHUFFLE(2, 0, 2, 0));
@@ -3002,7 +3836,7 @@ public:
             const __m128 val3 = _mm_unpacklo_ps(_mm256_castps256_ps128(val0), val2); //(1-46, 1-02, 0-46, 0-02)
             const __m128 val4 = _mm_unpackhi_ps(_mm256_castps256_ps128(val0), val2); //(1-57, 1-13, 0-57, 0-13)
             return SIMD4Def(_mm_max_ps(val3, val4));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_unpacklo_ps(this->values0, this->values1);       //(00,10,01,11)
             __m128 val1 = _mm_unpackhi_ps(this->values0, this->values1);       //(02,12,03,13)
             __m128 val2 = _mm_unpacklo_ps(this->values2, this->values3);       //(20,30,21,31)
@@ -3052,7 +3886,7 @@ public:
             const __m128 val3 = _mm_unpacklo_ps(_mm256_castps256_ps128(val0), val2); //(1-46, 1-02, 0-46, 0-02)
             const __m128 val4 = _mm_unpackhi_ps(_mm256_castps256_ps128(val0), val2); //(1-57, 1-13, 0-57, 0-13)
             return SIMD4Def(_mm_min_ps(val3, val4));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_unpacklo_ps(this->values0, this->values1);       //(00,10,01,11)
             __m128 val1 = _mm_unpackhi_ps(this->values0, this->values1);       //(02,12,03,13)
             __m128 val2 = _mm_unpacklo_ps(this->values2, this->values3);       //(20,30,21,31)
@@ -3100,7 +3934,7 @@ public:
             __m128 val2 = _mm256_extractf128_ps(val0, 1);
             val2 = _mm_max_ps(val2, _mm256_castps256_ps128(val0)); //(1-1357,0-1357,1-0246,0-0246)
             return SIMD2Def(_mm_max_ps(_mm_movehl_ps(val2, val2), val2));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_max_ps(this->values0, this->values1);
             const __m128 val1 = _mm_max_ps(this->values2, this->values3);
             __m128 val2 = _mm_unpacklo_ps(val0, val1);
@@ -3148,7 +3982,7 @@ public:
             __m128 val2 = _mm256_extractf128_ps(val0, 1);
             val2 = _mm_min_ps(val2, _mm256_castps256_ps128(val0)); //(1-1357,0-1357,1-0246,0-0246)
             return SIMD2Def(_mm_min_ps(_mm_movehl_ps(val2, val2), val2));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_min_ps(this->values0, this->values1);
             const __m128 val1 = _mm_min_ps(this->values2, this->values3);
             __m128 val2 = _mm_unpacklo_ps(val0, val1);
@@ -3188,7 +4022,7 @@ public:
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             const __m256 val = _mm256_add_ps(this->values0, this->values1);
             return SIMD4Def(_mm_add_ps(_mm256_castps256_ps128(val), _mm256_extractf128_ps(val, 1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_add_ps(this->values0, this->values1);
             const __m128 val1 = _mm_add_ps(this->values2, this->values3);
             return SIMD4Def(_mm_add_ps(val0, val1));
@@ -3220,7 +4054,7 @@ public:
                 _mm256_add_ps(_mm512_castps512_ps256(this->values), _mm512_extractf32x8_ps(this->values, 1)));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             return SIMD8Def(_mm256_add_ps(this->values0, this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_add_ps(this->values0, this->values2), _mm_add_ps(this->values1, this->values3));
         } else
 #endif
@@ -3243,7 +4077,7 @@ public:
                 _mm256_sub_ps(_mm512_castps512_ps256(this->values), _mm512_extractf32x8_ps(this->values, 1)));
         } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
             return SIMD8Def(_mm256_sub_ps(this->values0, this->values1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_sub_ps(this->values0, this->values2), _mm_sub_ps(this->values1, this->values3));
         } else
 #endif
@@ -3272,7 +4106,7 @@ public:
             val = _mm256_add_ps(_mm256_shuffle32107654_ps(val), val);
             val = _mm256_add_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(1, 0, 3, 2)), val);
             return BaseDef(_mm256_add_ps(_mm256_shuffle1_ps(val, _MM_SHUFFLE(2, 3, 0, 1)), val));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_add_ps(this->values0, this->values1);
             const __m128 val1 = _mm_add_ps(this->values2, this->values3);
             val0 = _mm_add_ps(val0, val1);
@@ -3318,7 +4152,7 @@ public:
             __m128 val1 = _mm_add_ps(_mm256_extractf128_ps(val0, 1), _mm256_castps256_ps128(val0));
             val1 = _mm_add_ps(_mm_shuffle3232_ps(val1), val1);
             return InBaseDef(_mm_add_ss(_mm_shuffle3311_ps(val1), val1));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_add_ps(this->values0, this->values1);
             const __m128 val1 = _mm_add_ps(this->values2, this->values3);
             val0 = _mm_add_ps(val0, val1);
@@ -3368,7 +4202,7 @@ public:
                 val1 = _mm256_shuffle1_ps(val1, _MM_SHUFFLE(1, 0, 3, 2));
                 return SIMD8Def(_mm256_blend_ps(val0, val1, _MM256_BLEND(0, 0, 1, 1, 1, 1, 0, 0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_hadd_ps(this->values0, this->values1), _mm_hadd_ps(this->values2, this->values3));
         } else
 #endif
@@ -3395,7 +4229,7 @@ public:
             const __m256 val = _mm256_hadd_ps(this->values0, this->values1);
             const __m128 val1 = _mm_hadd_ps(_mm256_castps256_ps128(val), _mm256_extractf128_ps(val, 1));
             return SIMD4Def(_mm_shuffle1_ps(val1, _MM_SHUFFLE(3, 1, 2, 0)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_hadd_ps(this->values0, this->values1);
             const __m128 val1 = _mm_hadd_ps(this->values2, this->values3);
             return SIMD4Def(_mm_hadd_ps(val0, val1));
@@ -3440,7 +4274,7 @@ public:
             __m128 val2 = _mm256_extractf128_ps(val0, 1);
             val2 = _mm_add_ps(val2, _mm256_castps256_ps128(val0)); //(1-1357,0-1357,1-0246,0-0246)
             return SIMD2Def(_mm_add_ps(_mm_shuffle3232_ps(val2), val2));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val0 = _mm_add_ps(this->values0, this->values1);
             const __m128 val1 = _mm_add_ps(this->values2, this->values3);
             __m128 val2 = _mm_unpacklo_ps(val0, val1);
@@ -3490,7 +4324,7 @@ public:
                 val1 = _mm256_shuffle1_ps(val1, _MM_SHUFFLE(1, 0, 3, 2));
                 return SIMD8Def(_mm256_blend_ps(val0, val1, _MM256_BLEND(0, 0, 1, 1, 1, 1, 0, 0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD8Def(_mm_hsub_ps(this->values0, this->values1), _mm_hsub_ps(this->values2, this->values3));
         } else
 #endif
@@ -3518,7 +4352,7 @@ public:
             const __m256 val1 = _mm256_mul_ps(this->values1, other.values1);
             val0 = _mm256_add_ps(val0, val1);
             return SIMD4Def(_mm_add_ps(_mm256_castps256_ps128(val0), _mm256_extractf128_ps(val0, 1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val0 = _mm_mul_ps(this->values0, other.values0);
             const __m128 val1 = _mm_mul_ps(this->values1, other.values1);
             __m128 val2 = _mm_mul_ps(this->values2, other.values2);
@@ -3590,7 +4424,7 @@ public:
             val1 = _mm256_shuffle_ps(val0, val1, _MM_SHUFFLE(3, 2, 3, 2));
             return SIMD16(_mm256_permute2f128_ps(val2, val1, _MM256_PERMUTE(2, 0)),
                 _mm256_permute2f128_ps(val2, val1, _MM256_PERMUTE(3, 1)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val1 = _mm_unpacklo_ps(this->values0, this->values1);
             const __m128 val2 = _mm_unpacklo_ps(this->values2, this->values3);
             const __m128 val3 = _mm_unpackhi_ps(this->values0, this->values1);
@@ -3649,7 +4483,7 @@ public:
                 return SIMD16(_mm256_blend_ps(this->values0, other.values0, _MM256_BLEND(1, 0, 1, 0, 1, 0, 1, 0)),
                     _mm256_blend_ps(this->values1, other.values1, _MM256_BLEND(1, 0, 1, 0, 1, 0, 1, 0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD16(_mm_blend_ps(this->values0, other.values0, _MM_BLEND(0, 1, 0, 1)),
                     _mm_blend_ps(this->values1, other.values1, _MM_BLEND(0, 1, 0, 1)),
@@ -3741,7 +4575,7 @@ public:
                 return SIMD16(_mm256_shuffle_ps(this->values0, val, _MM_SHUFFLE(2, 0, 1, 0)),
                     _mm256_shuffle_ps(this->values1, val1, _MM_SHUFFLE(2, 0, 1, 0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD16(_mm_blend_ss(this->values0, other.values0), _mm_blend_ss(this->values1, other.values1),
                     _mm_blend_ss(this->values2, other.values2), _mm_blend_ss(this->values3, other.values3));
@@ -3844,7 +4678,7 @@ public:
                         _MM256_BLEND(Index0 == 7, Index0 == 6, Index0 == 5, Index0 == 4, Index0 == 3, Index0 == 2,
                             Index0 == 1, Index0 == 0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 half0 = (&this->values0)[Index0 / 4];
             const __m128 half1 = (&other.values0)[Index1 / 4];
             __m128 half2 = (&this->values0)[Index0 / 4 + 2];
@@ -3914,7 +4748,7 @@ public:
                               _MM256_BLEND(Elem1, Elem0, Elem1, Elem0, Elem1, Elem0, Elem1, Elem0)),
                 _mm256_blend_ps(this->values1, other.values1,
                     _MM256_BLEND(Elem1, Elem0, Elem1, Elem0, Elem1, Elem0, Elem1, Elem0)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD16(_mm_blend_ps(this->values0, other.values0, _MM_BLEND(Elem1, Elem0, Elem1, Elem0)),
                 _mm_blend_ps(this->values1, other.values1, _MM_BLEND(Elem1, Elem0, Elem1, Elem0)),
                 _mm_blend_ps(this->values2, other.values2, _MM_BLEND(Elem1, Elem0, Elem1, Elem0)),
@@ -3961,7 +4795,7 @@ public:
                               _MM256_BLEND(Elem3, Elem2, Elem1, Elem0, Elem3, Elem2, Elem1, Elem0)),
                 _mm256_blend_ps(this->values1, other.values1,
                     _MM256_BLEND(Elem3, Elem2, Elem1, Elem0, Elem3, Elem2, Elem1, Elem0)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Elem0 && !Elem1 && !Elem2 && !Elem3) {
                 return SIMD16(_mm_blend_ss(this->values0, other.values0), _mm_blend_ss(this->values1, other.values1),
                     _mm_blend_ss(this->values2, other.values2), _mm_blend_ss(this->values3, other.values3));
@@ -4021,7 +4855,7 @@ public:
                               _MM256_BLEND(Elem7, Elem6, Elem5, Elem4, Elem3, Elem2, Elem1, Elem0)),
                 _mm256_blend_ps(this->values1, other.values1,
                     _MM256_BLEND(Elem7, Elem6, Elem5, Elem4, Elem3, Elem2, Elem1, Elem0)));
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 ret0, ret1, ret2, ret3;
             if constexpr (Elem0 && Elem1 && Elem2 && Elem3) {
                 ret0 = other.values0;
@@ -4101,7 +4935,7 @@ public:
                 return SIMD16(_mm256_shuffle1_ps(this->values0, _MM_SHUFFLE(Index1 + 2, Index0 + 2, Index1, Index0)),
                     _mm256_shuffle1_ps(this->values1, _MM_SHUFFLE(Index1 + 2, Index0 + 2, Index1, Index0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD16(_mm_shuffle2200_ps(this->values0), _mm_shuffle2200_ps(this->values1),
                     _mm_shuffle2200_ps(this->values2), _mm_shuffle2200_ps(this->values3));
@@ -4173,7 +5007,7 @@ public:
                 return SIMD16(_mm256_shuffle1_ps(this->values0, _MM_SHUFFLE(Index3, Index2, Index1, Index0)),
                     _mm256_shuffle1_ps(this->values1, _MM_SHUFFLE(Index3, Index2, Index1, Index0)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0 && Index3 == 1) {
                 return SIMD16(_mm_shuffle1010_ps(this->values0), _mm_shuffle1010_ps(this->values1),
                     _mm_shuffle1010_ps(this->values2), _mm_shuffle1010_ps(this->values3));
@@ -4261,7 +5095,7 @@ public:
                 SIMD8Def(this->values1)
                     .template shuffle<Index0, Index1, Index2, Index3, Index4, Index5, Index6, Index7>()
                     .values);
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr ((Index0 == Index4) && (Index1 == Index5) && (Index2 == Index6) && (Index3 == Index7)) {
                 const __m128 ret = SIMD4Def(this->values0)
                                        .template combine<Index0, Index1, Index2, Index3>(SIMD4Def(this->values1))
@@ -4325,7 +5159,7 @@ public:
                 return SIMD16(_mm256_permute2f128_ps(this->values0, this->values1, _MM256_PERMUTE(Index1, Index0)),
                     _mm256_permute2f128_ps(this->values0, this->values1, _MM256_PERMUTE(Index3, Index2)));
             }
-        } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD16(
                 (&this->values0)[Index0], (&this->values0)[Index1], (&this->values0)[Index2], (&this->values0)[Index3]);
         }
@@ -4351,14 +5185,37 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD16<T, Width> operator+(const SIMD16<T, Width>& other1, const SIMD16<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_add_ps(other1.values, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_add_ps(other1.values0, other2.values0), _mm256_add_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values0), _mm_add_ps(other1.values1, other2.values1),
-            _mm_add_ps(other1.values2, other2.values2), _mm_add_ps(other1.values3, other2.values3));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_ps(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_ps(other1.values0, other2.values0), _mm256_add_ps(other1.values1, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values0),
+                _mm_add_ps(other1.values1, other2.values1), _mm_add_ps(other1.values2, other2.values2),
+                _mm_add_ps(other1.values3, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_epi32(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_epi32(other1.values0, other2.values0), _mm256_add_epi32(other1.values1, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_add_epi32(other1.values0, other2.values0),
+                _mm_add_epi32(other1.values1, other2.values1), _mm_add_epi32(other1.values2, other2.values2),
+                _mm_add_epi32(other1.values3, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_add_epi16(other1.values, other2.values));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_add_epi16(other1.values0, other2.values0), _mm_add_epi16(other1.values1, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_add_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -4378,17 +5235,41 @@ XS_INLINE SIMD16<T, Width> operator+(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator+(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator+(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_add_ps(other1.values, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_add_ps(other1.values0, other2.values), _mm256_add_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values), _mm_add_ps(other1.values1, other2.values),
-            _mm_add_ps(other1.values2, other2.values), _mm_add_ps(other1.values3, other2.values));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_ps(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_ps(other1.values0, other2.values), _mm256_add_ps(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values),
+                _mm_add_ps(other1.values1, other2.values), _mm_add_ps(other1.values2, other2.values),
+                _mm_add_ps(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_epi32(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_epi32(other1.values0, other2.values), _mm256_add_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_add_epi32(other1.values0, other2.values),
+                _mm_add_epi32(other1.values1, other2.values), _mm_add_epi32(other1.values2, other2.values),
+                _mm_add_epi32(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_add_epi16(other1.values, other2.values));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_add_epi16(other1.values0, other2.values), _mm_add_epi16(other1.values1, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_add_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -4412,14 +5293,37 @@ XS_INLINE SIMD16<T, Width> operator+(
     const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::SIMD4Def& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_add_ps(other1.values, _mm512_broadcastf128_ps(other2.values)));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        const __m256 val = _mm256_broadcastf128_ps(other2.values);
-        return SIMD16<T, Width>(_mm256_add_ps(other1.values0, val), _mm256_add_ps(other1.values1, val));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values), _mm_add_ps(other1.values1, other2.values),
-            _mm_add_ps(other1.values2, other2.values), _mm_add_ps(other1.values3, other2.values));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_ps(other1.values, _mm512_broadcastf128_ps(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            const __m256 val = _mm256_broadcastf128_ps(other2.values);
+            return SIMD16<T, Width>(_mm256_add_ps(other1.values0, val), _mm256_add_ps(other1.values1, val));
+        } else {
+            return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values),
+                _mm_add_ps(other1.values1, other2.values), _mm_add_ps(other1.values2, other2.values),
+                _mm_add_ps(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_api32(other1.values, _mm512_broadcastsi128(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_add_epi32(other1.values0, _mm256_broadcasti128(other2.values)),
+                _mm256_add_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_add_epi32(other1.values0, other2.values),
+                _mm_add_epi32(other1.values1, other2.values), _mm_add_epi32(other1.values2, other2.values),
+                _mm_add_epi32(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_add_epi16(other1.values, _mm256_broadcasti64(other2.values)));
+        } else {
+            const __m128i val = _mm_shuffle32103210_epi16(other2.values);
+            return SIMD16<T, Width>(_mm_add_epi16(other1.values0, val), _mm_add_epi16(other1.values1, val));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_add_epi8(other1.values, _mm_shuffle0000_epi32(other2.values)));
     } else
 #endif
     {
@@ -4443,14 +5347,37 @@ XS_INLINE SIMD16<T, Width> operator+(
     const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::SIMD8Def& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_add_ps(other1.values, _mm512_broadcastf256_ps(other2.values)));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_add_ps(other1.values0, other2.values), _mm256_add_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values0), _mm_add_ps(other1.values1, other2.values1),
-            _mm_add_ps(other1.values2, other2.values0), _mm_add_ps(other1.values3, other2.values1));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_ps(other1.values, _mm512_broadcastf256_ps(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_ps(other1.values0, other2.values), _mm256_add_ps(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_add_ps(other1.values0, other2.values0),
+                _mm_add_ps(other1.values1, other2.values1), _mm_add_ps(other1.values2, other2.values0),
+                _mm_add_ps(other1.values3, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_add_api32(other1.values, _mm512_broadcasti256(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_add_epi32(other1.values0, other2.values), _mm256_add_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_add_epi32(other1.values0, other2.values0),
+                _mm_add_epi32(other1.values1, other2.values0), _mm_add_epi32(other1.values2, other2.values0),
+                _mm_add_epi32(other1.values3, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_add_epi16(other1.values, _mm256_broadcasti128(other2.values)));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_add_epi16(other1.values0, other2.values), _mm_add_epi16(other1.values1, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_add_epi8(other1.values, _mm_shuffle00_epi64(other2.values)));
     } else
 #endif
     {
@@ -4473,14 +5400,37 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD16<T, Width> operator-(const SIMD16<T, Width>& other1, const SIMD16<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_sub_ps(other1.values0, other2.values0), _mm256_sub_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values0), _mm_sub_ps(other1.values1, other2.values1),
-            _mm_sub_ps(other1.values2, other2.values2), _mm_sub_ps(other1.values3, other2.values3));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_ps(other1.values0, other2.values0), _mm256_sub_ps(other1.values1, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values0),
+                _mm_sub_ps(other1.values1, other2.values1), _mm_sub_ps(other1.values2, other2.values2),
+                _mm_sub_ps(other1.values3, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_epi32(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_epi32(other1.values0, other2.values0), _mm256_sub_epi32(other1.values1, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_epi32(other1.values0, other2.values0),
+                _mm_sub_epi32(other1.values1, other2.values1), _mm_sub_epi32(other1.values2, other2.values2),
+                _mm_sub_epi32(other1.values3, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi16(other1.values, other2.values));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_sub_epi16(other1.values0, other2.values0), _mm_sub_epi16(other1.values1, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -4500,17 +5450,41 @@ XS_INLINE SIMD16<T, Width> operator-(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator-(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator-(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_sub_ps(other1.values0, other2.values), _mm256_sub_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values), _mm_sub_ps(other1.values1, other2.values),
-            _mm_sub_ps(other1.values2, other2.values), _mm_sub_ps(other1.values3, other2.values));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_ps(other1.values0, other2.values), _mm256_sub_ps(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values),
+                _mm_sub_ps(other1.values1, other2.values), _mm_sub_ps(other1.values2, other2.values),
+                _mm_sub_ps(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_epi32(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_epi32(other1.values0, other2.values), _mm256_sub_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_epi32(other1.values0, other2.values),
+                _mm_sub_epi32(other1.values1, other2.values), _mm_sub_epi32(other1.values2, other2.values),
+                _mm_sub_epi32(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi16(other1.values, other2.values));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_sub_epi16(other1.values0, other2.values), _mm_sub_epi16(other1.values1, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -4530,17 +5504,41 @@ XS_INLINE SIMD16<T, Width> operator-(const SIMD16<T, Width>& other1, typename SI
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator-(typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept
+XS_INLINE SIMD16<T, Width> operator-(
+    const typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_sub_ps(other1.values, other2.values0), _mm256_sub_ps(other1.values, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_sub_ps(other1.values, other2.values0), _mm_sub_ps(other1.values, other2.values1),
-            _mm_sub_ps(other1.values, other2.values2), _mm_sub_ps(other1.values, other2.values3));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_ps(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_ps(other1.values, other2.values0), _mm256_sub_ps(other1.values, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_ps(other1.values, other2.values0),
+                _mm_sub_ps(other1.values, other2.values1), _mm_sub_ps(other1.values, other2.values2),
+                _mm_sub_ps(other1.values, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_epi32(other1.values, other2.values));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_epi32(other1.values, other2.values0), _mm256_sub_epi32(other1.values, other2.values1));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_epi32(other1.values, other2.values0),
+                _mm_sub_epi32(other1.values, other2.values1), _mm_sub_epi32(other1.values, other2.values2),
+                _mm_sub_epi32(other1.values, other2.values3));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi16(other1.values, other2.values));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_sub_epi16(other1.values, other2.values0), _mm_sub_epi16(other1.values, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -4564,14 +5562,37 @@ XS_INLINE SIMD16<T, Width> operator-(
     const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::SIMD4Def& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_sub_ps(other1.values, _mm512_broadcastf128_ps(other2.values)));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        const __m256 val = _mm256_broadcastf128_ps(other2.values);
-        return SIMD16<T, Width>(_mm256_sub_ps(other1.values0, val), _mm256_sub_ps(other1.values1, val));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values), _mm_sub_ps(other1.values1, other2.values),
-            _mm_sub_ps(other1.values2, other2.values), _mm_sub_ps(other1.values3, other2.values));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_ps(other1.values, _mm512_broadcastf128_ps(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            const __m256 val = _mm256_broadcastf128_ps(other2.values);
+            return SIMD16<T, Width>(_mm256_sub_ps(other1.values0, val), _mm256_sub_ps(other1.values1, val));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values),
+                _mm_sub_ps(other1.values1, other2.values), _mm_sub_ps(other1.values2, other2.values),
+                _mm_sub_ps(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_api32(other1.values, _mm512_broadcastsi128(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi32(other1.values0, _mm256_broadcasti128(other2.values)),
+                _mm256_sub_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_epi32(other1.values0, other2.values),
+                _mm_sub_epi32(other1.values1, other2.values), _mm_sub_epi32(other1.values2, other2.values),
+                _mm_sub_epi32(other1.values3, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi16(other1.values, _mm256_broadcasti64(other2.values)));
+        } else {
+            const __m128i val = _mm_shuffle32103210_epi16(other2.values);
+            return SIMD16<T, Width>(_mm_sub_epi16(other1.values0, val), _mm_sub_epi16(other1.values1, val));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_sub_epi8(other1.values, _mm_shuffle0000_epi32(other2.values)));
     } else
 #endif
     {
@@ -4595,14 +5616,37 @@ XS_INLINE SIMD16<T, Width> operator-(
     const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::SIMD8Def& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
-        return SIMD16<T, Width>(_mm512_sub_ps(other1.values, _mm512_broadcastf256_ps(other2.values)));
-    } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-        return SIMD16<T, Width>(
-            _mm256_sub_ps(other1.values0, other2.values), _mm256_sub_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-        return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values0), _mm_sub_ps(other1.values1, other2.values1),
-            _mm_sub_ps(other1.values2, other2.values0), _mm_sub_ps(other1.values3, other2.values1));
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_ps(other1.values, _mm512_broadcastf256_ps(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_ps(other1.values0, other2.values), _mm256_sub_ps(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_ps(other1.values0, other2.values0),
+                _mm_sub_ps(other1.values1, other2.values1), _mm_sub_ps(other1.values2, other2.values0),
+                _mm_sub_ps(other1.values3, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+            return SIMD16<T, Width>(_mm512_sub_api32(other1.values, _mm512_broadcasti256(other2.values)));
+        } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(
+                _mm256_sub_epi32(other1.values0, other2.values), _mm256_sub_epi32(other1.values1, other2.values));
+        } else {
+            return SIMD16<T, Width>(_mm_sub_epi32(other1.values0, other2.values0),
+                _mm_sub_epi32(other1.values1, other2.values0), _mm_sub_epi32(other1.values2, other2.values0),
+                _mm_sub_epi32(other1.values3, other2.values1));
+        }
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+            return SIMD16<T, Width>(_mm256_sub_epi16(other1.values, _mm256_broadcasti128(other2.values)));
+        } else {
+            return SIMD16<T, Width>(
+                _mm_sub_epi16(other1.values0, other2.values), _mm_sub_epi16(other1.values1, other2.values));
+        }
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD16<T, Width>(_mm_sub_epi8(other1.values, _mm_shuffle00_epi64(other2.values)));
     } else
 #endif
     {
@@ -4630,7 +5674,7 @@ XS_INLINE SIMD16<T, Width> operator*(const SIMD16<T, Width>& other1, const SIMD1
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_mul_ps(other1.values0, other2.values0), _mm256_mul_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_mul_ps(other1.values0, other2.values0), _mm_mul_ps(other1.values1, other2.values1),
             _mm_mul_ps(other1.values2, other2.values2), _mm_mul_ps(other1.values3, other2.values3));
     } else
@@ -4652,7 +5696,8 @@ XS_INLINE SIMD16<T, Width> operator*(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator*(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator*(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -4660,7 +5705,7 @@ XS_INLINE SIMD16<T, Width> operator*(const SIMD16<T, Width>& other1, typename SI
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_mul_ps(other1.values0, other2.values), _mm256_mul_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_mul_ps(other1.values0, other2.values), _mm_mul_ps(other1.values1, other2.values),
             _mm_mul_ps(other1.values2, other2.values), _mm_mul_ps(other1.values3, other2.values));
     } else
@@ -4691,7 +5736,7 @@ XS_INLINE SIMD16<T, Width> operator*(
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         const __m256 val = _mm256_broadcastf128_ps(other2.values);
         return SIMD16<T, Width>(_mm256_mul_ps(other1.values0, val), _mm256_mul_ps(other1.values1, val));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_mul_ps(other1.values0, other2.values), _mm_mul_ps(other1.values1, other2.values),
             _mm_mul_ps(other1.values2, other2.values), _mm_mul_ps(other1.values3, other2.values));
     } else
@@ -4722,7 +5767,7 @@ XS_INLINE SIMD16<T, Width> operator*(
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_mul_ps(other1.values0, other2.values), _mm256_mul_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_mul_ps(other1.values0, other2.values0), _mm_mul_ps(other1.values1, other2.values1),
             _mm_mul_ps(other1.values2, other2.values0), _mm_mul_ps(other1.values3, other2.values1));
     } else
@@ -4752,7 +5797,7 @@ XS_INLINE SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, const SIMD1
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_div_ps(other1.values0, other2.values0), _mm256_div_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_div_ps(other1.values0, other2.values0), _mm_div_ps(other1.values1, other2.values1),
             _mm_div_ps(other1.values2, other2.values2), _mm_div_ps(other1.values3, other2.values3));
     } else
@@ -4774,7 +5819,8 @@ XS_INLINE SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator/(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -4782,7 +5828,7 @@ XS_INLINE SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, typename SI
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_div_ps(other1.values0, other2.values), _mm256_div_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_div_ps(other1.values0, other2.values), _mm_div_ps(other1.values1, other2.values),
             _mm_div_ps(other1.values2, other2.values), _mm_div_ps(other1.values3, other2.values));
     } else
@@ -4804,7 +5850,8 @@ XS_INLINE SIMD16<T, Width> operator/(const SIMD16<T, Width>& other1, typename SI
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator/(typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept
+XS_INLINE SIMD16<T, Width> operator/(
+    const typename SIMD16<T, Width>::BaseDef other1, const SIMD16<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -4812,7 +5859,7 @@ XS_INLINE SIMD16<T, Width> operator/(typename SIMD16<T, Width>::BaseDef other1, 
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_div_ps(other1.values, other2.values0), _mm256_div_ps(other1.values, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_div_ps(other1.values, other2.values0), _mm_div_ps(other1.values, other2.values1),
             _mm_div_ps(other1.values, other2.values2), _mm_div_ps(other1.values, other2.values3));
     } else
@@ -4843,7 +5890,7 @@ XS_INLINE SIMD16<T, Width> operator/(
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         const __m256 val = _mm256_broadcastf128_ps(other2.values);
         return SIMD16<T, Width>(_mm256_div_ps(other1.values0, val), _mm256_div_ps(other1.values1, val));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_div_ps(other1.values0, other2.values), _mm_div_ps(other1.values1, other2.values),
             _mm_div_ps(other1.values2, other2.values), _mm_div_ps(other1.values3, other2.values));
     } else
@@ -4874,7 +5921,7 @@ XS_INLINE SIMD16<T, Width> operator/(
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_div_ps(other1.values0, other2.values), _mm256_div_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_div_ps(other1.values0, other2.values0), _mm_div_ps(other1.values1, other2.values1),
             _mm_div_ps(other1.values2, other2.values0), _mm_div_ps(other1.values3, other2.values1));
     } else
@@ -4903,7 +5950,7 @@ XS_INLINE SIMD16<T, Width> operator-(const SIMD16<T, Width>& other) noexcept
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         const __m256 val = _mm256_setzero_ps();
         return SIMD16<T, Width>(_mm256_sub_ps(val, other.values0), _mm256_sub_ps(val, other.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         const __m128 val = _mm_setzero_ps();
         return SIMD16<T, Width>(_mm_sub_ps(val, other.values0), _mm_sub_ps(val, other.values1),
             _mm_sub_ps(val, other.values2), _mm_sub_ps(val, other.values3));
@@ -4931,7 +5978,7 @@ XS_INLINE SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, const SIMD16<T,
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_add_ps(other1.values0, other2.values0);
         other1.values1 = _mm256_add_ps(other1.values1, other2.values1);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_add_ps(other1.values0, other2.values0);
         other1.values1 = _mm_add_ps(other1.values1, other2.values1);
         other1.values2 = _mm_add_ps(other1.values2, other2.values2);
@@ -4966,7 +6013,8 @@ XS_INLINE SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, const SIMD16<T,
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width>& operator+=(
+    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -4974,7 +6022,7 @@ XS_INLINE SIMD16<T, Width>& operator+=(SIMD16<T, Width>& other1, typename SIMD16
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_add_ps(other1.values0, other2.values);
         other1.values1 = _mm256_add_ps(other1.values1, other2.values);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_add_ps(other1.values0, other2.values);
         other1.values1 = _mm_add_ps(other1.values1, other2.values);
         other1.values2 = _mm_add_ps(other1.values2, other2.values);
@@ -5017,7 +6065,7 @@ XS_INLINE SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, const SIMD16<T,
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_sub_ps(other1.values0, other2.values0);
         other1.values1 = _mm256_sub_ps(other1.values1, other2.values1);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_sub_ps(other1.values0, other2.values0);
         other1.values1 = _mm_sub_ps(other1.values1, other2.values1);
         other1.values2 = _mm_sub_ps(other1.values2, other2.values2);
@@ -5052,7 +6100,8 @@ XS_INLINE SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, const SIMD16<T,
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width>& operator-=(
+    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5060,7 +6109,7 @@ XS_INLINE SIMD16<T, Width>& operator-=(SIMD16<T, Width>& other1, typename SIMD16
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_sub_ps(other1.values0, other2.values);
         other1.values1 = _mm256_sub_ps(other1.values1, other2.values);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_sub_ps(other1.values0, other2.values);
         other1.values1 = _mm_sub_ps(other1.values1, other2.values);
         other1.values2 = _mm_sub_ps(other1.values2, other2.values);
@@ -5103,7 +6152,7 @@ XS_INLINE SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, const SIMD16<T,
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_mul_ps(other1.values0, other2.values0);
         other1.values1 = _mm256_mul_ps(other1.values1, other2.values1);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_mul_ps(other1.values0, other2.values0);
         other1.values1 = _mm_mul_ps(other1.values1, other2.values1);
         other1.values2 = _mm_mul_ps(other1.values2, other2.values2);
@@ -5138,7 +6187,8 @@ XS_INLINE SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, const SIMD16<T,
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width>& operator*=(
+    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5146,7 +6196,7 @@ XS_INLINE SIMD16<T, Width>& operator*=(SIMD16<T, Width>& other1, typename SIMD16
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_mul_ps(other1.values0, other2.values);
         other1.values1 = _mm256_mul_ps(other1.values1, other2.values);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_mul_ps(other1.values0, other2.values);
         other1.values1 = _mm_mul_ps(other1.values1, other2.values);
         other1.values2 = _mm_mul_ps(other1.values2, other2.values);
@@ -5189,7 +6239,7 @@ XS_INLINE SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, const SIMD16<T,
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_div_ps(other1.values0, other2.values0);
         other1.values1 = _mm256_div_ps(other1.values1, other2.values1);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_div_ps(other1.values0, other2.values0);
         other1.values1 = _mm_div_ps(other1.values1, other2.values1);
         other1.values2 = _mm_div_ps(other1.values2, other2.values2);
@@ -5224,7 +6274,8 @@ XS_INLINE SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, const SIMD16<T,
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width>& operator/=(
+    SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5232,7 +6283,7 @@ XS_INLINE SIMD16<T, Width>& operator/=(SIMD16<T, Width>& other1, typename SIMD16
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         other1.values0 = _mm256_div_ps(other1.values0, other2.values);
         other1.values1 = _mm256_div_ps(other1.values1, other2.values);
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values0 = _mm_div_ps(other1.values0, other2.values);
         other1.values1 = _mm_div_ps(other1.values1, other2.values);
         other1.values2 = _mm_div_ps(other1.values2, other2.values);
@@ -5277,7 +6328,7 @@ XS_INLINE SIMD16<T, Width> operator&(const SIMD16<T, Width>& other1, const SIMD1
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_and_ps(other1.values0, other2.values0), _mm256_and_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_and_ps(other1.values0, other2.values0), _mm_and_ps(other1.values1, other2.values1),
             _mm_and_ps(other1.values2, other2.values2), _mm_and_ps(other1.values3, other2.values3));
     } else
@@ -5313,7 +6364,8 @@ XS_INLINE SIMD16<T, Width> operator&(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator&(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator&(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5321,7 +6373,7 @@ XS_INLINE SIMD16<T, Width> operator&(const SIMD16<T, Width>& other1, typename SI
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_and_ps(other1.values0, other2.values), _mm256_and_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_and_ps(other1.values0, other2.values), _mm_and_ps(other1.values1, other2.values),
             _mm_and_ps(other1.values2, other2.values), _mm_and_ps(other1.values3, other2.values));
     } else
@@ -5365,7 +6417,7 @@ XS_INLINE SIMD16<T, Width> operator|(const SIMD16<T, Width>& other1, const SIMD1
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_or_ps(other1.values0, other2.values0), _mm256_or_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_or_ps(other1.values0, other2.values0), _mm_or_ps(other1.values1, other2.values1),
             _mm_or_ps(other1.values2, other2.values2), _mm_or_ps(other1.values3, other2.values3));
     } else
@@ -5401,7 +6453,8 @@ XS_INLINE SIMD16<T, Width> operator|(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator|(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator|(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5409,7 +6462,7 @@ XS_INLINE SIMD16<T, Width> operator|(const SIMD16<T, Width>& other1, typename SI
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_or_ps(other1.values0, other2.values), _mm256_or_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_or_ps(other1.values0, other2.values), _mm_or_ps(other1.values1, other2.values),
             _mm_or_ps(other1.values2, other2.values), _mm_or_ps(other1.values3, other2.values));
     } else
@@ -5453,7 +6506,7 @@ XS_INLINE SIMD16<T, Width> operator^(const SIMD16<T, Width>& other1, const SIMD1
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_xor_ps(other1.values0, other2.values0), _mm256_xor_ps(other1.values1, other2.values1));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_xor_ps(other1.values0, other2.values0), _mm_xor_ps(other1.values1, other2.values1),
             _mm_xor_ps(other1.values2, other2.values2), _mm_xor_ps(other1.values3, other2.values3));
     } else
@@ -5489,7 +6542,8 @@ XS_INLINE SIMD16<T, Width> operator^(const SIMD16<T, Width>& other1, const SIMD1
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD16<T, Width> operator^(const SIMD16<T, Width>& other1, typename SIMD16<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD16<T, Width> operator^(
+    const SIMD16<T, Width>& other1, const typename SIMD16<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
     if constexpr (isSame<T, float32> && hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
@@ -5497,7 +6551,7 @@ XS_INLINE SIMD16<T, Width> operator^(const SIMD16<T, Width>& other1, typename SI
     } else if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
         return SIMD16<T, Width>(
             _mm256_xor_ps(other1.values0, other2.values), _mm256_xor_ps(other1.values1, other2.values));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD16<T, Width>(_mm_xor_ps(other1.values0, other2.values), _mm_xor_ps(other1.values1, other2.values),
             _mm_xor_ps(other1.values2, other2.values), _mm_xor_ps(other1.values3, other2.values));
     } else
@@ -5541,7 +6595,7 @@ XS_INLINE SIMD16<T, Width> operator~(const SIMD16<T, Width>& other) noexcept
         __m256 val = _mm256_undefined_ps();
         val = _mm256_cmp_ps(val, val, _CMP_EQ_UQ);
         return SIMD16<T, Width>(_mm256_xor_ps(other.values0, val), _mm256_xor_ps(other.values1, val));
-    } else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         __m128 val = _mm_undefined_ps();
         val = _mm_cmpeq_ps(val, val);
         return SIMD16<T, Width>(_mm_xor_ps(other.values0, val), _mm_xor_ps(other.values1, val),

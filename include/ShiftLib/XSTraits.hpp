@@ -1158,7 +1158,7 @@ using conditional = typename NoExport::Conditional<B, T, T2>::type;
  * Query if any SIMD operations are supported.
  */
 template<typename T>
-inline constexpr bool hasSIMD = isSameAny<T, uint32, int32, uint64, int64> ?
+inline constexpr bool hasSIMD = isSameAny<T, uint32, int32, uint16, int16, uint8, int8> ?
     hasISAFeature<ISAFeature::SSE2> :
     (isSameAny<T, float32> ? hasISAFeature<ISAFeature::SSE> : false);
 
@@ -1166,14 +1166,14 @@ inline constexpr bool hasSIMD = isSameAny<T, uint32, int32, uint64, int64> ?
  * Query if fused multiply add instructions are supported.
  */
 template<typename T>
-inline constexpr bool hasFMA = hasISAFeature<ISAFeature::AVX2> ? (isSame<T, float32>&& hasSIMD<T>) :
-                                                                 (currentISA == ISA::CUDA);
+inline constexpr bool hasFMA = isSame<T, float32> &&
+    ((hasISAFeature<ISAFeature::FMA3> && hasSIMD<T>) || (currentISA == ISA::CUDA));
 
 /**
  * Query if fused multiply subtraction instructions are supported.
  */
 template<typename T>
-inline constexpr bool hasFMS = hasISAFeature<ISAFeature::AVX2> ? isSame<T, float32>&& hasSIMD<T> : false;
+inline constexpr bool hasFMS = isSame<T, float32> && (hasISAFeature<ISAFeature::FMA3> && hasSIMD<T>);
 
 /**
  * Query if fused multiply add/sub operations have same or better latency/throughput as individual add or multiply.

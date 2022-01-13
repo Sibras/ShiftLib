@@ -90,7 +90,7 @@ public:
      * @param other1 The second pre-calculated value.
      * @param other2 The third pre-calculated value.
      */
-    XS_INLINE void setData(T other0, T other1, T other2) noexcept
+    XS_INLINE void setData(const T other0, const T other1, const T other2) noexcept
     {
         value0 = other0;
         value1 = other1;
@@ -106,7 +106,7 @@ public:
     XS_INLINE void store(const SIMD3<T, Width>& other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 _mm_mask_storeu_ps(&value0, _cvtu32_mask8(0x7), other.values);
             } else {
@@ -114,6 +114,30 @@ public:
                 const __m128 back = _mm_load_ss(&this[1].value0);
                 _mm_storeu_ps(&value0, other.values);
                 _mm_store_ss(&this[1].value0, back);
+            }
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                _mm_mask_storeu_epi8(&value0, _cvtu32_mask8(0x7), other.values);
+            } else {
+                const T back = this[1].value0;
+                _mm_storeu_si32(&value0, other.values);
+                this[1].value0 = back;
+            }
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                _mm_mask_storeu_epi16(&value0, _cvtu32_mask8(0x7), other.values);
+            } else {
+                const T back = this[1].value0;
+                _mm_storeu_si64(&value0, other.values);
+                this[1].value0 = back;
+            }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                _mm_mask_storeu_epi32(&value0, _cvtu32_mask8(0x7), other.values);
+            } else {
+                const __m128i back = _mm_load_si128(&this[1].value0);
+                _mm_storeu_si128(&value0, other.values);
+                _mm_storeu_si32(&this[1].value0, back);
             }
         } else
 #endif
@@ -133,8 +157,14 @@ public:
     XS_INLINE SIMD3<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width >= SIMDWidth::B16)) {
             return SIMD3<T, Width>(_mm_loadu_ps(&value0));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_loadu_si32(&value0));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_loadu_si64(&value0));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_loadu_si128(&value0));
         } else
 #endif
         {
@@ -213,7 +243,7 @@ public:
      * @param other1 The second pre-calculated value.
      * @param other2 The third pre-calculated value.
      */
-    XS_INLINE void setData(T other0, T other1, T other2) noexcept
+    XS_INLINE void setData(const T other0, const T other1, const T other2) noexcept
     {
         value0 = other0;
         value1 = other1;
@@ -229,8 +259,14 @@ public:
     XS_INLINE void store(const SIMD3<T, Width>& other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            _mm_stream_ps(&value0, other.values);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            _mm_store_ps(&value0, other.values);
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            _mm_storeu_si32(&value0, other.values);
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            _mm_storel_epi64(&value0, other.values);
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            _mm_store_si128(&value0, other.values);
         } else
 #endif
         {
@@ -249,8 +285,14 @@ public:
     XS_INLINE SIMD3<T, Width> load() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width >= SIMDWidth::B16)) {
             return SIMD3<T, Width>(_mm_load_ps(&value0));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_loadu_si32(&value0));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_loadl_si64(&value0));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3<T, Width>(_mm_load_si128(&value0));
         } else
 #endif
         {
@@ -328,7 +370,7 @@ public:
         XS_INLINE explicit Mask(uint32 mask) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     this->values = _cvtu32_mask8(mask);
                 } else {
@@ -353,10 +395,10 @@ public:
          * @param bool1 The second boolean value.
          * @param bool2 The third boolean value.
          */
-        XS_INLINE Mask(bool bool0, bool bool1, bool bool2) noexcept
+        XS_INLINE Mask(const bool bool0, const bool bool1, const bool bool2) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     this->values = _cvtu32_mask8((static_cast<uint32>(bool2) << 2) | (static_cast<uint32>(bool1) << 1) |
                         static_cast<uint32>(bool0));
@@ -379,7 +421,7 @@ public:
         XS_INLINE Bool getBool3() const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Bool3(static_cast<uint8>(_cvtmask8_u32(this->values)));
                 } else {
@@ -399,7 +441,7 @@ public:
         XS_INLINE bool getAny() const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return static_cast<bool>(_cvtmask8_u32(this->values) & 0x7);
                 } else {
@@ -419,7 +461,7 @@ public:
         XS_INLINE bool getAll() const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return ((_cvtmask8_u32(this->values) & 0x7) == 0x7);
                 } else {
@@ -439,7 +481,7 @@ public:
         XS_INLINE bool getNone() const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return ((_cvtmask8_u32(this->values) & 0x7) == 0x0);
                 } else {
@@ -502,7 +544,7 @@ public:
         XS_INLINE void maskFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 auto val = maskFunc.template expression<SIMD3, SIMDMasker3X86>();
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     val.values = _mm_mask_blend_ps(this->values, _mm_setzero_ps(), val.values);
@@ -556,7 +598,7 @@ public:
         XS_INLINE void maskElseFunction(MaskOperator& maskFunc) const noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 auto value1 = maskFunc.template expression1<SIMD3, SIMDMasker3X86>();
                 auto value2 = maskFunc.template expression2<SIMD3, SIMDMasker3X86>();
                 const auto final(value1.blendVar(value2, *this));
@@ -585,7 +627,7 @@ public:
         XS_INLINE friend Mask operator&(const Mask mask1, const Mask mask2) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_kand_mask8(mask1.values, mask2.values));
                 } else {
@@ -608,7 +650,7 @@ public:
         XS_INLINE friend Mask operator|(const Mask mask1, const Mask mask2) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_kor_mask8(mask1.values, mask2.values));
                 } else {
@@ -631,7 +673,7 @@ public:
         XS_INLINE friend Mask operator^(const Mask mask1, const Mask mask2) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_kxor_mask8(mask1.values, mask2.values));
                 } else {
@@ -653,7 +695,7 @@ public:
         XS_INLINE friend Mask operator~(const Mask mask) noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values));
                 } else {
@@ -712,13 +754,13 @@ public:
          * @param shuffle1 Input integer representation of the second shuffle value (must be between 0 and 2).
          * @param shuffle2 Input integer representation of the third shuffle value (must be between 0 and 2).
          */
-        XS_INLINE Shuffle(uint32 shuffle0, uint32 shuffle1, uint32 shuffle2) noexcept
+        XS_INLINE Shuffle(const uint32 shuffle0, const uint32 shuffle1, const uint32 shuffle2) noexcept
         {
             XS_ASSERT(shuffle0 < 3);
             XS_ASSERT(shuffle1 < 3);
             XS_ASSERT(shuffle2 < 3);
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     this->values = _mm_set_epi32(3, shuffle2, shuffle1, shuffle0);
                 } else {
@@ -738,11 +780,11 @@ public:
          * Construct a shuffle that broadcasts a single element to all positions.
          * @param shuffle Input element to broadcast (must be between 0 and 2).
          */
-        XS_INLINE explicit Shuffle(uint32 shuffle) noexcept
+        XS_INLINE explicit Shuffle(const uint32 shuffle) noexcept
         {
             XS_ASSERT(shuffle < 3);
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     this->values = _mm_set1_epi32(shuffle);
                 } else {
@@ -764,7 +806,7 @@ public:
         XS_INLINE static Shuffle Default() noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     return Shuffle(_mm_set_epi32(3, 2, 1, 0));
                 } else {
@@ -784,7 +826,7 @@ public:
         XS_INLINE static Shuffle Reverse() noexcept
         {
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     return Shuffle(_mm_set_epi32(3, 0, 1, 2));
                 } else {
@@ -806,7 +848,7 @@ public:
         {
             XS_ASSERT(rotate < 3);
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     __m128i val0 = _mm_set_epi32(3, 2, 1, 0);
                     const __m128i val1 = _mm_set1_epi32(rotate);
@@ -847,7 +889,7 @@ public:
         {
             XS_ASSERT(rotate < 3);
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX>) {
                     __m128i val0 = _mm_set_epi32(3, 2, 1, 0);
                     const __m128i val1 = _mm_set1_epi32(rotate);
@@ -878,7 +920,7 @@ public:
          * @param extract Index of the item to move to end (must be between 0 and 2).
          * @returns Newly constructed Shuffle with required attributes.
          */
-        XS_INLINE static Shuffle Extract(uint32 extract) noexcept
+        XS_INLINE static Shuffle Extract(const uint32 extract) noexcept
         {
             XS_ASSERT(extract < 3);
             const uint32 u = (2 - extract) >> 1;
@@ -898,7 +940,7 @@ public:
         {
             static_assert(Index0 < 3 && Index1 < 3 && Index2 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
-            if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 2) {
                     return *this;
                 } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 0) {
@@ -985,11 +1027,19 @@ public:
      * @param value1 The second value.
      * @param value2 The third value.
      */
-    XS_INLINE SIMD3(T value0, T value1, T value2) noexcept
+    XS_INLINE SIMD3(const T value0, const T value1, const T value2) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values = _mm_set_ps(0, value2, value1, value0);
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set_epi32(0, static_cast<T>(value2), static_cast<T>(value1), static_cast<T>(value0));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values =
+                _mm_set_epi16(0, 0, 0, 0, 0, static_cast<T>(value2), static_cast<T>(value1), static_cast<T>(value0));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set_epi8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, static_cast<T>(value2),
+                static_cast<T>(value1), static_cast<T>(value0));
         } else
 #endif
         {
@@ -1001,19 +1051,25 @@ public:
 
     /**
      * Constructor to set all elements to the same scalar value.
-     * @param val Value to set all elements to.
+     * @param value Value to set all elements to.
      */
-    XS_INLINE explicit SIMD3(T val) noexcept
+    XS_INLINE explicit SIMD3(const T value) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values = _mm_set1_ps(val);
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set1_ps(value);
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set1_epi32(static_cast<T>(value));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set1_epi16(static_cast<T>(value));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_set1_epi8(static_cast<T>(value));
         } else
 #endif
         {
-            this->values0 = val;
-            this->values1 = val;
-            this->values2 = val;
+            this->values0 = value;
+            this->values1 = value;
+            this->values2 = value;
         }
     }
 
@@ -1021,11 +1077,35 @@ public:
      * Constructor to set all elements to the same scalar value.
      * @param other Value to set all elements to.
      */
-    XS_INLINE explicit SIMD3(BaseDef other) noexcept
+    XS_INLINE explicit SIMD3(const BaseDef other) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values = other.values;
+        } else
+#endif
+        {
+            this->values0 = other.value;
+            this->values1 = other.value;
+            this->values2 = other.value;
+        }
+    }
+
+    /**
+     * Constructor to set all elements to the same scalar value.
+     * @param other Value to set all elements to.
+     */
+    XS_INLINE explicit SIMD3(const InBaseDef other) noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_shuffle0000_ps(other.values);
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_shuffle0000_epi32(other.values);
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_shufflelo_epi16(other.values, _MM_SHUFFLE(0, 0, 0, 0));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            this->values = _mm_broadcastb_epi8(other.values);
         } else
 #endif
         {
@@ -1041,10 +1121,10 @@ public:
      * @param value1 The second value.
      * @param value2 The third value.
      */
-    XS_INLINE SIMD3(BaseDef value0, BaseDef value1, BaseDef value2) noexcept
+    XS_INLINE SIMD3(const BaseDef value0, const BaseDef value1, const BaseDef value2) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values = _mm_move_ss(value1.values, value0.values);
             this->values = _mm_movelh_ps(this->values, value2.values);
         } else
@@ -1057,32 +1137,14 @@ public:
     }
 
     /**
-     * Constructor to set all elements to the same scalar value.
-     * @param other Value to set all elements to.
-     */
-    XS_INLINE explicit SIMD3(InBaseDef other) noexcept
-    {
-#if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
-            this->values = _mm_shuffle0000_ps(other.values);
-        } else
-#endif
-        {
-            this->values0 = other.value;
-            this->values1 = other.value;
-            this->values2 = other.value;
-        }
-    }
-
-    /**
      * Construct from a SIMD2 and a single scalar value.
      * @param other0 The input SIMD2.
      * @param other1 The third value.
      */
-    XS_INLINE SIMD3(const SIMD2Def& other0, InBaseDef other1) noexcept
+    XS_INLINE SIMD3(const SIMD2Def& other0, const InBaseDef other1) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             this->values = _mm_movelh_ps(other0.values, other1.values);
         } else
 #endif
@@ -1099,11 +1161,11 @@ public:
      * @param other1 The new value to insert.
      * @param index  The position to insert the new value (must be between 0 and 2).
      */
-    XS_INLINE SIMD3(const SIMD2Def& other0, InBaseDef other1, const uint32 index) noexcept
+    XS_INLINE SIMD3(const SIMD2Def& other0, const InBaseDef other1, const uint32 index) noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if (index == 0) {
                 const __m128 val = _mm_movelh_ps(other0.values, other1.values);
                 this->values = _mm_shuffle1_ps(val, _MM_SHUFFLE(3, 1, 0, 2));
@@ -1138,8 +1200,11 @@ public:
     XS_INLINE static SIMD3 Zero() noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_setzero_ps());
+        } else if constexpr (isSameAny<T, uint8, int8, uint16, int16, uint32, int32> && hasSIMD<T> &&
+            (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_setzero_si128());
         } else
 #endif
         {
@@ -1154,8 +1219,14 @@ public:
     XS_INLINE static SIMD3 One() noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_set1_ps(1.0f));
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_set1_epi32(1.0));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_set1_epi16(1.0));
+        } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_set1_epi8(1.0));
         } else
 #endif
         {
@@ -1179,7 +1250,7 @@ public:
         SIMD3& otherT1, SIMD3& otherT2) noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val1 = _mm_unpacklo_ps(other0.values, other1.values);
             const __m128 val2 = _mm_shuffle1_ps(other2.values, _MM_SHUFFLE(3, 1, 3, 0)); //(0,x,1,x))
             const __m128 val3 = _mm_unpackhi_ps(other0.values, other1.values);
@@ -1213,7 +1284,7 @@ public:
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 return InBaseDef(this->values);
             } else if constexpr (Index == 1) {
@@ -1239,7 +1310,7 @@ public:
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 return BaseDef(_mm_shuffle0000_ps(this->values));
             } else if constexpr (Index == 1) {
@@ -1260,15 +1331,15 @@ public:
      * @param index The index of the element to retrieve (range is 0-2).
      * @returns SIMDInBase containing the desired value.
      */
-    XS_INLINE InBaseDef getValueInBase(uint32 index) const noexcept
+    XS_INLINE InBaseDef getValueInBase(const uint32 index) const noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX>) {
                 return InBaseDef(_mm_permutevar_ps(this->values, _mm_cvtsi32_si128(index)));
             } else {
-                __m128i val = _mm_shuffle_epi8(_mm_cvtsi32_si128(index * 4), _mm_setzero_si128());
+                __m128i val = _mm_broadcastb_epi8(_mm_cvtsi32_si128(index * 4));
                 val = _mm_add_epi8(val, _mm_set1_epi32(0x03020100)); // equivalent to (3,2,1,0)
                 return InBaseDef(_mm_castsi128_ps(_mm_shuffle_epi8(_mm_castps_si128(this->values), val)));
             }
@@ -1285,15 +1356,15 @@ public:
      * @param index The index of the element to retrieve (range is 0-2).
      * @returns BaseDef containing the desired value.
      */
-    XS_INLINE BaseDef getValue(uint32 index) const noexcept
+    XS_INLINE BaseDef getValue(const uint32 index) const noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX>) {
                 return BaseDef(_mm_permutevar_ps(this->values, _mm_shuffle0000_epi32(_mm_cvtsi32_si128(index))));
             } else {
-                __m128i val = _mm_shuffle_epi8(_mm_cvtsi32_si128(index * 4), _mm_setzero_si128());
+                __m128i val = _mm_broadcastb_epi8(_mm_cvtsi32_si128(index * 4));
                 val = _mm_add_epi8(val, _mm_set1_epi32(0x03020100));
                 return BaseDef(_mm_castsi128_ps(_mm_shuffle_epi8(_mm_castps_si128(this->values), val)));
             }
@@ -1316,7 +1387,7 @@ public:
     {
         static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD2Def(_mm_shuffle2200_ps(this->values));
             } else if constexpr (Index0 == 0 && Index1 == 1) {
@@ -1339,13 +1410,14 @@ public:
      * Set an element of the object.
      * @tparam Index The index of the element to set (range is 0-2).
      * @param other The new value.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue(InBaseDef other) noexcept
+    XS_INLINE SIMD3& setValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_blend_ss(this->values, other.values);
             } else {
@@ -1356,19 +1428,21 @@ public:
         {
             (&this->values0)[Index] = other.value;
         }
+        return *this;
     }
 
     /**
      * Set an element of the object.
      * @tparam Index The index of the element to set (range is 0-2).
      * @param other The new value.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void setValue(BaseDef other) noexcept
+    XS_INLINE SIMD3& setValue(const BaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_blend_ss(this->values, other.values);
             } else {
@@ -1379,18 +1453,20 @@ public:
         {
             (&this->values0)[Index] = other.value;
         }
+        return *this;
     }
 
     /**
      * Dynamically set an element of the object.
      * @param index The index of the element to retrieve (range is 0-2).
      * @param other The new value.
+     * @returns The current object after modification.
      */
-    XS_INLINE void setValue(uint32 index, BaseDef other) noexcept
+    XS_INLINE SIMD3& setValue(const uint32 index, const BaseDef other) noexcept
     {
         XS_ASSERT(index < 3);
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 this->values = _mm_mask_blend_ps(_cvtu32_mask8(1UL << index), this->values, other.values);
             } else {
@@ -1402,19 +1478,21 @@ public:
         {
             (&this->values0)[index] = other.value;
         }
+        return *this;
     }
 
     /**
      * Add a value to an element of the object.
      * @tparam Index The index of the element to modify (range is 0-2).
      * @param other The value to add.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void addValue(InBaseDef other) noexcept
+    XS_INLINE SIMD3& addValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_add_ss(this->values, other.values);
             } else if constexpr (Index == 1) {
@@ -1429,19 +1507,21 @@ public:
         {
             (&this->values0)[Index] += other.value;
         }
+        return *this;
     }
 
     /**
      * Subtract a value from an element of the object.
      * @tparam Index The index of the element to modify (range is 0-2).
      * @param other The value to subtract.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void subValue(InBaseDef other) noexcept
+    XS_INLINE SIMD3& subValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_sub_ss(this->values, other.values);
             } else if constexpr (Index == 1) {
@@ -1456,19 +1536,21 @@ public:
         {
             (&this->values0)[Index] -= other.value;
         }
+        return *this;
     }
 
     /**
      * Multiply an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-2).
      * @param other The value to multiply by.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void mulValue(InBaseDef other) noexcept
+    XS_INLINE SIMD3& mulValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_mul_ss(this->values, other.values);
             } else if constexpr (Index == 1) {
@@ -1483,19 +1565,21 @@ public:
         {
             (&this->values0)[Index] *= other.value;
         }
+        return *this;
     }
 
     /**
      * Divide an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-2).
      * @param other The value to divide by.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void divValue(InBaseDef other) noexcept
+    XS_INLINE SIMD3& divValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_div_ss(this->values, other.values);
             } else if constexpr (Index == 1) {
@@ -1510,6 +1594,7 @@ public:
         {
             (&this->values0)[Index] /= other.value;
         }
+        return *this;
     }
 
     /**
@@ -1517,13 +1602,14 @@ public:
      * @tparam Index The index of the element to modify (range is 0-2).
      * @param other1 The value to multiply by.
      * @param other2 The value to add.
+     * @returns The current object after modification.
      */
     template<uint32 Index>
-    XS_INLINE void madValue(InBaseDef other1, InBaseDef other2) noexcept
+    XS_INLINE SIMD3& madValue(const InBaseDef other1, const InBaseDef other2) noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index == 0) {
                 this->values = _mm_fmadd_ss(this->values, other1.values, other2.values);
             } else if constexpr (Index % 4 == 1) {
@@ -1540,6 +1626,7 @@ public:
         {
             (&this->values0)[Index] = Shift::fma<T>((&this->values0)[Index], other1.value, other2.value);
         }
+        return *this;
     }
 
     /**
@@ -1556,7 +1643,7 @@ public:
             return *this;
         }
 #if XS_ISA == XS_X86
-        else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
                 return SIMD3(_mm_xor_ps(this->values, _mm_set_ss(-0.0f)));
             } else if constexpr (Elem0 && Elem1 && Elem2) {
@@ -1584,12 +1671,26 @@ public:
     XS_INLINE SIMD3 mad(const SIMD3& other1, const SIMD3& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
                 return SIMD3(_mm_fmadd_ps(this->values, other1.values, other2.values));
             } else {
                 return SIMD3(_mm_add_ps(_mm_mul_ps(this->values, other1.values), other2.values));
             }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi32(_mm_mullo_epi32(this->values, other1.values), other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi16(_mm_mullo_epi16(this->values, other1.values), other2.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                    _mm_cvtepu8_epi16(other2.values));
+            return SIMD3(_mm_packus_epi16(ret, ret));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                    _mm_cvtepi8_epi16(other2.values));
+            return SIMD3(_mm_packs_epi16(ret, ret));
         } else
 #endif
         {
@@ -1607,15 +1708,29 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_INLINE SIMD3 mad(BaseDef other1, const SIMD3& other2) const noexcept
+    XS_INLINE SIMD3 mad(const BaseDef other1, const SIMD3& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
                 return SIMD3(_mm_fmadd_ps(this->values, other1.values, other2.values));
             } else {
                 return SIMD3(_mm_add_ps(_mm_mul_ps(this->values, other1.values), other2.values));
             }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi32(_mm_mullo_epi32(this->values, other1.values), other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi16(_mm_mullo_epi16(this->values, other1.values), other2.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                    _mm_cvtepu8_epi16(other2.values));
+            return SIMD3(_mm_packus_epi16(ret, ret));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                    _mm_cvtepi8_epi16(other2.values));
+            return SIMD3(_mm_packs_epi16(ret, ret));
         } else
 #endif
         {
@@ -1633,15 +1748,29 @@ public:
      * @returns Result of operation.
      */
     template<bool EvenIfNotFree = true>
-    XS_INLINE SIMD3 mad(const SIMD3& other1, BaseDef other2) const noexcept
+    XS_INLINE SIMD3 mad(const SIMD3& other1, const BaseDef other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
                 return SIMD3(_mm_fmadd_ps(this->values, other1.values, other2.values));
             } else {
                 return SIMD3(_mm_add_ps(_mm_mul_ps(this->values, other1.values), other2.values));
             }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi32(_mm_mullo_epi32(this->values, other1.values), other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_add_epi16(_mm_mullo_epi16(this->values, other1.values), other2.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                    _mm_cvtepu8_epi16(other2.values));
+            return SIMD3(_mm_packus_epi16(ret, ret));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_add_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                    _mm_cvtepi8_epi16(other2.values));
+            return SIMD3(_mm_packs_epi16(ret, ret));
         } else
 #endif
         {
@@ -1662,12 +1791,26 @@ public:
     XS_INLINE SIMD3 msub(const SIMD3& other1, const SIMD3& other2) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasFMA<T> && (EvenIfNotFree || hasFMAFree<T>)) {
                 return SIMD3(_mm_fmsub_ps(this->values, other1.values, other2.values));
             } else {
                 return SIMD3(_mm_sub_ps(_mm_mul_ps(this->values, other1.values), other2.values));
             }
+        } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sub_epi32(_mm_mullo_epi32(this->values, other1.values), other2.values));
+        } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sub_epi16(_mm_mullo_epi16(this->values, other1.values), other2.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepu8_epi16(this->values), _mm_cvtepu8_epi16(other1.values)),
+                    _mm_cvtepu8_epi16(other2.values));
+            return SIMD3(_mm_packus_epi16(ret, ret));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            const __m128i ret =
+                _mm_sub_epi16(_mm_mullo_epi16(_mm_cvtepi8_epi16(this->values), _mm_cvtepi8_epi16(other1.values)),
+                    _mm_cvtepi8_epi16(other2.values));
+            return SIMD3(_mm_packs_epi16(ret, ret));
         } else
 #endif
         {
@@ -1685,7 +1828,7 @@ public:
     XS_INLINE SIMD3 subAdd(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_addsub_ps(this->values, other.values));
         } else
 #endif
@@ -1702,7 +1845,7 @@ public:
     XS_INLINE Mask equalMask(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_EQ_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1725,7 +1868,7 @@ public:
     XS_INLINE Mask lessOrEqualMask(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LE_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1748,7 +1891,7 @@ public:
     XS_INLINE Mask lessThanMask(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LT_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1771,7 +1914,7 @@ public:
     XS_INLINE Mask notEqualMask(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_NEQ_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1791,10 +1934,10 @@ public:
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask equalMask(BaseDef other) const noexcept
+    XS_INLINE Mask equalMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_EQ_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1814,10 +1957,10 @@ public:
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask lessOrEqualMask(BaseDef other) const noexcept
+    XS_INLINE Mask lessOrEqualMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LE_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1837,10 +1980,10 @@ public:
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask lessThanMask(BaseDef other) const noexcept
+    XS_INLINE Mask lessThanMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_LT_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1860,10 +2003,10 @@ public:
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask greaterOrEqualMask(BaseDef other) const noexcept
+    XS_INLINE Mask greaterOrEqualMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_GE_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1883,10 +2026,10 @@ public:
      * @param other The object to compare to the object.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask greaterThanMask(BaseDef other) const noexcept
+    XS_INLINE Mask greaterThanMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_GT_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1906,10 +2049,10 @@ public:
      * @param other The second object to compare to the first.
      * @returns Mask containing comparison applied to each element of the object.
      */
-    XS_INLINE Mask notEqualMask(BaseDef other) const noexcept
+    XS_INLINE Mask notEqualMask(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return Mask(_mm_cmp_ps_mask(this->values, other.values, _CMP_NEQ_OQ));
             } else if constexpr (hasISAFeature<ISAFeature::AVX>) {
@@ -1933,13 +2076,22 @@ public:
      */
     XS_INLINE SIMD3 sign(const SIMD3& other) const noexcept
     {
+        if constexpr (isUnsigned<T>) {
+            return *this;
+        }
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 mask = _mm_and_ps(_mm_set1_ps(-0.0f), other.values);
             return SIMD3(_mm_xor_ps(this->values, mask));
-        } else
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi8(this->values, other.values));
+        }
 #endif
-        {
+        else {
             return SIMD3(Shift::sign<T>(this->values0, other.values0), Shift::sign<T>(this->values1, other.values1),
                 Shift::sign<T>(this->values2, other.values2));
         }
@@ -1952,15 +2104,24 @@ public:
      * @param other The second object whose sign to check.
      * @returns Result of operation.
      */
-    XS_INLINE SIMD3 sign(BaseDef other) const noexcept
+    XS_INLINE SIMD3 sign(const BaseDef other) const noexcept
     {
+        if constexpr (isUnsigned<T>) {
+            return *this;
+        }
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 mask = _mm_and_ps(_mm_set1_ps(-0.0f), other.values);
             return SIMD3(_mm_xor_ps(this->values, mask));
-        } else
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_sign_epi8(this->values, other.values));
+        }
 #endif
-        {
+        else {
             return SIMD3(Shift::sign<T>(this->values0, other.value), Shift::sign<T>(this->values1, other.value),
                 Shift::sign<T>(this->values2, other.value));
         }
@@ -1972,12 +2133,21 @@ public:
      */
     XS_INLINE SIMD3 abs() const noexcept
     {
+        if constexpr (isUnsigned<T>) {
+            return *this;
+        }
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_andnot_ps(_mm_set1_ps(-0.0f), this->values));
-        } else
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_abs_epi32(this->values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_abs_epi16(this->values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_abs_epi8(this->values));
+        }
 #endif
-        {
+        else {
             return SIMD3(Shift::abs<T>(this->values0), Shift::abs<T>(this->values1), Shift::abs<T>(this->values2));
         }
     }
@@ -1990,8 +2160,20 @@ public:
     XS_INLINE SIMD3 max(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_max_ps(this->values, other.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu32(this->values, other.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu16(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2008,8 +2190,20 @@ public:
     XS_INLINE SIMD3 min(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_min_ps(this->values, other.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu32(this->values, other.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu16(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2023,11 +2217,23 @@ public:
      * @param other The second object.
      * @returns The maximum value.
      */
-    XS_INLINE SIMD3 max(BaseDef other) const noexcept
+    XS_INLINE SIMD3 max(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_max_ps(this->values, other.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu32(this->values, other.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu16(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_max_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2041,11 +2247,23 @@ public:
      * @param other The second object.
      * @returns The minimum value.
      */
-    XS_INLINE SIMD3 min(BaseDef other) const noexcept
+    XS_INLINE SIMD3 min(const BaseDef other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return SIMD3(_mm_min_ps(this->values, other.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu32(this->values, other.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi32(this->values, other.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu16(this->values, other.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi16(this->values, other.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epu8(this->values, other.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD3(_mm_min_epi8(this->values, other.values));
         } else
 #endif
         {
@@ -2061,7 +2279,7 @@ public:
     XS_INLINE BaseDef hmax() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 other = _mm_max_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             other = _mm_max_ss(other, _mm_shuffle3311_ps(this->values));               //(x,x,x,1)
             return BaseDef(_mm_shuffle0000_ps(other));
@@ -2080,7 +2298,7 @@ public:
     XS_INLINE BaseDef hmin() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 other = _mm_min_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             other = _mm_min_ss(other, _mm_shuffle3311_ps(this->values));               //(x,x,x,1)
             return BaseDef(_mm_shuffle0000_ps(other));
@@ -2099,7 +2317,7 @@ public:
     XS_INLINE InBaseDef hmaxInBase() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 other = _mm_max_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             return InBaseDef(_mm_max_ss(other, _mm_shuffle3311_ps(this->values)));           //(x,x,x,1)
         } else
@@ -2116,7 +2334,7 @@ public:
     XS_INLINE InBaseDef hminInBase() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 other = _mm_min_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             return InBaseDef(_mm_min_ss(other, _mm_shuffle3311_ps(this->values)));           //(x,x,x,1)
         } else
@@ -2134,7 +2352,7 @@ public:
     XS_INLINE BaseDef hmaxIndex(uint32& index) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 other = _mm_max_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             other = _mm_max_ss(other, _mm_shuffle3311_ps(this->values));               //(x,x,x,1)
             other = _mm_shuffle0000_ps(other);
@@ -2166,7 +2384,7 @@ public:
     XS_INLINE BaseDef hminIndex(uint32& index) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 other = _mm_min_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             other = _mm_min_ss(other, _mm_shuffle3311_ps(this->values));               //(x,x,x,1)
             other = _mm_shuffle0000_ps(other);
@@ -2197,7 +2415,7 @@ public:
     XS_INLINE BaseDef hadd() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 other = _mm_add_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             other = _mm_add_ss(_mm_shuffle3311_ps(this->values), other);               //(x,x,x,1)
             return BaseDef(_mm_shuffle0000_ps(other));
@@ -2217,7 +2435,7 @@ public:
     XS_INLINE InBaseDef haddInBase() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 other = _mm_add_ss(_mm_shuffle3232_ps(this->values), this->values); //(x,x,x,2)
             return InBaseDef(_mm_add_ss(_mm_shuffle3311_ps(this->values), other));           //(x,x,x,1)
         } else
@@ -2235,7 +2453,7 @@ public:
     XS_INLINE BaseDef dot3(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return BaseDef(_mm_dp_ps(this->values, other.values, 0x7F));
         } else
 #endif
@@ -2257,7 +2475,7 @@ public:
     XS_INLINE InBaseDef dot3InBase(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return InBaseDef(_mm_dp_ps(this->values, other.values, 0x71));
         } else
 #endif
@@ -2275,7 +2493,7 @@ public:
     XS_INLINE SIMD3 cross3(const SIMD3& other) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             __m128 val1 = _mm_shuffle1_ps(other.values, _MM_SHUFFLE(3, 0, 2, 1));
             val1 = _mm_mul_ps(val1, this->values);
             __m128 val2 = _mm_shuffle1_ps(this->values, _MM_SHUFFLE(3, 0, 2, 1));
@@ -2301,7 +2519,7 @@ public:
     XS_INLINE BaseDef lengthSqr() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return BaseDef(_mm_dp_ps(this->values, this->values, 0x7F));
         } else
 #endif
@@ -2322,7 +2540,7 @@ public:
     XS_INLINE BaseDef length() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return BaseDef(_mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F)));
         } else
 #endif
@@ -2343,7 +2561,7 @@ public:
     XS_INLINE InBaseDef lengthSqrInBase() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return InBaseDef(_mm_dp_ps(this->values, this->values, 0x71));
         } else
 #endif
@@ -2364,7 +2582,7 @@ public:
     XS_INLINE InBaseDef lengthInBase() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             return InBaseDef(_mm_sqrt_ss(_mm_dp_ps(this->values, this->values, 0x71)));
         } else
 #endif
@@ -2386,7 +2604,7 @@ public:
     XS_INLINE SIMD3 normalize() const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             const __m128 val = _mm_sqrt_ps(_mm_dp_ps(this->values, this->values, 0x7F));
             return SIMD3(_mm_div_ps(this->values, val));
         } else
@@ -2408,7 +2626,7 @@ public:
     {
         static_assert(Index0 < 3 && Index1 < 3, "Invalid Index: Indexes must be <3");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 0) {
                 return SIMD3(_mm_blend_ss(this->values, other.values));
             } else if constexpr (Index0 == Index1) {
@@ -2443,7 +2661,7 @@ public:
             return other;
         }
 #if XS_ISA == XS_X86
-        else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
                 return SIMD3(_mm_blend_ss(this->values, other.values));
             } else if constexpr (!Elem0 && Elem1 && Elem2) {
@@ -2470,7 +2688,7 @@ public:
     XS_INLINE SIMD3 blendVar(const SIMD3& other, const Mask& mask) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 return SIMD3(_mm_mask_blend_ps(mask.values, this->values, other.values));
             } else {
@@ -2504,7 +2722,7 @@ public:
             return backup;
         }
 #if XS_ISA == XS_X86
-        else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Elem0 && !Elem1 && !Elem2) {
                 const __m128 backup = other.values;
                 other.values = _mm_blend_ss(other.values, this->values);
@@ -2540,7 +2758,7 @@ public:
     XS_INLINE SIMD3 blendSwapVar(SIMD3& other, const Mask& mask) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                 const __m128 backup = other.values;
                 other.values = _mm_mask_blend_ps(mask.values, other.values, this->values);
@@ -2577,7 +2795,7 @@ public:
             return *this;
         }
 #if XS_ISA == XS_X86
-        else if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 0 && Index1 == 1 && Index2 == 0) {
                 return SIMD3(_mm_shuffle1010_ps(this->values));
             } else if constexpr (Index0 == 0 && Index1 == 0 && Index2 == 1) {
@@ -2602,7 +2820,7 @@ public:
     XS_INLINE SIMD3 shuffleVar(const Shuffle& shuffle) const noexcept
     {
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (hasISAFeature<ISAFeature::AVX>) {
                 XS_ASSERT((_mm_movemask_epi8(_mm_cmpgt_epi32(shuffle.values, _mm_set1_epi32(2))) & 0xFFF) == 0);
                 return SIMD3(_mm_permutevar_ps(this->values, shuffle.values));
@@ -2633,7 +2851,7 @@ public:
     {
         static_assert(Index0 < 6 && Index1 < 6 && Index2 < 6, "Invalid Index: Indexes must be <6");
 #if XS_ISA == XS_X86
-        if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
             if constexpr (Index0 == 3 && Index1 == 1 && Index2 == 2) {
                 return SIMD3(_mm_blend_ss(this->values, other.values));
             } else if constexpr (Index0 == 0 && Index1 == 4 && Index2 == 5) {
@@ -2718,8 +2936,14 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator+(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_add_ps(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi32(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi16(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -2735,11 +2959,18 @@ XS_INLINE SIMD3<T, Width> operator+(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator+(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator+(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_add_ps(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi32(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi16(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_add_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -2758,8 +2989,14 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator-(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_sub_ps(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi32(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi16(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -2775,11 +3012,18 @@ XS_INLINE SIMD3<T, Width> operator-(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator-(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator-(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_sub_ps(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi32(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi16(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -2795,11 +3039,18 @@ XS_INLINE SIMD3<T, Width> operator-(const SIMD3<T, Width>& other1, typename SIMD
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator-(typename SIMD3<T, Width>::BaseDef other1, const SIMD3<T, Width>& other2) noexcept
+XS_INLINE SIMD3<T, Width> operator-(
+    const typename SIMD3<T, Width>::BaseDef other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_sub_ps(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi32(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi16(other1.values, other2.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi8(other1.values, other2.values));
     } else
 #endif
     {
@@ -2818,8 +3069,22 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator*(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_mul_ps(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi32(other1.values, other2.values));
+    } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi32(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi16(other1.values, other2.values));
+    } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi16(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        const __m128i ret = _mm_mullo_epi16(_mm_cvtepu8_epi16(other1.values), _mm_cvtepu8_epi16(other2.values));
+        return SIMD3<T, Width>(_mm_packus_epi16(ret, ret));
+    } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        const __m128i ret = _mm_mullo_epi16(_mm_cvtepi8_epi16(other1.values), _mm_cvtepi8_epi16(other2.values));
+        return SIMD3<T, Width>(_mm_packs_epi16(ret, ret));
     } else
 #endif
     {
@@ -2835,11 +3100,26 @@ XS_INLINE SIMD3<T, Width> operator*(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator*(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator*(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_mul_ps(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi32(other1.values, other2.values));
+    } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi32(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi16(other1.values, other2.values));
+    } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_mullo_epi16(other1.values, other2.values));
+    } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        const __m128i ret = _mm_mullo_epi16(_mm_cvtepu8_epi16(other1.values), _mm_cvtepu8_epi16(other2.values));
+        return SIMD3<T, Width>(_mm_packus_epi16(ret, ret));
+    } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        const __m128i ret = _mm_mullo_epi16(_mm_cvtepi8_epi16(other1.values), _mm_cvtepi8_epi16(other2.values));
+        return SIMD3<T, Width>(_mm_packs_epi16(ret, ret));
     } else
 #endif
     {
@@ -2858,7 +3138,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator/(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_div_ps(other1.values, other2.values));
     } else
 #endif
@@ -2875,10 +3155,11 @@ XS_INLINE SIMD3<T, Width> operator/(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator/(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator/(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_div_ps(other1.values, other2.values));
     } else
 #endif
@@ -2895,10 +3176,11 @@ XS_INLINE SIMD3<T, Width> operator/(const SIMD3<T, Width>& other1, typename SIMD
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator/(typename SIMD3<T, Width>::BaseDef other1, const SIMD3<T, Width>& other2) noexcept
+XS_INLINE SIMD3<T, Width> operator/(
+    const typename SIMD3<T, Width>::BaseDef other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_div_ps(other1.values, other2.values));
     } else
 #endif
@@ -2917,8 +3199,14 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator-(const SIMD3<T, Width>& other) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3<T, Width>(_mm_sub_ps(_mm_setzero_ps(), other.values));
+    } else if constexpr (isSameAny<T, uint32, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi32(_mm_setzero_si128(), other.values));
+    } else if constexpr (isSameAny<T, uint16, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi16(_mm_setzero_si128(), other.values));
+    } else if constexpr (isSameAny<T, uint8, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+        return SIMD3<T, Width>(_mm_sub_epi8(_mm_setzero_si128(), other.values));
     } else
 #endif
     {
@@ -2936,7 +3224,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width>& operator+=(SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_add_ps(other1.values, other2.values);
     } else
 #endif
@@ -2955,10 +3243,10 @@ XS_INLINE SIMD3<T, Width>& operator+=(SIMD3<T, Width>& other1, const SIMD3<T, Wi
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width>& operator+=(SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width>& operator+=(SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_add_ps(other1.values, other2.values);
     } else
 #endif
@@ -2980,7 +3268,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width>& operator-=(SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_sub_ps(other1.values, other2.values);
     } else
 #endif
@@ -2999,10 +3287,10 @@ XS_INLINE SIMD3<T, Width>& operator-=(SIMD3<T, Width>& other1, const SIMD3<T, Wi
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width>& operator-=(SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width>& operator-=(SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_sub_ps(other1.values, other2.values);
     } else
 #endif
@@ -3024,7 +3312,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width>& operator*=(SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_mul_ps(other1.values, other2.values);
     } else
 #endif
@@ -3043,10 +3331,10 @@ XS_INLINE SIMD3<T, Width>& operator*=(SIMD3<T, Width>& other1, const SIMD3<T, Wi
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width>& operator*=(SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width>& operator*=(SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_mul_ps(other1.values, other2.values);
     } else
 #endif
@@ -3068,7 +3356,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width>& operator/=(SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_div_ps(other1.values, other2.values);
     } else
 #endif
@@ -3087,10 +3375,10 @@ XS_INLINE SIMD3<T, Width>& operator/=(SIMD3<T, Width>& other1, const SIMD3<T, Wi
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width>& operator/=(SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width>& operator/=(SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         other1.values = _mm_div_ps(other1.values, other2.values);
     } else
 #endif
@@ -3112,7 +3400,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE bool operator==(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3135,10 +3423,10 @@ XS_INLINE bool operator==(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator==(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE bool operator==(const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NEQ_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3163,7 +3451,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3186,10 +3474,10 @@ XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE bool operator<=(const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLE_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3214,7 +3502,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE bool operator<(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3237,10 +3525,10 @@ XS_INLINE bool operator<(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& o
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator<(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE bool operator<(const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_NLT_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3265,7 +3553,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3288,10 +3576,10 @@ XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& 
  * @returns Boolean signalling if compare was valid for every element of the input.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE bool operator!=(const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         if constexpr (hasISAFeature<ISAFeature::AVX>) {
             __m128 val = _mm_cmp_ps(other1.values, other2.values, _CMP_EQ_UQ);
             val = _mm_shuffle1_ps(val, _MM_SHUFFLE(0, 2, 1, 0));
@@ -3318,7 +3606,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator&(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_and_ps(other1.values, other2.values));
     } else
 #endif
@@ -3342,10 +3630,11 @@ XS_INLINE SIMD3<T, Width> operator&(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator&(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator&(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_and_ps(other1.values, other2.values));
     } else
 #endif
@@ -3372,7 +3661,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator|(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_or_ps(other1.values, other2.values));
     } else
 #endif
@@ -3396,10 +3685,11 @@ XS_INLINE SIMD3<T, Width> operator|(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator|(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator|(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_or_ps(other1.values, other2.values));
     } else
 #endif
@@ -3426,7 +3716,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator^(const SIMD3<T, Width>& other1, const SIMD3<T, Width>& other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_xor_ps(other1.values, other2.values));
     } else
 #endif
@@ -3450,10 +3740,11 @@ XS_INLINE SIMD3<T, Width> operator^(const SIMD3<T, Width>& other1, const SIMD3<T
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE SIMD3<T, Width> operator^(const SIMD3<T, Width>& other1, typename SIMD3<T, Width>::BaseDef other2) noexcept
+XS_INLINE SIMD3<T, Width> operator^(
+    const SIMD3<T, Width>& other1, const typename SIMD3<T, Width>::BaseDef other2) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         return SIMD3(_mm_xor_ps(other1.values, other2.values));
     } else
 #endif
@@ -3479,7 +3770,7 @@ template<typename T, SIMDWidth Width>
 XS_INLINE SIMD3<T, Width> operator~(const SIMD3<T, Width>& other) noexcept
 {
 #if XS_ISA == XS_X86
-    if constexpr (isSame<T, float32> && hasSIMD128<T> && (Width >= SIMDWidth::B16)) {
+    if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
         const __m128 val = _mm_undefined_ps();
         return SIMD3(_mm_xor_ps(other.values, _mm_cmpeq_ps(val, val)));
     } else
