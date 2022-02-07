@@ -232,7 +232,7 @@ public:
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         this->IArray::operator=(forward<IArray>(array));
-        endAllocated = forward<T*>(array.endAllocated);
+        Shift::swap(endAllocated, array.endAllocated);
         return *this;
     }
 
@@ -249,7 +249,7 @@ public:
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         this->IArray::operator=(forward<IArray>(array));
-        endAllocated = forward<T*>(array.endAllocated);
+        Shift::swap(endAllocated, forward<T*>(array.endAllocated));
         return *this;
     }
 
@@ -262,9 +262,7 @@ public:
         // Call array swap function
         this->IArray::swap(array);
         // Swap the end allocated element
-        const T* XS_RESTRICT tempEndAllocated = endAllocated;
-        endAllocated = array.endAllocated;
-        array.endAllocated = tempEndAllocated;
+        Shift::swap(endAllocated, array.endAllocated);
     }
 
     /**
@@ -1378,7 +1376,7 @@ public:
 private:
     /**
      * Increase the amount of reserved memory we have.
-     * @param requiredEndAllocated Pointer to new minimum required p_TEndAllocated (i.e. allocated+1).
+     * @param requiredEndAllocated Pointer to new minimum required endAllocated (i.e. allocated+1).
      * @return Boolean false if new memory was required but could not be allocated.
      */
     XS_INLINE bool increaseReservedSize(const T* const XS_RESTRICT requiredEndAllocated) noexcept

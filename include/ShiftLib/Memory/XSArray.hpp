@@ -96,14 +96,19 @@ public:
      * Move constructor.
      * @param array The other array.
      */
-    XS_INLINE Array(Array&& array) noexcept = default;
+    XS_INLINE Array(Array&& array) noexcept
+        : handle(forward<Handle>(array.handle))
+        , nextElement(forward<T*>(array.nextElement))
+    {
+        array.nextElement = nullptr;
+    }
 
     /**
      * Construct from a sequence of elements.
      * @param [in] elements Pointer to list of elements to use.
      * @param      number   The number of elements in the input list.
      */
-    XS_INLINE Array(const T* const XS_RESTRICT elements, uint0 number) noexcept
+    XS_INLINE Array(const T* const XS_RESTRICT elements, const uint0 number) noexcept
         : handle(number, Alloc())
         , nextElement(handle.pointer + number)
     {
@@ -113,11 +118,11 @@ public:
 
     /**
      * Constructor to copy from a sub section of another array.
-     * @param array         Reference to Array object to copy.
+     * @param array Reference to Array object to copy.
      * @param start The location the array should be cut from.
      * @param end   The location where the array should be cut till (non inclusive).s
      */
-    XS_INLINE Array(const Array& array, uint0 start, uint0 end) noexcept
+    XS_INLINE Array(const Array& array, const uint0 start, const uint0 end) noexcept
         : handle(end - start, Alloc())
     {
         T* XS_RESTRICT const startIndex = &array.handle.pointer[start];
@@ -137,13 +142,13 @@ public:
      * Constructor to copy from a sub section of another array.
      * @tparam T2     Type of object being added to array.
      * @tparam Alloc2 Type of allocator used to allocate T2.
-     * @param array         Reference to Array object to copy.
+     * @param array Reference to Array object to copy.
      * @param start The location the array should be cut from.
      * @param end   The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
     XS_REQUIRES((isNothrowConstructible<T, T2>))
-    XS_INLINE Array(const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
+    XS_INLINE Array(const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
         : handle(end - start, Alloc())
     {
         const T* XS_RESTRICT const startIndex = &array.handle.pointer[start];
@@ -161,7 +166,7 @@ public:
 
     /**
      * Constructor to copy from a sub section of another array.
-     * @param array         Reference to Array object to copy.
+     * @param array Reference to Array object to copy.
      * @param start The iterator of the location the array should be cut from.
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
@@ -183,7 +188,7 @@ public:
      * Constructor to copy from a sub section of another array.
      * @tparam T2     Type of object being added to array.
      * @tparam Alloc2 Type of allocator used to allocate T2.
-     * @param array         Reference to Array object to copy.
+     * @param array Reference to Array object to copy.
      * @param start The iterator of the location the array should be cut from.
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
@@ -277,11 +282,8 @@ public:
     XS_INLINE Array& operator=(Array<T2, Alloc2>&& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
-        this->~Array();
         handle = forward<Handle>(array.handle);
-        nextElement = forward<T*>(array.nextElement);
-        array.handle = Handle();
-        array.nextElement = nullptr;
+        Shift::swap(nextElement, array.nextElement);
         return *this;
     }
 
@@ -293,11 +295,8 @@ public:
     XS_INLINE Array& operator=(Array&& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
-        this->~Array();
         handle = forward<Handle>(array.handle);
-        nextElement = forward<T*>(array.nextElement);
-        array.handle = Handle();
-        array.nextElement = nullptr;
+        Shift::swap(nextElement, array.nextElement);
         return *this;
     }
 
@@ -316,14 +315,8 @@ public:
      */
     XS_INLINE void swap(Array& array) noexcept
     {
-        // Backup current data for swap
-        Handle tempHandle(handle);
-        T* XS_RESTRICT tempNextElement = nextElement;
-        // Swap 2 arrays
-        handle = array.handle;
-        nextElement = array.nextElement;
-        array.handle = tempHandle;
-        array.nextElement = tempNextElement;
+        Shift::swap(handle, array.handle);
+        Shift::swap(nextElement, array.nextElement);
     }
 
     /**
@@ -402,7 +395,7 @@ public:
      * @return Boolean representing if element could be inserted into array. (will be false if memory could not be
      *         allocated).
      */
-    XS_INLINE void insert(uint0 position, const T& element) noexcept
+    XS_INLINE void insert(const uint0 position, const T& element) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
@@ -426,7 +419,7 @@ public:
      */
     template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
     XS_REQUIRES((isNothrowConstructible<T, Args...>))
-    XS_INLINE void insert(uint0 position, Args&&... values) noexcept
+    XS_INLINE void insert(const uint0 position, Args&&... values) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
@@ -451,7 +444,7 @@ public:
      */
     template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
     XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
-    XS_INLINE void insert(uint0 position, const Array<T2, Alloc2>& array) noexcept
+    XS_INLINE void insert(const uint0 position, const Array<T2, Alloc2>& array) noexcept
     {
         T* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
@@ -642,7 +635,7 @@ public:
      * adds extra memory copies based on size of array.
      * @param position The location the element should be removed from.
      */
-    XS_INLINE void remove(uint0 position) noexcept
+    XS_INLINE void remove(const uint0 position) noexcept
     {
         // Move any elements down 1
         T* XS_RESTRICT index2 = &handle.pointer[position];
@@ -663,7 +656,7 @@ public:
      * @param start The location the elements should be removed from.
      * @param end   The location the elements should be removed till (non inclusive).
      */
-    XS_INLINE void remove(uint0 start, uint0 end) noexcept
+    XS_INLINE void remove(const uint0 start, const uint0 end) noexcept
     {
         // Move any elements down
         T* XS_RESTRICT startIndex = &handle.pointer[start];
@@ -831,7 +824,7 @@ public:
     template<typename T2, typename Alloc2,
         typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
     XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
-    XS_INLINE void replace(uint0 start, uint0 end, const Array<T2, Alloc2>& array) noexcept
+    XS_INLINE void replace(const uint0 start, const uint0 end, const Array<T2, Alloc2>& array) noexcept
     {
         T* XS_RESTRICT startIndex = &handle.pointer[start];
         T* XS_RESTRICT endIndex = &handle.pointer[end];
@@ -932,7 +925,7 @@ public:
     template<typename T2, typename Alloc2,
         typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
     XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
-    XS_INLINE void set(const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
+    XS_INLINE void set(const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
     {
         T* XS_RESTRICT startIndex = &array.handle.pointer[start];
         T* XS_RESTRICT endIndex = &array.handle.pointer[end];
@@ -968,7 +961,7 @@ public:
     template<typename T2, typename Alloc2,
         typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
     XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
-    XS_INLINE void set(uint0 position, const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
+    XS_INLINE void set(uint0 position, const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
     {
         T* XS_RESTRICT startIndex = &array.handle.pointer[start];
         T* XS_RESTRICT endIndex = &array.handle.pointer[end];
@@ -1171,7 +1164,7 @@ public:
      * @param position The number of the element in the array to create iterator for.
      * @return An iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeIterator iteratorAt(uint0 position) noexcept
+    XS_INLINE TypeIterator iteratorAt(const uint0 position) noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
         return TypeIterator(handle.pointer, position);
@@ -1182,7 +1175,7 @@ public:
      * @param position The number of the element in the array to create iterator for.
      * @return An iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeConstIterator iteratorAt(uint0 position) const noexcept
+    XS_INLINE TypeConstIterator iteratorAt(const uint0 position) const noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
         return TypeConstIterator(handle.pointer, position);
@@ -1218,7 +1211,7 @@ public:
      * @param position The number of the element in the array to create offset iterator for.
      * @return An offset iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeIteratorOffset offsetIteratorAt(uint0 position) noexcept
+    XS_INLINE TypeIteratorOffset offsetIteratorAt(const uint0 position) noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
         return TypeIteratorOffset(position * sizeof(T));
@@ -1229,7 +1222,7 @@ public:
      * @param position The number of the element in the array to create offset iterator for.
      * @return An offset iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeConstIteratorOffset offsetIteratorAt(uint0 position) const noexcept
+    XS_INLINE TypeConstIteratorOffset offsetIteratorAt(const uint0 position) const noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
         return TypeConstIteratorOffset(position * sizeof(T));
@@ -1434,7 +1427,7 @@ public:
      * @param position The element to get or set (return is undefined if the input position is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& at(uint0 position) noexcept
+    XS_INLINE T& at(const uint0 position) noexcept
     {
         XS_ASSERT(position < static_cast<uint0>(nextElement - handle.pointer));
         return handle.pointer[position];
@@ -1445,7 +1438,7 @@ public:
      * @param position The element to get or set (return is undefined if the input position is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& at(uint0 position) const noexcept
+    XS_INLINE const T& at(const uint0 position) const noexcept
     {
         XS_ASSERT(position < static_cast<uint0>(nextElement - handle.pointer));
         return handle.pointer[position];
@@ -1625,7 +1618,7 @@ public:
      * @return Boolean signaling if new memory could be reserved.
      */
     template<typename = require<Handle::isResizable>>
-    XS_INLINE bool setReservedSize(uint0 size) noexcept
+    XS_INLINE bool setReservedSize(const uint0 size) noexcept
     {
         static_assert(Handle::isResizable, "Cannot resize an array created using a non-resizable allocator");
         XS_ASSERT(size % sizeof(T) == 0);
@@ -1648,7 +1641,7 @@ public:
 
     /**
      * Remove all elements from the array and clear.
-     * @note This removes all elements from the array and deallocates the arrays memory.
+     * @note This removes all elements from the array and de-allocates the arrays memory.
      */
     XS_INLINE void clear() noexcept
     {

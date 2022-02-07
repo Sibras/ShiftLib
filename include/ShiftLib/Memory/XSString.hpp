@@ -1002,7 +1002,7 @@ public:
             }
 
             // Fill array with chars for post-point
-            for (; startIterator + length2 < iterator2;) {
+            while (startIterator + length2 < iterator2) {
                 --iterator2;
                 const sizeType value = postPoint / static_cast<sizeType>(convertBase);
                 this->at(iterator2) =
@@ -1015,7 +1015,7 @@ public:
             this->at(iterator2) = utfDot;
 
             // Fill array with chars for pre-point
-            for (; startIterator < iterator2;) {
+            while (startIterator < iterator2) {
                 --iterator2;
                 const sizeType value = prePoint / static_cast<sizeType>(convertBase);
                 this->at(iterator2) =
@@ -1198,7 +1198,7 @@ public:
      * Convert the string to a number.
      * @note Converts string up till the first non-numeric character.
      * @tparam T Type of the returned number.
-     * @param position The postion in the string to get the number from.
+     * @param position The position in the string to get the number from.
      * @returns The converted numeric value.
      */
     template<typename T, typename = require<isArithmetic<T>>>
@@ -1213,7 +1213,7 @@ public:
      * Convert the string to a number.
      * @note Converts string up till the first non-numeric character.
      * @tparam T Type of the returned number.
-     * @param iterator The postion in the string to get the number from.
+     * @param iterator The position in the string to get the number from.
      * @returns The converted numeric value.
      */
     template<typename T, typename = require<isArithmetic<T>>>
@@ -1226,7 +1226,7 @@ public:
             bool negative = false;
             TypeConstIterator tempIt(iterator);
             while (tempIt < this->cend()) {
-                // CSheck for valid number
+                // Check for valid number
                 const CharType newChar = this->at(tempIt);
                 if ((newChar >= utfZero) && (newChar < utfZero + 10)) [[likely]] {
                     // Multiply existing number by base (i.e. 10)
@@ -1326,7 +1326,7 @@ public:
      * @param string Sequence of characters to add.
      * @return The result of the operation.
      */
-    XS_INLINE String& operator+=(CharType const* XS_RESTRICT string) noexcept
+    XS_INLINE String& operator+=(const CharType* const XS_RESTRICT string) noexcept
     {
         this->add(string, CharLength(string));
         return *this;
@@ -1339,7 +1339,8 @@ public:
      */
     XS_INLINE String operator+(const String& string) const noexcept
     {
-        String ret((this->IArray::getSize() + string.getSize()) / sizeof(CharType));
+        String ret;
+        ret.checkReservedSize(this->IArray::getSize() + string.getSize());
         ret.add(*this);
         ret.add(string);
         return ret;
@@ -1352,8 +1353,9 @@ public:
      */
     XS_INLINE String operator+(const CharType* const XS_RESTRICT string) const noexcept
     {
-        const uint32 number = CharLength(string);
-        String ret(this->getLength() + number);
+        const auto number = CharLength(string);
+        String ret;
+        ret.checkReservedSize(this->IArray::getSize() + (number * sizeof(CharType)));
         ret.add(*this);
         ret.add(string, number);
         return ret;

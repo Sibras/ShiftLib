@@ -18,6 +18,7 @@
 #include "Memory/XSMemory.hpp"
 #include "SIMD/XSSIMDTraits.hpp"
 #include "XSMath.hpp"
+#include "XSUtility.hpp"
 
 #if XS_PLATFORM == XS_WINDOWS
 #    include <Windows.h>
@@ -45,8 +46,15 @@ public:
     template<typename T2, uint0 T2Align = 0>
     using Allocator = AllocRegionHeap<T2, T2Align>;
 
+    /**
+     * Round up size value to multiple of SystemAlign.
+     * @tparam InputAlign Alignment of input value.
+     * @tparam SystemAlign Requested alignment of output.
+     * @param size Alignment value to round.
+     * @return Input rounded down to multiple of requested alignment.
+     */
     template<uint0 InputAlign, uint0 SystemAlign, typename T2>
-    static constexpr T2 AlignTypeToSystem(const T2 size) noexcept
+    static constexpr T2 AlignSize(const T2 size) noexcept
     {
         if constexpr (InputAlign >= SystemAlign) {
             return size;
@@ -61,7 +69,7 @@ public:
         // Check that we have adequate alignment for memcopy optimization
         static_assert(align >= systemAlignment, "Invalid alignment: Alignment must be greater than system alignment");
         // Make Size a multiple of Alignment
-        const uint0 alignedSize = AlignTypeToSystem<alignof(T), align>(size);
+        const uint0 alignedSize = AlignSize<alignof(T), align>(size);
         if constexpr (align <= defaultAlignment) {
             // Allocate required space
             if constexpr (currentPlatform == Platform::Windows) {
@@ -128,7 +136,7 @@ public:
         XS_ASSERT(pointer);
         XS_ASSERT(size % sizeof(T) == 0);
         // Make Size a multiple of Alignment
-        const uint0 alignedSize = AlignTypeToSystem<alignof(T), align>(size);
+        const uint0 alignedSize = AlignSize<alignof(T), align>(size);
         if constexpr (align <= defaultAlignment) {
             // Try and determine if we can extend the existing space
             if constexpr (currentPlatform == Platform::Windows) {
@@ -158,12 +166,12 @@ public:
         XS_ASSERT(size % sizeof(T) == 0);
         XS_ASSERT(minSize % sizeof(T) == 0);
         // Make Size a multiple of Alignment
-        const uint0 alignedMinSize = AlignTypeToSystem<alignof(T), align>(minSize);
+        const uint0 alignedMinSize = AlignSize<alignof(T), align>(minSize);
         if constexpr (align <= defaultAlignment) {
             if constexpr (currentPlatform == Platform::Windows) {
                 uint0 checkSize = size;
                 do {
-                    checkSize = AlignTypeToSystem<alignof(T), align>(checkSize);
+                    checkSize = AlignSize<alignof(T), align>(checkSize);
                     // Try and determine if we can extend the existing space
                     if (HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY, pointer, checkSize) != nullptr) {
                         return true;
@@ -174,7 +182,7 @@ public:
             } else {
                 // C APIs do not have expand so we just guess based on allocated size
                 auto allocSize = AllocatedSize();
-                const uint0 alignedSize = AlignTypeToSystem<alignof(T), align>(size);
+                const uint0 alignedSize = AlignSize<alignof(T), align>(size);
                 return (alignedSize <= allocSize || alignedMinSize <= allocSize);
             }
         } else {
@@ -182,13 +190,13 @@ public:
             // NOLINTNEXTLINE(clang-diagnostic-undefined-reinterpret-cast)
             auto pointer2 = *reinterpret_cast<T* const*>(reinterpret_cast<const uint0*>(pointer) - 1);
             // Make Size a multiple of Alignment
-            const uint0 alignedSize = AlignTypeToSystem<alignof(T), align>(size);
+            const uint0 alignedSize = AlignSize<alignof(T), align>(size);
             // Try and determine if we can extend the existing space
             const auto allocSize = alignedSize + (align - 1) + sizeof(void*);
             if constexpr (currentPlatform == Platform::Windows) {
                 uint0 checkSize = allocSize;
                 do {
-                    checkSize = AlignTypeToSystem<alignof(T), align>(checkSize);
+                    checkSize = AlignSize<alignof(T), align>(checkSize);
                     // Try and determine if we can extend the existing space
                     if (HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY, pointer2, checkSize) != nullptr) {
                         return true;
@@ -250,7 +258,7 @@ public:
      * Copy constructor.
      * @param handle Reference to Handle object to copy.
      */
-    XS_INLINE AllocRegionHeapHandle(const AllocRegionHeapHandle& handle) noexcept = default;
+    XS_INLINE AllocRegionHeapHandle(const AllocRegionHeapHandle& handle) noexcept = delete;
 
     /**
      * Constructor to build from member variables.
@@ -267,21 +275,35 @@ public:
      * Defaulted move constructor.
      * @param other The other.
      */
-    AllocRegionHeapHandle(AllocRegionHeapHandle&& other) noexcept = default;
+    AllocRegionHeapHandle(AllocRegionHeapHandle&& other) noexcept
+        : pointer(other.pointer)
+    {
+        other.pointer = nullptr;
+    }
+
+    /** Destructor. */
+    ~AllocRegionHeapHandle() noexcept
+    {
+        unallocate();
+    }
 
     /**
      * Defaulted assignment operator.
      * @param other The other handle.
      * @returns A shallow copy of this object.
      */
-    AllocRegionHeapHandle& operator=(const AllocRegionHeapHandle& other) noexcept = default;
+    AllocRegionHeapHandle& operator=(const AllocRegionHeapHandle& other) noexcept = delete;
 
     /**
      * Defaulted move assignment operator.
      * @param other The other handle.
      * @returns A shallow copy of this object.
      */
-    AllocRegionHeapHandle& operator=(AllocRegionHeapHandle&& other) noexcept = default;
+    AllocRegionHeapHandle& operator=(AllocRegionHeapHandle&& other) noexcept
+    {
+        swap(pointer, other.pointer);
+        return *this;
+    }
 
     /**
      * Allocate the specified amount of memory.
@@ -351,7 +373,7 @@ public:
                     uint8 data[systemAlignment]; // NOLINT(modernize-avoid-c-arrays)
                 };
                 memMove<AlignedData>(reinterpret_cast<AlignedData*>(pointer2), reinterpret_cast<AlignedData*>(pointer),
-                    Allocator::AlignTypeToSystem<alignof(T), alignof(AlignedData)>(copySize));
+                    Allocator::AlignSize<alignof(T), systemAlignment>(copySize));
                 // Unallocate the old data
                 Allocator::Unallocate(pointer);
                 // Update the internal pointer
@@ -399,7 +421,7 @@ public:
                 };
                 memMove<AlignedData>(reinterpret_cast<AlignedData*>(pointer2),
                     reinterpret_cast<const AlignedData*>(pointer),
-                    Allocator::AlignTypeToSystem<alignof(T), alignof(AlignedData)>(copySize));
+                    Allocator::AlignSize<alignof(T), systemAlignment>(copySize));
                 // Unallocate the old data
                 Allocator::Unallocate(pointer);
                 // Update the internal pointer

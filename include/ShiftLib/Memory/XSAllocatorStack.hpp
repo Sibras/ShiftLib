@@ -47,7 +47,7 @@ public:
      * Copy constructor.
      * @param handle Reference to Handle object to copy.
      */
-    XS_INLINE AllocRegionStackHandle(const AllocRegionStackHandle& handle) noexcept = default;
+    XS_INLINE AllocRegionStackHandle(const AllocRegionStackHandle& handle) noexcept = delete;
 
     /**
      * Constructor to build from member variables.

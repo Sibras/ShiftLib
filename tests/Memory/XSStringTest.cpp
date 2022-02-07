@@ -172,12 +172,37 @@ TYPED_TEST_NS2(String, StringTest, Add)
     using TestType = typename TestFixture::Type;
 
     String<TestType> test1 = String<TestType>("Hello");
+    auto test2 = test1;
+    ASSERT_EQ(test2, String<TestType>("Hello"));
 
     test1.add(TestType(' '));
     ASSERT_EQ(test1, String<TestType>("Hello "));
 
     test1.add(String<TestType>("World", 5));
     ASSERT_EQ(test1, String<TestType>("Hello World"));
+
+    ASSERT_EQ(test2 + String<TestType>(" World", 6), String<TestType>("Hello World"));
+    if constexpr (isSame<TestType, char>) {
+        ASSERT_EQ(test2 + " World", String<TestType>("Hello World"));
+    } else if constexpr (isSame<TestType, char8>) {
+        ASSERT_EQ(test2 + u8" World", String<TestType>("Hello World"));
+    } else if constexpr (isSame<TestType, char16>) {
+        ASSERT_EQ(test2 + u" World", String<TestType>("Hello World"));
+    } else if constexpr (isSame<TestType, char32>) {
+        ASSERT_EQ(test2 + U" World", String<TestType>("Hello World"));
+    }
+    test2 += String<TestType>(" World", 6);
+    ASSERT_EQ(test2, String<TestType>("Hello World"));
+    if constexpr (isSame<TestType, char>) {
+        test2 += String<TestType>(" World", 6);
+    } else if constexpr (isSame<TestType, char8>) {
+        test2 += String<TestType>(u8" World", 6);
+    } else if constexpr (isSame<TestType, char16>) {
+        test2 += String<TestType>(u" World", 6);
+    } else if constexpr (isSame<TestType, char32>) {
+        test2 += String<TestType>(U" World", 6);
+    }
+    ASSERT_EQ(test2, String<TestType>("Hello World World"));
 }
 
 TYPED_TEST_NS2(String, StringTest, Insert)

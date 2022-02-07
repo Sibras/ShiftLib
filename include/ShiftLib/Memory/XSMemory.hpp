@@ -18,9 +18,10 @@
 #include "SIMD/XSSIMDTraits.hpp"
 #include "SIMD/XSSIMDx86.hpp"
 #include "XSBit.hpp"
+#include "XSMath.hpp"
 
 namespace Shift {
-constexpr uint0 systemAlignment = maxAlignment<uint0, 128>;
+constexpr uint0 systemAlignment = max(maxAlignment<uint32, 128>, alignof(uint0));
 
 namespace NoExport {
 #if (XS_COMPILER == XS_MSVC) || (XS_COMPILER == XS_ICL) || (XS_COMPILER == XS_ICC) || (XS_COMPILER == XS_CLANGWIN)
@@ -86,22 +87,22 @@ template<typename T, uint0 Size = 1>
 struct BulkHelper
 {
     using Type = T[Size]; // NOLINT(modernize-avoid-c-arrays)
-    static constexpr uint32 data512Size =
+    static constexpr uint0 data512Size =
         (hasISAFeature<ISAFeature::AVX512F> && (alignof(T) >= 64)) ? sizeof(T) / 64 : 0;
-    static constexpr uint32 data256Size =
+    static constexpr uint0 data256Size =
         (hasISAFeature<ISAFeature::AVX2> && (alignof(T) >= 32)) ? (sizeof(T) - (data512Size * 64)) / 32 : 0;
-    static constexpr uint32 data128Size = (hasISAFeature<ISAFeature::SSE2> && (alignof(T) >= 16)) ?
+    static constexpr uint0 data128Size = (hasISAFeature<ISAFeature::SSE2> && (alignof(T) >= 16)) ?
         (sizeof(T) - (data512Size * 64) - (data256Size * 32)) / 16 :
         0;
-    static constexpr uint32 data64Size = ((currentArch == Architecture::Bit64) && (alignof(T) >= 8)) ?
+    static constexpr uint0 data64Size = ((currentArch == Architecture::Bit64) && (alignof(T) >= 8)) ?
         (sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16)) / 8 :
         0;
-    static constexpr uint32 data32Size =
+    static constexpr uint0 data32Size =
         (sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16) - (data64Size * 8)) / 4;
-    static constexpr uint32 data16Size = (sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16) -
-                                             (data64Size * 8) - (data32Size * 4)) /
+    static constexpr uint0 data16Size = (sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16) -
+                                            (data64Size * 8) - (data32Size * 4)) /
         2;
-    static constexpr uint32 data8Size = sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16) -
+    static constexpr uint0 data8Size = sizeof(T) - (data512Size * 64) - (data256Size * 32) - (data128Size * 16) -
         (data64Size * 8) - (data32Size * 4) - (data16Size * 2);
 };
 

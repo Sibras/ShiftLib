@@ -57,6 +57,12 @@ public:
         ++data[0];
         return *this;
     }
+
+    D1024 operator--() noexcept
+    {
+        --data[0];
+        return *this;
+    }
 };
 
 using MemoryTestTypes = ::testing::Types<uint8, uint16, uint32, uint64, D1024>;
@@ -139,6 +145,10 @@ TYPED_TEST_NS2(Array, ArrayTest, AddElement)
     test2.add(check);
     ASSERT_EQ(test2.getLength(), (2 * test1.getLength()) + 1);
     ASSERT_EQ(test2.atBack(), check);
+
+    auto test3 = test1 + test1;
+    ASSERT_EQ(test3.getLength(), (2 * test1.getLength()));
+    ASSERT_EQ(test3.atBack(), --check);
 }
 
 #endif
