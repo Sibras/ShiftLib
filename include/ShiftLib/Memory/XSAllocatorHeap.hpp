@@ -21,6 +21,7 @@
 #include "XSUtility.hpp"
 
 #if XS_PLATFORM == XS_WINDOWS
+#    define NOMINMAX
 #    include <Windows.h>
 #elif XS_PLATFORM == XS_LINUX || XS_PLATFORM == XS_MAC
 #    include <malloc.h>

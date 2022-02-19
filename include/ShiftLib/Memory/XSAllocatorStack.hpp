@@ -78,7 +78,7 @@ public:
     }
 
     /** Unallocate previously allocated memory. */
-    XS_INLINE void unallocate()
+    XS_INLINE void unallocate() noexcept
     {}
 
     /**
