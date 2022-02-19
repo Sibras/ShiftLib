@@ -20,42 +20,42 @@
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
-class Matrix4x3;
+class Matrix3x4;
 
 template<typename T>
-class Matrix4x3Data
+class Matrix3x4Data
 {
 public:
     SIMD3x4Data<T> values;
 
     /** Default constructor. */
-    XS_INLINE Matrix4x3Data() noexcept = default;
+    XS_INLINE Matrix3x4Data() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix4x3Data(const Matrix4x3Data& other) noexcept = default;
+    XS_INLINE Matrix3x4Data(const Matrix3x4Data& other) noexcept = default;
 
     /**
      * Forwarding Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix4x3Data(Matrix4x3Data&& other) noexcept = default;
+    XS_INLINE Matrix3x4Data(Matrix3x4Data&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3Data& operator=(const Matrix4x3Data& other) noexcept = default;
+    XS_INLINE Matrix3x4Data& operator=(const Matrix3x4Data& other) noexcept = default;
 
     /**
      * Move assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3Data& operator=(Matrix4x3Data&& other) noexcept = default;
+    XS_INLINE Matrix3x4Data& operator=(Matrix3x4Data&& other) noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -63,7 +63,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit Matrix4x3Data(const Matrix4x3<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix3x4Data(const Matrix3x4<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -97,7 +97,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Matrix4x3<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix3x4<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -108,46 +108,46 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width = defaultWidthSIMD512<T>>
-    XS_INLINE Matrix4x3<T, Width> load() const noexcept
+    XS_INLINE Matrix3x4<T, Width> load() const noexcept
     {
-        return Matrix4x3<T, Width>(this->values.template load<Matrix4x3<T, Width>::widthImpl>());
+        return Matrix3x4<T, Width>(this->values.template load<Matrix3x4<T, Width>::widthImpl>());
     }
 };
 
 template<typename T>
-class Matrix4x3DataPad
+class Matrix3x4DataPad
 {
 public:
     SIMD3x4DataPad<T> values;
 
     /** Default constructor. */
-    XS_INLINE Matrix4x3DataPad() noexcept = default;
+    XS_INLINE Matrix3x4DataPad() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix4x3DataPad(const Matrix4x3DataPad& other) noexcept = default;
+    XS_INLINE Matrix3x4DataPad(const Matrix3x4DataPad& other) noexcept = default;
 
     /**
      * Forwarding Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix4x3DataPad(Matrix4x3DataPad&& other) noexcept = default;
+    XS_INLINE Matrix3x4DataPad(Matrix3x4DataPad&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3DataPad& operator=(const Matrix4x3DataPad& other) noexcept = default;
+    XS_INLINE Matrix3x4DataPad& operator=(const Matrix3x4DataPad& other) noexcept = default;
 
     /**
      * Move assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3DataPad& operator=(Matrix4x3DataPad&& other) noexcept = default;
+    XS_INLINE Matrix3x4DataPad& operator=(Matrix3x4DataPad&& other) noexcept = default;
 
     /**
      * Construct from non-data type.
@@ -155,7 +155,7 @@ public:
      * @param other The non-data type to construct from.
      */
     template<SIMDWidth Width>
-    XS_INLINE explicit Matrix4x3DataPad(const Matrix4x3<T, Width>& other) noexcept
+    XS_INLINE explicit Matrix3x4DataPad(const Matrix3x4<T, Width>& other) noexcept
         : values(other.columns)
     {}
 
@@ -189,7 +189,7 @@ public:
      * @param other The object to store.
      */
     template<SIMDWidth Width>
-    XS_INLINE void store(const Matrix4x3<T, Width>& other) noexcept
+    XS_INLINE void store(const Matrix3x4<T, Width>& other) noexcept
     {
         this->values.store(other.columns);
     }
@@ -200,14 +200,14 @@ public:
      * @returns The loaded object.
      */
     template<SIMDWidth Width = defaultWidthSIMD512<T>>
-    XS_INLINE Matrix4x3<T, Width> load() const noexcept
+    XS_INLINE Matrix3x4<T, Width> load() const noexcept
     {
-        return Matrix4x3<T, Width>(this->values.template load<Matrix4x3<T, Width>::widthImpl>());
+        return Matrix3x4<T, Width>(this->values.template load<Matrix3x4<T, Width>::widthImpl>());
     }
 };
 
 /**
- * A  base type used to represent a 4x3 matrix. This is a specialised version of Matrix4x4 designed specially for
+ * A  base type used to represent a 3x4 matrix. This is a specialised version of Matrix4x4 designed specially for
  * affine matrices with a translational component.
  * @note This uses standard right handed coordinate notation
  *    i.e. Vector (V) transforms with Matrix (M) occur in the following order:
@@ -218,13 +218,13 @@ public:
  * @tparam Width Type of SIMD being used.
  */
 template<typename T, SIMDWidth Width = defaultWidthSIMD512<T>>
-class Matrix4x3
+class Matrix3x4
 {
 public:
     using Type = T;
     using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, Width>::widthImpl>;
-    using Data = Matrix4x3Data<T>;
-    using DataPad = Matrix4x3DataPad<T>;
+    using Data = Matrix3x4Data<T>;
+    using DataPad = Matrix3x4DataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD3x4Def::widthImpl;
     using BaseDef = typename SIMD3x4Def::BaseDef;
@@ -247,33 +247,33 @@ public:
     SIMD3x4Def columns;
 
     /** Default constructor. */
-    XS_INLINE Matrix4x3() noexcept = default;
+    XS_INLINE Matrix3x4() noexcept = default;
 
     /**
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix4x3(const Matrix4x3& other) = default;
+    XS_INLINE Matrix3x4(const Matrix3x4& other) = default;
 
     /**
      * Constructor.
      * @param [in,out] other The other.
      */
-    XS_INLINE Matrix4x3(Matrix4x3&& other) noexcept = default;
+    XS_INLINE Matrix3x4(Matrix3x4&& other) noexcept = default;
 
     /**
      * Assignment operator.
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3& operator=(const Matrix4x3& other) = default;
+    XS_INLINE Matrix3x4& operator=(const Matrix3x4& other) = default;
 
     /**
      * Move assignment operator.
      * @param [in,out] other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix4x3& operator=(Matrix4x3&& other) noexcept = default;
+    XS_INLINE Matrix3x4& operator=(Matrix3x4&& other) noexcept = default;
 
     /**
      * Constructor.
@@ -281,32 +281,32 @@ public:
      * @param other The other.
      */
     template<SIMDWidth Width2>
-    XS_INLINE explicit Matrix4x3(const Matrix4x3<T, Width2>& other) noexcept
+    XS_INLINE explicit Matrix3x4(const Matrix3x4<T, Width2>& other) noexcept
         : columns(other.columns)
     {}
 
     /**
-     * Construct a 4x3 matrix from a SIMD3x4.
+     * Construct a 3x4 matrix from a SIMD3x4.
      * @param values The 3 columns of the matrix.
      */
-    XS_INLINE explicit Matrix4x3(const SIMD3x4Def& values) noexcept
+    XS_INLINE explicit Matrix3x4(const SIMD3x4Def& values) noexcept
         : columns(values)
     {}
 
     /**
-     * Construct a 4x3 matrix from 4 SIMD3s.
+     * Construct a 3x4 matrix from 4 SIMD3s.
      * @param column0 The first column of the matrix.
      * @param column1 The second column of the matrix.
      * @param column2 The third column of the matrix.
      * @param column3 The fourth column of the matrix.
      */
-    XS_INLINE Matrix4x3(
+    XS_INLINE Matrix3x4(
         const SIMD3Def& column0, const SIMD3Def& column1, const SIMD3Def& column2, const SIMD3Def& column3) noexcept
         : columns(column0, column1, column2, column3)
     {}
 
     /**
-     * Construct a 4x3 matrix from 12 values.
+     * Construct a 3x4 matrix from 12 values.
      * @param col0Row0 The first element of the first column of the matrix.
      * @param col0Row1 The second element of the first column of the matrix.
      * @param col0Row2 The third element of the first column of the matrix.
@@ -320,7 +320,7 @@ public:
      * @param col3Row1 The second element of the fourth column of the matrix.
      * @param col3Row2 The third element of the fourth column of the matrix.
      */
-    XS_INLINE Matrix4x3(T col0Row0, T col0Row1, T col0Row2, T col1Row0, T col1Row1, T col1Row2, T col2Row0, T col2Row1,
+    XS_INLINE Matrix3x4(T col0Row0, T col0Row1, T col0Row2, T col1Row0, T col1Row1, T col1Row2, T col2Row0, T col2Row1,
         T col2Row2, T col3Row0, T col3Row1, T col3Row2) noexcept
         : columns(col0Row0, col0Row1, col0Row2, col1Row0, col1Row1, col1Row2, col2Row0, col2Row1, col2Row2, col3Row0,
               col3Row1, col3Row2)
@@ -330,7 +330,7 @@ public:
      * Construct from a Matrix3x3.
      * @param matrix Reference to matrix to copy.
      */
-    XS_INLINE explicit Matrix4x3(const Matrix3x3Def& matrix) noexcept
+    XS_INLINE explicit Matrix3x4(const Matrix3x3Def& matrix) noexcept
         : columns(matrix.columns, SIMD3Def::Zero())
     {}
 
@@ -339,7 +339,7 @@ public:
      * @param matrix Reference to matrix to copy.
      * @param column3 The fourth column of the matrix.
      */
-    XS_INLINE Matrix4x3(const Matrix3x3Def& matrix, const SIMD3Def& column3) noexcept
+    XS_INLINE Matrix3x4(const Matrix3x3Def& matrix, const SIMD3Def& column3) noexcept
         : columns(matrix.columns, column3)
     {}
 
@@ -348,12 +348,12 @@ public:
      * @param quaternion Reference to quaternion to copy.
      * @param column3    The fourth column of the matrix.
      */
-    XS_INLINE Matrix4x3(const QuaternionDef& quaternion, const SIMD3Def& column3) noexcept
+    XS_INLINE Matrix3x4(const QuaternionDef& quaternion, const SIMD3Def& column3) noexcept
         : columns(Matrix3x3Def(quaternion).columns, column3)
     {}
 
     /**
-     * Construct a Matrix3x3 from a Matrix4x3.
+     * Construct a Matrix3x3 from a Matrix3x4.
      * @return Newly constructed object.
      */
     XS_INLINE explicit operator Matrix3x3Def() const noexcept
@@ -362,56 +362,56 @@ public:
     }
 
     /**
-     * Constructor to build a 4x3 Identity Matrix.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * Constructor to build a 3x4 Identity Matrix.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 Identity() noexcept
+    XS_INLINE static Matrix3x4 Identity() noexcept
     {
-        return Matrix4x3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+        return Matrix3x4(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed translation.
+     * Constructor to build a 3x4 Matrix with fixed translation.
      * @param translation The amount to translate in the X/Y/Z directions.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 Translation(const SIMD3Def& translation) noexcept
+    XS_INLINE static Matrix3x4 Translation(const SIMD3Def& translation) noexcept
     {
-        return Matrix4x3(
+        return Matrix3x4(
             SIMD3x4Def(SIMD3x4Def::SIMD3x3Def(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f), translation));
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed uniform scale.
+     * Constructor to build a 3x4 Matrix with fixed uniform scale.
      * @param scale The amount to scale in the X/Y/Z direction.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 UniformScale(InBaseDef scale) noexcept
+    XS_INLINE static Matrix3x4 UniformScale(InBaseDef scale) noexcept
     {
         const SIMD3Def zero(SIMD3Def::Zero());
         SIMD3Def scale3(zero);
         scale3.template setValue<0>(scale);
-        return Matrix4x3(scale3, scale3.template shuffle<1, 0, 2>(), scale3.template shuffle<1, 2, 0>(), zero);
+        return Matrix3x4(scale3, scale3.template shuffle<1, 0, 2>(), scale3.template shuffle<1, 2, 0>(), zero);
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed scale.
+     * Constructor to build a 3x4 Matrix with fixed scale.
      * @param scale The amount to scale in the X/Y/Z direction.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 Scale(const SIMD3Def& scale) noexcept
+    XS_INLINE static Matrix3x4 Scale(const SIMD3Def& scale) noexcept
     {
         const SIMD4Def scale4(scale, SIMD4Def::BaseDef::Zero());
-        return Matrix4x3(scale4.template getValue3<0, 3, 3>(), scale4.template getValue3<3, 1, 3>(),
+        return Matrix3x4(scale4.template getValue3<0, 3, 3>(), scale4.template getValue3<3, 1, 3>(),
             scale4.template getValue3<3, 3, 2>(), SIMD3Def::Zero());
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed rotation about X axis.
+     * Constructor to build a 3x4 Matrix with fixed rotation about X axis.
      * @param rotation The amount to rotate the matrix by (in radians).
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 RotationX(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x4 RotationX(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -425,16 +425,16 @@ public:
         }
         const SIMD3Def ident(1.0, 0.0, 0.0f);
         const SIMD3Def sinCos3(sinCos, SIMD3Def::InBaseDef::Zero());
-        return Matrix4x3(ident, sinCos3.template shuffle<2, 1, 0>(),
+        return Matrix3x4(ident, sinCos3.template shuffle<2, 1, 0>(),
             sinCos3.template shuffle<2, 0, 1>().template negate<false, true, false>(), SIMD3Def::Zero());
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed rotation about Y axis.
+     * Constructor to build a 3x4 Matrix with fixed rotation about Y axis.
      * @param rotation The amount to rotate the matrix by (in radians).
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 RotationY(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x4 RotationY(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -448,16 +448,16 @@ public:
         }
         const SIMD3Def col2(0.0f, 1.0f, 0.0f);
         const SIMD3Def sinCos3(sinCos, SIMD3Def::InBaseDef::Zero());
-        return Matrix4x3(sinCos3.template shuffle<1, 2, 0>().template negate<false, false, true>(), col2,
+        return Matrix3x4(sinCos3.template shuffle<1, 2, 0>().template negate<false, false, true>(), col2,
             sinCos3.template shuffle<0, 2, 1>(), SIMD3Def::Zero());
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed rotation about Z axis.
+     * Constructor to build a 3x4 Matrix with fixed rotation about Z axis.
      * @param rotation The amount to rotate the matrix by (in radians).
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 RotationZ(typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x4 RotationZ(typename SIMD3Def::BaseDef rotation) noexcept
     {
         using SIMD2Def = typename SIMD3Def::SIMD2Def;
         using BaseDef2 = typename SIMD2Def::BaseDef;
@@ -471,17 +471,17 @@ public:
         }
         const SIMD3Def col3(0.0f, 0.0f, 1.0f);
         const SIMD3Def sinCos3(sinCos, SIMD3Def::InBaseDef::Zero());
-        return Matrix4x3(
+        return Matrix3x4(
             sinCos3.template shuffle<1, 0, 2>(), sinCos3.template negate<true, false, false>(), col3, SIMD3Def::Zero());
     }
 
     /**
-     * Constructor to build a 4x3 Matrix with fixed rotation about arbitrary axis.
+     * Constructor to build a 3x4 Matrix with fixed rotation about arbitrary axis.
      * @param axis     The axis to rotate around.
      * @param rotation The amount to rotate the matrix by (in radians).
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
-    XS_INLINE static Matrix4x3 RotationAxis(const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept
+    XS_INLINE static Matrix3x4 RotationAxis(const Vector3DDef& axis, typename SIMD3Def::BaseDef rotation) noexcept
     {
         // The equivalent matrix for a rotation around an axis can be described by:
         //      xx(1-c)+ s xy(1-c)-zs xz(1-c)+ys
@@ -505,13 +505,13 @@ public:
         const SIMD4Def mods(axis.values, SIMD4Def::BaseDef::One());
         const SIMD3Def negSinCosSin(
             SIMD3Def(sinCos, sinCos.template getValueInBase<0>()).template negate<true, false, false>());
-        return Matrix4x3(mods.template getValue3<3, 2, 1>().mad(negSinCosSin.template shuffle<1, 2, 0>(), col0),
+        return Matrix3x4(mods.template getValue3<3, 2, 1>().mad(negSinCosSin.template shuffle<1, 2, 0>(), col0),
             mods.template getValue3<2, 3, 0>().mad(negSinCosSin, col1),
             mods.template getValue3<1, 0, 3>().mad(negSinCosSin.template shuffle<2, 0, 1>(), col2), SIMD3Def::Zero());
     }
 
     /**
-     * Get a column of a Matrix4x3.
+     * Get a column of a Matrix3x4.
      * @tparam Index The index of the column to retrieve (must be between 0 and 3).
      * @returns SIMD3Def containing the desired values.
      */
@@ -522,7 +522,7 @@ public:
     }
 
     /**
-     * Get a row of a Matrix4x3.
+     * Get a row of a Matrix3x4.
      * @tparam Index The index of the row to retrieve (must be between 0 and 2).
      * @returns SIMD4Def containing the desired values.
      */
@@ -535,7 +535,7 @@ public:
     }
 
     /**
-     * Set the first column of a Matrix4x3.
+     * Set the first column of a Matrix3x4.
      * @tparam Index The index of the column to set (must be between 0 and 3).
      * @param column The new column values.
      */
@@ -546,12 +546,12 @@ public:
     }
 
     /**
-     * Multiply a 4x3 Matrix by a 4x3 Matrix and then add another 4x3 Matrix.
+     * Multiply a 3x4 Matrix by a 3x4 Matrix and then add another 3x4 Matrix.
      * @param matrix1 Matrix to multiply the first by.
      * @param matrix2 Second matrix to add.
      * @returns Result of the operation.
      */
-    XS_INLINE Matrix4x3 mad(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) const noexcept
+    XS_INLINE Matrix3x4 mad(const Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) const noexcept
     {
         if constexpr (numValues<T, SIMD3x4Def::widthImpl> >= 12) {
             SIMD3x4Def ret(matrix1.columns.template shuffle3<2, 2, 2>().mad(
@@ -561,7 +561,7 @@ public:
             ret = matrix1.columns.template shuffle3<0, 0, 0>().template mad<false>(
                 this->columns.template shuffleH3<0, 0, 0, 0>(), ret);
             ret.template setValue3<3>(ret.template getValue3<3>() + this->columns.template getValue3<3>());
-            return Matrix4x3(ret);
+            return Matrix3x4(ret);
         } else if constexpr (numValues<T, SIMD3x4Def::widthImpl> >= 6) {
             SIMD3x4Def ret(matrix1.columns.template shuffle3<2, 2, 2>().mad(
                 this->columns.template getValue3x2<2, 2>(), matrix2.columns));
@@ -570,7 +570,7 @@ public:
             ret = matrix1.columns.template shuffle3<0, 0, 0>().template mad<false>(
                 this->columns.template getValue3x2<0, 0>(), ret);
             ret.template setValue3<3>(ret.template getValue3<3>() + this->columns.template getValue3<3>());
-            return Matrix4x3(ret);
+            return Matrix3x4(ret);
         } else {
             SIMD3x4Def ret(matrix1.columns.template shuffle3<2, 2, 2>().mad(
                 this->columns.template getValue3<2>(), matrix2.columns));
@@ -579,7 +579,7 @@ public:
             ret = matrix1.columns.template shuffle3<0, 0, 0>().template mad<false>(
                 this->columns.template getValue3<0>(), ret);
             ret.template setValue3<3>(ret.template getValue3<3>() + this->columns.template getValue3<3>());
-            return Matrix4x3(ret);
+            return Matrix3x4(ret);
         }
     }
 
@@ -769,7 +769,7 @@ public:
      * Determine the inverse of a matrix.
      * @returns A new inverse matrix.
      */
-    XS_INLINE Matrix4x3 inverse() const noexcept
+    XS_INLINE Matrix3x4 inverse() const noexcept
     {
         // Inverse of affine matrix M=[    A     b ]  can be determined using:
         //                           [  0,..0   1 ]
@@ -799,7 +799,7 @@ public:
         ret = adjoint.template getValue3<1>().template mad<false>(col3.template getValue<1>(), ret);
         ret = adjoint.template getValue3<2>().template mad<false>(col3.template getValue<2>(), ret);
 
-        return Matrix4x3(SIMD3x4Def(adjoint, -ret));
+        return Matrix3x4(SIMD3x4Def(adjoint, -ret));
     }
 
     /**
@@ -835,7 +835,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 postRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -852,7 +852,7 @@ public:
                 ret.template getValue3x2<1, 2>().template mad<false>(SIMD3x2Def::BaseDef(cos),
                     ret.template getValue3x2<2, 1>() * SIMD3x2Def::SIMD2Def(sin).template negate<false, true>()));
         }
-        return Matrix4x3(ret);
+        return Matrix3x4(ret);
     }
 
     /**
@@ -860,7 +860,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 postRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -877,7 +877,7 @@ public:
                 ret.template getValue3x2<0, 2>().template mad<false>(SIMD3x2Def::BaseDef(cos),
                     ret.template getValue3x2<2, 0>() * SIMD3x2Def::SIMD2Def(sin).template negate<true, false>()));
         }
-        return Matrix4x3(ret);
+        return Matrix3x4(ret);
     }
 
     /**
@@ -885,7 +885,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 postRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD3x2Def = typename SIMD3x4Def::SIMD3x2Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -902,7 +902,7 @@ public:
                 ret.template getValue3x2<0, 1>().template mad<false>(SIMD3x2Def::BaseDef(cos),
                     ret.template getValue3x2<1, 0>() * SIMD3x2Def::SIMD2Def(sin).template negate<false, true>()));
         }
-        return Matrix4x3(ret);
+        return Matrix3x4(ret);
     }
 
     /**
@@ -910,7 +910,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 preRotateX(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -929,7 +929,7 @@ public:
                 ret.template getValue4x2<1, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<2, 1>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<true, false>())));
         }
-        return Matrix4x3(SIMD3x4Def(ret));
+        return Matrix3x4(SIMD3x4Def(ret));
     }
 
     /**
@@ -937,7 +937,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 preRotateY(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -956,7 +956,7 @@ public:
                 ret.template getValue4x2<0, 2>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<2, 0>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<false, true>())));
         }
-        return Matrix4x3(SIMD3x4Def(ret));
+        return Matrix3x4(SIMD3x4Def(ret));
     }
 
     /**
@@ -964,7 +964,7 @@ public:
      * @param rotation The angle to rotate by (in radians).
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
+    XS_INLINE Matrix3x4 preRotateZ(typename SIMD3Def::BaseDef rotation) const noexcept
     {
         using SIMD4x2Def = typename SIMD3x4Def::SIMD12Def::SIMD8Def;
         using BaseDef3 = typename SIMD3Def::BaseDef;
@@ -983,7 +983,7 @@ public:
                 ret.template getValue4x2<0, 1>().template mad<false>(SIMD4x2Def::BaseDef(cos),
                     ret.template getValue4x2<1, 0>().mulH4(SIMD4x2Def::SIMD2Def(sin).template negate<true, false>())));
         }
-        return Matrix4x3(SIMD3x4Def(ret));
+        return Matrix3x4(SIMD3x4Def(ret));
     }
 
     /**
@@ -991,12 +991,12 @@ public:
      * @param scale The amount to scale along X/Y/Z-axis.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix3x4 postScale(const SIMD3Def& scale) const noexcept
     {
         if constexpr (widthImpl >= SIMDWidth::B64) {
-            return Matrix4x3(this->columns * SIMD3x4Def::SIMD4Def(scale, SIMD3x4Def::SIMD4Def::BaseDef::One()));
+            return Matrix3x4(this->columns * SIMD3x4Def::SIMD4Def(scale, SIMD3x4Def::SIMD4Def::BaseDef::One()));
         } else {
-            return Matrix4x3(
+            return Matrix3x4(
                 SIMD3x4Def(this->columns.template getValue3x3<0, 1, 2>().component3(scale), this->getColumn<3>()));
         }
     }
@@ -1006,9 +1006,9 @@ public:
      * @param scale The 3 scale values for each axis.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preScale(const SIMD3Def& scale) const noexcept
+    XS_INLINE Matrix3x4 preScale(const SIMD3Def& scale) const noexcept
     {
-        return Matrix4x3(this->columns * scale);
+        return Matrix3x4(this->columns * scale);
     }
 
     /**
@@ -1016,9 +1016,9 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Matrix3x4 postUniformScale(BaseDef scale) const noexcept
     {
-        return Matrix4x3(SIMD3x4Def(this->columns.template getValue3x3<0, 1, 2>() * scale, this->getColumn<3>()));
+        return Matrix3x4(SIMD3x4Def(this->columns.template getValue3x3<0, 1, 2>() * scale, this->getColumn<3>()));
     }
 
     /**
@@ -1026,9 +1026,9 @@ public:
      * @param scale The amount to scale along all axis.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preUniformScale(BaseDef scale) const noexcept
+    XS_INLINE Matrix3x4 preUniformScale(BaseDef scale) const noexcept
     {
-        return Matrix4x3(this->columns * scale);
+        return Matrix3x4(this->columns * scale);
     }
 
     /**
@@ -1036,11 +1036,11 @@ public:
      * @param translation The amount to translate in the X/Y/Z directions.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 postTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Matrix3x4 postTranslate(const SIMD3Def& translation) const noexcept
     {
         const typename SIMD3x4Def::SIMD3x3Def ret(this->columns.template getValue3x3<0, 1, 2>());
         const SIMD3Def ret2(ret.component3(translation).add3());
-        return Matrix4x3(SIMD3x4Def(ret, this->getColumn<3>() + ret2));
+        return Matrix3x4(SIMD3x4Def(ret, this->getColumn<3>() + ret2));
     }
 
     /**
@@ -1048,109 +1048,109 @@ public:
      * @param translation The 3 translate values for each axis.
      * @returns The rotated matrix.
      */
-    XS_INLINE Matrix4x3 preTranslate(const SIMD3Def& translation) const noexcept
+    XS_INLINE Matrix3x4 preTranslate(const SIMD3Def& translation) const noexcept
     {
-        return Matrix4x3(SIMD3x4Def(this->columns.template getValue3x3<0, 1, 2>(), this->getColumn<3>() + translation));
+        return Matrix3x4(SIMD3x4Def(this->columns.template getValue3x3<0, 1, 2>(), this->getColumn<3>() + translation));
     }
 };
 
 /**
- * Add two 4x3 Matrices.
+ * Add two 3x4 Matrices.
  * @param matrix1 The first matrix.
  * @param matrix2 Matrix to add to the first one.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width> operator+(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width> operator+(const Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
-    return Matrix4x3<T, Width>(matrix1.columns + matrix2.columns);
+    return Matrix3x4<T, Width>(matrix1.columns + matrix2.columns);
 }
 
 /**
- * Subtract a 4x3 Matrix from another 4x3 Matrix.
+ * Subtract a 3x4 Matrix from another 3x4 Matrix.
  * @param matrix1 The first matrix.
  * @param matrix2 Matrix to subtract from the first one.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width> operator-(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width> operator-(const Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
-    return Matrix4x3<T, Width>(matrix1.columns - matrix2.columns);
+    return Matrix3x4<T, Width>(matrix1.columns - matrix2.columns);
 }
 
 /**
- * Multiply two 4x3 Matrices together.
+ * Multiply two 3x4 Matrices together.
  * @param matrix1 The first matrix.
  * @param matrix2 Matrix to multiply the first by.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width> operator*(const Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width> operator*(const Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
-    if constexpr (numValues<T, Matrix4x3<T, Width>::SIMD3x4Def::widthImpl> >= 12) {
-        typename Matrix4x3<T, Width>::SIMD3x4Def ret(
+    if constexpr (numValues<T, Matrix3x4<T, Width>::SIMD3x4Def::widthImpl> >= 12) {
+        typename Matrix3x4<T, Width>::SIMD3x4Def ret(
             matrix2.columns.template shuffle3<2, 2, 2>() * matrix1.columns.template shuffleH3<2, 2, 2, 2>());
         ret = matrix2.columns.template shuffle3<1, 1, 1>().template mad<false>(
             matrix1.columns.template shuffleH3<1, 1, 1, 1>(), ret);
         ret = matrix2.columns.template shuffle3<0, 0, 0>().template mad<false>(
             matrix1.columns.template shuffleH3<0, 0, 0, 0>(), ret);
         ret.template setValue3<3>(ret.template getValue3<3>() + matrix1.columns.template getValue3<3>());
-        return Matrix4x3<T, Width>(ret);
-    } else if constexpr (numValues<T, Matrix4x3<T, Width>::SIMD3x4Def::widthImpl> >= 6) {
-        typename Matrix4x3<T, Width>::SIMD3x4Def ret(
+        return Matrix3x4<T, Width>(ret);
+    } else if constexpr (numValues<T, Matrix3x4<T, Width>::SIMD3x4Def::widthImpl> >= 6) {
+        typename Matrix3x4<T, Width>::SIMD3x4Def ret(
             matrix2.columns.template shuffle3<2, 2, 2>() * matrix1.columns.template getValue3x2<2, 2>());
         ret = matrix2.columns.template shuffle3<1, 1, 1>().template mad<false>(
             matrix1.columns.template getValue3x2<1, 1>(), ret);
         ret = matrix2.columns.template shuffle3<0, 0, 0>().template mad<false>(
             matrix1.columns.template getValue3x2<0, 0>(), ret);
         ret.template setValue3<3>(ret.template getValue3<3>() + matrix1.columns.template getValue3<3>());
-        return Matrix4x3<T, Width>(ret);
+        return Matrix3x4<T, Width>(ret);
     } else {
-        typename Matrix4x3<T, Width>::SIMD3x4Def ret(
+        typename Matrix3x4<T, Width>::SIMD3x4Def ret(
             matrix2.columns.template shuffle3<2, 2, 2>() * matrix1.columns.template getValue3<2>());
         ret = matrix2.columns.template shuffle3<1, 1, 1>().template mad<false>(
             matrix1.columns.template getValue3<1>(), ret);
         ret = matrix2.columns.template shuffle3<0, 0, 0>().template mad<false>(
             matrix1.columns.template getValue3<0>(), ret);
         ret.template setValue3<3>(ret.template getValue3<3>() + matrix1.columns.template getValue3<3>());
-        return Matrix4x3<T, Width>(ret);
+        return Matrix3x4<T, Width>(ret);
     }
 }
 
 /**
- * Perform compound assignment and addition with a 4x3 Matrix.
+ * Perform compound assignment and addition with a 3x4 Matrix.
  * @param [in,out] matrix1 The first matrix.
  * @param          matrix2 Matrix to add to first one.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width>& operator+=(Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width>& operator+=(Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
     matrix1.columns += matrix2.columns;
     return matrix1;
 }
 
 /**
- * Perform compound assignment and subtraction with a 4x3 Matrix.
+ * Perform compound assignment and subtraction with a 3x4 Matrix.
  * @param [in,out] matrix1 The first matrix.
  * @param          matrix2 Matrix to subtract from first one.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width>& operator-=(Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width>& operator-=(Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
     matrix1.columns -= matrix2.columns;
     return matrix1;
 }
 
 /**
- * Perform compound assignment and multiplication with a 4x3 Matrix.
+ * Perform compound assignment and multiplication with a 3x4 Matrix.
  * @param [in,out] matrix1 The first matrix.
  * @param          matrix2 Matrix to multiply the first by.
  * @returns The result of the operation.
  */
 template<typename T, SIMDWidth Width>
-XS_INLINE Matrix4x3<T, Width>& operator*=(Matrix4x3<T, Width>& matrix1, const Matrix4x3<T, Width>& matrix2) noexcept
+XS_INLINE Matrix3x4<T, Width>& operator*=(Matrix3x4<T, Width>& matrix1, const Matrix3x4<T, Width>& matrix2) noexcept
 {
     matrix1 = matrix1 * matrix2;
     return matrix1;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "Geometry/XSMatrix4x3.hpp"
+#include "Geometry/XSMatrix3x4.hpp"
 #include "SIMD/XSSIMD16.hpp"
 
 namespace Shift {
@@ -250,7 +250,7 @@ public:
     using Vector3D2Def = Vector3D2<T, Packed, Vector3D2<T, Packed, widthImpl>::widthImpl>;
     template<bool Packed>
     using Vector3D4Def = Vector3D4<T, Packed, Vector3D4<T, Packed, widthImpl>::widthImpl>;
-    using Matrix4x3Def = Matrix4x3<T, Matrix4x3<T, widthImpl>::widthImpl>;
+    using Matrix3x4Def = Matrix3x4<T, Matrix3x4<T, widthImpl>::widthImpl>;
     using Matrix3x3Def = Matrix3x3<T, Matrix3x3<T, widthImpl>::widthImpl>;
     using QuaternionDef = Quaternion<T, Quaternion<T, widthImpl>::widthImpl>;
 
@@ -345,17 +345,17 @@ public:
      * @param matrix Reference to matrix to copy.
      */
     XS_INLINE explicit Matrix4x4(const Matrix3x3Def& matrix) noexcept
-        : columns(Matrix4x3Def::SIMD3x4Def::SIMD12Def(
-                      matrix.columns, Matrix4x3Def::SIMD3x4Def::SIMD12Def::SIMD3Def::Zero()),
+        : columns(Matrix3x4Def::SIMD3x4Def::SIMD12Def(
+                      matrix.columns, Matrix3x4Def::SIMD3x4Def::SIMD12Def::SIMD3Def::Zero()),
               SIMD4Def(0.0f, 0.0f, 0.0f, 1.0f))
     {}
 
     /**
-     * Construct from a Matrix4x3.
+     * Construct from a Matrix3x4.
      * @param matrix Reference to matrix to copy.
      * @param row3   The fourth row of the matrix.
      */
-    XS_INLINE explicit Matrix4x4(const Matrix4x3Def& matrix, const SIMD4Def& row3) noexcept
+    XS_INLINE explicit Matrix4x4(const Matrix3x4Def& matrix, const SIMD4Def& row3) noexcept
         : columns(matrix.columns, row3)
     {}
 
@@ -439,12 +439,12 @@ public:
     }
 
     /**
-     * Construct a Matrix4x3 from a Matrix4x4.
+     * Construct a Matrix3x4 from a Matrix4x4.
      * @return Newly constructed object.
      */
-    XS_INLINE explicit operator Matrix4x3Def() const noexcept
+    XS_INLINE explicit operator Matrix3x4Def() const noexcept
     {
-        return Matrix4x3Def(this->columns.template getValue3x4<0, 1, 2>());
+        return Matrix3x4Def(this->columns.template getValue3x4<0, 1, 2>());
     }
 
     /**

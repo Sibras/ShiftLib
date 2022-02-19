@@ -71,11 +71,11 @@ namespace XS_OVERRIDE_SHIFT_NS {
 #    endif
 #    include "Geometry/XSMatrix3x3.hpp"
 #endif
-#ifdef XS_TESTING_MATRIX4X3
+#ifdef XS_TESTING_MATRIX3X4
 #    ifndef XS_TESTING_SIMD4
 #        define XS_TESTING_SIMD4 // Needed for PrinTo(row)
 #    endif
-#    include "Geometry/XSMatrix4x3.hpp"
+#    include "Geometry/XSMatrix3x4.hpp"
 #endif
 #ifdef XS_TESTING_MATRIX4X4
 #    ifndef XS_TESTING_SIMD4
@@ -251,9 +251,9 @@ void PrintTo(const Matrix3x3<T, Width>& param, std::ostream* os)
 }
 #endif
 
-#ifdef XS_TESTING_MATRIX4X3
+#ifdef XS_TESTING_MATRIX3X4
 template<typename T, SIMDWidth Width>
-void PrintTo(const Matrix4x3<T, Width>& param, std::ostream* os)
+void PrintTo(const Matrix3x4<T, Width>& param, std::ostream* os)
 {
     auto val0 = param.template getRow<0>();
     auto val1 = param.template getRow<1>();
@@ -412,8 +412,6 @@ void PrintTo(const Vector3D<T, Width>& param, std::ostream* os)
 } // namespace Shift
 #ifdef XS_OVERRIDE_SHIFT_NS
 } // namespace XS_OVERRIDE_SHIFT_NS
-#else
-#    define XS_OVERRIDE_SHIFT_NS
 #endif
 
 #include "SIMD/XSGTestSIMD.hpp"
@@ -603,9 +601,9 @@ template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
 }
 #endif
 
-#ifdef XS_TESTING_MATRIX4X3
+#ifdef XS_TESTING_MATRIX3X4
 template<typename T, XS_OVERRIDE_SHIFT_NS::Shift::SIMDWidth Width>
-::testing::AssertionResult assertMatrix4x3(const XS_OVERRIDE_SHIFT_NS::Shift::Matrix4x3<T, Width>& param, T v0, T v1,
+::testing::AssertionResult assertMatrix3x4(const XS_OVERRIDE_SHIFT_NS::Shift::Matrix3x4<T, Width>& param, T v0, T v1,
     T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11)
 {
     auto val0 = param.template getRow<0>();

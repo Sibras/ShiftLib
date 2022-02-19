@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "Geometry/XSMatrix4x3.hpp"
+#include "Geometry/XSMatrix3x4.hpp"
 #include "Geometry/XSPoint3D4.hpp"
 #include "Geometry/XSQuaternion.hpp"
 #include "Geometry/XSVector3D4.hpp"
@@ -37,7 +37,7 @@ class TransformData
     template<>
     struct InternData<true>
     {
-        Matrix4x3Data<T> matrix;
+        Matrix3x4Data<T> matrix;
     };
 
 public:
@@ -111,7 +111,7 @@ public:
     {
         if constexpr (Matrix) {
             return Transform<T, Matrix, Width>(
-                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix4x3Def::widthImpl>());
+                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix3x4Def::widthImpl>());
         } else {
             const typename Transform<T, Matrix, Width>::QuaternionDef quaternion(this->data.quaternion.load());
             // Pack in single float4 for faster load/store
@@ -137,7 +137,7 @@ class TransformDataPad
     template<>
     struct InternData<true>
     {
-        Matrix4x3DataPad<T> matrix;
+        Matrix3x4DataPad<T> matrix;
     };
 
 public:
@@ -210,7 +210,7 @@ public:
     {
         if constexpr (Matrix) {
             return Transform<T, Matrix, Width>(
-                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix4x3Def::widthImpl>());
+                this->data.matrix.template load<Transform<T, Matrix, Width>::Matrix3x4Def::widthImpl>());
         } else {
             return Transform<T, Matrix, Width>(
                 this->data.quaternion.template load<Transform<T, Matrix, Width>::QuaternionDef::widthImpl>(),
@@ -252,19 +252,19 @@ class Transform
     template<>
     struct InternData<true>
     {
-        using Matrix4x3Def = Matrix4x3<T, Quaternion<T, Width>::widthImpl>;
-        static constexpr SIMDWidth widthImpl = Matrix4x3Def::widthImpl;
-        using BaseDef = typename Matrix4x3Def::BaseDef;
-        using InBaseDef = typename Matrix4x3Def::InBaseDef;
-        using SIMD3Def = typename Matrix4x3Def::SIMD3Def;
+        using Matrix3x4Def = Matrix3x4<T, Quaternion<T, Width>::widthImpl>;
+        static constexpr SIMDWidth widthImpl = Matrix3x4Def::widthImpl;
+        using BaseDef = typename Matrix3x4Def::BaseDef;
+        using InBaseDef = typename Matrix3x4Def::InBaseDef;
+        using SIMD3Def = typename Matrix3x4Def::SIMD3Def;
 
-        Matrix4x3Def matrix; /**< The transforms internal representation. */
+        Matrix3x4Def matrix; /**< The transforms internal representation. */
     };
 
 public:
     using Type = T;
     static constexpr SIMDWidth width = Width;
-    using Matrix4x3Def = Matrix4x3<T, Width>;
+    using Matrix3x4Def = Matrix3x4<T, Width>;
     using QuaternionDef = Quaternion<T, Width>;
     using InternalData = InternData<Matrix>;
     static constexpr SIMDWidth widthImpl = InternalData::widthImpl;
@@ -324,7 +324,7 @@ public:
     XS_INLINE explicit Transform(const Transform<T, Matrix, Width2>& other) noexcept
     {
         if constexpr (Matrix) {
-            this->data.matrix = Matrix4x3Def(other.data.matrix);
+            this->data.matrix = Matrix3x4Def(other.data.matrix);
         } else {
             this->data.quaternion = QuaternionDef(other.data.quaternion);
             this->data.translation = SIMD3Def(other.data.translation);
@@ -333,10 +333,10 @@ public:
     }
 
     /**
-     * Construct a transform from a Matrix4x3.
+     * Construct a transform from a Matrix3x4.
      * @param matrix The new transform transform.
      */
-    XS_INLINE explicit Transform(const Matrix4x3Def& matrix) noexcept
+    XS_INLINE explicit Transform(const Matrix3x4Def& matrix) noexcept
     {
         if constexpr (Matrix) {
             this->data.matrix = matrix;
@@ -356,7 +356,7 @@ public:
     XS_INLINE Transform(const QuaternionDef& quaternion, const Vector3DDef& translation, BaseDef scale) noexcept
     {
         if constexpr (Matrix) {
-            this->data.matrix = Matrix4x3Def(quaternion, translation).postUniformScale(scale);
+            this->data.matrix = Matrix3x4Def(quaternion, translation).postUniformScale(scale);
         } else {
             this->data.quaternion = quaternion;
             this->data.translation = translation;
@@ -371,7 +371,7 @@ public:
     XS_INLINE static Transform Identity() noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::Identity());
+            return Transform(Matrix3x4Def::Identity());
         } else {
             return Transform(QuaternionDef::Identity(), Vector3DDef::Zero(), BaseDef::One());
         }
@@ -385,7 +385,7 @@ public:
     XS_INLINE static Transform Translation(const SIMD3Def& translation) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::Translation(translation));
+            return Transform(Matrix3x4Def::Translation(translation));
         } else {
             return Transform(QuaternionDef::Identity(), Vector3DDef(translation), BaseDef::One());
         }
@@ -399,7 +399,7 @@ public:
     XS_INLINE static Transform UniformScale(InBaseDef scale) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::UniformScale(scale));
+            return Transform(Matrix3x4Def::UniformScale(scale));
         } else {
             return Transform(QuaternionDef::Identity(), Vector3DDef::Zero(), BaseDef(scale));
         }
@@ -413,7 +413,7 @@ public:
     XS_INLINE static Transform RotationX(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::RotationX(rotation));
+            return Transform(Matrix3x4Def::RotationX(rotation));
         } else {
             return Transform(QuaternionDef::RotationX(rotation), Vector3DDef::Zero(), BaseDef(1.0f));
         }
@@ -427,7 +427,7 @@ public:
     XS_INLINE static Transform RotationY(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::RotationY(rotation));
+            return Transform(Matrix3x4Def::RotationY(rotation));
         } else {
             return Transform(QuaternionDef::RotationY(rotation), Vector3DDef::Zero(), BaseDef(1.0f));
         }
@@ -441,7 +441,7 @@ public:
     XS_INLINE static Transform RotationZ(InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::RotationZ(rotation));
+            return Transform(Matrix3x4Def::RotationZ(rotation));
         } else {
             return Transform(QuaternionDef::RotationZ(rotation), Vector3DDef::Zero(), BaseDef(1.0f));
         }
@@ -456,7 +456,7 @@ public:
     XS_INLINE static Transform RotationAxis(const Vector3DDef& axis, InBaseDef rotation) noexcept
     {
         if constexpr (Matrix) {
-            return Transform(Matrix4x3Def::RotationAxis(axis, rotation));
+            return Transform(Matrix3x4Def::RotationAxis(axis, rotation));
         } else {
             return Transform(QuaternionDef::RotationAxis(axis, rotation), Vector3DDef::Zero(), BaseDef(1.0f));
         }

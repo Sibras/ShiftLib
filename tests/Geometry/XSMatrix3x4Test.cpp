@@ -17,8 +17,8 @@
 #ifndef XSTESTMAIN
 #    include "XSCompilerOptions.h"
 
-#    define XS_OVERRIDE_SHIFT_NS TESTISA(Matrix4x3Test)
-#    define XS_TESTING_MATRIX4X3
+#    define XS_OVERRIDE_SHIFT_NS TESTISA(Matrix3x4Test)
+#    define XS_TESTING_MATRIX3X4
 #    define XS_TESTING_MATRIX4X4
 #    define XS_TESTING_VECTOR3D
 #    define XS_TESTING_VECTOR3D2
@@ -35,7 +35,7 @@ using namespace XS_OVERRIDE_SHIFT_NS;
 using namespace XS_OVERRIDE_SHIFT_NS::Shift;
 
 template<typename T>
-class TESTISA(M4x3)
+class TESTISA(M3x4)
     : public ::testing::Test
 {
 public:
@@ -45,12 +45,12 @@ public:
     static constexpr SIMDWidth widthImpl = T::widthImpl; // actual width in use
 };
 
-using Matrix4x3TestTypes = ::testing::Types<Matrix4x3<float, SIMDWidth::Scalar>, Matrix4x3<float, SIMDWidth::B16>,
-    Matrix4x3<float, SIMDWidth::B32>, Matrix4x3<float, SIMDWidth::B64>>;
+using Matrix3x4TestTypes = ::testing::Types<Matrix3x4<float, SIMDWidth::Scalar>, Matrix3x4<float, SIMDWidth::B16>,
+    Matrix3x4<float, SIMDWidth::B32>, Matrix3x4<float, SIMDWidth::B64>>;
 
-TYPED_TEST_SUITE(TESTISA(M4x3), Matrix4x3TestTypes);
+TYPED_TEST_SUITE(TESTISA(M3x4), Matrix3x4TestTypes);
 
-TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
+TYPED_TEST_NS2(Matrix3x4, TESTISA(M3x4), Matrix3x4)
 {
     using TestType = typename TestFixture::Type;
 
@@ -59,22 +59,22 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
 
     TestType test1 = TestType(TestType::SIMD3Def(2.3f, -4.32f, 1.7f), TestType::SIMD3Def(-1.1f, 1.0f, 8.8f),
         TestType::SIMD3Def(2.0f, 51.2f, -1.1f), TestType::SIMD3Def(-8.7f, 1.05f, -1.05f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
     TestType test2 = TestType(TestType::SIMD3Def(11.1f, -11.1f, 2.3f), TestType::SIMD3Def(0.2f, 3.3f, -4.5f),
         TestType::SIMD3Def(0.6f, -0.2f, 33.6f), TestType::SIMD3Def(9.1f, 2.8f, -92.1f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test2, 11.1f, 0.2f, 0.6f, 9.1f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test2, 11.1f, 0.2f, 0.6f, 9.1f,
         -11.1f, 3.3f, -0.2f, 2.8f, 2.3f, -4.5f, 33.6f, -92.1f);
 
     TestType test3 = TestType(test1);
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test3, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test3, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
     typename TestType::Matrix3x3Def testM31 = TestType::Matrix3x3Def(TestType::SIMD3Def(2.3f, -4.32f, 1.7f),
         TestType::SIMD3Def(-1.1f, 1.0f, 8.8f), TestType::SIMD3Def(2.0f, 51.2f, -1.1f));
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), TestType(testM31), 2.3f, -1.1f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), TestType(testM31), 2.3f, -1.1f,
         2.0f, 0.0f, -4.32f, 1.0f, 51.2f, 0.0f, 1.7f, 8.8f, -1.1f, 0.0f);
 
     typename TestType::Matrix3x3Def test1B = TestType::Matrix3x3Def(test1);
@@ -83,38 +83,38 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
 
     //  Preset Constructor Test
     TestType test4 = TestType::Identity();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test4, 1.0f, 0.0f, 0.0f, 0.0f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test4, 1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
     TestType test5 = TestType::Translation(TestType::SIMD3Def(5.6f, -4.2f, 0.5f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test5, 1.0f, 0.0f, 0.0f, 5.6f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test5, 1.0f, 0.0f, 0.0f, 5.6f,
         0.0f, 1.0f, 0.0f, -4.2f, 0.0f, 0.0f, 1.0f, 0.5f);
 
     TestType test6 = TestType::Scale(TestType::SIMD3Def(2.3f, 4.7f, -1.3f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test6, 2.3f, 0.0f, 0.0f, 0.0f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test6, 2.3f, 0.0f, 0.0f, 0.0f,
         0.0f, 4.7f, 0.0f, 0.0f, 0.0f, 0.0f, -1.3f, 0.0f);
 
     TestType test7 = TestType::RotationX(TestType::SIMD3Def::BaseDef(1.0471975511965977461542144610932f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test7, 1.0f, 0.0f, 0.0f, 0.0f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test7, 1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.5f, -0.86602540378443864676372317075294f, 0.0f, 0.0f, 0.86602540378443864676372317075294f, 0.5f, 0.0f);
 
     TestType test8 = TestType::RotationY(TestType::SIMD3Def::BaseDef(0.78539816339744830961566084581988f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test8,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test8,
         0.70710678118654752440084436210485f, 0.0f, 0.70710678118654752440084436210485f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
         -0.70710678118654752440084436210485f, 0.0f, 0.70710678118654752440084436210485f, 0.0f);
 
     TestType test9 = TestType::RotationZ(TestType::SIMD3Def::BaseDef(0.52359877559829887307710723054658f));
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test9,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test9,
         0.86602540378443864676372317075294f, -0.5f, 0.0f, 0.0f, 0.5f, 0.86602540378443864676372317075294f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         TestType::RotationAxis(
             TestType::Vector3DDef(1.0f, 0.0f, 0.0f), TestType::SIMD3Def::BaseDef(1.0471975511965977461542144610932f)),
         1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, -0.86602540378443864676372317075294f, 0.0f, 0.0f,
         0.86602540378443864676372317075294f, 0.5f, 0.0f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         TestType::RotationAxis(TestType::Vector3DDef(0.845032f, 0.169006f, 0.507019f),
             TestType::SIMD3Def::BaseDef(0.52359877559829887307710723054658f)),
         0.961722f, -0.234407f, 0.141933f, 0.0f, 0.272685f, 0.869853f, -0.411094f, 0.0f, -0.0270977f, 0.434061f,
@@ -180,53 +180,53 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
         -8.7f, 1.05f, -1.05f);
 
     //  Load/Store Test
-    Matrix4x3Data<typename TestFixture::TypeInt> data(
+    Matrix3x4Data<typename TestFixture::TypeInt> data(
         test1); // uses constructor to avoid needing to allocate aligned mem
     data.store(test1);
     test1 = data.template load<TestType::width>();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
     data.setData(2.3f, -4.32f, 1.7f, -1.1f, 1.0f, 8.8f, 2.0f, 51.2f, -1.1f, -8.7f, 1.05f, -1.05f);
     test1 = data.template load<TestType::width>();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
-    Matrix4x3DataPad<typename TestFixture::TypeInt> dataPad(test1);
+    Matrix3x4DataPad<typename TestFixture::TypeInt> dataPad(test1);
     dataPad.store(test1);
     test1 = dataPad.template load<TestType::width>();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
     dataPad.setData(2.3f, -4.32f, 1.7f, -1.1f, 1.0f, 8.8f, 2.0f, 51.2f, -1.1f, -8.7f, 1.05f, -1.05f);
     test1 = dataPad.template load<TestType::width>();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1, 2.3f, -1.1f, 2.0f, -8.7f,
         -4.32f, 1.0f, 51.2f, 1.05f, 1.7f, 8.8f, -1.1f, -1.05f);
 
     //  Math Test
     TestType test12 = test1 + test2;
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test12, 13.4f, -0.9f, 2.6f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test12, 13.4f, -0.9f, 2.6f,
         0.4f, -15.42f, 4.3f, 51.0f, 3.85f, 4.0f, 4.3f, 32.5f, -93.15f);
 
     TestType test13 = test1 - test2;
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test13, -8.8f, -1.3f, 1.4f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test13, -8.8f, -1.3f, 1.4f,
         -17.8f, 6.78f, -2.3f, 51.4f, -1.75f, -0.6f, 13.3f, -34.7f, 91.05f);
 
     TestType test14 = test1 * test2;
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test14, 42.34f, -12.17f, 68.8f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test14, 42.34f, -12.17f, 68.8f,
         -175.05f, 58.708f, -227.964f, 1717.53f, -4750.98f, -81.34f, 34.33f, -37.7f, 140.37f);
 
     TestType test15 = test1.mad(test2, test3);
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test15, 44.64f, -13.27f, 70.8f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test15, 44.64f, -13.27f, 70.8f,
         -183.75f, 54.388f, -226.964f, 1768.73f, -4749.93f, -79.64f, 43.13f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 *= test2, 42.34f, -12.17f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 *= test2, 42.34f, -12.17f,
         68.8f, -175.05f, 58.708f, -227.964f, 1717.53f, -4750.98f, -81.34f, 34.33f, -37.7f, 140.37f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 += test3, 44.64f, -13.27f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 += test3, 44.64f, -13.27f,
         70.8f, -183.75f, 54.388f, -226.964f, 1768.73f, -4749.93f, -79.64f, 43.13f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test3 -= test2, -8.8f, -1.3f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test3 -= test2, -8.8f, -1.3f,
         1.4f, -17.8f, 6.78f, -2.3f, 51.4f, -1.75f, -0.6f, 13.3f, -34.7f, 91.05f);
 
     //  Transform Test
@@ -297,7 +297,7 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
         test2.transformTransposed(testPoint3), 0.0473674f, 0.0571539f, -0.323355f);
 
     TestType test17 = test2.inverse();
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test17, 0.0832744f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test17, 0.0832744f,
         -0.00713261f, -0.0015295f, -0.878693f, 0.282049f, 0.281352f, -0.00336187f, -3.66406f, 0.032074f, 0.0381693f,
         0.0294164f, 2.3105f);
 
@@ -313,91 +313,91 @@ TYPED_TEST_NS2(Matrix4x3, TESTISA(M4x3), Matrix4x3)
         (assertSIMDInBase<typename TestFixture::TypeInt, TestType::InBaseDef::width>), test7.determinantInBase(), 1.0f);
 
     //  Matrix Inline Modify Test
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test7, 44.64f, 54.6796f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test7, 44.64f, 54.6796f,
         46.8922f, -183.75f, 54.388f, 1418.28f, 1080.92f, -4749.9321f, -79.64f, -12.0368f, -56.7517f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postRotateX(TestType::SIMD3Def::BaseDef(1.0471975511965977461542144610932f)), 44.64f, 54.6796f, 46.8922f,
         -183.75f, 54.388f, 1418.28f, 1080.92f, -4749.9321f, -79.64f, -12.0368f, -56.7517f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test8, -18.4979f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test8, -18.4979f,
         -13.27f, 81.6284f, -183.75f, -1212.22f, -226.964f, 1289.14f, -4749.9321f, -28.8782f, 43.13f, -83.7479f,
         139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postRotateY(TestType::SIMD3Def::BaseDef(0.78539816339744830961566084581988f)), -18.4979f, -13.27f,
         81.6284f, -183.75f, -1212.22f, -226.964f, 1289.14f, -4749.9321f, -28.8782f, 43.13f, -83.7479f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test9, 32.0244f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test9, 32.0244f,
         -33.8122f, 70.8f, -183.75f, -66.3806f, -223.751f, 1768.73f, -4749.9321f, -47.4053f, 77.1717f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postRotateZ(TestType::SIMD3Def::BaseDef(0.52359877559829887307710723054658f)), 32.0244f, -33.8122f, 70.8f,
         -183.75f, -66.3806f, -223.751f, 1768.73f, -4749.9321f, -47.4053f, 77.1717f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test7 * test1, 44.64f, -13.27f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test7 * test1, 44.64f, -13.27f,
         70.8f, -183.75f, 96.1643f, -150.834f, 917.966f, -2495.62f, 7.28139f, -174.992f, 1512.36f, -4043.9f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preRotateX(TestType::SIMD3Def::BaseDef(1.0471975511965977461542144610932f)), 44.64f, -13.27f, 70.8f,
         -183.75f, 96.1643f, -150.834f, 917.966f, -2495.62f, 7.28139f, -174.992f, 1512.36f, -4043.9f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test8 * test1, -24.7487f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test8 * test1, -24.7487f,
         21.1142f, 22.6274f, -31.4168f, 54.388f, -226.964f, 1768.73f, -4749.93f, -87.8792f, 39.8808f, -77.4989f,
         228.445f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preRotateY(TestType::SIMD3Def::BaseDef(0.78539816339744830961566084581988f)), -24.7487f, 21.1142f,
         22.6274f, -31.4168f, 54.388f, -226.964f, 1768.73f, -4749.93f, -87.8792f, 39.8808f, -77.4989f, 228.445f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test9 * test1, 11.4654f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test9 * test1, 11.4654f,
         101.99f, -823.049f, 2215.83f, 69.4214f, -203.192f, 1567.16f, -4205.44f, -79.64f, 43.13f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preRotateZ(TestType::SIMD3Def::BaseDef(0.52359877559829887307710723054658f)), 11.4654f, 101.99f,
         -823.049f, 2215.83f, 69.4214f, -203.192f, 1567.16f, -4205.44f, -79.64f, 43.13f, -38.8f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test6, 102.672f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test6, 102.672f,
         -62.369f, -92.04f, -183.75f, 125.092f, -1066.73f, -2299.35f, -4749.93f, -183.172f, 202.711f, 50.44f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postScale(TestType::SIMD3Def(2.3f, 4.7f, -1.3f)), 102.672f, -62.369f, -92.04f, -183.75f, 125.092f,
         -1066.73f, -2299.35f, -4749.93f, -183.172f, 202.711f, 50.44f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test6 * test1, 102.672f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test6 * test1, 102.672f,
         -30.521f, 162.84f, -422.625f, 255.524f, -1066.73f, 8313.02f, -22324.7f, 103.532f, -56.069f, 50.44f, -181.116f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preScale(TestType::SIMD3Def(2.3f, 4.7f, -1.3f)), 102.672f, -30.521f, 162.84f, -422.625f, 255.524f,
         -1066.73f, 8313.02f, -22324.7f, 103.532f, -56.069f, 50.44f, -181.116f);
 
     test6 = TestType::Scale(TestType::SIMD3Def(2.3f, 2.3f, 2.3f));
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test6, 102.672f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test6, 102.672f,
         -30.521f, 162.84f, -183.75f, 125.092f, -522.017f, 4068.07f, -4749.93f, -183.172f, 99.199f, -89.24f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postUniformScale(TestType::BaseDef(2.3f)), 102.672f, -30.521f, 162.84f, -183.75f, 125.092f, -522.017f,
         4068.07f, -4749.93f, -183.172f, 99.199f, -89.24f, 139.32f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test6 * test1, 102.672f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test6 * test1, 102.672f,
         -30.521f, 162.84f, -422.625f, 125.092f, -522.017f, 4068.07f, -10924.8f, -183.172f, 99.199f, -89.24f, 320.436f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preUniformScale(TestType::BaseDef(2.3f)), 102.672f, -30.521f, 162.84f, -422.625f, 125.092f, -522.017f,
         4068.07f, -10924.8f, -183.172f, 99.199f, -89.24f, 320.436f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test1 * test5, 44.64f, -13.27f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test1 * test5, 44.64f, -13.27f,
         70.8f, 157.368f, 54.388f, -226.964f, 1768.73f, -2607.75f, -79.64f, 43.13f, -38.8f, -507.21f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.postTranslate(TestType::SIMD3Def(5.6f, -4.2f, 0.5f)), 44.64f, -13.27f, 70.8f, 157.368f, 54.388f,
         -226.964f, 1768.73f, -2607.75f, -79.64f, 43.13f, -38.8f, -507.21f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>), test5 * test1, 44.64f, -13.27f,
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>), test5 * test1, 44.64f, -13.27f,
         70.8f, -178.15f, 54.388f, -226.964f, 1768.73f, -4754.13f, -79.64f, 43.13f, -38.8f, 139.82f);
 
-    ASSERT_PRED13((assertMatrix4x3<typename TestFixture::TypeInt, TestFixture::width>),
+    ASSERT_PRED13((assertMatrix3x4<typename TestFixture::TypeInt, TestFixture::width>),
         test1.preTranslate(TestType::SIMD3Def(5.6f, -4.2f, 0.5f)), 44.64f, -13.27f, 70.8f, -178.15f, 54.388f, -226.964f,
         1768.73f, -4754.13f, -79.64f, 43.13f, -38.8f, 139.82f);
 }

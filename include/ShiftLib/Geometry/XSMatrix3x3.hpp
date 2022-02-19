@@ -23,7 +23,7 @@ namespace Shift {
 template<typename T, SIMDWidth Width>
 class Matrix3x3;
 template<typename T, SIMDWidth Width>
-class Matrix4x3;
+class Matrix3x4;
 template<typename T, SIMDWidth Width>
 class Matrix4x4;
 template<typename T, SIMDWidth Width>
@@ -326,7 +326,7 @@ public:
     /**
      * Constructor to build a 3x3 Matrix with fixed uniform scale.
      * @param scale The amount to scale in the X/Y/Z direction.
-     * @returns Newly constructed Matrix4x3 with required attributes.
+     * @returns Newly constructed Matrix3x4 with required attributes.
      */
     XS_INLINE static Matrix3x3 UniformScale(InBaseDef scale) noexcept
     {

@@ -103,7 +103,7 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSAABoundingBox2.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSAABoundingBox4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSMatrix3x3.hpp>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSMatrix4x3.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSMatrix3x4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSMatrix4x4.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSPoint3D.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Geometry/XSPoint3D2.hpp>"
@@ -222,7 +222,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/Geometry/XSAABoundingBox2Test.cpp
         tests/Geometry/XSAABoundingBox4Test.cpp
         tests/Geometry/XSMatrix3x3Test.cpp
-        tests/Geometry/XSMatrix4x3Test.cpp
+        tests/Geometry/XSMatrix3x4Test.cpp
         tests/Geometry/XSMatrix4x4Test.cpp
         tests/Geometry/XSPoint3DTest.cpp
         tests/Geometry/XSPoint3D2Test.cpp
