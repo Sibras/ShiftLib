@@ -67,7 +67,7 @@ endif()
 # Add in the library code
 add_library(ShiftLib INTERFACE)
 
-target_sources(ShiftLib INTERFACE    
+set(SHIFTLIB_SOURCE_FILES  
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSArchitecture.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSConfig.h>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSCompiler.h>"
@@ -79,6 +79,7 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUInt128.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSRational.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSUtility.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/XSExpected.hpp>"
     
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDData.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/SIMD/XSSIMDTraits.hpp>"
@@ -126,12 +127,20 @@ target_sources(ShiftLib INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIterator.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSIteratorOffset.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArray.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSStaticArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSArrayView.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSDArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSPArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSString.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSStringView.hpp>"
 )
+
+target_sources(ShiftLib
+    INTERFACE
+    ${SHIFTLIB_SOURCE_FILES}
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SHIFTLIB_SOURCE_FILES})
 
 target_compile_features(ShiftLib
     INTERFACE cxx_std_20
@@ -142,10 +151,6 @@ target_include_directories(ShiftLib
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib>"
     "$<INSTALL_INTERFACE:include/ShiftLib>"
 )
-
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" REGULAR_EXPRESSION "*.h")
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Header Files" REGULAR_EXPRESSION "*.hpp")
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" REGULAR_EXPRESSION "*.cpp")
 
 add_library(ShiftLib::ShiftLib ALIAS ShiftLib)
 
@@ -192,7 +197,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     include(GoogleTest)
     
     #Source files are included in main executable and in dependent ISA specific static libs
-    set(SHIFTLIBTESTFILES
+    set(SHIFTLIB_TEST_FILES
         tests/XSCompilerOptions.h
         tests/XSGTest.hpp
         tests/XSUInt128Test.cpp
@@ -248,7 +253,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     
     add_executable(ShiftLibTest)
 
-    target_sources(ShiftLibTest PRIVATE ${SHIFTLIBTESTFILES})
+    target_sources(ShiftLibTest PRIVATE ${SHIFTLIB_TEST_FILES})
+    
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SHIFTLIB_TEST_FILES})
 
     # XSTESTMAIN is used to signal if in main executable or ISA library
     target_compile_definitions(ShiftLibTest PRIVATE XSTESTMAIN)
@@ -319,7 +326,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     foreach(SHIFTLIBCOMPILE ${SHIFTLIBTESTOPTIONSTAG})
         add_library(ShiftLibTest_${SHIFTLIBCOMPILE} STATIC)        
         
-        target_sources(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIBTESTFILES})
+        target_sources(ShiftLibTest_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIB_TEST_FILES})
 
         set_target_properties(
             ShiftLibTest_${SHIFTLIBCOMPILE} PROPERTIES
@@ -382,14 +389,16 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_BENCHMARKING)
     find_package(benchmark REQUIRED)
     
     #Source files are included in main executable and in dependent ISA specific static libs
-    set(SHIFTLIBBENCHFILES
+    set(SHIFTLIB_BENCH_FILES
         benchmarks/XSBenchConfig.h
         benchmarks/Memory/XSMemoryBench.cpp
     )
     
     add_executable(ShiftLibBench)
 
-    target_sources(ShiftLibBench PRIVATE ${SHIFTLIBBENCHFILES})
+    target_sources(ShiftLibBench PRIVATE ${SHIFTLIB_BENCH_FILES})
+    
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SHIFTLIB_BENCH_FILES})
 
     # XSTESTMAIN is used to signal if in main executable or ISA library
     target_compile_definitions(ShiftLibBench PRIVATE XSBENCHMAIN)
@@ -441,7 +450,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_BENCHMARKING)
     foreach(SHIFTLIBCOMPILE ${SHIFTLIBBENCHOPTIONSTAG})
         add_library(ShiftLibBench_${SHIFTLIBCOMPILE} STATIC)        
         
-        target_sources(ShiftLibBench_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIBBENCHFILES})
+        target_sources(ShiftLibBench_${SHIFTLIBCOMPILE} PRIVATE ${SHIFTLIB_BENCH_FILES})
 
         set_target_properties(
             ShiftLibBench_${SHIFTLIBCOMPILE} PROPERTIES
