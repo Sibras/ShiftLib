@@ -174,16 +174,19 @@ public:
     }
 };
 
-template<typename T>
+template<typename T, typename T2 = T>
 class alignas(maxAlignment<T, 4>) SIMD3x3DataPad
 {
     static_assert(
         isArithmetic<T> && !isCOrV<T>, "Invalid Type: Only arithmetic types without any qualifiers can be used");
 
 public:
-    T value0, value1, value2, pad0;
-    T value3, value4, value5, pad1;
-    T value6, value7, value8, pad2;
+    T value0, value1, value2;
+    NoExport::SIMDPad<T2, sizeof(T)> pad0;
+    T value3, value4, value5;
+    NoExport::SIMDPad<T2, sizeof(T)> pad1;
+    T value6, value7, value8;
+    NoExport::SIMDPad<T2, sizeof(T)> pad2;
 
     /** Default constructor. */
     XS_INLINE SIMD3x3DataPad() noexcept = default;
@@ -319,11 +322,12 @@ public:
     using Type = T;
     using InternalData = NoExport::SIMDData<T, 9, 3, Width>;
     using Data = SIMD3x3Data<T>;
-    using DataPad = SIMD3x3DataPad<T>;
+    template<typename T2 = Type>
+    using DataPad = SIMD3x3DataPad<T, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = InternalData::width;
-    static constexpr uint32 numValues = 9;
-    static constexpr uint32 size = InternalData::size;
+    static constexpr uint32 numValues = InternalData::numValues;
+    static constexpr uint32 totalValues = InternalData::totalValues;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD3Def = SIMD3<T, SIMD3<T, widthImpl>::widthImpl>;

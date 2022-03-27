@@ -198,8 +198,8 @@ public:
     using DataPad = SIMD16DataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = InternalData::width;
-    static constexpr uint32 numValues = 16;
-    static constexpr uint32 size = InternalData::size;
+    static constexpr uint32 numValues = InternalData::numValues;
+    static constexpr uint32 totalValues = InternalData::totalValues;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;

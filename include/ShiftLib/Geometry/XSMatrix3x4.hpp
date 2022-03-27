@@ -114,11 +114,11 @@ public:
     }
 };
 
-template<typename T>
+template<typename T, typename T2 = T>
 class Matrix3x4DataPad
 {
 public:
-    SIMD3x4DataPad<T> values;
+    SIMD3x4DataPad<T, T2> values;
 
     /** Default constructor. */
     XS_INLINE Matrix3x4DataPad() noexcept = default;
@@ -224,7 +224,8 @@ public:
     using Type = T;
     using SIMD3x4Def = SIMD3x4<T, SIMD3x4<T, Width>::widthImpl>;
     using Data = Matrix3x4Data<T>;
-    using DataPad = Matrix3x4DataPad<T>;
+    template<typename T2 = Type>
+    using DataPad = Matrix3x4DataPad<T, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD3x4Def::widthImpl;
     using BaseDef = typename SIMD3x4Def::BaseDef;

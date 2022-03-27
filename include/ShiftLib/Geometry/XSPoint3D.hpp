@@ -112,11 +112,11 @@ public:
     }
 };
 
-template<typename T>
+template<typename T, typename T2 = T>
 class Point3DDataPad
 {
 public:
-    SIMD3DataPad<T> values;
+    SIMD3DataPad<T, T2> values;
 
     /** Default constructor. */
     XS_INLINE Point3DDataPad() noexcept = default;
@@ -215,7 +215,8 @@ public:
     using Type = T;
     using SIMD3Def = SIMD3<T, SIMD3<T, Width>::widthImpl>;
     using Data = Point3DData<T>;
-    using DataPad = Point3DDataPad<T>;
+    template<typename T2 = Type>
+    using DataPad = Point3DDataPad<T, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = SIMD3Def::widthImpl;
     using BaseDef = typename SIMD3Def::BaseDef;

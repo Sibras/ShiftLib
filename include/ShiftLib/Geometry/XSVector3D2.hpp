@@ -122,19 +122,19 @@ public:
     }
 };
 
-template<typename T, bool Packed = false>
+template<typename T, bool Packed = false, typename T2 = T>
 class Vector3D2DataPad
 {
     template<bool IsPacked>
     struct InternData
     {
-        using Vector3D2InternDataPad = SIMD6DataPad<T>;
+        using Vector3D2InternDataPad = SIMD6DataPad<T, T2>;
     };
 
     template<>
     struct InternData<false>
     {
-        using Vector3D2InternDataPad = SIMD3x2DataPad<T>;
+        using Vector3D2InternDataPad = SIMD3x2DataPad<T, T2>;
     };
 
 public:
@@ -253,7 +253,8 @@ public:
     using Type = T;
     using Vector3D2Def = typename InternData<Packed>::Vector3D2Intern;
     using Data = Vector3D2Data<T, Packed>;
-    using DataPad = Vector3D2DataPad<T, Packed>;
+    template<typename T2 = Type>
+    using DataPad = Vector3D2DataPad<T, Packed, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Vector3D2Def::widthImpl;
     static constexpr bool packed = Packed;

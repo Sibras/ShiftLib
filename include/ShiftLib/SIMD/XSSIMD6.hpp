@@ -144,7 +144,7 @@ public:
     }
 };
 
-template<typename T>
+template<typename T, typename T2 = T>
 class alignas(maxAlignment<T, 6>) SIMD6DataPad
 {
     static_assert(
@@ -152,7 +152,8 @@ class alignas(maxAlignment<T, 6>) SIMD6DataPad
 
 public:
     T value0, value1, value2, value3;
-    T value4, value5, pad0, pad1;
+    T value4, value5;
+    NoExport::SIMDPad<T2, sizeof(T) * 2> pad;
 
     /** Default constructor. */
     XS_INLINE SIMD6DataPad() noexcept = default;
@@ -272,11 +273,12 @@ public:
     using Type = T;
     using InternalData = NoExport::SIMDData<T, 6, 0, Width>;
     using Data = SIMD6Data<T>;
-    using DataPad = SIMD6DataPad<T>;
+    template<typename T2 = Type>
+    using DataPad = SIMD6DataPad<T, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = InternalData::width;
-    static constexpr uint32 numValues = 6;
-    static constexpr uint32 size = InternalData::size;
+    static constexpr uint32 numValues = InternalData::numValues;
+    static constexpr uint32 totalValues = InternalData::totalValues;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;

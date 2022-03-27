@@ -169,7 +169,7 @@ public:
     }
 };
 
-template<typename T>
+template<typename T, typename T2 = T>
 class alignas(maxAlignment<T, 16>) SIMD12DataPad
 {
     static_assert(
@@ -179,7 +179,7 @@ public:
     T value0, value1, value2, value3;
     T value4, value5, value6, value7;
     T value8, value9, value10, value11;
-    T pad0, pad1, pad2, pad3;
+    NoExport::SIMDPad<T2, sizeof(T) * 4> pad;
 
     /** Default constructor. */
     XS_INLINE SIMD12DataPad() noexcept = default;
@@ -325,11 +325,12 @@ public:
     using Type = T;
     using InternalData = NoExport::SIMDData<T, 12, 0, Width>;
     using Data = SIMD12Data<T>;
-    using DataPad = SIMD12DataPad<T>;
+    template<typename T2 = Type>
+    using DataPad = SIMD12DataPad<T, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = InternalData::width;
-    static constexpr uint32 numValues = 12;
-    static constexpr uint32 size = InternalData::size;
+    static constexpr uint32 numValues = InternalData::numValues;
+    static constexpr uint32 totalValues = InternalData::totalValues;
     using BaseDef = SIMDBase<T, SIMDBase<T, widthImpl>::widthImpl>;
     using InBaseDef = SIMDInBase<T, SIMDInBase<T, widthImpl>::widthImpl>;
     using SIMD2Def = SIMD2<T, SIMD2<T, widthImpl>::widthImpl>;
@@ -4436,7 +4437,6 @@ public:
         } else
 #endif
         {
-
             return SIMD12(Index0 != 0 ? this->values0 : (&other.values0)[Index1 * 4],
                 Index0 != 0 ? this->values1 : (&other.values0)[Index1 * 4 + 1],
                 Index0 != 0 ? this->values2 : (&other.values0)[Index1 * 4 + 2],

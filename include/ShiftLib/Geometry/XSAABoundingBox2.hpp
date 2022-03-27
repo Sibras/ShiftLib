@@ -95,12 +95,12 @@ public:
     }
 };
 
-template<typename T, bool Packed = false>
+template<typename T, bool Packed = false, typename T2 = T>
 class AABoundingBox2DataPad
 {
 public:
-    Point3D2DataPad<T, Packed> minPoints;
-    Point3D2DataPad<T, Packed> maxPoints;
+    Point3D2DataPad<T, Packed, T2> minPoints;
+    Point3D2DataPad<T, Packed, T2> maxPoints;
 
     /** Default constructor. */
     XS_INLINE AABoundingBox2DataPad() noexcept = default;
@@ -181,7 +181,8 @@ public:
     using Type = T;
     using Point3D2Def = Point3D2<T, Packed, Point3D2<T, Packed, Width>::widthImpl>;
     using Data = AABoundingBox2Data<T, Packed>;
-    using DataPad = AABoundingBox2DataPad<T, Packed>;
+    template<typename T2 = Type>
+    using DataPad = AABoundingBox2DataPad<T, Packed, T2>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = Point3D2Def::widthImpl;
     static constexpr bool packed = Packed;

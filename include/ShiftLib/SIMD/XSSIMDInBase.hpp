@@ -135,8 +135,8 @@ public:
     using DataPad = SIMDInBaseDataPad<T>;
     static constexpr SIMDWidth width = Width;
     static constexpr SIMDWidth widthImpl = InternalData::width;
-    static constexpr uint32 numValues = 1;
-    static constexpr uint32 size = 1;
+    static constexpr uint32 numValues = InternalData::numValues;
+    static constexpr uint32 totalValues = 1;
     using InternalData::SIMDData;
 
     /** Default constructor. */
