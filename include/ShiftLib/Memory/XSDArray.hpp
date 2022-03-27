@@ -297,6 +297,17 @@ public:
     }
 
     /**
+     * Add an element to the dynamic array.
+     * @note This variant does not check if there is enough space in the array. Only use if you have manually assured
+     * adequate space before hand.
+     * @param element The element to add to the dynamic array.
+     */
+    XS_INLINE void addUnChecked(const T& element) noexcept
+    {
+        this->IArray::add(element);
+    }
+
+    /**
      * Add a series of elements to the dynamic array.
      * @note If there is not enough space allocated for the new element
      * the dynamic array will be expanded to make room.
@@ -361,6 +372,20 @@ public:
             return true;
         }
         return false;
+    }
+
+    /**
+     * Add an element to the dynamic array using direct construction.
+     * @note This variant does not check if there is enough space in the array. Only use if you have manually assured
+     * adequate space before hand.
+     * @tparam Args Type of the arguments.
+     * @param values The values used to construct the new array element.
+     */
+    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
+    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    XS_INLINE void addUnchecked(Args&&... values) noexcept
+    {
+        this->IArray::add(forward<Args>(values)...);
     }
 
     /**
@@ -1053,8 +1078,10 @@ public:
      */
     XS_INLINE uint0 getReservedSize() const noexcept
     {
-        return static_cast<uint0>(
-            reinterpret_cast<uint8*>(endAllocated) - reinterpret_cast<uint8*>(this->handle.pointer));
+        const uint0 ret =
+            static_cast<uint0>(reinterpret_cast<uint8*>(endAllocated) - reinterpret_cast<uint8*>(this->handle.pointer));
+        // Ensure return value is rounded to element size
+        return ret / sizeof(T) * sizeof(T);
     }
 
     /**
@@ -1397,10 +1424,10 @@ private:
         // Increase grow in case required additional size is larger (uses grow rate on required size)
         oversize = (oversize < requiredAdditional) ? (requiredAdditional + (requiredAdditional >> 2)) : oversize;
 
-        // Ensure that we oversize by multiple of size(T) (assumes compiler opts out template / and * with bitshift)
+        // Ensure that we oversize by multiple of size(T) (assumes compiler opts out / and * with bitshift)
+        oversize += currentSize;
         oversize = (oversize + (sizeof(T) - 1)) / sizeof(T);
         oversize = oversize * sizeof(T);
-        oversize += currentSize;
 
         // Try and extend the currently available memory
         const T* XS_RESTRICT oldPointer = this->handle.pointer;

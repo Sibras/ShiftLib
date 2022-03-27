@@ -1150,7 +1150,26 @@ public:
 
     using IArray::indexOfLast;
 
-    using IArray::getData;
+    /**
+     * Get a pointer to the arrays internal data.
+     * @return Pointer to start of internal memory.
+     */
+    XS_INLINE CharType* getData() noexcept
+    {
+        this->add(CharType('\0'));
+        return this->handle.pointer;
+    }
+
+    /**
+     * Get a pointer to the arrays internal data.
+     * @note This does not add a terminating '\0' character to end of string so must only be used in functions that are
+     * explicitly passed the string length.
+     * @return Pointer to start of internal memory.
+     */
+    XS_INLINE const CharType* getData() const noexcept
+    {
+        return this->handle.pointer;
+    }
 
     /**
      * Convert all characters in the string to there lower case equivalent.

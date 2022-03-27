@@ -1133,6 +1133,15 @@ public:
     }
 
     /**
+     * Get the iterator to the first element of the array.
+     * @return An iterator pointing to first element in array.
+     */
+    XS_INLINE TypeConstIterator begin() const noexcept
+    {
+        return TypeConstIterator(handle.pointer);
+    }
+
+    /**
      * Get the constant iterator to the first element of the array.
      * @return An iterator pointing to first element in array.
      */
@@ -1148,6 +1157,15 @@ public:
     XS_INLINE TypeIterator end() noexcept
     {
         return TypeIterator(nextElement);
+    }
+
+    /**
+     * Get the iterator to the end of the array.
+     * @return An iterator pointing to end of the array (one past last element).
+     */
+    XS_INLINE TypeConstIterator end() const noexcept
+    {
+        return TypeConstIterator(nextElement);
     }
 
     /**
@@ -1588,7 +1606,8 @@ public:
      */
     XS_INLINE uint0 getReservedSize() const noexcept
     {
-        return handle.getAllocatedSize();
+        // Ensure return value is rounded to element size
+        return static_cast<uint0>(handle.getAllocatedElements()) * sizeof(T);
     }
 
     /**

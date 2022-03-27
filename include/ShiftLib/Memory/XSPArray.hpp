@@ -18,7 +18,6 @@
 #include "Memory/XSDArray.hpp"
 
 namespace Shift {
-
 /** Array template class used to store sections of memory.
  * Includes template functions for using custom memory allocators.
  * @tparam T      Type of element stored within array.
@@ -92,7 +91,7 @@ public:
         const TypeConstIterator endIt(array.iteratorAt(end));
         for (auto& i : array.availableArray) {
             // Check if within valid range
-            if ((i >= startIt) & (i < endIt)) [[likely]] {
+            if ((i >= startIt) && (i < endIt)) [[likely]] {
                 // Add the available position to current available array
                 availableArray.add(array.availableArray.at(i));
             }
@@ -117,7 +116,7 @@ public:
         const TypeConstIterator endIt(array.iteratorAt(end));
         for (auto& i : array.availableArray) {
             // Check if within valid range
-            if ((i >= startIt) & (i < endIt)) [[likely]] {
+            if ((i >= startIt) && (i < endIt)) [[likely]] {
                 // Add the available position to current available array
                 availableArray.add(array.availableArray.at(i));
             }
@@ -136,7 +135,7 @@ public:
         // Get all values from available array that are between the input positions
         for (auto& i : array.availableArray) {
             // Check if within valid range
-            if ((i >= start) & (i < end)) [[likely]] {
+            if ((i >= start) && (i < end)) [[likely]] {
                 // Add the available position to current available array
                 availableArray.add(array.availableArray.at(i));
             }
@@ -160,7 +159,7 @@ public:
         // Get all values from available array that are between the input positions
         for (auto& i : array.availableArray) {
             // Check if within valid range
-            if ((i >= start) & (i < end)) [[likely]] {
+            if ((i >= start) && (i < end)) [[likely]] {
                 // Add the available position to current available array
                 availableArray.add(array.availableArray.at(i));
             }
@@ -168,7 +167,10 @@ public:
     }
 
     /** Destructor. */
-    XS_INLINE ~PArray() noexcept = default;
+    XS_INLINE ~PArray() noexcept
+    {
+        removeAll();
+    }
 
     /**
      * Assign one array object to another.
@@ -177,6 +179,7 @@ public:
      */
     XS_INLINE PArray& operator=(const PArray& array) noexcept
     {
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         this->IArray::operator=(array);
         this->availableArray = array.availableArray;
         return *this;
@@ -194,6 +197,7 @@ public:
     XS_REQUIRES((isNothrowAssignable<T, T2>))
     XS_INLINE PArray& operator=(const PArray<T2, Alloc2>& array) noexcept
     {
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         this->IArray::operator=(array);
         this->availableArray = array.availableArray;
         return *this;
@@ -206,6 +210,7 @@ public:
      */
     XS_INLINE PArray& operator=(PArray&& array) noexcept
     {
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         this->IArray::operator=(forward<IArray>(array));
         this->availableArray = forward<AvailableArray>(array.availableArray);
         return *this;
@@ -222,6 +227,7 @@ public:
     XS_REQUIRES((isNothrowAssignable<T, T2>))
     XS_INLINE PArray& operator=(PArray<T2, Alloc2>&& array) noexcept
     {
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         this->IArray::operator=(forward<IArray>(array));
         this->availableArray = forward<AvailableArray>(array.availableArray);
         return *this;
@@ -266,7 +272,7 @@ public:
             availableArray.remove();
 
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<T>(&this->IArray::at(availableArray.atEnd()), element);
+            memConstruct<T>(&at(availableArray.atEnd()), element);
             return true;
         }
     }
@@ -286,13 +292,13 @@ public:
     {
         if (availableArray.isEmpty()) {
             // Can just use normal add method to add to existing array
-            return this->IArray::add(forward<Args&&>(values)...);
+            return this->IArray::add(forward<Args>(values)...);
         } else {
             // Remove ID from available list now that it is in use
             availableArray.remove();
 
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<T>(&this->IArray::at(availableArray.atEnd()), forward<Args&&>(values)...);
+            memConstruct<T>(&at(availableArray.atEnd()), forward<Args>(values)...);
             return true;
         }
     }
@@ -335,11 +341,11 @@ public:
      */
     XS_INLINE void remove(uint0 position) noexcept
     {
-        XS_ASSERT(&availableArray.findFirst(this->IArray::offsetIteratorAt(position)) == nullptr);
+        XS_ASSERT(&availableArray.findFirst(offsetIteratorAt(position)) == nullptr);
         // Add the removed position to available list
-        auto value = this->IArray::offsetIteratorAt(position);
+        auto value = offsetIteratorAt(position);
         availableArray.add(value);
-        memDestruct<T>(&this->IArray::at(value));
+        memDestruct<T>(&at(value));
     }
 
     /**
@@ -354,13 +360,13 @@ public:
         // Fast increment available array
         if (availableArray.checkAddReservedLength(end - start)) [[likely]] {
             // Add the removed positions to the list (optimised assuming few available elements)
-            TypeIteratorOffset i(this->IArray::offsetIteratorAt(end));
-            while (i > this->IArray::offsetIteratorAt(start)) {
+            TypeIteratorOffset i(offsetIteratorAt(end));
+            while (i > offsetIteratorAt(start)) {
                 // Add next position to list
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&this->IArray::at(i));
+                memDestruct<T>(&at(i));
             }
         }
     }
@@ -373,11 +379,11 @@ public:
      */
     XS_INLINE void remove(const TypeIterator& iterator) noexcept
     {
-        XS_ASSERT(&availableArray.findFirst(this->IArray::offsetIteratorAt(iterator)) == nullptr);
+        XS_ASSERT(&availableArray.findFirst(offsetIteratorAt(iterator)) == nullptr);
         // Add the removed position to available list
-        auto value = this->IArray::offsetIteratorAt(iterator);
+        auto value = offsetIteratorAt(iterator);
         availableArray.add(value);
-        memDestruct<T>(&this->IArray::at(value));
+        memDestruct<T>(&at(value));
     }
 
     /**
@@ -392,13 +398,13 @@ public:
         // Add the removed positions to the list (optimised assuming few available elements)
         // Fast increment available array
         if (availableArray.checkAddReservedLength(end - start)) [[likely]] {
-            TypeIteratorOffset i(this->IArray::offsetIteratorAt(end));
-            while (this->IArray::offsetIteratorAt(start) < i) {
+            TypeIteratorOffset i(offsetIteratorAt(end));
+            while (offsetIteratorAt(start) < i) {
                 // Add next position to list (uses array add so that a size check can be avoided)
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&this->IArray::at(i));
+                memDestruct<T>(&at(i));
             }
         }
     }
@@ -414,7 +420,7 @@ public:
         XS_ASSERT(&availableArray.findFirst(iterator) == nullptr);
         // Add the removed position to available list
         availableArray.add(iterator);
-        memDestruct<T>(&this->IArray::at(iterator));
+        memDestruct<T>(&at(iterator));
     }
 
     /**
@@ -436,7 +442,7 @@ public:
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&this->IArray::at(i));
+                memDestruct<T>(&at(i));
             }
         }
     }
@@ -449,9 +455,9 @@ public:
      */
     XS_INLINE void remove(const T* XS_RESTRICT element) noexcept
     {
-        XS_ASSERT(&availableArray.findFirst(this->IArray::offsetIteratorAt(element)) == nullptr);
+        XS_ASSERT(&availableArray.findFirst(offsetIteratorAt(element)) == nullptr);
         // Add the removed position to available list
-        availableArray.add(this->IArray::offsetIteratorAt(element));
+        availableArray.add(offsetIteratorAt(element));
         memDestruct<T>(element);
     }
 
@@ -467,13 +473,13 @@ public:
         // Add the removed positions to the list (optimised assuming few available elements)
         // Fast increment available array
         if (availableArray.checkAddReservedLength(endElement - startElement)) [[likely]] {
-            TypeIteratorOffset i(this->IArray::offsetIteratorAt(endElement));
-            while (this->IArray::offsetIteratorAt(startElement) < i) {
+            TypeIteratorOffset i(offsetIteratorAt(endElement));
+            while (offsetIteratorAt(startElement) < i) {
                 // Add next position to list (uses array add so that a size check can be avoided)
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&this->IArray::at(i));
+                memDestruct<T>(&at(i));
             }
         }
     }
@@ -485,9 +491,17 @@ public:
      */
     XS_INLINE void removeAll() noexcept
     {
+        // Only elements that are not already destructed need removing
+        for (auto i = begin(); i < end(); ++i) {
+            if (&availableArray.findFirst(offsetIteratorAt(i)) != nullptr) {
+                memDestruct<T>(&at(i));
+            }
+        }
         // Clear everything in available array
         availableArray.removeAll();
-        this->IArray::removeAll();
+
+        // Reset next element
+        this->nextElement = this->handle.pointer;
     }
 
     /**
@@ -506,6 +520,7 @@ public:
     {
         // Clear everything in available array
         availableArray.removeAll();
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         // Set the array contents (optimised assuming few available elements)
         if (this->IArray::set(array, start, end)) [[likely]] {
             // Get all values from available array that are between the input positions
@@ -513,7 +528,7 @@ public:
             const TypeIterator endIt(array.iteratorAt(end));
             for (auto& i : array.availableArray) {
                 // Check if within valid range
-                if ((i >= startIt) & (i < endIt)) [[likely]] {
+                if ((i >= startIt) && (i < endIt)) [[likely]] {
                     // Add the available position to current available array
                     if (!availableArray.add(array.availableArray.at(i))) [[unlikely]] {
                         return false;
@@ -544,12 +559,13 @@ public:
     {
         // Clear everything in available array
         availableArray.removeAll();
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         // Set the array contents (optimised assuming few available elements)
         if (this->IArray::set(array, start, end)) [[likely]] {
             // Get all values from available array that are between the input positions
             for (auto& i : array.availableArray) {
                 // Check if within valid range
-                if ((i >= start) & (i < end)) [[likely]] {
+                if ((i >= start) && (i < end)) [[likely]] {
                     // Add the available position to current available array
                     if (!availableArray.add(array.availableArray.at(i))) [[unlikely]] {
                         return false;
@@ -571,6 +587,7 @@ public:
     {
         // Don't need to store removed items as they are no longer valid
         availableArray.removeAll();
+        removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
         // Use array function to set new contents
         return this->IArray::set(elements, number);
     }
@@ -585,7 +602,26 @@ public:
         if (this->IArray::getLength() != availableArray.getLength()) [[likely]] {
             // May have issue where start item is on available item list
             TypeIterator ret(this->IArray::begin());
-            while (&availableArray.findFirst(this->IArray::offsetIteratorAt(ret)) != nullptr) {
+            while (&availableArray.findFirst(offsetIteratorAt(ret)) != nullptr) {
+                ++ret;
+            }
+            return ret;
+        } else {
+            return this->IArray::end();
+        }
+    }
+
+    /**
+     * Get the constant iterator to the first element of the array.
+     * @return An iterator pointing to first element in array.
+     */
+    XS_INLINE TypeConstIterator begin() const noexcept
+    {
+        // Must check to see if we have removed all used items (required so that array start is valid )
+        if (this->IArray::getLength() != availableArray.getLength()) [[likely]] {
+            // May have issue where start item is on available item list
+            TypeIterator ret(this->IArray::begin());
+            while (&availableArray.findFirst(offsetIteratorAt(ret)) != nullptr) {
                 ++ret;
             }
             return ret;
@@ -604,7 +640,7 @@ public:
         if (this->IArray::getLength() != availableArray.getLength()) [[likely]] {
             // May have issue where start item is on available item list
             TypeIterator ret(this->IArray::begin());
-            while (&availableArray.findFirst(this->IArray::offsetIteratorAt(ret)) != nullptr) {
+            while (&availableArray.findFirst(offsetIteratorAt(ret)) != nullptr) {
                 ++ret;
             }
             return ret;
@@ -620,6 +656,15 @@ public:
     XS_INLINE TypeIterator end() noexcept
     {
         return this->IArray::end();
+    }
+
+    /**
+     * Get the iterator to the end of the preserved array.
+     * @return An iterator pointing to end of the preserved array (one past last element).
+     */
+    XS_INLINE TypeConstIterator end() const noexcept
+    {
+        return this->IArray::cend();
     }
 
     /**
@@ -642,11 +687,11 @@ public:
      */
     XS_INLINE TypeIterator iteratorIncrement(const TypeIterator& iterator) noexcept
     {
-        TypeIteratorOffset ret(this->IArray::iteratorIncrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeIteratorOffset ret(this->IArray::iteratorIncrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(ret) != nullptr) {
             ret = this->IArray::iteratorIncrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -656,11 +701,11 @@ public:
      */
     XS_INLINE TypeConstIterator iteratorIncrement(const TypeConstIterator& iterator) const noexcept
     {
-        TypeConstIteratorOffset ret(this->IArray::iteratorIncrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeConstIteratorOffset ret(this->IArray::iteratorIncrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(TypeIteratorOffset(ret.pointerOffset)) != nullptr) {
             ret = this->IArray::iteratorIncrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -670,11 +715,11 @@ public:
      */
     XS_INLINE TypeIteratorOffset iteratorIncrement(const TypeIteratorOffset& iterator) noexcept
     {
-        TypeIteratorOffset ret(this->IArray::iteratorIncrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeIteratorOffset ret(this->IArray::iteratorIncrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(ret) != nullptr) {
             ret = this->IArray::iteratorIncrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -684,11 +729,11 @@ public:
      */
     XS_INLINE TypeConstIteratorOffset iteratorIncrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
-        TypeConstIteratorOffset ret(this->IArray::iteratorIncrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeConstIteratorOffset ret(this->IArray::iteratorIncrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(TypeIteratorOffset(ret.pointerOffset)) != nullptr) {
             ret = this->IArray::iteratorIncrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -698,11 +743,11 @@ public:
      */
     XS_INLINE TypeIterator iteratorDecrement(const TypeIterator& iterator) noexcept
     {
-        TypeIteratorOffset ret(this->IArray::iteratorDecrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeIteratorOffset ret(this->IArray::iteratorDecrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(ret) != nullptr) {
             ret = this->IArray::iteratorDecrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -712,11 +757,11 @@ public:
      */
     XS_INLINE TypeConstIterator iteratorDecrement(const TypeConstIterator& iterator) const noexcept
     {
-        TypeConstIteratorOffset ret(this->IArray::iteratorDecrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeConstIteratorOffset ret(this->IArray::iteratorDecrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(TypeIteratorOffset(ret.pointerOffset)) != nullptr) {
             ret = this->IArray::iteratorDecrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -726,11 +771,11 @@ public:
      */
     XS_INLINE TypeIteratorOffset iteratorDecrement(const TypeIteratorOffset& iterator) noexcept
     {
-        TypeIteratorOffset ret(this->IArray::iteratorDecrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeIteratorOffset ret(this->IArray::iteratorDecrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(ret) != nullptr) {
             ret = this->IArray::iteratorDecrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -740,11 +785,11 @@ public:
      */
     XS_INLINE TypeConstIteratorOffset iteratorDecrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
-        TypeConstIteratorOffset ret(this->IArray::iteratorDecrement(this->IArray::offsetIteratorAt(iterator)));
+        TypeConstIteratorOffset ret(this->IArray::iteratorDecrement(offsetIteratorAt(iterator)));
         while (&availableArray.findFirst(TypeIteratorOffset(ret.pointerOffset)) != nullptr) {
             ret = this->IArray::iteratorDecrement(ret);
         }
-        return this->IArray::iteratorAt(ret);
+        return iteratorAt(ret);
     }
 
     /**
@@ -754,11 +799,11 @@ public:
     XS_INLINE T& atStart() noexcept
     {
         // May have issue where start item is on available item list
-        auto ret(this->IArray::offsetIteratorAt(&this->IArray::begin()));
+        auto ret(offsetIteratorAt(&this->IArray::begin()));
         while (&availableArray.findFirst(ret) != nullptr) {
             ++ret;
         }
-        return this->IArray::at(ret);
+        return at(ret);
     }
 
     /**
@@ -768,11 +813,11 @@ public:
     XS_INLINE T& atBack() noexcept
     {
         // May have issue where start item is on available item list
-        auto ret(this->IArray::offsetIteratorAt(&this->IArray::atBack()));
+        auto ret(offsetIteratorAt(&this->IArray::atBack()));
         while (&availableArray.findFirst(ret) != nullptr) {
             ++ret;
         }
-        return this->IArray::at(ret);
+        return at(ret);
     }
 
     /**
@@ -795,7 +840,7 @@ public:
     XS_INLINE bool isValid(uint0 position) const noexcept
     {
         // Check if the position is correct
-        if (const TypeIteratorOffset i(this->IArray::offsetIteratorAt(position)); this->IArray::isValid(i)) [[likely]] {
+        if (const TypeIteratorOffset i(offsetIteratorAt(position)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
             return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
         }
@@ -810,7 +855,7 @@ public:
     XS_INLINE bool isValid(const TypeIterator& iterator) const noexcept
     {
         // Check if the position is correct
-        if (const TypeIteratorOffset i(this->IArray::offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
+        if (const TypeIteratorOffset i(offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
             return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
         }
@@ -825,7 +870,7 @@ public:
     XS_INLINE bool isValid(const TypeConstIterator& iterator) const noexcept
     {
         // Check if the position is correct
-        if (const TypeIteratorOffset i(this->IArray::offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
+        if (const TypeIteratorOffset i(offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
             return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
         }
@@ -873,8 +918,8 @@ public:
         // Check if the position is correct
         if (this->IArray::isValid(element)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(this->IArray::offsetIteratorAt(element)) ==
-                nullptr); // Check if return is equal to nullptr
+            return (
+                &availableArray.findFirst(offsetIteratorAt(element)) == nullptr); // Check if return is equal to nullptr
         }
         return false;
     }
@@ -996,17 +1041,15 @@ public:
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed =
-                &availableArray.findFirst(this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
-                found = &this->IArray::findFirst<T2>(element, this->IArray::iteratorAt(++found));
+                found = &this->IArray::findFirst<T2>(element, iteratorAt(++found));
                 if (found == nullptr) [[unlikely]] {
                     break;
                 }
                 // Check if this is a valid element
-                removed = &availableArray.findFirst(
-                    this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+                removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             }
         }
         return *found;
@@ -1061,17 +1104,15 @@ public:
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed =
-                &availableArray.findFirst(this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
-                found = &this->IArray::findLast<T2>(element, this->IArray::iteratorAt(--found));
+                found = &this->IArray::findLast<T2>(element, iteratorAt(--found));
                 if (found == nullptr) [[unlikely]] {
                     break;
                 }
                 // Check if this is a valid element
-                removed = &availableArray.findFirst(
-                    this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+                removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             }
         }
         return *found;
@@ -1092,19 +1133,17 @@ public:
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed =
-                &availableArray.findFirst(this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
-                found = &this->IArray::findFirst<T2>(element, this->IArray::iteratorAt(++found));
+                found = &this->IArray::findFirst<T2>(element, iteratorAt(++found));
                 if (found == nullptr) [[unlikely]] {
                     return -1;
                 }
                 // Check if this is a valid element
-                removed = &availableArray.findFirst(
-                    this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+                removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             }
-            return this->IArray::positionAt(found);
+            return positionAt(found);
         }
         return -1;
     }
@@ -1124,19 +1163,17 @@ public:
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed =
-                &availableArray.findFirst(this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
-                found = &this->IArray::findLast<T2>(element, this->IArray::iteratorAt(--found));
+                found = &this->IArray::findLast<T2>(element, iteratorAt(--found));
                 if (found == nullptr) [[unlikely]] {
                     return -1;
                 }
                 // Check if this is a valid element
-                removed = &availableArray.findFirst(
-                    this->IArray::offsetIteratorAt(&element), this->IArray::iteratorAt(found));
+                removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             }
-            return this->IArray::positionAt(found);
+            return positionAt(found);
         }
         return -1;
     }
