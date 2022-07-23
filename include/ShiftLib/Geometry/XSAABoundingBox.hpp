@@ -16,6 +16,7 @@
  */
 
 #include "Geometry/XSPoint3D.hpp"
+#include "XSLimits.hpp"
 
 namespace Shift {
 template<typename T, SIMDWidth Width>
@@ -246,6 +247,15 @@ public:
         : minPoint(point)
         , maxPoint(point)
     {}
+
+    /**
+     * Function to build a bounding box with invalid extents.
+     * @returns Newly constructed bounding box with required attributes.
+     */
+    XS_INLINE static AABoundingBox Invalid() noexcept
+    {
+        return AABoundingBox(Point3DDef(Limits<Type>::Max), Point3DDef(Limits<Type>::Lowest));
+    }
 
     /**
      * Extends the original bounding box to incorporate the new point.
