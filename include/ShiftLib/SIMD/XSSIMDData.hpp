@@ -772,7 +772,20 @@ public:
         return this->pad[Index];
     }
 
+    template<uint32 Index>
+    constexpr Type& getPad()
+    {
+        static_assert(Index < numValues);
+        return this->pad[Index];
+    }
+
     constexpr Type getPad(uint0 index) const
+    {
+        XS_ASSERT(index < numValues);
+        return this->pad[index];
+    }
+
+    constexpr Type& getPad(uint0 index)
     {
         XS_ASSERT(index < numValues);
         return this->pad[index];
