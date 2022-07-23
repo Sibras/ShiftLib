@@ -72,8 +72,15 @@
         public:                                                                                                        \
             NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name)() = default;                         \
             ~NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name)() override = default;               \
-            GTEST_DISALLOW_COPY_AND_ASSIGN_(NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name));    \
-            GTEST_DISALLOW_MOVE_AND_ASSIGN_(NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name));    \
+            NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name)                                      \
+            (const NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name) &) = delete;                  \
+            NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name) & operator=(                         \
+                const NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name) &) = delete; /* NOLINT */  \
+            NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name)                                      \
+            (NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name) &&) noexcept = delete;              \
+            NS_GTEST_TEST_CLASS_NAME_(namespace_name, test_suite_name, test_name) & operator=(                         \
+                NS_GTEST_TEST_CLASS_NAME_(                                                                             \
+                    namespace_name, test_suite_name, test_name) &&) noexcept = delete; /* NOLINT */                    \
                                                                                                                        \
         private:                                                                                                       \
             void TestBody() override;                                                                                  \
