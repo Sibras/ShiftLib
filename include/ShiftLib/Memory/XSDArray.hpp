@@ -670,6 +670,7 @@ public:
         return false;
     }
 
+    using IArray::pop;
     using IArray::remove;
     using IArray::removeAll;
 

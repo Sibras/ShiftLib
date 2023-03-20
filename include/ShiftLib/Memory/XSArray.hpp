@@ -616,6 +616,19 @@ public:
     }
 
     /**
+     * Remove the top most element from the array and return it.
+     * @return The last item.
+     */
+    XS_INLINE T&& pop() noexcept
+    {
+        XS_ASSERT(nextElement - handle.pointer > 0);
+        // Decrement number of elements
+        --nextElement;
+        // Return the required data
+        return move(*nextElement); // Now points to correct location
+    }
+
+    /**
      * Remove the top most element from the array.
      * @note This provides a fast way to decrement the number of elements in the array.
      */

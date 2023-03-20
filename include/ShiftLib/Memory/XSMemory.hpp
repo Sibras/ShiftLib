@@ -1642,7 +1642,7 @@ XS_INLINE void memReverse(T* XS_RESTRICT start, T* XS_RESTRICT end) noexcept
 {
     XS_ASSERT((reinterpret_cast<uint0>(start) % sizeof(T)) == 0);
     XS_ASSERT((reinterpret_cast<uint0>(end) % sizeof(T)) == 0);
-    XS_ASSERT(end > start);
+    XS_ASSERT(end >= start);
     if constexpr (hasISAFeature<ISAFeature::SSE2> && (sizeof(T) % 2 == 0) && (sizeof(T) < systemAlignment)) {
         constexpr auto logSize = NoExport::log2(sizeof(T));
         constexpr uint32 copyThreshold =
@@ -2254,7 +2254,7 @@ XS_INLINE void memReverse(T* XS_RESTRICT start, T* XS_RESTRICT end) noexcept
 template<typename T>
 XS_INLINE T* memRotate(T* const XS_RESTRICT start, T* const XS_RESTRICT pivot, T* const XS_RESTRICT end) noexcept
 {
-    XS_ASSERT(start < pivot && pivot < end);
+    XS_ASSERT(start <= pivot && pivot <= end);
     if (start == pivot) [[unlikely]] {
         return end;
     }
@@ -2276,7 +2276,7 @@ XS_INLINE T* memRotate(T* const XS_RESTRICT start, T* const XS_RESTRICT pivot, T
         ++first;
     }
 
-    if (first == pivot) {
+    if (first == pivot && pivot != last) {
         memReverse(pivot, last);
         return last;
     }

@@ -134,6 +134,8 @@ set(SHIFTLIB_SOURCE_FILES
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSPArray.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSString.hpp>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSStringView.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSSort.hpp>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ShiftLib/Memory/XSSortPartition.hpp>"
 )
 
 target_sources(ShiftLib
@@ -250,6 +252,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
         tests/Memory/XSDArrayTest.cpp
         tests/Memory/XSPArrayTest.cpp
         tests/Memory/XSStringTest.cpp
+        tests/Memory/XSSortTest.cpp
+        tests/Memory/XSSortPartitionTest.cpp
     )
     
     add_executable(ShiftLibTest)
