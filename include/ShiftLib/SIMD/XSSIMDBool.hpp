@@ -134,7 +134,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 2)
+    requires(Index < 2)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
@@ -153,7 +153,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 1).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 2)
+    requires(Index < 2)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
@@ -172,7 +172,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 1).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 2)
+    requires(Index < 2)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 2, "Invalid Index: Index must be <2");
@@ -445,7 +445,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 3)
+    requires(Index < 3)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
@@ -464,7 +464,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 2).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 3)
+    requires(Index < 3)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
@@ -483,7 +483,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 2).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 3)
+    requires(Index < 3)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 3, "Invalid Index: Index must be <3");
@@ -789,7 +789,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -809,7 +809,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 5).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -829,7 +829,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 5).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -1117,7 +1117,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 4)
+    requires(Index < 4)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
@@ -1136,7 +1136,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 3).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 4)
+    requires(Index < 4)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
@@ -1155,7 +1155,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 3).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 4)
+    requires(Index < 4)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
@@ -1427,7 +1427,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -1446,7 +1446,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 5).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -1465,7 +1465,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 5).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 6)
+    requires(Index < 6)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 6, "Invalid Index: Index must be <6");
@@ -1762,7 +1762,7 @@ public:
      * @returns The requested bool.
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 8)
+    requires(Index < 8)
     XS_INLINE bool getBool() const noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
@@ -1781,7 +1781,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 7).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 8)
+    requires(Index < 8)
     XS_INLINE constexpr void setBoolTrue() noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");
@@ -1800,7 +1800,7 @@ public:
      * @tparam Index The index of the bool to set (must be between 0 and 7).
      */
     template<uint32 Index>
-    XS_REQUIRES(Index < 8)
+    requires(Index < 8)
     XS_INLINE constexpr void setBoolFalse() noexcept
     {
         static_assert(Index < 8, "Invalid Index: Index must be <8");

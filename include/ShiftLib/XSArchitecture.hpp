@@ -99,7 +99,7 @@ enum class ISAFeature
 
 namespace NoExport {
 template<ISAFeature T>
-XS_CONSTEVAL bool getHasISAFeature() noexcept
+consteval bool getHasISAFeature() noexcept
 {
     if constexpr (T == ISAFeature::SSE && XS_ARCH_SSE) {
         return true;

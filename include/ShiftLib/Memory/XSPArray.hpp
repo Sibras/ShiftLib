@@ -64,8 +64,8 @@ public:
      * @tparam Alloc2 Type of allocator used to allocate T2.
      * @param array Reference to PArray object to copy.
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE explicit PArray(const PArray<T2, Alloc2>& array) noexcept
         : IArray(array)
         , availableArray(array.availableArray)
@@ -106,8 +106,8 @@ public:
      * @param start The location the array should be cut from.
      * @param end   The location where the array should be cut till (non inclusive).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE PArray(const PArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
         : IArray(array, start, end)
     {
@@ -150,8 +150,8 @@ public:
      * @param start The iterator of the location the array should be cut from.
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE PArray(const PArray<T2, Alloc2>& array, const typename PArray<T2, Alloc2>::TypeConstIterator& start,
         const typename PArray<T2, Alloc2>::TypeConstIterator& end) noexcept
         : IArray(array, start, end)
@@ -192,9 +192,8 @@ public:
      * @param array PArray object to assign to this one.
      * @return The result of the operation.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>>>
-    XS_REQUIRES((isNothrowAssignable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>)
     XS_INLINE PArray& operator=(const PArray<T2, Alloc2>& array) noexcept
     {
         removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
@@ -223,8 +222,8 @@ public:
      * @param array PArray object to assign to this one.
      * @return The result of the operation.
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowAssignable<T, T2>>>
-    XS_REQUIRES((isNothrowAssignable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowAssignable<T, T2>)
     XS_INLINE PArray& operator=(PArray<T2, Alloc2>&& array) noexcept
     {
         removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
@@ -286,8 +285,8 @@ public:
      * @return Boolean representing if element could be added to preserved array. (will be false if memory could not
      * be allocated).
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     XS_INLINE bool add(Args&&... values) noexcept
     {
         if (availableArray.isEmpty()) {
@@ -513,9 +512,8 @@ public:
      * @param end   The location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const PArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         // Clear everything in available array
@@ -551,9 +549,8 @@ public:
      * @param end   The iterator of the location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const PArray<T2, Alloc2>& array, const typename PArray<T2, Alloc2>::TypeConstIterator& start,
         const typename PArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
@@ -842,7 +839,7 @@ public:
         // Check if the position is correct
         if (const TypeIteratorOffset i(offsetIteratorAt(position)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(i) == nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -857,7 +854,7 @@ public:
         // Check if the position is correct
         if (const TypeIteratorOffset i(offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(i) == nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -872,7 +869,7 @@ public:
         // Check if the position is correct
         if (const TypeIteratorOffset i(offsetIteratorAt(iterator)); this->IArray::isValid(i)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(i) == nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(i) == nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -887,7 +884,7 @@ public:
         // Check if the position is correct
         if (this->IArray::isValid(iterator)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(iterator) == nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(iterator) == nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -902,8 +899,8 @@ public:
         // Check if the position is correct
         if (this->IArray::isValid(iterator)) [[likely]] {
             // Check if it is in the availableID array
-            return (&availableArray.findFirst(TypeIteratorOffset(iterator.pointerOffset)) ==
-                nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(TypeIteratorOffset(iterator.pointerOffset)) ==
+                nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -918,8 +915,8 @@ public:
         // Check if the position is correct
         if (this->IArray::isValid(element)) [[likely]] {
             // Check if it is in the availableID array
-            return (
-                &availableArray.findFirst(offsetIteratorAt(element)) == nullptr); // Check if return is equal to nullptr
+            return &availableArray.findFirst(offsetIteratorAt(element)) ==
+                nullptr; // Check if return is equal to nullptr
         }
         return false;
     }
@@ -958,7 +955,7 @@ public:
      */
     XS_INLINE bool isEmpty() const noexcept
     {
-        return (this->IArray::isEmpty() | (this->IArray::getLength() == availableArray.getLength()));
+        return this->IArray::isEmpty() | this->IArray::getLength() == availableArray.getLength();
     }
 
     /**
@@ -1002,8 +999,8 @@ public:
      * @param element The element to search for.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findFirst(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
@@ -1017,8 +1014,8 @@ public:
      * @param position The position to start searching at.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findFirst(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
@@ -1032,8 +1029,8 @@ public:
      * @param iterator he position to start searching at.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findFirst(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         // Use standard find to get the required element
@@ -1061,8 +1058,8 @@ public:
      * @param element The element to search for.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findLast(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
@@ -1078,8 +1075,8 @@ public:
      * @param position The position to start searching at.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findLast(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
@@ -1095,8 +1092,8 @@ public:
      * @param iterator (Optional) The position to start searching at.
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE T& findLast(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         // Use standard find to get the required element
@@ -1124,8 +1121,8 @@ public:
      * @param element The element to search for.
      * @return The location of the element within the array (return is -1 if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE uint0 indexOfFirst(const T2& element) const noexcept
     {
         // Use standard find to get the required element
@@ -1154,8 +1151,8 @@ public:
      * @param element The element to search for.
      * @return The location of the element within the array (return is -1 if the input element could not be found).
      */
-    template<class T2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<class T2>
+    requires(isComparable<T, T2>)
     XS_INLINE uint0 indexOfLast(const T2& element) const noexcept
     {
         // Use standard find to get the required element

@@ -34,7 +34,7 @@ namespace Shift {
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isSameAny<T, int16, uint16, int32, uint32, int64, uint64>))
+requires((isSameAny<T, int16, uint16, int32, uint32, int64, uint64>))
 XS_INLINE T bswap(T param) noexcept
 {
     static_assert(isSameAny<T, int16, uint16, int32, uint32, int64, uint64>,
@@ -87,7 +87,7 @@ XS_INLINE T bswap(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
+requires((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 bsr(T param) noexcept
 {
     static_assert(isSameAny<T, int32, uint32, int64, uint64>, "Invalid Type: Only native 32/64bit integers supported");
@@ -173,7 +173,7 @@ XS_INLINE uint32 bsr(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isInteger<T> && isNative<T>))
+requires((isInteger<T> && isNative<T>))
 XS_INLINE uint32 popcnt(T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
@@ -234,7 +234,7 @@ XS_INLINE uint32 popcnt(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isInteger<T> && isNative<T>))
+requires((isInteger<T> && isNative<T>))
 XS_INLINE uint32 ctz(T param) noexcept
 {
     static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
@@ -329,7 +329,7 @@ XS_INLINE uint32 ctz(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isSameAny<T, int32, uint32, int64, uint64>))
+requires((isSameAny<T, int32, uint32, int64, uint64>))
 XS_INLINE uint32 clz(T param) noexcept
 {
     static_assert(isSameAny<T, int32, uint32, int64, uint64>, "Invalid Type: Only native 32/64bit integers supported");
@@ -418,7 +418,7 @@ XS_INLINE uint32 clz(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isInteger<T> && isNative<T>))
+requires((isInteger<T> && isNative<T>))
 XS_INLINE uint8 bitExtract(T param, uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
@@ -486,7 +486,7 @@ XS_INLINE uint8 bitExtract(T param, uint32 bit) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isInteger<T> && isNative<T>))
+requires((isInteger<T> && isNative<T>))
 XS_INLINE T bitSet(T param, uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
@@ -542,7 +542,7 @@ XS_INLINE T bitSet(T param, uint32 bit) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isInteger<T> && isNative<T>))
+requires((isInteger<T> && isNative<T>))
 XS_INLINE T bitClear(T param, uint32 bit) noexcept
 {
     static_assert(isInteger<T> && isNative<T>, "Invalid Type: Only native 8/16/32/64bit integers supported");
@@ -599,7 +599,7 @@ XS_INLINE T bitClear(T param, uint32 bit) noexcept
  * @returns A result.
  */
 template<typename T, typename T2>
-XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+requires(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
 XS_INLINE T bitCast(T2 param) noexcept
 {
@@ -743,7 +743,7 @@ XS_INLINE T bitCast(T2 param) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+requires(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
 XS_INLINE T bitAnd(T param1, T2 param2) noexcept
 {
@@ -784,7 +784,7 @@ XS_INLINE T bitAnd(T param1, T2 param2) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+requires(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
 XS_INLINE T bitOr(T param1, T2 param2) noexcept
 {
@@ -825,7 +825,7 @@ XS_INLINE T bitOr(T param1, T2 param2) noexcept
  * @returns The result.
  */
 template<typename T, typename T2>
-XS_REQUIRES(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
+requires(((isSame<T, T2> || ((sizeof(T) == sizeof(T2)) && (alignof(T) <= alignof(T2)))) && isTriviallyCopyable<T> &&
     isTriviallyCopyable<T2>))
 XS_INLINE T bitXor(T param1, T2 param2) noexcept
 {

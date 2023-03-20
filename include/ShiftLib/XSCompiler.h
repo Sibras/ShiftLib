@@ -113,19 +113,6 @@
 #    error Unrecognized compiler
 #endif
 
-/* Set up functions for missing c++20 features */
-#ifdef __cpp_concepts
-#    define XS_REQUIRES(expr) requires(expr)
-#else
-#    define XS_REQUIRES(expr)
-#endif
-
-#ifdef __cpp_consteval
-#    define XS_CONSTEVAL consteval
-#else
-#    define XS_CONSTEVAL constexpr
-#endif
-
 /* Check for compilation settings on native compilers */
 #if (defined(__SSE__) || (_M_IX86_FP == 1)) && !defined(XS_IGNORE_ISA_OPT)
 #    define XS_ARCH_SSE 1

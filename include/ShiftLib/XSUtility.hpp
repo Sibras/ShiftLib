@@ -19,7 +19,6 @@
 #include "XSTraits.hpp"
 
 namespace Shift {
-
 template<typename T1, typename T2 = T1>
 class Pair
 {
@@ -30,11 +29,22 @@ public:
     T1 first;
     T2 second;
 
+    /** Default constructor. */
     constexpr Pair() noexcept = default;
 
-    constexpr Pair(T1 firstIn, T2 secondIn) noexcept
-        : first(move(firstIn))
-        , second(move(secondIn))
+    /**
+     * Constructor from member variables.
+     * @param firstIn The value for the first element.
+     * @param secondIn The value for the second element.
+     */
+    constexpr Pair(const T1& firstIn, const T2& secondIn) noexcept
+        : first(firstIn)
+        , second(secondIn)
+    {}
+
+    constexpr Pair(T1&& firstIn, T2&& secondIn) noexcept
+        : first(forward(firstIn))
+        , second(forward(secondIn))
     {}
 
     constexpr Pair(const Pair& other) noexcept = default;
@@ -52,9 +62,8 @@ public:
  * @param [in,out] a The first object.
  * @param [in,out] b The second object.
  */
-template<typename T,
-    typename = require<isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>)>>
-XS_REQUIRES((isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>)))
+template<typename T>
+requires((isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>)))
 XS_INLINE void swap(T& a, T& b) noexcept
 {
     static_assert(isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>),

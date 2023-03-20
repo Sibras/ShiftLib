@@ -62,7 +62,7 @@ using Align4 = uint32_t;
 using Align8 = uint64_t;
 
 template<typename T>
-XS_CONSTEVAL size_t maxSize(const size_t size)
+consteval size_t maxSize(const size_t size)
 {
     return size > sizeof(T) ? size : sizeof(T);
 }

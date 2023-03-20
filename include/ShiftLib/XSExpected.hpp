@@ -40,8 +40,8 @@ public:
      * Constructor.
      * @param valueIn The value to use.
      */
-    template<typename = require<isNothrowCopyConstructible<T>>>
-    XS_REQUIRES((isNothrowCopyConstructible<T>))
+    template<typename>
+    requires(isNothrowCopyConstructible<T>)
     constexpr explicit Expected(const Type& valueIn) noexcept
         : value(valueIn)
         , valid(true)
@@ -51,8 +51,8 @@ public:
      * Constructor.
      * @param valueIn The value to use.
      */
-    template<typename = require<isNothrowMoveConstructible<T>>>
-    XS_REQUIRES((isNothrowMoveConstructible<T>))
+    template<typename>
+    requires(isNothrowMoveConstructible<T>)
     constexpr explicit Expected(Type&& valueIn) noexcept
         : value(forward<Type>(valueIn))
         , valid(true)
@@ -62,8 +62,8 @@ public:
      * Constructor from type args.
      * @param valueIn The values to use.
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     constexpr explicit Expected(Args&&... valueIn) noexcept
         : value(forward<Args>(valueIn)...)
         , valid(true)
@@ -94,8 +94,8 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    template<typename = require<isNothrowCopyAssignable<T>>>
-    XS_REQUIRES((isNothrowCopyAssignable<T>))
+    template<typename>
+    requires(isNothrowCopyAssignable<T>)
     constexpr Expected& operator=(const Expected& other) noexcept
     {
         if (valid) {
@@ -119,8 +119,8 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    template<typename = require<isNothrowMoveAssignable<T>>>
-    XS_REQUIRES((isNothrowMoveAssignable<T>))
+    template<typename>
+    requires(isNothrowMoveAssignable<T>)
     constexpr Expected& operator=(Expected&& other) noexcept
     {
         if (valid) {
@@ -146,8 +146,8 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    template<typename = require<isNothrowCopyAssignable<T>>>
-    XS_REQUIRES((isNothrowCopyAssignable<T>))
+    template<typename>
+    requires(isNothrowCopyAssignable<T>)
     constexpr Expected& operator=(const Type& other) noexcept
     {
         if (valid) {
@@ -164,8 +164,8 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    template<typename = require<isNothrowMoveAssignable<T>>>
-    XS_REQUIRES((isNothrowMoveAssignable<T>))
+    template<typename>
+    requires(isNothrowMoveAssignable<T>)
     constexpr Expected& operator=(Type&& other) noexcept
     {
         if (valid) {
@@ -181,8 +181,8 @@ public:
      * Swap data between objects.
      * @param other The other.
      */
-    template<typename = require<isNothrowCopyAssignable<T> && isNothrowMoveConstructible<T>>>
-    XS_REQUIRES((isNothrowCopyAssignable<T> && isNothrowMoveConstructible<T>))
+    template<typename>
+    requires(isNothrowCopyAssignable<T> && isNothrowMoveConstructible<T>)
     constexpr void swap(Expected& other) noexcept
     {
         *this = forward<Expected>(other);

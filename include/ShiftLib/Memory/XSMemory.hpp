@@ -123,7 +123,7 @@ struct BulkBlock
           typename BulkHelper<uint8, BulkHelper<T>::data8Size>::Type>
 {};
 
-XS_CONSTEVAL uint0 log2(const uint0 n)
+consteval uint0 log2(const uint0 n)
 {
     // TODO: Can be replaced by ctz when it is possible to make it constexpr
     return (n > 1) ? 1 + log2(n >> 1) : 0;

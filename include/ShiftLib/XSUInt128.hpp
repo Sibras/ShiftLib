@@ -34,32 +34,32 @@ public:
         , low(0_ui64)
     {}
 
-    XS_INLINE constexpr explicit UInt128(uint32 other) noexcept
+    XS_INLINE constexpr explicit UInt128(const uint32 other) noexcept
         : high(0_ui64)
         , low(other)
     {}
 
-    XS_INLINE constexpr explicit UInt128(uint64 other) noexcept
+    XS_INLINE constexpr explicit UInt128(const uint64 other) noexcept
         : high(0_ui64)
         , low(other)
     {}
 
-    XS_INLINE constexpr explicit UInt128(int32 other) noexcept
+    XS_INLINE constexpr explicit UInt128(const int32 other) noexcept
         : high((other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64))
         , low(static_cast<uint64>(other))
     {}
 
-    XS_INLINE constexpr explicit UInt128(int64 other) noexcept
+    XS_INLINE constexpr explicit UInt128(const int64 other) noexcept
         : high((other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64))
         , low(static_cast<uint64>(other))
     {}
 
-    XS_INLINE constexpr UInt128(uint64 hi, uint64 lo) noexcept
+    XS_INLINE constexpr UInt128(const uint64 hi, const uint64 lo) noexcept
         : high(hi)
         , low(lo)
     {}
 
-    XS_INLINE explicit UInt128(float32 other) noexcept
+    XS_INLINE explicit UInt128(const float32 other) noexcept
     {
         if (other < 0) {
             // Negative overflow
@@ -91,7 +91,7 @@ public:
         }
     }
 
-    XS_INLINE explicit UInt128(float64 other) noexcept
+    XS_INLINE explicit UInt128(const float64 other) noexcept
     {
         if (other < 0) {
             // Negative overflow
@@ -178,65 +178,67 @@ public:
         return static_cast<float64>(low) + ldexp(static_cast<float64>(high), 64_i32);
     }
 
-    XS_INLINE constexpr UInt128& operator=(uint32 other) noexcept
+    XS_INLINE constexpr UInt128& operator=(const uint32 other) noexcept
     {
         high = 0_ui64;
         low = other;
         return *this;
     }
 
-    XS_INLINE constexpr UInt128& operator=(uint64 other) noexcept
+    XS_INLINE constexpr UInt128& operator=(const uint64 other) noexcept
     {
         high = 0_ui64;
         low = other;
         return *this;
     }
 
-    XS_INLINE constexpr UInt128& operator=(int32 other) noexcept
+    XS_INLINE constexpr UInt128& operator=(const int32 other) noexcept
     {
         high = (other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64);
         low = static_cast<uint64>(other);
         return *this;
     }
 
-    XS_INLINE constexpr UInt128& operator=(int64 other) noexcept
+    XS_INLINE constexpr UInt128& operator=(const int64 other) noexcept
     {
         high = (other >= 0) ? 0_ui64 : static_cast<uint64>(-1_i64);
         low = static_cast<uint64>(other);
         return *this;
     }
 
-    XS_INLINE UInt128& operator=(float32 other) noexcept
+    XS_INLINE UInt128& operator=(const float32 other) noexcept
     {
         *this = UInt128(other);
         return *this;
     }
 
-    XS_INLINE UInt128& operator=(float64 other) noexcept
+    XS_INLINE UInt128& operator=(const float64 other) noexcept
     {
         *this = UInt128(other);
         return *this;
     }
 
-    XS_INLINE constexpr UInt128 operator&(UInt128 other) const noexcept
+    XS_INLINE constexpr UInt128 operator&(const UInt128 other) const noexcept
     {
         return UInt128(high & other.high, low & other.low);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128 operator&(T other) const noexcept
     {
         return UInt128(0_ui64, low & static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr UInt128& operator&=(UInt128 other) noexcept
+    XS_INLINE constexpr UInt128& operator&=(const UInt128 other) noexcept
     {
         high &= other.high;
         low &= other.low;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128& operator&=(T other) noexcept
     {
         high = 0_ui64;
@@ -244,50 +246,54 @@ public:
         return *this;
     }
 
-    XS_INLINE constexpr UInt128 operator|(UInt128 other) const noexcept
+    XS_INLINE constexpr UInt128 operator|(const UInt128 other) const noexcept
     {
         return UInt128(high | other.high, low | other.low);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128 operator|(T other) const noexcept
     {
         return UInt128(0_ui64, low | static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr UInt128& operator|=(UInt128 other) noexcept
+    XS_INLINE constexpr UInt128& operator|=(const UInt128 other) noexcept
     {
         high |= other.high;
         low |= other.low;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128& operator|=(T other) noexcept
     {
         low |= static_cast<uint64>(other);
         return *this;
     }
 
-    XS_INLINE constexpr UInt128 operator^(UInt128 other) const noexcept
+    XS_INLINE constexpr UInt128 operator^(const UInt128 other) const noexcept
     {
         return UInt128(high ^ other.high, low ^ other.low);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128 operator^(T other) const noexcept
     {
         return UInt128(0_ui64, low ^ static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr UInt128& operator^=(UInt128 other) noexcept
+    XS_INLINE constexpr UInt128& operator^=(const UInt128 other) noexcept
     {
         high ^= other.high;
         low ^= other.low;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr UInt128& operator^=(T other) noexcept
     {
         low ^= static_cast<uint64>(other);
@@ -299,12 +305,13 @@ public:
         return UInt128(~high, ~low);
     }
 
-    XS_INLINE UInt128 operator<<(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator<<(const UInt128 other) const noexcept
     {
         return *this << static_cast<uint8>(other);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator<<(T other) const noexcept
     {
         if constexpr (currentArch == Architecture::Bit64 &&
@@ -321,25 +328,27 @@ public:
         }
     }
 
-    XS_INLINE UInt128& operator<<=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator<<=(const UInt128 other) noexcept
     {
         *this = *this << other;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator<<=(T other) noexcept
     {
         *this = *this << other;
         return *this;
     }
 
-    XS_INLINE UInt128 operator>>(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator>>(const UInt128 other) const noexcept
     {
         return *this >> static_cast<uint8>(other);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator>>(T other) const noexcept
     {
         if constexpr (currentArch == Architecture::Bit64 &&
@@ -356,13 +365,14 @@ public:
         }
     }
 
-    XS_INLINE UInt128& operator>>=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator>>=(const UInt128 other) noexcept
     {
         *this = *this >> other;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator>>=(T other) noexcept
     {
         *this = *this >> other;
@@ -374,90 +384,97 @@ public:
         return ((high | low) == 0_ui64);
     }
 
-    XS_INLINE constexpr bool operator&&(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator&&(const UInt128 other) const noexcept
     {
         return static_cast<bool>(*this) && static_cast<bool>(other);
     }
 
-    XS_INLINE constexpr bool operator||(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator||(const UInt128 other) const noexcept
     {
         return static_cast<bool>(*this) || static_cast<bool>(other);
     }
 
-    XS_INLINE constexpr bool operator==(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator==(const UInt128 other) const noexcept
     {
         return (high == other.high) && (low == other.low);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator==(T other) const noexcept
     {
         return !high && (low == static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr bool operator!=(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator!=(const UInt128 other) const noexcept
     {
         return (high != other.high) || (low != other.low);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator!=(T other) const noexcept
     {
         return high || (low != static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr bool operator>(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator>(const UInt128 other) const noexcept
     {
         return (high == other.high) ? low > other.low : high > other.high;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator>(T other) const noexcept
     {
         return high || (low > static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr bool operator<(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator<(const UInt128 other) const noexcept
     {
         return (high == other.high) ? low < other.low : high < other.high;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator<(T other) const noexcept
     {
         return (!high) ? (low < static_cast<uint64>(other)) : false;
     }
 
-    XS_INLINE constexpr bool operator>=(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator>=(const UInt128 other) const noexcept
     {
         return (high == other.high) ? low >= other.low : high >= other.high;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator>=(T other) const noexcept
     {
         return high || (low >= static_cast<uint64>(other));
     }
 
-    XS_INLINE constexpr bool operator<=(UInt128 other) const noexcept
+    XS_INLINE constexpr bool operator<=(const UInt128 other) const noexcept
     {
         return (high == other.high) ? low <= other.low : high <= other.high;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE constexpr bool operator<=(T other) const noexcept
     {
         return (!high) ? (low <= static_cast<uint64>(other)) : false;
     }
 
-    XS_INLINE UInt128 operator+(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator+(const UInt128 other) const noexcept
     {
         uint8 carry;
         const auto newLow = addc<uint64>(low, other.low, 0, carry);
         return UInt128(addc<uint64>(high, other.high, carry, carry), newLow);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator+(T other) const noexcept
     {
         uint8 carry;
@@ -465,7 +482,7 @@ public:
         return UInt128(addc<uint64>(high, 0, carry, carry), newLow);
     }
 
-    XS_INLINE UInt128& operator+=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator+=(const UInt128 other) noexcept
     {
         uint8 carry;
         low = addc<uint64>(low, other.low, 0, carry);
@@ -473,7 +490,8 @@ public:
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator+=(T other) noexcept
     {
         uint8 carry;
@@ -482,14 +500,15 @@ public:
         return *this;
     }
 
-    XS_INLINE UInt128 operator-(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator-(const UInt128 other) const noexcept
     {
         uint8 carry;
         const auto newLow = subc<uint64>(low, other.low, 0, carry);
         return UInt128(subc<uint64>(high, other.high, carry, carry), newLow);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator-(T other) const noexcept
     {
         uint8 carry;
@@ -497,7 +516,7 @@ public:
         return UInt128(subc<uint64>(high, 0, carry, carry), newLow);
     }
 
-    XS_INLINE UInt128& operator-=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator-=(const UInt128 other) noexcept
     {
         uint8 carry;
         low = subc<uint64>(low, other.low, 0, carry);
@@ -505,7 +524,8 @@ public:
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator-=(T other) noexcept
     {
         uint8 carry;
@@ -514,7 +534,7 @@ public:
         return *this;
     }
 
-    XS_INLINE UInt128 operator*(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator*(const UInt128 other) const noexcept
     {
         if constexpr (currentArch == Architecture::Bit32) {
             // Split values into 4 32-bit parts
@@ -581,7 +601,8 @@ public:
         }
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator*(T other) const noexcept
     {
         if constexpr (sizeof(T) <= sizeof(uint64)) {
@@ -600,20 +621,21 @@ public:
         }
     }
 
-    XS_INLINE UInt128& operator*=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator*=(const UInt128 other) noexcept
     {
         *this = *this * other;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator*=(T other) noexcept
     {
         *this = *this * UInt128(other);
         return *this;
     }
 
-    XS_INLINE UInt128 divide(UInt128 denom, UInt128& rem) const noexcept
+    XS_INLINE UInt128 divide(const UInt128 denom, UInt128& rem) const noexcept
     {
         UInt128 quot(0, 0);
         rem = 0_ui64;
@@ -634,51 +656,55 @@ public:
         return quot;
     }
 
-    XS_INLINE UInt128 operator/(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator/(const UInt128 other) const noexcept
     {
         UInt128 rem;
         return divide(other, rem);
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator/(T other) const noexcept
     {
         return *this / UInt128(other);
     }
 
-    XS_INLINE UInt128& operator/=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator/=(const UInt128 other) noexcept
     {
         *this = *this / other;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator/=(T other) noexcept
     {
         *this = *this / UInt128(other);
         return *this;
     }
 
-    XS_INLINE UInt128 operator%(UInt128 other) const noexcept
+    XS_INLINE UInt128 operator%(const UInt128 other) const noexcept
     {
         UInt128 rem;
         divide(other, rem);
         return rem;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128 operator%(T other) const noexcept
     {
         return *this % UInt128(other);
     }
 
-    XS_INLINE UInt128& operator%=(UInt128 other) noexcept
+    XS_INLINE UInt128& operator%=(const UInt128 other) noexcept
     {
         *this = *this % other;
         return *this;
     }
 
-    template<typename T, typename = require<isInteger<T>>>
+    template<typename T>
+    requires(isInteger<T>)
     XS_INLINE UInt128& operator%=(T other) noexcept
     {
         *this = *this % UInt128(other);
@@ -717,91 +743,105 @@ public:
     }
 };
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr UInt128 operator&(T param1, UInt128 param2) noexcept
 {
     return param2 & param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr UInt128 operator|(T param1, UInt128 param2) noexcept
 {
     return param2 | param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr UInt128 operator^(T param1, UInt128 param2) noexcept
 {
     return param2 ^ param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator==(T param1, UInt128 param2) noexcept
 {
     return param2 == param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator!=(T param1, UInt128 param2) noexcept
 {
     return param2 != param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator>(T param1, UInt128 param2) noexcept
 {
     return param2 < param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator<(T param1, UInt128 param2) noexcept
 {
     return param2 > param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator>=(T param1, UInt128 param2) noexcept
 {
     return param2 <= param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr bool operator<=(T param1, UInt128 param2) noexcept
 {
     return param2 >= param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr UInt128 operator+(T param1, UInt128 param2) noexcept
 {
     return param2 + param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
-XS_INLINE constexpr UInt128 operator-(T param1, UInt128 param2) noexcept
+template<typename T>
+requires(isInteger<T>)
+XS_INLINE constexpr UInt128 operator-(T param1, const UInt128 param2) noexcept
 {
     return UInt128(param1) - param2;
 }
 
-template<typename T, typename = require<isInteger<T>>>
+template<typename T>
+requires(isInteger<T>)
 XS_INLINE constexpr UInt128 operator*(T param1, UInt128 param2) noexcept
 {
     return param2 * param1;
 }
 
-template<typename T, typename = require<isInteger<T>>>
-XS_INLINE constexpr UInt128 operator/(T param1, UInt128 param2) noexcept
+template<typename T>
+requires(isInteger<T>)
+XS_INLINE constexpr UInt128 operator/(T param1, const UInt128 param2) noexcept
 {
     return UInt128(param1) / param2;
 }
 
-template<typename T, typename = require<isInteger<T>>>
-XS_INLINE constexpr UInt128 operator%(T param1, UInt128 param2) noexcept
+template<typename T>
+requires(isInteger<T>)
+XS_INLINE constexpr UInt128 operator%(T param1, const UInt128 param2) noexcept
 {
     return UInt128(param1) % param2;
 }
 
-XS_INLINE constexpr UInt128 operator"" _ui128(unsigned long long v) noexcept // NOLINT(google-runtime-int)
+XS_INLINE constexpr UInt128 operator"" _ui128(const unsigned long long v) noexcept // NOLINT(google-runtime-int)
 {
     return UInt128(v);
 }

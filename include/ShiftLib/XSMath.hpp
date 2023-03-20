@@ -35,97 +35,97 @@
 namespace Shift {
 /**< The value pi */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valPi = static_cast<T>(3.141592653589793238462643383279502884L);
 
 /**< The value pi */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvPi = static_cast<T>(0.318309886183790671537767526745028724L);
 
 /**< The value 2 * pi */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T val2Pi = static_cast<T>(6.2831853071795864769252867665590057683L);
 
 /**< The value pi / 2 */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valPi2 = static_cast<T>(1.570796326794896619231321691639751442L);
 
 /**< 1 / (pi / 2) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvPi2 = static_cast<T>(0.636619772367581343075535053490057448L);
 
 /**< The value pi / 4 */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valPi4 = static_cast<T>(0.785398163397448309615660845819875721L);
 
 /**< 1 / (pi / 4) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvPi4 = static_cast<T>(1.273239544735162686151070106980114896L);
 
 /**< The value  3 * pi / 4 */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T val3Pi4 = static_cast<T>(2.356194490192344928846982537459627163L);
 
 /**< 1 / (3 * pi / 4) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInv3Pi4 = static_cast<T>(0.424413181578387562050356702326704965L);
 
 /**< The value pi / 180 */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valPi180 = static_cast<T>(0.017453292519943295769236907684886127L);
 
 /**< The e */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valE = static_cast<T>(2.718281828459045235360287471352662498L);
 
 /**< The value log2(e) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valLog2E = static_cast<T>(1.442695040888963407359924681001892137L);
 
 /**< The value 1 / log2(e) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvLog2E = static_cast<T>(0.693147180559945309417232121458176568L);
 
 /**< The log10(e) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T vallog10E = static_cast<T>(0.434294481903251827651128918916605082L);
 
 /**< The loge(2) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T vallogE2 = static_cast<T>(0.693147180559945309417232121458176568L);
 
 /**< The loge(10) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T vallogE10 = static_cast<T>(2.302585092994045684017991454684364208L);
 
 /**< The value 1 / (sqrt(pi) / 2) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvSqrtPi2 = static_cast<T>(1.128379167095512573896158903121545172L);
 
 /**< The value sqrt(2) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valSqrt2 = static_cast<T>(1.414213562373095048801688724209698079L);
 
 /**< The value 1 / sqrt(2) */
 template<typename T>
-XS_REQUIRES(isFloat<T>)
+requires(isFloat<T>)
 inline constexpr T valInvSqrt2 = static_cast<T>(0.707106781186547524400844362104849039L);
 
 #ifdef FP_FAST_FMAF
@@ -154,7 +154,7 @@ inline constexpr bool hasFastFMALong = false;
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isSigned<T>)
+requires(isSigned<T>)
 XS_INLINE constexpr T sign(T param1, T param2) noexcept
 {
     static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
@@ -169,7 +169,7 @@ XS_INLINE constexpr T sign(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isSigned<T>)
+requires(isSigned<T>)
 XS_INLINE constexpr T abs(T param) noexcept
 {
     static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
@@ -198,7 +198,7 @@ XS_INLINE constexpr T abs(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isInteger<T>)
+requires(isInteger<T>)
 XS_INLINE constexpr promote<T> mul(T param1, T param2) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
@@ -277,7 +277,7 @@ XS_INLINE constexpr promote<T> mul(T param1, T param2) noexcept
  * @returns Result of addition.
  */
 template<typename T>
-XS_REQUIRES(isInteger<T>)
+requires(isInteger<T>)
 XS_INLINE constexpr T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
@@ -340,7 +340,7 @@ XS_INLINE constexpr T addc(T param1, T param2, uint8 carryIn, uint8& carryOut) n
  * @returns Result of subtraction.
  */
 template<typename T>
-XS_REQUIRES(isInteger<T>)
+requires(isInteger<T>)
 XS_INLINE constexpr T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) noexcept
 {
     static_assert(isInteger<T>, "Invalid Type: Only integer arithmetic types supported");
@@ -400,7 +400,7 @@ XS_INLINE constexpr T subc(T param1, T param2, uint8 carryIn, uint8& carryOut) n
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T exp(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -423,7 +423,7 @@ XS_INLINE constexpr T exp(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T exp2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -446,7 +446,7 @@ XS_INLINE constexpr T exp2(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T log(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -469,7 +469,7 @@ XS_INLINE constexpr T log(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T log2(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -494,7 +494,7 @@ XS_INLINE constexpr T log2(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isArithmetic<T>)
+requires(isArithmetic<T>)
 XS_INLINE constexpr T fma(T param1, T param2, T param3) noexcept
 {
     static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
@@ -517,7 +517,7 @@ XS_INLINE constexpr T fma(T param1, T param2, T param3) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isArithmetic<T>)
+requires(isArithmetic<T>)
 XS_INLINE constexpr T min(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
@@ -540,7 +540,7 @@ XS_INLINE constexpr T min(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isArithmetic<T>)
+requires(isArithmetic<T>)
 XS_INLINE constexpr T max(T param1, T param2) noexcept
 {
     static_assert(isArithmetic<T>, "Invalid Type: Only arithmetic types supported");
@@ -563,7 +563,7 @@ XS_INLINE constexpr T max(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES(isSigned<T>)
+requires(isSigned<T>)
 XS_INLINE constexpr T copysign(T param1, T param2) noexcept
 {
     static_assert(isSigned<T>, "Invalid Type: Only signed arithmetic types supported");
@@ -585,7 +585,7 @@ XS_INLINE constexpr T copysign(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -609,7 +609,7 @@ XS_INLINE constexpr T sqrt(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T rsqrt(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -642,7 +642,7 @@ XS_INLINE constexpr T rsqrt(T param) noexcept
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -665,7 +665,7 @@ XS_INLINE constexpr T sin(T param) noexcept
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T cos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -688,7 +688,7 @@ XS_INLINE constexpr T cos(T param) noexcept
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T tan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -712,7 +712,7 @@ XS_INLINE constexpr T tan(T param) noexcept
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T sincos(T param, T& cosResult) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -739,7 +739,7 @@ XS_INLINE constexpr T sincos(T param, T& cosResult) noexcept
  * @returns The sine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T asin(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -762,7 +762,7 @@ XS_INLINE constexpr T asin(T param) noexcept
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T acos(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -785,7 +785,7 @@ XS_INLINE constexpr T acos(T param) noexcept
  * @returns The cosine result.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T atan(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -809,7 +809,7 @@ XS_INLINE constexpr T atan(T param) noexcept
  * @returns Object containing the angle (result in radians).
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T atan2(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -833,7 +833,7 @@ XS_INLINE constexpr T atan2(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T pow(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -857,7 +857,7 @@ XS_INLINE constexpr T pow(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T powr(T param1, T param2) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -881,7 +881,7 @@ XS_INLINE constexpr T powr(T param1, T param2) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T recip(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -895,7 +895,7 @@ XS_INLINE constexpr T recip(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T ceil(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -918,7 +918,7 @@ XS_INLINE constexpr T ceil(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T floor(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -941,7 +941,7 @@ XS_INLINE constexpr T floor(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T trunc(T param) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");
@@ -965,7 +965,7 @@ XS_INLINE constexpr T trunc(T param) noexcept
  * @returns Resultant value.
  */
 template<typename T>
-XS_REQUIRES((isNative<T> && isFloat<T>))
+requires((isNative<T> && isFloat<T>))
 XS_INLINE constexpr T ldexp(T param, int32 exp) noexcept
 {
     static_assert(isNative<T> && isFloat<T>, "Invalid Type: Only native floating point types supported");

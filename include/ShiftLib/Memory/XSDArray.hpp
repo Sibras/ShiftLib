@@ -72,8 +72,8 @@ public:
      * @tparam Alloc2 Type of allocator used to allocate T2.
      * @param array Reference to DArray object to copy.
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE explicit DArray(const DArray<T2, Alloc2>& array) noexcept
         : IArray(array)
         , endAllocated(
@@ -117,8 +117,8 @@ public:
      * @param start The location the array should be cut from.
      * @param end   The location where the array should be cut till (non inclusive).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE DArray(const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
         : IArray(array, start, end)
         , endAllocated(
@@ -145,8 +145,8 @@ public:
      * @param start The iterator of the location the array should be cut from.
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2>)
     XS_INLINE DArray(const DArray<T2, Alloc2>& array, const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
         : IArray(array, start, end)
@@ -193,9 +193,8 @@ public:
      * @param array DArray object to assign to this one.
      * @return The result of the operation.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>>>
-    XS_REQUIRES((isNothrowAssignable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>)
     XS_INLINE DArray& operator=(const DArray<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -243,8 +242,8 @@ public:
      * @param array DArray object to assign to this one.
      * @return The result of the operation.
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowAssignable<T, T2>>>
-    XS_REQUIRES((isNothrowAssignable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowAssignable<T, T2>)
     XS_INLINE DArray& operator=(DArray<T2, Alloc2>&& array) noexcept
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
@@ -317,8 +316,8 @@ public:
      * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
      *         allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool add(const DArray<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -340,8 +339,8 @@ public:
      * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
      *         allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool add(const Array<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -362,8 +361,8 @@ public:
      * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
      *         allocated).
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     XS_INLINE bool add(Args&&... values) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
@@ -381,9 +380,9 @@ public:
      * @tparam Args Type of the arguments.
      * @param values The values used to construct the new array element.
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
-    XS_INLINE void addUnchecked(Args&&... values) noexcept
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
+    XS_INLINE void addUnChecked(Args&&... values) noexcept
     {
         this->IArray::add(forward<Args>(values)...);
     }
@@ -433,8 +432,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      * be allocated).
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     XS_INLINE bool insert(const uint0 position, Args&&... values) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
@@ -456,8 +455,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      * be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(const uint0 position, const DArray<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -480,8 +479,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(const uint0 position, const Array<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -522,8 +521,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      * be allocated).
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     XS_INLINE bool insert(TypeIterator& iterator, Args&&... values) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
@@ -545,8 +544,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(TypeIterator& iterator, const DArray<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -569,8 +568,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(TypeIterator& iterator, const Array<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -611,8 +610,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      * be allocated).
      */
-    template<typename... Args, typename = require<isNothrowConstructible<T, Args...>>>
-    XS_REQUIRES((isNothrowConstructible<T, Args...>))
+    template<typename... Args>
+    requires(isNothrowConstructible<T, Args...>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, Args&&... values) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
@@ -634,8 +633,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const DArray<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -658,8 +657,8 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    template<typename T2, typename Alloc2, typename = require<isNothrowConstructible<T, T2> || isSame<T, T2>>>
-    XS_REQUIRES((isNothrowConstructible<T, T2> || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const Array<T2, Alloc2>& array) noexcept
     {
         if (const T* XS_RESTRICT requiredReserved =
@@ -683,9 +682,8 @@ public:
      * @param array The array to replace the element sequence with.
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool replace(uint0 start, uint0 end, const DArray<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
@@ -707,9 +705,8 @@ public:
      * @param array The array to replace the element sequence with.
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool replace(uint0 start, uint0 end, const Array<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
@@ -731,9 +728,8 @@ public:
      * @param          array The array to replace the element sequence with.
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool replace(TypeIterator& start, TypeIterator& end, const DArray<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize =
@@ -756,9 +752,8 @@ public:
      * @param          array The array to replace the element sequence with.
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool replace(TypeIterator& start, TypeIterator& end, const Array<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize =
@@ -781,9 +776,8 @@ public:
      * @param end   The location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         const uint0 additionalSize = ((end - start) * sizeof(T));
@@ -805,9 +799,8 @@ public:
      * @param end   The location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         const uint0 additionalSize = ((end - start) * sizeof(T));
@@ -832,9 +825,8 @@ public:
      * @param end      The location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(uint0 position, const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         const uint0 additionalElements = ((end - start + position) * sizeof(T));
@@ -859,9 +851,8 @@ public:
      * @param end      The location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(uint0 position, const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         const uint0 additionalElements = ((end - start + position) * sizeof(T));
@@ -885,14 +876,13 @@ public:
      * @param end   The iterator of the location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const DArray<T2, Alloc2>& array, const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         const uint0 additionalSize =
-            (reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
+            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
@@ -913,14 +903,13 @@ public:
      * @param end   The iterator of the location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(const Array<T2, Alloc2>& array, const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         const uint0 additionalSize =
-            (reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
+            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         if (const T* XS_RESTRICT requiredReserved =
                 reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
@@ -942,17 +931,16 @@ public:
      * @param          end      The iterator of the location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(TypeIterator& iterator, const DArray<T2, Alloc2>& array,
         const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         // Check we have enough space
-        if (const T* XS_RESTRICT requiredReserved = (iterator.pointer +
+        if (const T* XS_RESTRICT requiredReserved = iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
-                    reinterpret_cast<const uint8* const>(start.pointer)));
+                    reinterpret_cast<const uint8* const>(start.pointer));
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
@@ -972,17 +960,16 @@ public:
      * @param          end      The iterator of the location where the elements should be cut till (non inclusive).
      * @return Whether operation could be performed.
      */
-    template<typename T2, typename Alloc2,
-        typename = require<(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>>>
-    XS_REQUIRES(((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
     XS_INLINE bool set(TypeIterator& iterator, const Array<T2, Alloc2>& array,
         const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         // Check we have enough space
-        if (const T* XS_RESTRICT requiredReserved = (iterator.pointer +
+        if (const T* XS_RESTRICT requiredReserved = iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
-                    reinterpret_cast<const uint8* const>(start.pointer)));
+                    reinterpret_cast<const uint8* const>(start.pointer));
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, array, start, end);
             return true;
@@ -1227,8 +1214,8 @@ public:
      * @param array The elements to search for.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1242,8 +1229,8 @@ public:
      * @param position The position to start searching at.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), position);
@@ -1257,8 +1244,8 @@ public:
      * @param iterator The position to start searching at.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), iterator);
@@ -1273,8 +1260,8 @@ public:
      * @param array The elements to search for.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1290,8 +1277,8 @@ public:
      * @param position The position to start searching at.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), position);
@@ -1307,8 +1294,8 @@ public:
      * @param iterator The position to start searching at.
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), iterator);
@@ -1324,8 +1311,8 @@ public:
      * @return The location of the element within the array (return is UINT_MAX if the input element could not be
      * found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE uint0 indexOfFirst(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::indexOfFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1341,8 +1328,8 @@ public:
      * @return The location of the element within the array (return is UINT_MAX if the input element could not be
      * found).
      */
-    template<typename T2, typename Alloc2, typename = require<isComparable<T, T2>>>
-    XS_REQUIRES((isComparable<T, T2>))
+    template<typename T2, typename Alloc2>
+    requires(isComparable<T, T2>)
     XS_INLINE uint0 indexOfLast(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::indexOfLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1408,7 +1395,7 @@ private:
      */
     XS_INLINE bool increaseReservedSize(const T* const XS_RESTRICT requiredEndAllocated) noexcept
     {
-        XS_ASSERT((reinterpret_cast<uint0>(requiredEndAllocated) % alignof(T)) == 0);
+        XS_ASSERT(reinterpret_cast<uint0>(requiredEndAllocated) % alignof(T) == 0);
         // Get number of required elements and current elements (must use elements to ensure reserved size is multiple
         // of size(T))
         const uint0 requiredAdditional = static_cast<uint0>(

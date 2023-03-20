@@ -50,7 +50,8 @@ public:
      * @param string array of chars.
      * @return Length of the array.
      */
-    template<typename CharType2, typename = require<isSameAny<CharType2, char, char8, char16, char32>>>
+    template<typename CharType2>
+    requires(isSameAny<CharType2, char, char8, char16, char32>)
     XS_INLINE static uint0 CharLength(const CharType2* const XS_RESTRICT string) noexcept
     {
         // Must loop over all chars until we find the null terminating character
@@ -161,7 +162,7 @@ public:
                 --sourceLength;
                 while (left--) {
                     temp <<= 6;
-                    temp |= (*sourcePos & 0x3F);
+                    temp |= *sourcePos & 0x3F;
                     ++sourcePos;
                     --sourceLength;
                 }
@@ -374,8 +375,8 @@ public:
      * @param number A number to convert.
      * @param reserve The number of characters to reserve memory for (optional).
      */
-    template<typename T, typename = require<isArithmetic<T> && !isSame<CharType, T>>>
-    XS_REQUIRES((isArithmetic<T> && !isSame<CharType, T>))
+    template<typename T>
+    requires(isArithmetic<T> && !isSame<CharType, T>)
     XS_INLINE explicit String(
         const T number, uint0 reserve = (sizeof(T) * 5) / (isFloat<T> ? 1 : 2) + (isSigned<T> ? 1 : 0)) noexcept
         : IArray(reserve)
@@ -416,8 +417,8 @@ public:
      * @param number The number to convert to string and add to current one.
      * @return Whether operation could be performed.
      */
-    template<typename T, typename = require<isArithmetic<T> && !isSame<CharType, T>>>
-    XS_REQUIRES((isArithmetic<T> && !isSame<CharType, T>))
+    template<typename T>
+    requires(isArithmetic<T> && !isSame<CharType, T>)
     XS_INLINE bool add(const T number) noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -589,8 +590,8 @@ public:
      * @param number The number to convert to string and insert into current one.
      * @return Whether operation could be performed.
      */
-    template<typename T, typename = require<isArithmetic<T> && !isSame<CharType, T>>>
-    XS_REQUIRES((isArithmetic<T> && !isSame<CharType, T>))
+    template<typename T>
+    requires(isArithmetic<T> && !isSame<CharType, T>)
     XS_INLINE bool set(const T number) noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -610,8 +611,8 @@ public:
      * @param number   The number to convert to string and insert into current one.
      * @return Whether operation could be performed.
      */
-    template<typename T, typename = require<isArithmetic<T> && !isSame<CharType, T>>>
-    XS_REQUIRES((isArithmetic<T> && !isSame<CharType, T>))
+    template<typename T>
+    requires(isArithmetic<T> && !isSame<CharType, T>)
     XS_INLINE bool set(uint32 position, const T number) noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -630,8 +631,8 @@ public:
      * @param number            The number to convert to string and insert into current one.
      * @return Whether operation could be performed.
      */
-    template<typename T, typename = require<isArithmetic<T> && !isSame<CharType, T>>>
-    XS_REQUIRES((isArithmetic<T> && !isSame<CharType, T>))
+    template<typename T>
+    requires(isArithmetic<T> && !isSame<CharType, T>)
     XS_INLINE bool set(TypeIterator& iterator, T number) noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -842,7 +843,7 @@ public:
                 // For full precision we need to divide until the final exponent equals 0
                 while (finalExponent > 0) {
                     // Divide the number by required scaling
-                    prePoint /= (convertBase / 2);
+                    prePoint /= convertBase / 2;
                     ++pointOffset;
                     --finalExponent; // Additional -1 due to div by base/2
                     // Get the number of bits that were lost due to scaling down
@@ -924,8 +925,8 @@ public:
             const uint32 totalLength =
                 static_cast<uint32>(iterator - this->begin()) + length + length2 + static_cast<uint32>(addSign);
             constexpr int32 doubleFix = isSame<T, float64> ? 1 : 0;
-            uint32 numberElements = (pointOffset > 0) ? totalLength + 2 + doubleFix : totalLength;
-            numberElements = (pointOffset < 0) ? numberElements + 3 + doubleFix : numberElements;
+            uint32 numberElements = pointOffset > 0 ? totalLength + 2 + doubleFix : totalLength;
+            numberElements = pointOffset < 0 ? numberElements + 3 + doubleFix : numberElements;
             // Check if we need to increase number elements
             if (numberElements > this->getLength()) [[unlikely]] {
                 // Update num elements
@@ -1205,8 +1206,8 @@ public:
      * @tparam T Type of the returned number.
      * @returns The converted numeric value.
      */
-    template<typename T, typename = require<isArithmetic<T>>>
-    XS_REQUIRES(isArithmetic<T>)
+    template<typename T>
+    requires(isArithmetic<T>)
     XS_INLINE T toNumber() const noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -1220,8 +1221,8 @@ public:
      * @param position The position in the string to get the number from.
      * @returns The converted numeric value.
      */
-    template<typename T, typename = require<isArithmetic<T>>>
-    XS_REQUIRES(isArithmetic<T>)
+    template<typename T>
+    requires(isArithmetic<T>)
     XS_INLINE T toNumber(const uint0 position) const noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -1235,8 +1236,8 @@ public:
      * @param iterator The position in the string to get the number from.
      * @returns The converted numeric value.
      */
-    template<typename T, typename = require<isArithmetic<T>>>
-    XS_REQUIRES(isArithmetic<T>)
+    template<typename T>
+    requires(isArithmetic<T>)
     XS_INLINE T toNumber(const TypeConstIterator& iterator) const noexcept
     {
         static_assert(isArithmetic<T>, "Invalid Type: Only native arithmetic numbers are supported");
@@ -1288,7 +1289,7 @@ public:
             const CharType char2 = *it2;
             if (char1 != char2) [[unlikely]] {
                 // Directly return difference between characters
-                return (static_cast<int32>(char1) - static_cast<int32>(char2));
+                return static_cast<int32>(char1) - static_cast<int32>(char2);
             }
             ++it1;
             ++it2;
@@ -1387,7 +1388,7 @@ public:
      */
     XS_INLINE bool operator==(const String& string2) const noexcept
     {
-        return (this->compare(string2) == 0);
+        return this->compare(string2) == 0;
     }
 
     /**
@@ -1397,7 +1398,7 @@ public:
      */
     XS_INLINE bool operator==(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) == 0);
+        return this->compare(string, CharLength(string)) == 0;
     }
 
     /**
@@ -1407,7 +1408,7 @@ public:
      */
     XS_INLINE bool operator!=(const String& string2) const noexcept
     {
-        return (this->compare(string2) != 0);
+        return this->compare(string2) != 0;
     }
 
     /**
@@ -1417,7 +1418,7 @@ public:
      */
     XS_INLINE bool operator!=(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) != 0);
+        return this->compare(string, CharLength(string)) != 0;
     }
 
     /**
@@ -1427,7 +1428,7 @@ public:
      */
     XS_INLINE bool operator<(const String& string2) const noexcept
     {
-        return (this->compare(string2) < 0);
+        return this->compare(string2) < 0;
     }
 
     /**
@@ -1437,7 +1438,7 @@ public:
      */
     XS_INLINE bool operator<(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) < 0);
+        return this->compare(string, CharLength(string)) < 0;
     }
 
     /**
@@ -1447,7 +1448,7 @@ public:
      */
     XS_INLINE bool operator>(const String& string2) const noexcept
     {
-        return (this->compare(string2) > 0);
+        return this->compare(string2) > 0;
     }
 
     /**
@@ -1457,7 +1458,7 @@ public:
      */
     XS_INLINE bool operator>(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) > 0);
+        return this->compare(string, CharLength(string)) > 0;
     }
 
     /**
@@ -1467,7 +1468,7 @@ public:
      */
     XS_INLINE bool operator<=(const String& string2) const noexcept
     {
-        return (this->compare(string2) <= 0);
+        return this->compare(string2) <= 0;
     }
 
     /**
@@ -1477,7 +1478,7 @@ public:
      */
     XS_INLINE bool operator<=(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) <= 0);
+        return this->compare(string, CharLength(string)) <= 0;
     }
 
     /**
@@ -1487,7 +1488,7 @@ public:
      */
     XS_INLINE bool operator>=(const String& string2) const noexcept
     {
-        return (this->compare(string2) >= 0);
+        return this->compare(string2) >= 0;
     }
 
     /**
@@ -1497,7 +1498,7 @@ public:
      */
     XS_INLINE bool operator>=(const CharType* const XS_RESTRICT string) const noexcept
     {
-        return (this->compare(string, CharLength(string)) >= 0);
+        return this->compare(string, CharLength(string)) >= 0;
     }
 };
 

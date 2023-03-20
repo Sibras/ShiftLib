@@ -28,7 +28,8 @@ namespace Shift {
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T reciprocal(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -128,7 +129,8 @@ XS_INLINE T reciprocal(const T& value) noexcept
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T ceil(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -205,7 +207,8 @@ XS_INLINE T ceil(const T& value) noexcept
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T floor(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -282,7 +285,8 @@ XS_INLINE T floor(const T& value) noexcept
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T trunc(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -359,7 +363,8 @@ XS_INLINE T trunc(const T& value) noexcept
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T sqrt(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -436,7 +441,8 @@ XS_INLINE T sqrt(const T& value) noexcept
  * @param value Input value(s).
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T rsqrt(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -573,7 +579,8 @@ XS_INLINE T rsqrt(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the binary exponential of the input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T exp2(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -712,7 +719,8 @@ XS_INLINE T exp2(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the exponential of the input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T exp(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -832,7 +840,8 @@ XS_INLINE T exp(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the binary logarithm of the input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T log2(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -971,7 +980,8 @@ XS_INLINE T log2(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the logarithm of the input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T log(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1092,7 +1102,8 @@ XS_INLINE T log(const T& value) noexcept
  * @param other The value(s) containing the exponent.
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T pow(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1268,7 +1279,8 @@ XS_INLINE T pow(const T& value, const T& other) noexcept
  * @param other The value(s) containing the exponent.
  * @returns Result of operation.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T powr(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1431,7 +1443,8 @@ XS_INLINE T powr(const T& value, const T& other) noexcept
  * @param other The value containing the exponent.
  * @returns Value(s) containing the input values to the power of the second input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32> && (T::numValues >= 2)>>
+template<typename T>
+requires(isSame<typename T::Type, float32> && (T::numValues >= 2))
 XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1585,7 +1598,8 @@ XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
  * @param other The value containing the exponent.
  * @returns Value(s) containing the input values to the power of the second input.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32> && (T::numValues >= 2)>>
+template<typename T>
+requires(isSame<typename T::Type, float32> && (T::numValues >= 2))
 XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1737,7 +1751,8 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the sin value.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T sin(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -1887,7 +1902,8 @@ XS_INLINE T sin(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the cos value.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T cos(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2008,7 +2024,8 @@ XS_INLINE T cos(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the tan value.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T tan(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2196,7 +2213,8 @@ XS_INLINE T tan(const T& value) noexcept
  * @param [out] cosReturn The cos return values.
  * @returns Value(s) containing the sin value.
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2412,7 +2430,8 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the asin value (result in radians).
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T asin(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2535,7 +2554,8 @@ XS_INLINE T asin(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the acos value (result in radians).
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T acos(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2661,7 +2681,8 @@ XS_INLINE T acos(const T& value) noexcept
  * @param value Input value(s).
  * @returns Value(s) containing the atan value (result in radians).
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T atan(const T& value) noexcept
 {
 #if XS_ISA == XS_X86
@@ -2823,7 +2844,8 @@ XS_INLINE T atan(const T& value) noexcept
  * @param other The value(s) containing the second param of the input points.
  * @returns Value(s) containing the angle (result in radians).
  */
-template<typename T, typename = require<isSame<typename T::Type, float32>>>
+template<typename T>
+requires(isSame<typename T::Type, float32>)
 XS_INLINE T atan2(const T& value, const T& other) noexcept
 {
 #if XS_ISA == XS_X86
