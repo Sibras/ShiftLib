@@ -290,6 +290,26 @@ TEST_NS(Traits, Traits, IsRef)
     static_assert(isRef<int32*> == false);
 }
 
+void test2(uint32) noexcept
+{}
+
+TEST_NS(Traits, Traits, IsFunction)
+{
+    class Test
+    {
+    public:
+        static float32 test(const float32& val) noexcept
+        {
+            return val;
+        }
+    };
+    static_assert(isFunction<decltype(Test::test)> == true);
+    static_assert(isFunction<decltype(test2)> == true);
+    static_assert(isFunction<int32> == false);
+    static_assert(isFunction<int32*> == false);
+    static_assert(isFunction<int32&&> == false);
+}
+
 TEST_NS(Traits, Traits, IsInteger)
 {
     static_assert(isInteger<int8> == true);
@@ -426,6 +446,38 @@ TEST_NS(Traits, Traits, Conditional)
 {
     static_assert(isSame<conditional<true, int8, float32>, int8> == true);
     static_assert(isSame<conditional<false, int8, float32>, float32> == true);
+}
+
+TEST_NS(Traits, Traits, InvokableResult)
+{
+    class Test
+    {
+    public:
+        static float32 test(const float32& val) noexcept
+        {
+            return val;
+        }
+    };
+    using type = invokeResult<decltype(Test::test), float32>;
+    static_assert(isSame<type, float32> == true);
+    static_assert(isSame<invokeResult<decltype(Test::test), uint32>, uint32> == false);
+}
+
+TEST_NS(Traits, Traits, Invokable)
+{
+    class Test
+    {
+    public:
+        static float test(const float& val) noexcept
+        {
+            return val;
+        }
+    };
+    static_assert(isInvokable<decltype(Test::test), float32> == true);
+    static_assert(isInvokable<decltype(test2), uint32> == true);
+    static_assert(isInvokable<decltype(test2), uint32, bool> == false);
+    static_assert(isInvokable<decltype(test2), uint32, bool, float32> == false);
+    static_assert(isInvokable<decltype(test2), Test> == false);
 }
 
 TEST_NS(Traits, Traits, Promote)

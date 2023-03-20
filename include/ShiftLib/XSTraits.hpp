@@ -261,15 +261,6 @@ struct AddPointer<T&&>
 template<typename T>
 using addPointer = typename NoExport::AddPointer<T>::type;
 
-/**
- * Converts any type T to a reference type, making it possible to use member functions in decltype expressions
- * without the need to go through constructors.
- * @tparam T Generic type parameter.
- * @returns Cannot be called and thus never returns a value.
- */
-template<typename T>
-constexpr addRRef<T> declval() noexcept;
-
 namespace NoExport {
 template<bool, typename = void>
 struct Requires
@@ -371,11 +362,25 @@ using requireSameAnyCV = require<isSameAnyCV<T, Types...>>;
 template<typename T, typename... Types>
 using requireNotSameAnyCV = require<!isSameAnyCV<T, Types...>>;
 
+namespace NoExport {
+template<typename T>
+struct IsConstHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct IsConstHelper<const T>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
 /**
  * Query if a type is constant.
  */
 template<typename T>
-inline constexpr bool isConst = isSameAnyCV<T, const removeCV<T>, const volatile removeCV<T>>;
+inline constexpr bool isConst = NoExport::IsConstHelper<T>::value;
 
 template<typename T, typename Tx = void>
 using requireConst = require<isConst<T>, Tx>;
@@ -383,11 +388,25 @@ using requireConst = require<isConst<T>, Tx>;
 template<typename T, typename Tx = void>
 using requireNotConst = require<!isConst<T>, Tx>;
 
+namespace NoExport {
+template<typename T>
+struct IsVolatileHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct IsVolatileHelper<volatile T>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
 /**
  * Query if a type is volatile.
  */
 template<typename T>
-inline constexpr bool isVolatile = isSameAnyCV<T, volatile removeCV<T>, const volatile removeCV<T>>;
+inline constexpr bool isVolatile = NoExport::IsVolatileHelper<T>::value;
 
 template<typename T, typename Tx = void>
 using requireVolatile = require<isVolatile<T>, Tx>;
@@ -395,11 +414,25 @@ using requireVolatile = require<isVolatile<T>, Tx>;
 template<typename T, typename Tx = void>
 using requireNotVolatile = require<!isVolatile<T>, Tx>;
 
+namespace NoExport {
+template<typename T>
+struct IsConstVolatileHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct IsConstVolatileHelper<const volatile T>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
 /**
  * Query if a type is constant volatile.
  */
 template<typename T>
-inline constexpr bool isCV = isSameCV<T, const volatile removeCV<T>>;
+inline constexpr bool isCV = NoExport::IsConstVolatileHelper<T>::value;
 
 template<typename T, typename Tx = void>
 using requireCV = require<isCV<T>, Tx>;
@@ -411,7 +444,7 @@ using requireNotCV = require<!isCV<T>, Tx>;
  * Query if a type is constant or volatile.
  */
 template<typename T>
-inline constexpr bool isCOrV = isSameAnyCV<T, const removeCV<T>, volatile removeCV<T>, const volatile removeCV<T>>;
+inline constexpr bool isCOrV = isConst<T> || isVolatile<T>;
 
 template<typename T, typename Tx = void>
 using requireCOrV = require<isCOrV<T>, Tx>;
@@ -661,6 +694,58 @@ template<typename T, typename Tx = void>
 using requireNotRef = require<!isRef<T>, Tx>;
 
 /**
+ * Query if a type is an function.
+ */
+template<typename T>
+inline constexpr bool isFunction = !isConst<const T> && !isRef<T>;
+
+template<typename T, typename Tx = void>
+using requireFunction = require<isFunction<T>, Tx>;
+
+template<typename T, typename Tx = void>
+using requireNotFunction = require<!isFunction<T>, Tx>;
+
+/**
+ * Converts any type T to a reference type, making it possible to use member functions in decltype expressions
+ * without the need to go through constructors.
+ * @tparam T Generic type parameter.
+ * @returns Cannot be called and thus never returns a value.
+ */
+template<typename T>
+constexpr addRRef<T> declval() noexcept;
+
+/**
+ * Forwards the given parameter on maintaining any rvalue/lvalue state.
+ * @tparam T Generic type parameter.
+ * @param param The input parameter.
+ * @returns The forwarded reference.
+ */
+template<typename T>
+constexpr T&& forward(removeRef<T>& param) noexcept
+{
+    return static_cast<T&&>(param);
+}
+
+template<typename T>
+constexpr T&& forward(removeRef<T>&& param) noexcept
+{
+    static_assert(!isLRef<T>, "Invalid use of forward");
+    return static_cast<T&&>(param);
+}
+
+/**
+ * Moves the given parameter to an rvalue.
+ * @tparam T Generic type parameter.
+ * @param param The parameter.
+ * @returns An rvalue reference to the moved input object.
+ */
+template<typename T>
+constexpr removeRef<T>&& move(T&& param) noexcept
+{
+    return static_cast<removeRef<T>&&>(param);
+}
+
+/**
  * Query if a type is trivially copyable.
  */
 template<class T>
@@ -810,6 +895,12 @@ inline constexpr bool isNothrowMoveAssignable = __is_nothrow_assignable(addLRef<
 template<typename T>
 inline constexpr bool isNothrowDestructible = __is_nothrow_destructible(T);
 
+/**
+ * Query if a type is a base type of another.
+ */
+template<typename B, typename D>
+inline constexpr bool isBaseOf = __is_base_of(B, D);
+
 namespace NoExport {
 template<typename T, typename T2, typename = void>
 struct IsSwappableHelper
@@ -840,7 +931,7 @@ struct IsSwappableMemberHelper<T, T2, Void<decltype(declval<T>().swap(declval<T2
  * Query if a type is swappable with another using a global swap function.
  */
 template<typename T, typename T2 = T>
-inline constexpr bool isSwappable = NoExport::IsSwappableHelper<addLRef<T>, addLRef<T2>>::value&&
+inline constexpr bool isSwappable = NoExport::IsSwappableHelper<addLRef<T>, addLRef<T2>>::value &&
     NoExport::IsSwappableHelper<addLRef<T2>, addLRef<T>>::value;
 
 /**
@@ -870,36 +961,151 @@ template<typename T, typename T2 = T>
 inline constexpr bool isComparable =
     NoExport::IsComparableHelper<addLRef<T>, addLRef<T2>>::value || NoExport::IsComparableHelper<T, T2>::value;
 
-/**
- * Forwards the given parameter on maintaining any rvalue/lvalue state.
- * @tparam T Generic type parameter.
- * @param param The input parameter.
- * @returns The forwarded reference.
- */
-template<typename T>
-constexpr T&& forward(removeRef<T>& param) noexcept
+namespace NoExport {
+template<bool B, class T, class T2>
+struct Conditional
 {
-    return static_cast<T&&>(param);
-}
+    using type = T;
+};
 
-template<typename T>
-constexpr T&& forward(removeRef<T>&& param) noexcept
+template<class T, class T2>
+struct Conditional<false, T, T2>
 {
-    static_assert(!isLRef<T>, "Invalid use of forward");
-    return static_cast<T&&>(param);
-}
+    using type = T2;
+};
+} // namespace NoExport
 
 /**
- * Moves the given parameter to an rvalue.
- * @tparam T Generic type parameter.
- * @param param The parameter.
- * @returns An rvalue reference to the moved input object.
+ * Conditionally choose a type.
+ */
+template<bool B, class T, class T2>
+using conditional = typename NoExport::Conditional<B, T, T2>::type;
+
+namespace NoExport {
+template<class T>
+struct RemoveExtent
+{
+    using type = T;
+};
+
+template<class T>
+struct RemoveExtent<T[]> // NOLINT(modernize-avoid-c-arrays)
+{
+    using type = T;
+};
+
+template<class T, size_t N>
+struct RemoveExtent<T[N]> // NOLINT(modernize-avoid-c-arrays)
+{
+    using type = T;
+};
+} // namespace NoExport
+
+/**
+ * Remove a dimension from an array.
  */
 template<typename T>
-constexpr removeRef<T>&& move(T&& param) noexcept
+using removeExtent = typename NoExport::RemoveExtent<T>::type;
+
+namespace NoExport {
+template<typename T>
+struct Decay
 {
-    return static_cast<removeRef<T>&&>(param);
+    using U = removeRef<T>;
+
+    using type = typename conditional<isArray<U>, removeExtent<U>*,
+        typename conditional<isFunction<U>, addPointer<U>, removeCV<U>>::type>::type;
+};
+} // namespace NoExport
+
+/**
+ * The type created after compiler performs any silent conversion to function arguments passed by value.
+ */
+template<typename T>
+using decay = typename NoExport::Decay<T>::type;
+
+namespace NoExport {
+template<typename R, typename C, typename T, typename... Args>
+constexpr auto invokeHelper(R C::*func, T&& obj, Args&&... args) noexcept ->
+    typename require<isBaseOf<C, decay<T>>, decltype((forward<T>(obj).*func)(forward<Args>(args)...))>
+{
+    return (forward<T>(obj).*func)(forward<Args>(args)...);
 }
+
+template<typename F, typename... Args>
+constexpr auto invokeHelper(F&& func, Args&&... args) noexcept -> decltype(forward<F>(func)(forward<Args>(args)...))
+{
+    return forward<F>(func)(forward<Args>(args)...);
+}
+
+template<typename R, typename C, typename T, typename... Args>
+constexpr auto invokeHelper(R C::*func, T&& obj, Args&&... args) noexcept
+    -> decltype(((*forward<T>(obj)).*func)(forward<Args>(args)...))
+{
+    return ((*forward<T>(obj)).*func)(forward<Args>(args)...);
+}
+
+template<typename M, typename C, typename T>
+constexpr auto invokeHelper(M C::*member, T&& obj) noexcept
+    -> require<isBaseOf<C, decay<T>>, decltype(forward<T>(obj).*member)>
+{
+    return forward<T>(obj).*member;
+}
+
+template<typename M, typename C, typename T>
+constexpr auto invokeHelper(M C::*member, T&& obj) noexcept -> decltype((*forward<T>(obj)).*member)
+{
+    return (*forward<T>(obj)).*member;
+}
+} // namespace NoExport
+
+template<typename F, typename... Args>
+constexpr decltype(auto) invoke(F&& func, Args&&... args) noexcept
+{
+    return invokeHelper(forward<F>(func), forward<Args>(args)...);
+}
+
+namespace NoExport {
+template<typename F, typename = void, typename... Args>
+struct InvokeResult
+{};
+
+template<typename F, typename... Args>
+struct InvokeResult<F, Void<decltype(invokeHelper(declval<F>(), declval<Args>()...))>, Args...>
+{
+    using type = decltype(invokeHelper(declval<F>(), declval<Args>()...));
+};
+} // namespace NoExport
+
+/**
+ * The type returned from a function when invoked with specified types.
+ * @tparam F    The function type.
+ * @tparam Args The parameters to invoke function with.
+ */
+template<typename F, typename... Args>
+using invokeResult = typename NoExport::InvokeResult<F, void, Args...>::type;
+
+namespace NoExport {
+template<typename F, typename = void, typename... Args>
+struct IsInvokable
+{
+    static constexpr bool value = false;
+};
+
+template<typename F, typename... Args>
+struct IsInvokable<F, Void<invokeResult<F, Args...>>, Args...>
+{
+    static constexpr bool value = true;
+};
+} // namespace NoExport
+
+/**
+ * Check if a function is invokable with requested parameters.
+ * @tparam F    The function type.
+ * @tparam Args The parameters to invoke function with.
+ */
+template<typename F, typename... Args>
+inline constexpr bool isInvokable = NoExport::IsInvokable<F, void, Args...>::value;
 
 namespace NoExport {
 template<typename T>
@@ -1134,26 +1340,6 @@ struct ToSigned<T, true>
 template<typename T>
 using toSigned = typename NoExport::ToSigned<T>::type;
 
-namespace NoExport {
-template<bool B, class T, class T2>
-struct Conditional
-{
-    using type = T;
-};
-
-template<class T, class T2>
-struct Conditional<false, T, T2>
-{
-    using type = T2;
-};
-} // namespace NoExport
-
-/**
- * Conditionally choose a type.
- */
-template<bool B, class T, class T2>
-using conditional = typename NoExport::Conditional<B, T, T2>::type;
-
 /**
  * Query if any SIMD operations are supported.
  */
@@ -1166,8 +1352,8 @@ inline constexpr bool hasSIMD = isSameAny<T, uint32, int32, uint16, int16, uint8
  * Query if fused multiply add instructions are supported.
  */
 template<typename T>
-inline constexpr bool hasFMA = isSame<T, float32> &&
-    ((hasISAFeature<ISAFeature::FMA3> && hasSIMD<T>) || (currentISA == ISA::CUDA));
+inline constexpr bool hasFMA =
+    isSame<T, float32> && ((hasISAFeature<ISAFeature::FMA3> && hasSIMD<T>) || (currentISA == ISA::CUDA));
 
 /**
  * Query if fused multiply subtraction instructions are supported.
