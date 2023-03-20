@@ -1628,7 +1628,7 @@ public:
     XS_INLINE uint0 getReservedSize() const noexcept
     {
         // Ensure return value is rounded to element size
-        return static_cast<uint0>(handle.getAllocatedElements()) * sizeof(T);
+        return static_cast<uint0>(handle.getAllocatedSize());
     }
 
     /**
