@@ -67,6 +67,20 @@ public:
     AllocRegionStackHandle(AllocRegionStackHandle&& other) noexcept = default;
 
     /**
+     * Defaulted assignment operator.
+     * @param other The other handle.
+     * @returns A shallow copy of this object.
+     */
+    AllocRegionStackHandle& operator=(const AllocRegionStackHandle& other) noexcept = delete;
+
+    /**
+     * Defaulted move assignment operator.
+     * @param other The other handle.
+     * @returns A shallow copy of this object.
+     */
+    AllocRegionStackHandle& operator=(AllocRegionStackHandle&& other) noexcept = default;
+
+    /**
      * Allocate the specified amount of memory.
      * @param size The amount of memory to allocate (In Bytes).
      * @return Boolean value specifying if memory could be allocated or not.

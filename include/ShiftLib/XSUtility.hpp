@@ -66,8 +66,6 @@ template<typename T>
 requires((isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>)))
 XS_INLINE void swap(T& a, T& b) noexcept
 {
-    static_assert(isSwappableMember<T> || (isNothrowMoveConstructible<T> && isNothrowMoveAssignable<T>),
-        "Invalid Type: Type cannot be swapped");
     if constexpr (isSwappableMember<T>) {
         // All allocated types must define there own swap function
         a.swap(b);
