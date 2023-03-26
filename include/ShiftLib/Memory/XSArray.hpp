@@ -1316,10 +1316,33 @@ public:
 
     /**
      * Get the integer position to a specific element in the array.
+     * @param iterator The iterator into the array.
+     * @return An integer representing the number of the element in the array the iterator represents.
+     */
+    XS_INLINE uint0 positionAt(const TypeIterator& iterator) const noexcept
+    {
+        XS_ASSERT(handle.pointer <= iterator.pointer);
+        return static_cast<uint0>(iterator.pointer - handle.pointer);
+    }
+
+    /**
+     * Get the integer position to a specific element in the array.
      * @param iterator The offset iterator into the array.
      * @return An integer representing the number of the element in the array the iterator represents.
      */
     XS_INLINE uint0 positionAt(const TypeConstIteratorOffset& iterator) const noexcept
+    {
+        XS_ASSERT(iterator.pointerOffset <
+            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
+        return iterator.pointerOffset / sizeof(Type);
+    }
+
+    /**
+     * Get the integer position to a specific element in the array.
+     * @param iterator The offset iterator into the array.
+     * @return An integer representing the number of the element in the array the iterator represents.
+     */
+    XS_INLINE uint0 positionAt(const TypeIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset <
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
