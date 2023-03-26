@@ -24,21 +24,22 @@ namespace Shift {
  * Array template class used to store sections of memory. Includes template functions for using
  * custom memory allocators.
  * @tparam T      Type of element stored within array.
- * @tparam Alloc  Type of allocator use to allocate elements of type T.
+ * @tparam Alloc  Type of allocator use to allocate elements of type Type.
  */
 template<class T, class Alloc = AllocRegionHeap<T>>
 class Array
 {
 public:
-    using TypeIterator = Iterator<T>;
-    using TypeConstIterator = ConstIterator<T>;
-    using TypeIteratorOffset = IteratorOffset<T>;
-    using TypeConstIteratorOffset = ConstIteratorOffset<T>;
+    using Type = T;
+    using TypeIterator = Iterator<Type>;
+    using TypeConstIterator = ConstIterator<Type>;
+    using TypeIteratorOffset = IteratorOffset<Type>;
+    using TypeConstIteratorOffset = ConstIteratorOffset<Type>;
     using Handle = typename Alloc::Handle;
     using Allocator = Alloc;
 
-    Handle handle;                        /**< The allocator to be used to reserve memory */
-    T* XS_RESTRICT nextElement = nullptr; /**< Pointer to next unused slot in array */
+    Handle handle;                           /**< The allocator to be used to reserve memory */
+    Type* XS_RESTRICT nextElement = nullptr; /**< Pointer to next unused slot in array */
 
     /** Default constructor. */
     XS_INLINE Array() noexcept
@@ -63,11 +64,11 @@ public:
      */
     XS_INLINE Array(const Array& array) noexcept
         : handle(static_cast<uint0>(array.nextElement - array.handle.pointer), Alloc())
-        , nextElement(reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) +
+        , nextElement(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) +
               (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer))))
     {
         // Perform Copy operation
-        memConstructRange<T>(handle.pointer, array.handle.pointer,
+        memConstructRange<Type>(handle.pointer, array.handle.pointer,
             static_cast<uint0>(
                 reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer)));
     }
@@ -79,15 +80,15 @@ public:
      * @param array Reference to Array object to copy.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     explicit XS_INLINE Array(const Array<T2, Alloc2>& array) noexcept
         : handle(static_cast<uint0>(array.nextElement - array.handle.pointer), Alloc())
-        , nextElement(reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) +
+        , nextElement(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) +
               (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer))))
     {
         // TODO: Handle different allocator memory types
         // Perform Copy operation
-        memConstructRange<T, T2>(handle.pointer, array.handle.pointer,
+        memConstructRange<Type, T2>(handle.pointer, array.handle.pointer,
             static_cast<uint0>(
                 reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer)));
     }
@@ -98,7 +99,7 @@ public:
      */
     XS_INLINE Array(Array&& array) noexcept
         : handle(forward<Handle>(array.handle))
-        , nextElement(forward<T*>(array.nextElement))
+        , nextElement(forward<Type*>(array.nextElement))
     {
         array.nextElement = nullptr;
     }
@@ -108,12 +109,12 @@ public:
      * @param [in] elements Pointer to list of elements to use.
      * @param      number   The number of elements in the input list.
      */
-    XS_INLINE Array(const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE Array(const Type* const XS_RESTRICT elements, const uint0 number) noexcept
         : handle(number, Alloc())
         , nextElement(handle.pointer + number)
     {
         // Perform Copy operation
-        memConstructRange<T>(handle.pointer, elements, number * sizeof(T));
+        memConstructRange<Type>(handle.pointer, elements, number * sizeof(Type));
     }
 
     /**
@@ -125,17 +126,17 @@ public:
     XS_INLINE Array(const Array& array, const uint0 start, const uint0 end) noexcept
         : handle(end - start, Alloc())
     {
-        T* XS_RESTRICT const startIndex = &array.handle.pointer[start];
-        T* XS_RESTRICT const endIndex = &array.handle.pointer[end];
+        Type* XS_RESTRICT const startIndex = &array.handle.pointer[start];
+        Type* XS_RESTRICT const endIndex = &array.handle.pointer[end];
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
         const uint0 arraySize =
             static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
         // Perform Copy operation
-        memConstructRange<T>(handle.pointer, startIndex, arraySize);
+        memConstructRange<Type>(handle.pointer, startIndex, arraySize);
         // Update next element
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
 
     /**
@@ -147,21 +148,21 @@ public:
      * @param end   The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE Array(const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
         : handle(end - start, Alloc())
     {
-        const T* XS_RESTRICT const startIndex = &array.handle.pointer[start];
-        const T* XS_RESTRICT const endIndex = &array.handle.pointer[end];
+        const Type* XS_RESTRICT const startIndex = &array.handle.pointer[start];
+        const Type* XS_RESTRICT const endIndex = &array.handle.pointer[end];
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
         const uint0 arraySize =
             static_cast<uint0>(reinterpret_cast<const uint8*>(endIndex) - reinterpret_cast<const uint8*>(startIndex));
         // Perform Copy operation
-        memConstructRange<T, T2>(handle.pointer, startIndex, arraySize);
+        memConstructRange<Type, T2>(handle.pointer, startIndex, arraySize);
         // Update next element
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
 
     /**
@@ -179,9 +180,9 @@ public:
         const uint0 arraySize = static_cast<uint0>(
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
         // Perform Copy operation
-        memConstructRange<T>(handle.pointer, start.pointer, arraySize);
+        memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
         // Update next element
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
 
     /**
@@ -193,7 +194,7 @@ public:
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE Array(const Array<T2, Alloc2>& array, const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
         : handle(end - start, Alloc())
@@ -204,9 +205,9 @@ public:
         const uint0 arraySize =
             static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
         // Perform Copy operation
-        memConstructRange<T>(handle.pointer, start.pointer, arraySize);
+        memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
         // Update next element
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
 
     /** Destructor. */
@@ -228,10 +229,10 @@ public:
         const uint0 arraySize = static_cast<uint0>(
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
         // Perform Copy operation and construct additional if copying more than already exists
-        memCopyConstructRange<T, T>(handle.pointer, array.handle.pointer, arraySize,
+        memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Deallocate any existing data above new end
-        T* XS_RESTRICT newEnd = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
         if (nextElement > newEnd) {
             // Possible to have negative number of elements
             memDestructRange(newEnd, reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(newEnd));
@@ -249,17 +250,17 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowAssignable<T, T2> && isNothrowConstructible<T, T2>)
+    requires(isNothrowAssignable<Type, T2> && isNothrowConstructible<Type, T2>)
     XS_INLINE Array& operator=(const Array<T2, Alloc2>& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
         const uint0 arraySize = static_cast<uint0>(
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
         // Perform Copy operation and construct additional if copying more than already exists
-        memCopyConstructRange<T, T>(handle.pointer, array.handle.pointer, arraySize,
+        memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Deallocate any existing data above new end
-        T* XS_RESTRICT newEnd = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
         if (nextElement > newEnd) {
             // Possible to have negative number of elements
             memDestructRange(newEnd, reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(newEnd));
@@ -277,7 +278,7 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowAssignable<T, T2>)
+    requires(isNothrowAssignable<Type, T2>)
     XS_INLINE Array& operator=(Array<T2, Alloc2>&& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
@@ -324,11 +325,11 @@ public:
      * are sure space has been allocated already.
      * @param element The element to add to the array.
      */
-    XS_INLINE void add(const T& element) noexcept
+    XS_INLINE void add(const Type& element) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
-        memConstruct<T>(nextElement, element);
+        memConstruct<Type>(nextElement, element);
         ++nextElement;
     }
 
@@ -341,7 +342,7 @@ public:
      * @param array The elements to add to the array.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE void add(const Array<T2, Alloc2>& array) noexcept
     {
         const uint0 array2Size = static_cast<uint0>(
@@ -349,8 +350,8 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 array2Size <=
             getReservedSize());
-        memConstructRange<T, T2>(nextElement, array.handle.pointer, array2Size);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + array2Size);
+        memConstructRange<Type, T2>(nextElement, array.handle.pointer, array2Size);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + array2Size);
     }
 
     /**
@@ -361,12 +362,12 @@ public:
      * @param values The values used to construct the new array element.
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void add(Args&&... values) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
-        memConstruct<T>(nextElement, forward<Args>(values)...);
+        memConstruct<Type>(nextElement, forward<Args>(values)...);
         ++nextElement;
     }
 
@@ -375,14 +376,14 @@ public:
      * @param elements Input elements to copy in.
      * @param number The number of elements in the input.
      */
-    XS_INLINE void add(const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE void add(const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        const uint0 arraySize = static_cast<uint0>(number) * sizeof(T);
+        const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory
-        memConstructRange<T>(nextElement, elements, arraySize);
+        memConstructRange<Type>(nextElement, elements, arraySize);
         // Deallocate any existing data above new end
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + arraySize);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + arraySize);
     }
 
     /**
@@ -394,17 +395,17 @@ public:
      * @return Boolean representing if element could be inserted into array. (will be false if memory could not be
      *         allocated).
      */
-    XS_INLINE void insert(const uint0 position, const T& element) noexcept
+    XS_INLINE void insert(const uint0 position, const Type& element) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
-        T* XS_RESTRICT index = &handle.pointer[position];
+        Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(index + 1, index,
+        memMoveBackwards<Type>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(index, element);
+        memConstruct<Type>(index, element);
         ++nextElement;
     }
 
@@ -417,18 +418,18 @@ public:
      * @param values   The values used to construct the new array element.
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void insert(const uint0 position, Args&&... values) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
-        T* XS_RESTRICT index = &handle.pointer[position];
+        Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(index + 1, index,
+        memMoveBackwards<Type>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(index, forward<Args>(values)...);
+        memConstruct<Type>(index, forward<Args>(values)...);
         ++nextElement;
     }
 
@@ -442,10 +443,10 @@ public:
      * @param array    The elements to add to the array.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE void insert(const uint0 position, const Array<T2, Alloc2>& array) noexcept
     {
-        T* XS_RESTRICT index = &handle.pointer[position];
+        Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up to make room for insertion
         const uint0 inRange = static_cast<uint0>(
@@ -453,12 +454,12 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
-        memMoveBackwards<T>(reinterpret_cast<T*>(reinterpret_cast<uint8*>(index) + inRange), index,
+        memMoveBackwards<Type>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange), index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<T, T2>(index, array.handle.pointer, inRange);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + inRange);
+        memConstructRange<Type, T2>(index, array.handle.pointer, inRange);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
     /**
@@ -470,16 +471,16 @@ public:
      * @return Boolean representing if element could be inserted into array. (will be false if memory could not be
      *         allocated).
      */
-    XS_INLINE void insert(const TypeIterator& iterator, const T& element) noexcept
+    XS_INLINE void insert(const TypeIterator& iterator, const Type& element) noexcept
     {
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) < getReservedSize());
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(iterator.pointer + 1, iterator.pointer,
+        memMoveBackwards<Type>(iterator.pointer + 1, iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(iterator.pointer, element);
+        memConstruct<Type>(iterator.pointer, element);
         ++nextElement;
     }
 
@@ -492,7 +493,7 @@ public:
      * @param values   The values used to construct the new array element.
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void insert(const TypeIterator& iterator, Args&&... values) noexcept
     {
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
@@ -500,10 +501,10 @@ public:
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(iterator.pointer + 1, iterator.pointer,
+        memMoveBackwards<Type>(iterator.pointer + 1, iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(iterator.pointer, forward<Args>(values)...);
+        memConstruct<Type>(iterator.pointer, forward<Args>(values)...);
         ++nextElement;
     }
 
@@ -517,7 +518,7 @@ public:
      * @param array    The elements to add to the array.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE void insert(const TypeIterator& iterator, const Array<T2, Alloc2>& array) noexcept
     {
         XS_ASSERT(
@@ -528,13 +529,13 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
-        memMoveBackwards<T>(reinterpret_cast<T*>(reinterpret_cast<uint8*>(iterator.pointer) + inRange),
+        memMoveBackwards<Type>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + inRange),
             iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<T, T2>(iterator.pointer, array.handle.pointer, inRange);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + inRange);
+        memConstructRange<Type, T2>(iterator.pointer, array.handle.pointer, inRange);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
     /**
@@ -546,16 +547,17 @@ public:
      * @return Boolean representing if element could be inserted into array. (will be false if memory could not be
      *         allocated).
      */
-    XS_INLINE void insert(const TypeConstIteratorOffset& iterator, const T& element) noexcept
+    XS_INLINE void insert(const TypeConstIteratorOffset& iterator, const Type& element) noexcept
     {
-        T* XS_RESTRICT index = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        Type* XS_RESTRICT index =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) < getReservedSize());
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(index + 1, index,
+        memMoveBackwards<Type>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(index, element);
+        memConstruct<Type>(index, element);
         ++nextElement;
     }
 
@@ -570,18 +572,19 @@ public:
      *         allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void insert(const TypeConstIteratorOffset& iterator, Args&&... values) noexcept
     {
-        T* XS_RESTRICT index = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        Type* XS_RESTRICT index =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
             getReservedSize());
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<T>(index + 1, index,
+        memMoveBackwards<Type>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
-        memConstruct<T>(index, forward<Args>(values)...);
+        memConstruct<Type>(index, forward<Args>(values)...);
         ++nextElement;
     }
 
@@ -597,29 +600,30 @@ public:
      *         allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE void insert(const TypeConstIteratorOffset& iterator, const Array<T2, Alloc2>& array) noexcept
     {
-        T* XS_RESTRICT index = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        Type* XS_RESTRICT index =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up to make room for insertion
         const uint0 inRange = static_cast<uint0>(
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) + inRange <=
             getReservedSize());
-        memMoveBackwards<T, T2>(reinterpret_cast<T*>(reinterpret_cast<uint8*>(index) + inRange), index,
+        memMoveBackwards<Type, T2>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange), index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<T, T2>(index, array.handle.pointer, inRange);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + inRange);
+        memConstructRange<Type, T2>(index, array.handle.pointer, inRange);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
     /**
      * Remove the top most element from the array and return it.
      * @return The last item.
      */
-    XS_INLINE T&& pop() noexcept
+    XS_INLINE Type&& pop() noexcept
     {
         XS_ASSERT(nextElement - handle.pointer > 0);
         // Decrement number of elements
@@ -638,7 +642,7 @@ public:
         // Decrement number of elements
         --nextElement;
         // Destruct any required data
-        memDestruct<T>(nextElement); // Now points to correct location
+        memDestruct<Type>(nextElement); // Now points to correct location
     }
 
     /**
@@ -650,13 +654,13 @@ public:
     XS_INLINE void remove(const uint0 position) noexcept
     {
         // Move any elements down 1
-        T* XS_RESTRICT index2 = &handle.pointer[position];
+        Type* XS_RESTRICT index2 = &handle.pointer[position];
         XS_ASSERT(index2 < nextElement && index2 >= handle.pointer);
         // Destruct any required data
-        memDestruct<T>(index2);
-        T* XS_RESTRICT index = index2++;
+        memDestruct<Type>(index2);
+        Type* XS_RESTRICT index = index2++;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<T>(index, index2,
+        memMove<Type>(index, index2,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index2)));
         --nextElement;
     }
@@ -671,18 +675,18 @@ public:
     XS_INLINE void remove(const uint0 start, const uint0 end) noexcept
     {
         // Move any elements down
-        T* XS_RESTRICT startIndex = &handle.pointer[start];
-        T* XS_RESTRICT endIndex = &handle.pointer[end];
+        Type* XS_RESTRICT startIndex = &handle.pointer[start];
+        Type* XS_RESTRICT endIndex = &handle.pointer[end];
         XS_ASSERT(startIndex < nextElement && startIndex >= handle.pointer);
         XS_ASSERT(endIndex <= nextElement && endIndex > handle.pointer);
         // Destruct any required data
-        memDestructRange<T>(
+        memDestructRange<Type>(
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
-        memMove<T>(startIndex, endIndex, remaining);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(startIndex) + remaining);
+        memMove<Type>(startIndex, endIndex, remaining);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
 
     /**
@@ -695,11 +699,11 @@ public:
     {
         XS_ASSERT(iterator.pointer < nextElement && iterator.pointer >= handle.pointer);
         // Destruct the removed data
-        memDestruct<T>(iterator.pointer);
+        memDestruct<Type>(iterator.pointer);
         // move any elements down 1
-        T* XS_RESTRICT index = iterator.pointer + 1;
+        Type* XS_RESTRICT index = iterator.pointer + 1;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<T>(iterator.pointer, index,
+        memMove<Type>(iterator.pointer, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         --nextElement;
     }
@@ -716,13 +720,13 @@ public:
         XS_ASSERT(start.pointer < nextElement && start.pointer >= handle.pointer);
         XS_ASSERT(end.pointer <= nextElement && end.pointer > handle.pointer);
         // Destruct any required data
-        memDestructRange<T>(start.pointer,
+        memDestructRange<Type>(start.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer));
-        memMove<T>(start.pointer, end.pointer, remaining);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(start.pointer) + remaining);
+        memMove<Type>(start.pointer, end.pointer, remaining);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(start.pointer) + remaining);
     }
 
     /**
@@ -734,14 +738,15 @@ public:
     XS_INLINE void remove(const TypeIteratorOffset& iterator) noexcept
     {
         // Determine location
-        T* XS_RESTRICT index2 = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        Type* XS_RESTRICT index2 =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
         XS_ASSERT(index2 < nextElement && index2 >= handle.pointer);
         // Destruct the removed data
-        memDestruct<T>(index2);
+        memDestruct<Type>(index2);
         // move any elements down 1
-        T* XS_RESTRICT index = index2++;
+        Type* XS_RESTRICT index = index2++;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<T>(index, index2,
+        memMove<Type>(index, index2,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index2)));
         --nextElement;
     }
@@ -756,19 +761,20 @@ public:
     XS_INLINE void remove(const TypeIteratorOffset& start, const TypeIteratorOffset& end) noexcept
     {
         // Move any elements down
-        T* XS_RESTRICT startIndex =
-            reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + start.pointerOffset);
-        T* XS_RESTRICT endIndex = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + end.pointerOffset);
+        Type* XS_RESTRICT startIndex =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + start.pointerOffset);
+        Type* XS_RESTRICT endIndex =
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + end.pointerOffset);
         XS_ASSERT(startIndex < nextElement && startIndex >= handle.pointer);
         XS_ASSERT(endIndex <= nextElement && endIndex > handle.pointer);
         // Destruct any required data
-        memDestructRange<T>(
+        memDestructRange<Type>(
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
-        memMove<T>(startIndex, endIndex, remaining);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(startIndex) + remaining);
+        memMove<Type>(startIndex, endIndex, remaining);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
 
     /**
@@ -777,15 +783,15 @@ public:
      * adds extra memory copies based on size of array.
      * @param [in] element Pointer to the location the element should be removed from.
      */
-    XS_INLINE void remove(const T* XS_RESTRICT element) noexcept
+    XS_INLINE void remove(const Type* XS_RESTRICT element) noexcept
     {
         XS_ASSERT(element < nextElement && element >= handle.pointer);
         // Destruct the removed data
-        memDestruct<T>(element);
+        memDestruct<Type>(element);
         // move any elements down 1
-        T* XS_RESTRICT index = element + 1;
+        Type* XS_RESTRICT index = element + 1;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<T>(element, index,
+        memMove<Type>(element, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         --nextElement;
     }
@@ -797,18 +803,18 @@ public:
      * @param [in] startElement Pointer to the location the elements should be removed from.
      * @param [in] endElement   Pointer to the location the elements should be removed till (non inclusive).
      */
-    XS_INLINE void remove(const T* XS_RESTRICT startElement, const T* XS_RESTRICT endElement) noexcept
+    XS_INLINE void remove(const Type* XS_RESTRICT startElement, const Type* XS_RESTRICT endElement) noexcept
     {
         XS_ASSERT(startElement < nextElement && startElement >= handle.pointer);
         XS_ASSERT(endElement <= nextElement && endElement > handle.pointer);
         // Destruct any required data
-        memDestructRange<T>(startElement,
+        memDestructRange<Type>(startElement,
             static_cast<uint0>(reinterpret_cast<uint8*>(endElement) - reinterpret_cast<uint8*>(startElement)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endElement));
-        memMove<T>(startElement, endElement, remaining);
-        nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(startElement) + remaining);
+        memMove<Type>(startElement, endElement, remaining);
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startElement) + remaining);
     }
 
     /**
@@ -819,7 +825,7 @@ public:
     XS_INLINE void removeAll() noexcept
     {
         // Destruct any required data
-        memDestructRange<T>(handle.pointer,
+        memDestructRange<Type>(handle.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Reset next element
         nextElement = handle.pointer;
@@ -834,11 +840,11 @@ public:
      * @param array The array to replace the element sequence with.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void replace(const uint0 start, const uint0 end, const Array<T2, Alloc2>& array) noexcept
     {
-        T* XS_RESTRICT startIndex = &handle.pointer[start];
-        T* XS_RESTRICT endIndex = &handle.pointer[end];
+        Type* XS_RESTRICT startIndex = &handle.pointer[start];
+        Type* XS_RESTRICT endIndex = &handle.pointer[end];
         XS_ASSERT(startIndex < nextElement && startIndex >= handle.pointer);
         XS_ASSERT(endIndex <= nextElement && endIndex > handle.pointer);
         const uint0 arraySize = static_cast<uint0>(
@@ -847,7 +853,7 @@ public:
             static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
         if (const int0 additionalSize = static_cast<int0>(arraySize) - static_cast<int0>(replacedSize);
             additionalSize != 0) {
-            T* XS_RESTRICT dst = reinterpret_cast<T*>(reinterpret_cast<uint8*>(startIndex) + arraySize);
+            Type* XS_RESTRICT dst = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + arraySize);
             const uint0 sizeDisplaced =
                 static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
             if (additionalSize > 0) {
@@ -856,23 +862,23 @@ public:
                         static_cast<uint0>(additionalSize) <=
                     getReservedSize());
                 // Move up elements in the array
-                memMoveBackwards<T>(dst, endIndex, sizeDisplaced);
+                memMoveBackwards<Type>(dst, endIndex, sizeDisplaced);
                 // Force Construct of new elements
-                memCopyConstructRange<T, T2>(startIndex, array.handle.pointer, arraySize, replacedSize);
+                memCopyConstructRange<Type, T2>(startIndex, array.handle.pointer, arraySize, replacedSize);
             } else {
                 // Destruct any now unused memory
-                memDestructRange<T>(
+                memDestructRange<Type>(
                     dst, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(dst)));
                 // move any elements down
-                memMove<T>(dst, endIndex, sizeDisplaced);
+                memMove<Type>(dst, endIndex, sizeDisplaced);
                 // Copy across new elements
-                memCopy<T, T2>(startIndex, array.handle.pointer, arraySize);
+                memCopy<Type, T2>(startIndex, array.handle.pointer, arraySize);
             }
             // update next element
-            nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
+            nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
         } else {
             // Copy across new memory
-            memCopy<T, T2>(startIndex, array.handle.pointer, arraySize);
+            memCopy<Type, T2>(startIndex, array.handle.pointer, arraySize);
         }
     }
 
@@ -885,7 +891,7 @@ public:
      * @param array The array to replace the element sequence with.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void replace(const TypeIterator& start, const TypeIterator& end, const Array<T2, Alloc2>& array) noexcept
     {
         XS_ASSERT(start.pointer < nextElement && start.pointer >= handle.pointer);
@@ -896,30 +902,30 @@ public:
             static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
         if (const int0 additionalSize = static_cast<int0>(arraySize) - static_cast<int0>(replacedSize);
             additionalSize != 0) {
-            T* XS_RESTRICT dst = reinterpret_cast<T*>(reinterpret_cast<uint8*>(start.pointer) + arraySize);
+            Type* XS_RESTRICT dst = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(start.pointer) + arraySize);
             const uint0 sizeDisplaced =
                 static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer));
             if (additionalSize > 0) {
                 XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) -
                               reinterpret_cast<uint8*>(handle.pointer) + additionalSize) <= getReservedSize());
                 // Move up elements in the array
-                memMoveBackwards<T>(dst, end.pointer, sizeDisplaced);
+                memMoveBackwards<Type>(dst, end.pointer, sizeDisplaced);
                 // Force Construct of new elements
-                memCopyConstructRange<T, T2>(start.pointer, array.handle.pointer, arraySize, replacedSize);
+                memCopyConstructRange<Type, T2>(start.pointer, array.handle.pointer, arraySize, replacedSize);
             } else {
                 // Destruct any now unused memory
-                memDestructRange<T>(
+                memDestructRange<Type>(
                     dst, static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(dst)));
                 // move any elements down
-                memMove<T>(dst, end.pointer, sizeDisplaced);
+                memMove<Type>(dst, end.pointer, sizeDisplaced);
                 // Copy across new elements
-                memCopy<T, T2>(start.pointer, array.handle.pointer, arraySize);
+                memCopy<Type, T2>(start.pointer, array.handle.pointer, arraySize);
             }
             // update next element
-            nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
+            nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
         } else {
             // Copy across new memory
-            memCopy<T, T2>(start.pointer, array.handle.pointer, arraySize);
+            memCopy<Type, T2>(start.pointer, array.handle.pointer, arraySize);
         }
     }
 
@@ -933,11 +939,11 @@ public:
      * @param end   The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void set(const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
     {
-        T* XS_RESTRICT startIndex = &array.handle.pointer[start];
-        T* XS_RESTRICT endIndex = &array.handle.pointer[end];
+        Type* XS_RESTRICT startIndex = &array.handle.pointer[start];
+        Type* XS_RESTRICT endIndex = &array.handle.pointer[end];
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
@@ -945,10 +951,10 @@ public:
             static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T, T2>(handle.pointer, startIndex, arraySize,
+        memCopyConstructRange<Type, T2>(handle.pointer, startIndex, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
-        T* newEnd = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        Type* newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
         if (nextElement > newEnd) {
             // Possible to have negative number of elements
             memDestructRange(
@@ -968,12 +974,12 @@ public:
      * @param end      The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void set(uint0 position, const Array<T2, Alloc2>& array, const uint0 start, const uint0 end) noexcept
     {
-        T* XS_RESTRICT startIndex = &array.handle.pointer[start];
-        T* XS_RESTRICT endIndex = &array.handle.pointer[end];
-        T* XS_RESTRICT index = &handle.pointer[position];
+        Type* XS_RESTRICT startIndex = &array.handle.pointer[start];
+        Type* XS_RESTRICT endIndex = &array.handle.pointer[end];
+        Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
         XS_ASSERT((index <= nextElement || nextElement == handle.pointer) && index >= handle.pointer);
@@ -984,10 +990,10 @@ public:
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T, T2>(index, startIndex, arraySize,
+        memCopyConstructRange<Type, T2>(index, startIndex, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
-        T* XS_RESTRICT endTransfer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(index) + arraySize);
+        Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + arraySize);
         nextElement = endTransfer > nextElement ? endTransfer : nextElement;
     }
 
@@ -1001,7 +1007,7 @@ public:
      * @param end     The iterator of the location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void set(const Array<T2, Alloc2>& array, const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
@@ -1012,10 +1018,10 @@ public:
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T, T2>(handle.pointer, start.pointer, arraySize,
+        memCopyConstructRange<Type, T2>(handle.pointer, start.pointer, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
-        T* XS_RESTRICT newEnd = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
         if (nextElement > newEnd) {
             // Possible to have negative number of elements
             memDestructRange(
@@ -1035,7 +1041,7 @@ public:
      * @param end      The iterator of the location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE void set(const TypeIterator& iterator, const Array<T2, Alloc2>& array,
         const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
@@ -1052,10 +1058,10 @@ public:
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T, T2>(iterator.pointer, start.pointer, arraySize,
+        memCopyConstructRange<Type, T2>(iterator.pointer, start.pointer, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
-        T* XS_RESTRICT endTransfer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);
+        Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);
         nextElement = endTransfer > nextElement ? endTransfer : nextElement;
     }
 
@@ -1064,15 +1070,15 @@ public:
      * @param elements Input elements to copy in.
      * @param number The number of elements in the input.
      */
-    XS_INLINE void set(const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE void set(const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        const uint0 arraySize = static_cast<uint0>(number) * sizeof(T);
+        const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T>(handle.pointer, elements, arraySize,
+        memCopyConstructRange<Type>(handle.pointer, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
-        T* XS_RESTRICT newEnd = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+        Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
         if (nextElement > newEnd) {
             // Possible to have negative number of elements
             memDestructRange(
@@ -1088,20 +1094,20 @@ public:
      * @param elements Input elements to copy in.
      * @param number   The number of elements in the input.
      */
-    XS_INLINE void set(uint0 position, const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE void set(uint0 position, const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        T* XS_RESTRICT index = &handle.pointer[position];
+        Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index <= nextElement || nextElement == handle.pointer) && index >= handle.pointer);
 
-        const uint0 arraySize = static_cast<uint0>(number) * sizeof(T);
+        const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(index) - reinterpret_cast<uint8*>(handle.pointer)) +
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T>(index, elements, arraySize,
+        memCopyConstructRange<Type>(index, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
-        T* XS_RESTRICT endTransfer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(index) + arraySize);
+        Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + arraySize);
         nextElement = endTransfer > nextElement ? endTransfer : nextElement;
     }
 
@@ -1111,21 +1117,22 @@ public:
      * @param elements Input elements to copy in.
      * @param number   The number of elements in the input.
      */
-    XS_INLINE void set(const TypeIterator& iterator, const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE void set(
+        const TypeIterator& iterator, const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
 
-        const uint0 arraySize = static_cast<uint0>(number) * sizeof(T);
+        const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(
             static_cast<uint0>(reinterpret_cast<uint8*>(iterator.pointer) - reinterpret_cast<uint8*>(handle.pointer)) +
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<T>(iterator.pointer, elements, arraySize,
+        memCopyConstructRange<Type>(iterator.pointer, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
-        T* XS_RESTRICT endTransfer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);
+        Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);
         nextElement = endTransfer > nextElement ? endTransfer : nextElement;
     }
 
@@ -1214,7 +1221,7 @@ public:
     {
         XS_ASSERT(iterator.pointerOffset <=
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
-        return TypeIterator(reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset));
+        return TypeIterator(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset));
     }
 
     /**
@@ -1227,7 +1234,7 @@ public:
         XS_ASSERT(iterator.pointerOffset <=
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         return TypeConstIterator(
-            reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset));
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset));
     }
 
     /**
@@ -1238,7 +1245,7 @@ public:
     XS_INLINE TypeIteratorOffset offsetIteratorAt(const uint0 position) noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
-        return TypeIteratorOffset(position * sizeof(T));
+        return TypeIteratorOffset(position * sizeof(Type));
     }
 
     /**
@@ -1249,7 +1256,7 @@ public:
     XS_INLINE TypeConstIteratorOffset offsetIteratorAt(const uint0 position) const noexcept
     {
         XS_ASSERT(position <= static_cast<uint0>(nextElement - handle.pointer));
-        return TypeConstIteratorOffset(position * sizeof(T));
+        return TypeConstIteratorOffset(position * sizeof(Type));
     }
 
     /**
@@ -1279,7 +1286,7 @@ public:
      * @param [in] element Pointer to element within the array.
      * @return An offset iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeIteratorOffset offsetIteratorAt(const T* const XS_RESTRICT element) noexcept
+    XS_INLINE TypeIteratorOffset offsetIteratorAt(const Type* const XS_RESTRICT element) noexcept
     {
         XS_ASSERT(handle.pointer <= element);
         return TypeIteratorOffset(handle.pointer, element);
@@ -1290,7 +1297,7 @@ public:
      * @param [in] element Pointer to element within the array.
      * @return An offset iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeConstIteratorOffset offsetIteratorAt(const T* const XS_RESTRICT element) const noexcept
+    XS_INLINE TypeConstIteratorOffset offsetIteratorAt(const Type* const XS_RESTRICT element) const noexcept
     {
         XS_ASSERT(handle.pointer <= element);
         return TypeConstIteratorOffset(handle.pointer, element);
@@ -1316,7 +1323,7 @@ public:
     {
         XS_ASSERT(iterator.pointerOffset <
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
-        return iterator.pointerOffset / sizeof(T);
+        return iterator.pointerOffset / sizeof(Type);
     }
 
     /**
@@ -1324,7 +1331,7 @@ public:
      * @param [in] element Pointer to element within the array.
      * @return An integer representing the number of the element in the array the element represents.
      */
-    XS_INLINE uint0 positionAt(const T* const XS_RESTRICT element) const noexcept
+    XS_INLINE uint0 positionAt(const Type* const XS_RESTRICT element) const noexcept
     {
         XS_ASSERT(handle.pointer <= element);
         return static_cast<uint0>(element - handle.pointer);
@@ -1360,7 +1367,7 @@ public:
     XS_INLINE TypeIteratorOffset iteratorIncrement(const TypeIteratorOffset& iterator) noexcept
     {
         XS_ASSERT(iterator.pointerOffset != getSize());
-        return TypeIteratorOffset(iterator.pointerOffset + sizeof(T));
+        return TypeIteratorOffset(iterator.pointerOffset + sizeof(Type));
     }
 
     /**
@@ -1371,7 +1378,7 @@ public:
     XS_INLINE TypeConstIteratorOffset iteratorIncrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset != getSize());
-        return TypeConstIteratorOffset(iterator.pointerOffset + sizeof(T));
+        return TypeConstIteratorOffset(iterator.pointerOffset + sizeof(Type));
     }
 
     /**
@@ -1404,7 +1411,7 @@ public:
     XS_INLINE TypeIteratorOffset iteratorDecrement(const TypeIteratorOffset& iterator) noexcept
     {
         XS_ASSERT(iterator.pointerOffset != 0);
-        return TypeIteratorOffset(iterator.pointerOffset - sizeof(T));
+        return TypeIteratorOffset(iterator.pointerOffset - sizeof(Type));
     }
 
     /**
@@ -1415,14 +1422,14 @@ public:
     XS_INLINE TypeConstIteratorOffset iteratorDecrement(const TypeConstIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset != 0);
-        return TypeConstIteratorOffset(iterator.pointerOffset - sizeof(T));
+        return TypeConstIteratorOffset(iterator.pointerOffset - sizeof(Type));
     }
 
     /**
      * At function to set or get the first element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atBegin() noexcept
+    XS_INLINE Type& atBegin() noexcept
     {
         return *handle.pointer;
     }
@@ -1431,7 +1438,7 @@ public:
      * At function to set or get the first element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& atBegin() const noexcept
+    XS_INLINE const Type& atBegin() const noexcept
     {
         return *handle.pointer;
     }
@@ -1440,7 +1447,7 @@ public:
      * At function to set or get the last element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atBack() noexcept
+    XS_INLINE Type& atBack() noexcept
     {
         return *(nextElement - 1);
     }
@@ -1449,7 +1456,7 @@ public:
      * At function to set or get the last element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& atBack() const noexcept
+    XS_INLINE const Type& atBack() const noexcept
     {
         return *(nextElement - 1);
     }
@@ -1459,7 +1466,7 @@ public:
      * @note This return item at end of array (one past last element).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atEnd() noexcept
+    XS_INLINE Type& atEnd() noexcept
     {
         return *nextElement;
     }
@@ -1469,7 +1476,7 @@ public:
      * @note This return item at end of array (one past last element).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& atEnd() const noexcept
+    XS_INLINE const Type& atEnd() const noexcept
     {
         return *nextElement;
     }
@@ -1479,7 +1486,7 @@ public:
      * @param position The element to get or set (return is undefined if the input position is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& at(const uint0 position) noexcept
+    XS_INLINE Type& at(const uint0 position) noexcept
     {
         XS_ASSERT(position < static_cast<uint0>(nextElement - handle.pointer));
         return handle.pointer[position];
@@ -1490,7 +1497,7 @@ public:
      * @param position The element to get or set (return is undefined if the input position is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& at(const uint0 position) const noexcept
+    XS_INLINE const Type& at(const uint0 position) const noexcept
     {
         XS_ASSERT(position < static_cast<uint0>(nextElement - handle.pointer));
         return handle.pointer[position];
@@ -1501,7 +1508,7 @@ public:
      * @param iterator The iterator of the element to get or set (return is undefined if the input iterator is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& at(const TypeIterator& iterator) noexcept
+    XS_INLINE Type& at(const TypeIterator& iterator) noexcept
     {
         XS_ASSERT(handle.pointer <= iterator.pointer);
         return *iterator.pointer;
@@ -1512,7 +1519,7 @@ public:
      * @param iterator The iterator of the element to get or set (return is undefined if the input iterator is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& at(const TypeConstIterator& iterator) const noexcept
+    XS_INLINE const Type& at(const TypeConstIterator& iterator) const noexcept
     {
         XS_ASSERT(handle.pointer <= iterator.pointer);
         return *iterator.pointer;
@@ -1524,11 +1531,11 @@ public:
      * invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& at(const TypeIteratorOffset& iterator) noexcept
+    XS_INLINE Type& at(const TypeIteratorOffset& iterator) noexcept
     {
         XS_ASSERT(iterator.pointerOffset <
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
-        return *reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        return *reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
     }
 
     /**
@@ -1536,11 +1543,11 @@ public:
      * @param iterator The iterator of the element to get or set (return is undefined if the input iterator is invalid).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE const T& at(const TypeConstIteratorOffset& iterator) const noexcept
+    XS_INLINE const Type& at(const TypeConstIteratorOffset& iterator) const noexcept
     {
         XS_ASSERT(iterator.pointerOffset <
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
-        return *reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
+        return *reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
     }
 
     /**
@@ -1600,7 +1607,7 @@ public:
      * @param [in] element Pointer to element to check.
      * @return Boolean signaling if valid or not.
      */
-    XS_INLINE bool isValid(const T* const XS_RESTRICT element) const noexcept
+    XS_INLINE bool isValid(const Type* const XS_RESTRICT element) const noexcept
     {
         return element >= handle.pointer & element < nextElement;
     }
@@ -1662,7 +1669,7 @@ public:
     XS_INLINE bool setReservedLength(const uint0 number) noexcept
     {
         static_assert(Handle::isResizable, "Cannot resize an array created using a non-resizable allocator");
-        return setReservedSize(number * sizeof(T));
+        return setReservedSize(number * sizeof(Type));
     }
 
     /**
@@ -1674,19 +1681,19 @@ public:
     XS_INLINE bool setReservedSize(const uint0 size) noexcept
     {
         static_assert(Handle::isResizable, "Cannot resize an array created using a non-resizable allocator");
-        XS_ASSERT(size % sizeof(T) == 0);
+        XS_ASSERT(size % sizeof(Type) == 0);
         uint0 arraySize =
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Destruct object if we are reducing size of array
         if (arraySize > size) [[unlikely]] {
-            memDestructRange<T>(&handle.pointer[size], arraySize - size);
+            memDestructRange<Type>(&handle.pointer[size], arraySize - size);
         }
         // Check if new allocated size is less than we had
         arraySize = size < arraySize ? size : arraySize;
         // Try and extend the currently available memory
         if (handle.reallocate(size, arraySize)) [[likely]] {
             // update next pointer in case of memory move
-            nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
+            nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
             return true;
         }
         return false;
@@ -1699,7 +1706,7 @@ public:
     XS_INLINE void clear() noexcept
     {
         // Deallocate any used data
-        memDestructRange<T>(handle.pointer,
+        memDestructRange<Type>(handle.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Unallocate memory
         handle.unallocate();
@@ -1714,8 +1721,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const T2& element) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2>(element, cbegin());
@@ -1729,8 +1736,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const T2& element, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2>(element, TypeConstIterator(&handle.pointer[position]));
@@ -1744,19 +1751,19 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const T2& element, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
-        const T* XS_RESTRICT i = iterator.pointer;
+        const Type* XS_RESTRICT i = iterator.pointer;
         while (i < nextElement) {
             if (*i == element) [[unlikely]] {
                 return *i;
             }
             ++i;
         }
-        return *reinterpret_cast<T*>(nullptr);
+        return *reinterpret_cast<Type*>(nullptr);
     }
 
     /**
@@ -1767,8 +1774,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const Array<T2, Alloc2>& array) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const Array<T2, Alloc2>& array) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2, Alloc2>(array, cbegin());
@@ -1783,8 +1790,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const Array<T2, Alloc2>& array, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const Array<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2, Alloc2>(array, TypeConstIterator(&handle.pointer[position]));
@@ -1799,20 +1806,20 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const Array<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const Array<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
 
-        const T* XS_RESTRICT i = iterator.pointer;
+        const Type* XS_RESTRICT i = iterator.pointer;
         // Determine last location in array where there would still be room to find full search elements
-        const T* XS_RESTRICT end = reinterpret_cast<T*>(reinterpret_cast<uint8*>(nextElement) -
+        const Type* XS_RESTRICT end = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) -
             (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer)));
         // Search for first element
         while (i <= end) {
             if (*i == *array.handle.pointer) [[unlikely]] {
-                const T* XS_RESTRICT i2 = i;
+                const Type* XS_RESTRICT i2 = i;
                 const T2* XS_RESTRICT j = array.handle.pointer;
                 // If first found then look for remainder of search elements in sequence
                 while (++j < array.nextElement) {
@@ -1827,7 +1834,7 @@ public:
             }
             ++i;
         }
-        return *reinterpret_cast<T*>(nullptr);
+        return *reinterpret_cast<Type*>(nullptr);
     }
 
     /**
@@ -1837,8 +1844,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const T2& element) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2>(element, cend());
@@ -1854,8 +1861,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const T2& element, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2>(element, TypeConstIterator(&handle.pointer[position]));
@@ -1871,19 +1878,19 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const T2& element, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
 
-        const T* XS_RESTRICT i = iterator.pointer;
+        const Type* XS_RESTRICT i = iterator.pointer;
         while (i > handle.pointer) {
             if (*--i == element) [[unlikely]] {
                 return *i;
             }
         }
-        return *reinterpret_cast<T*>(nullptr);
+        return *reinterpret_cast<Type*>(nullptr);
     }
 
     /**
@@ -1894,8 +1901,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const Array<T2, Alloc2>& array) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const Array<T2, Alloc2>& array) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2, Alloc2>(array, cend());
@@ -1912,8 +1919,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const Array<T2, Alloc2>& array, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const Array<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2, Alloc2>(array, TypeConstIterator(&handle.pointer[position]));
@@ -1930,19 +1937,20 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const Array<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const Array<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
 
         // Determine last location in array where there would still be room to find full search elements
-        const T* XS_RESTRICT i = reinterpret_cast<const T*>(reinterpret_cast<const uint8* const>(iterator.pointer) -
-            (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer)));
+        const Type* XS_RESTRICT i =
+            reinterpret_cast<const Type*>(reinterpret_cast<const uint8* const>(iterator.pointer) -
+                (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer)));
         // Search for first element
         while (i > handle.pointer) {
             if (*i == *array.handle.pointer) [[unlikely]] {
-                const T* XS_RESTRICT i2 = i;
+                const Type* XS_RESTRICT i2 = i;
                 const T2* XS_RESTRICT j = array.handle.pointer;
                 // If first found then look for remainder of search elements in sequence
                 while (++j < array.nextElement) {
@@ -1957,7 +1965,7 @@ public:
             }
             --i;
         }
-        return *reinterpret_cast<T*>(nullptr);
+        return *reinterpret_cast<Type*>(nullptr);
     }
 
     /**
@@ -1968,10 +1976,10 @@ public:
      * found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfFirst(const T2& element) const noexcept
     {
-        const T* XS_RESTRICT find = &findFirst<T2>(element);
+        const Type* XS_RESTRICT find = &findFirst<T2>(element);
         if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
@@ -1987,10 +1995,10 @@ public:
      * found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfFirst(const Array<T2, Alloc2>& array) const noexcept
     {
-        const T* XS_RESTRICT find = &findFirst<T2, Alloc2>(array);
+        const Type* XS_RESTRICT find = &findFirst<T2, Alloc2>(array);
         if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
@@ -2005,10 +2013,10 @@ public:
      * found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfLast(const T2& element) const noexcept
     {
-        const T* XS_RESTRICT find = &findLast<T2>(element);
+        const Type* XS_RESTRICT find = &findLast<T2>(element);
         if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
@@ -2024,10 +2032,10 @@ public:
      * found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfLast(const Array<T2, Alloc2>& array) const noexcept
     {
-        const T* XS_RESTRICT find = &findLast<T2, Alloc2>(array);
+        const Type* XS_RESTRICT find = &findLast<T2, Alloc2>(array);
         if (find != nullptr) [[likely]] {
             return positionAt(find);
         }
@@ -2038,7 +2046,7 @@ public:
      * Get a pointer to the arrays internal data.
      * @return Pointer to start of internal memory.
      */
-    XS_INLINE T* getData() noexcept
+    XS_INLINE Type* getData() noexcept
     {
         return handle.pointer;
     }
@@ -2047,7 +2055,7 @@ public:
      * Get a constant pointer to the arrays internal data.
      * @return Pointer to start of internal memory.
      */
-    XS_INLINE const T* getData() const noexcept
+    XS_INLINE const Type* getData() const noexcept
     {
         return handle.pointer;
     }
@@ -2070,7 +2078,7 @@ public:
      */
     XS_INLINE Array operator+(const Array& array2) const noexcept
     {
-        Array ret((getSize() + array2.getSize()) / sizeof(T));
+        Array ret((getSize() + array2.getSize()) / sizeof(Type));
         ret.add(*this);
         ret.add(array2);
         return ret;

@@ -21,13 +21,14 @@ namespace Shift {
 /** Array template class used to store sections of memory.
  * Includes template functions for using custom memory allocators.
  * @tparam T      Type of element stored within array.
- * @tparam Alloc  Type of allocator use to allocate elements of type T.
+ * @tparam Alloc  Type of allocator use to allocate elements of type Type.
  */
 template<typename T, class Alloc = AllocRegionHeap<T>>
 class PArray : public DArray<T, Alloc>
 {
 public:
     using IArray = DArray<T, Alloc>;
+    using Type = typename IArray::Type;
     using TypeIterator = typename IArray::TypeIterator;
     using TypeConstIterator = typename IArray::TypeConstIterator;
     using TypeIteratorOffset = typename IArray::TypeIteratorOffset;
@@ -65,7 +66,7 @@ public:
      * @param array Reference to PArray object to copy.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE explicit PArray(const PArray<T2, Alloc2>& array) noexcept
         : IArray(array)
         , availableArray(array.availableArray)
@@ -107,7 +108,7 @@ public:
      * @param end   The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE PArray(const PArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
         : IArray(array, start, end)
     {
@@ -151,7 +152,7 @@ public:
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE PArray(const PArray<T2, Alloc2>& array, const typename PArray<T2, Alloc2>::TypeConstIterator& start,
         const typename PArray<T2, Alloc2>::TypeConstIterator& end) noexcept
         : IArray(array, start, end)
@@ -193,7 +194,7 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>)
+    requires(isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>)
     XS_INLINE PArray& operator=(const PArray<T2, Alloc2>& array) noexcept
     {
         removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
@@ -223,7 +224,7 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowAssignable<T, T2>)
+    requires(isNothrowAssignable<Type, T2>)
     XS_INLINE PArray& operator=(PArray<T2, Alloc2>&& array) noexcept
     {
         removeAll(); // TODO: improve performance as this is needed to prevent copying to destructed available item
@@ -261,7 +262,7 @@ public:
      * @return Boolean representing if element could be added to preserved array. (will be false if memory could not
      * be allocated).
      */
-    XS_INLINE bool add(const T& element) noexcept
+    XS_INLINE bool add(const Type& element) noexcept
     {
         if (availableArray.isEmpty()) {
             // Can just use normal add method to add to existing array
@@ -271,7 +272,7 @@ public:
             availableArray.remove();
 
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<T>(&at(availableArray.atEnd()), element);
+            memConstruct<Type>(&at(availableArray.atEnd()), element);
             return true;
         }
     }
@@ -286,7 +287,7 @@ public:
      * be allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE bool add(Args&&... values) noexcept
     {
         if (availableArray.isEmpty()) {
@@ -297,7 +298,7 @@ public:
             availableArray.remove();
 
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<T>(&at(availableArray.atEnd()), forward<Args>(values)...);
+            memConstruct<Type>(&at(availableArray.atEnd()), forward<Args>(values)...);
             return true;
         }
     }
@@ -329,7 +330,7 @@ public:
     {
         // Add the removed position to available list
         availableArray.add(TypeIteratorOffset(this->IArray::getSize()));
-        memDestruct<T>(&this->IArray::atBack());
+        memDestruct<Type>(&this->IArray::atBack());
     }
 
     /**
@@ -344,7 +345,7 @@ public:
         // Add the removed position to available list
         auto value = offsetIteratorAt(position);
         availableArray.add(value);
-        memDestruct<T>(&at(value));
+        memDestruct<Type>(&at(value));
     }
 
     /**
@@ -365,7 +366,7 @@ public:
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&at(i));
+                memDestruct<Type>(&at(i));
             }
         }
     }
@@ -382,7 +383,7 @@ public:
         // Add the removed position to available list
         auto value = offsetIteratorAt(iterator);
         availableArray.add(value);
-        memDestruct<T>(&at(value));
+        memDestruct<Type>(&at(value));
     }
 
     /**
@@ -403,7 +404,7 @@ public:
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&at(i));
+                memDestruct<Type>(&at(i));
             }
         }
     }
@@ -419,7 +420,7 @@ public:
         XS_ASSERT(&availableArray.findFirst(iterator) == nullptr);
         // Add the removed position to available list
         availableArray.add(iterator);
-        memDestruct<T>(&at(iterator));
+        memDestruct<Type>(&at(iterator));
     }
 
     /**
@@ -441,7 +442,7 @@ public:
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&at(i));
+                memDestruct<Type>(&at(i));
             }
         }
     }
@@ -452,12 +453,12 @@ public:
      * The function will fail if the specified element has already been removed.
      * @param element Pointer to the location the element should be removed from.
      */
-    XS_INLINE void remove(const T* XS_RESTRICT element) noexcept
+    XS_INLINE void remove(const Type* XS_RESTRICT element) noexcept
     {
         XS_ASSERT(&availableArray.findFirst(offsetIteratorAt(element)) == nullptr);
         // Add the removed position to available list
         availableArray.add(offsetIteratorAt(element));
-        memDestruct<T>(element);
+        memDestruct<Type>(element);
     }
 
     /**
@@ -467,7 +468,7 @@ public:
      * @param startElement Pointer to the location the elements should be removed from.
      * @param endElement   Pointer to the location the elements should be removed till (non inclusive).
      */
-    XS_INLINE void remove(const T* XS_RESTRICT startElement, const T* XS_RESTRICT endElement) noexcept
+    XS_INLINE void remove(const Type* XS_RESTRICT startElement, const Type* XS_RESTRICT endElement) noexcept
     {
         // Add the removed positions to the list (optimised assuming few available elements)
         // Fast increment available array
@@ -478,7 +479,7 @@ public:
                 --i;
                 XS_ASSERT(&availableArray.findFirst(i) == nullptr);
                 availableArray.add(i);
-                memDestruct<T>(&at(i));
+                memDestruct<Type>(&at(i));
             }
         }
     }
@@ -493,7 +494,7 @@ public:
         // Only elements that are not already destructed need removing
         for (auto i = begin(); i < end(); ++i) {
             if (&availableArray.findFirst(offsetIteratorAt(i)) != nullptr) {
-                memDestruct<T>(&at(i));
+                memDestruct<Type>(&at(i));
             }
         }
         // Clear everything in available array
@@ -513,7 +514,7 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const PArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
         // Clear everything in available array
@@ -550,7 +551,7 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const PArray<T2, Alloc2>& array, const typename PArray<T2, Alloc2>::TypeConstIterator& start,
         const typename PArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
@@ -580,7 +581,7 @@ public:
      * @param number The number of elements in the input.
      * @return Whether operation could be performed.
      */
-    XS_INLINE bool set(const T* XS_RESTRICT const elements, uint0 number) noexcept
+    XS_INLINE bool set(const Type* XS_RESTRICT const elements, uint0 number) noexcept
     {
         // Don't need to store removed items as they are no longer valid
         availableArray.removeAll();
@@ -793,7 +794,7 @@ public:
      * At function to set or get the first element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atStart() noexcept
+    XS_INLINE Type& atStart() noexcept
     {
         // May have issue where start item is on available item list
         auto ret(offsetIteratorAt(&this->IArray::begin()));
@@ -807,7 +808,7 @@ public:
      * At function to set or get the last element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atBack() noexcept
+    XS_INLINE Type& atBack() noexcept
     {
         // May have issue where start item is on available item list
         auto ret(offsetIteratorAt(&this->IArray::atBack()));
@@ -822,7 +823,7 @@ public:
      * @note This returns item at end of preserved array (one past last element).
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE T& atEnd() noexcept
+    XS_INLINE Type& atEnd() noexcept
     {
         return this->IArray::atEnd();
     }
@@ -910,7 +911,7 @@ public:
      * @param element Pointer to element to check.
      * @return Boolean signaling if valid or not.
      */
-    XS_INLINE bool isValid(const T* XS_RESTRICT const element) const noexcept
+    XS_INLINE bool isValid(const Type* XS_RESTRICT const element) const noexcept
     {
         // Check if the position is correct
         if (this->IArray::isValid(element)) [[likely]] {
@@ -1000,8 +1001,8 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findFirst(const T2& element) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findFirst(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2>(element, this->cbegin());
@@ -1015,8 +1016,8 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findFirst(const T2& element, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findFirst(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findFirst<T2>(element, this->iteratorAt(position));
@@ -1030,15 +1031,15 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findFirst(const T2& element, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findFirst(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         // Use standard find to get the required element
-        T* XS_RESTRICT found = &this->IArray::findFirst<T2>(element, iterator);
+        Type* XS_RESTRICT found = &this->IArray::findFirst<T2>(element, iterator);
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
+            Type* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
                 found = &this->IArray::findFirst<T2>(element, iteratorAt(++found));
@@ -1059,8 +1060,8 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findLast(const T2& element) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findLast(const T2& element) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2>(element, this->cend());
@@ -1076,8 +1077,8 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findLast(const T2& element, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findLast(const T2& element, const uint0 position) const noexcept
     {
         // Just use the iterator version. This increases code complexity slightly but significantly reduces code size
         return findLast<T2>(element, this->iteratorAt(position));
@@ -1093,15 +1094,15 @@ public:
      * @return The element found within the array (return is NULL if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
-    XS_INLINE T& findLast(const T2& element, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE Type& findLast(const T2& element, const TypeConstIterator& iterator) const noexcept
     {
         // Use standard find to get the required element
-        T* XS_RESTRICT found = &this->IArray::findLast<T2>(element, iterator);
+        Type* XS_RESTRICT found = &this->IArray::findLast<T2>(element, iterator);
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
+            Type* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
                 found = &this->IArray::findLast<T2>(element, iteratorAt(--found));
@@ -1122,15 +1123,15 @@ public:
      * @return The location of the element within the array (return is -1 if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfFirst(const T2& element) const noexcept
     {
         // Use standard find to get the required element
-        T* XS_RESTRICT found = &this->IArray::findFirst<T2>(element);
+        Type* XS_RESTRICT found = &this->IArray::findFirst<T2>(element);
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
+            Type* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
                 found = &this->IArray::findFirst<T2>(element, iteratorAt(++found));
@@ -1152,15 +1153,15 @@ public:
      * @return The location of the element within the array (return is -1 if the input element could not be found).
      */
     template<class T2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfLast(const T2& element) const noexcept
     {
         // Use standard find to get the required element
-        T* XS_RESTRICT found = &this->IArray::findLast<T2>(element);
+        Type* XS_RESTRICT found = &this->IArray::findLast<T2>(element);
         // Check if valid element
         if (found != nullptr) [[likely]] {
             // Check if this is a removed element
-            T* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
+            Type* XS_RESTRICT removed = &availableArray.findFirst(offsetIteratorAt(&element), iteratorAt(found));
             while (removed != nullptr) {
                 // Search for next valid element starting from next available position
                 found = &this->IArray::findLast<T2>(element, iteratorAt(--found));

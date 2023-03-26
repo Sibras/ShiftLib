@@ -22,13 +22,14 @@ namespace Shift {
  * Array template class used to store sections of memory. Includes template functions for using custom memory
  * allocators.
  * @tparam T      Type of element stored within array.
- * @tparam Alloc  Type of allocator use to allocate elements of type T.
+ * @tparam Alloc  Type of allocator use to allocate elements of type Type.
  */
 template<typename T, class Alloc = AllocRegionHeap<T>>
 class DArray : public Array<T, Alloc>
 {
 public:
     using IArray = Array<T, Alloc>;
+    using Type = typename IArray::Type;
     using TypeIterator = typename IArray::TypeIterator;
     using TypeConstIterator = typename IArray::TypeConstIterator;
     using TypeIteratorOffset = typename IArray::TypeIteratorOffset;
@@ -36,7 +37,7 @@ public:
     using Handle = typename IArray::Handle;
     using Allocator = typename IArray::Allocator;
 
-    T* XS_RESTRICT endAllocated = nullptr; /**< Pointer to end of allocated memory */
+    Type* XS_RESTRICT endAllocated = nullptr; /**< Pointer to end of allocated memory */
 
     /** Default constructor. */
     XS_INLINE DArray() noexcept
@@ -53,7 +54,7 @@ public:
     XS_INLINE explicit DArray(const uint0 number, const Alloc& alloc = Alloc()) noexcept
         : IArray(number, alloc)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -63,7 +64,7 @@ public:
     XS_INLINE DArray(const DArray& array) noexcept
         : IArray(array)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -73,11 +74,11 @@ public:
      * @param array Reference to DArray object to copy.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE explicit DArray(const DArray<T2, Alloc2>& array) noexcept
         : IArray(array)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -91,10 +92,10 @@ public:
      * @param elements Pointer to list of elements to use.
      * @param number   The number of elements in the input list.
      */
-    XS_INLINE DArray(const T* const XS_RESTRICT elements, uint0 number) noexcept
+    XS_INLINE DArray(const Type* const XS_RESTRICT elements, uint0 number) noexcept
         : IArray(elements, number)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -106,7 +107,7 @@ public:
     XS_INLINE DArray(const DArray& array, uint0 start, uint0 end) noexcept
         : IArray(array, start, end)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -118,11 +119,11 @@ public:
      * @param end   The location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE DArray(const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
         : IArray(array, start, end)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -134,7 +135,7 @@ public:
     XS_INLINE DArray(const DArray& array, const TypeConstIterator& start, const TypeConstIterator& end) noexcept
         : IArray(array, start, end)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -146,12 +147,12 @@ public:
      * @param end   The iterator of the location where the array should be cut till (non inclusive).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2>)
+    requires(isNothrowConstructible<Type, T2>)
     XS_INLINE DArray(const DArray<T2, Alloc2>& array, const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
         : IArray(array, start, end)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /**
@@ -163,7 +164,7 @@ public:
     XS_INLINE explicit DArray(const IArray& array) noexcept
         : IArray(array)
         , endAllocated(
-              reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
+              reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize()))
     {}
 
     /** Destructor. */
@@ -177,8 +178,8 @@ public:
     XS_INLINE DArray& operator=(const DArray& array) noexcept
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
@@ -194,11 +195,11 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>)
+    requires(isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>)
     XS_INLINE DArray& operator=(const DArray<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
@@ -213,8 +214,8 @@ public:
      */
     XS_INLINE DArray& operator=(const IArray& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             // Array equals operator handles error checking
             this->IArray::operator=(array);
@@ -243,12 +244,12 @@ public:
      * @return The result of the operation.
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowAssignable<T, T2>)
+    requires(isNothrowAssignable<Type, T2>)
     XS_INLINE DArray& operator=(DArray<T2, Alloc2>&& array) noexcept
     {
         XS_ASSERT(this->handle.pointer != array.handle.pointer);
         this->IArray::operator=(forward<IArray>(array));
-        Shift::swap(endAllocated, forward<T*>(array.endAllocated));
+        Shift::swap(endAllocated, forward<Type*>(array.endAllocated));
         return *this;
     }
 
@@ -274,7 +275,7 @@ public:
         this->IArray::swap(array);
         // Create the end allocated element
         endAllocated =
-            reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
     }
 
     /**
@@ -285,9 +286,9 @@ public:
      * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
      *         allocated).
      */
-    XS_INLINE bool add(const T& element) noexcept
+    XS_INLINE bool add(const Type& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::add(element);
             return true;
@@ -301,7 +302,7 @@ public:
      * adequate space before hand.
      * @param element The element to add to the dynamic array.
      */
-    XS_INLINE void addUnChecked(const T& element) noexcept
+    XS_INLINE void addUnChecked(const Type& element) noexcept
     {
         this->IArray::add(element);
     }
@@ -317,11 +318,11 @@ public:
      *         allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool add(const DArray<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -340,11 +341,11 @@ public:
      *         allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool add(const Array<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(array);
             return true;
@@ -362,10 +363,10 @@ public:
      *         allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE bool add(Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::add(forward<Args>(values)...);
             return true;
@@ -381,7 +382,7 @@ public:
      * @param values The values used to construct the new array element.
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void addUnChecked(Args&&... values) noexcept
     {
         this->IArray::add(forward<Args>(values)...);
@@ -392,10 +393,10 @@ public:
      * @param elements Input elements to copy in.
      * @param number The number of elements in the input.
      */
-    XS_INLINE bool add(const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE bool add(const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + number);
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + number);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::add(elements, number);
             return true;
@@ -412,9 +413,9 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      * be allocated).
      */
-    XS_INLINE bool insert(const uint0 position, const T& element) noexcept
+    XS_INLINE bool insert(const uint0 position, const Type& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::insert(position, element);
             return true;
@@ -433,10 +434,10 @@ public:
      * be allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE bool insert(const uint0 position, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::insert(position, forward<Args>(values)...);
             return true;
@@ -456,11 +457,11 @@ public:
      * be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(const uint0 position, const DArray<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(position, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -480,11 +481,11 @@ public:
      *         be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(const uint0 position, const Array<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(position, array);
             return true;
@@ -501,9 +502,9 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    XS_INLINE bool insert(TypeIterator& iterator, const T& element) noexcept
+    XS_INLINE bool insert(TypeIterator& iterator, const Type& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1;
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1;
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, element);
             return true;
@@ -522,10 +523,10 @@ public:
      * be allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE bool insert(TypeIterator& iterator, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::insert(iterator, forward<Args>(values)...);
             return true;
@@ -545,11 +546,11 @@ public:
      *         be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(TypeIterator& iterator, const DArray<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -569,11 +570,11 @@ public:
      *         be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(TypeIterator& iterator, const Array<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::insert(iterator, array);
             return true;
@@ -590,9 +591,9 @@ public:
      * @return Boolean representing if element could be inserted into dynamic array. (will be false if memory could not
      *         be allocated).
      */
-    XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const T& element) noexcept
+    XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const Type& element) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::insert(iterator, element);
             return true;
@@ -611,10 +612,10 @@ public:
      * be allocated).
      */
     template<typename... Args>
-    requires(isNothrowConstructible<T, Args...>)
+    requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, Args&&... values) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
+        if (const Type* XS_RESTRICT requiredReserved = this->nextElement + 1; checkWithinReserved(requiredReserved))
             [[likely]] {
             this->IArray::insert(iterator, forward<Args>(values)...);
             return true;
@@ -634,11 +635,11 @@ public:
      *         be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const DArray<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(iterator, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -658,11 +659,11 @@ public:
      *         be allocated).
      */
     template<typename T2, typename Alloc2>
-    requires(isNothrowConstructible<T, T2> || isSame<T, T2>)
+    requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE bool insert(const TypeConstIteratorOffset& iterator, const Array<T2, Alloc2>& array) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + array.getSize());
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::insert(iterator, array);
             return true;
@@ -684,12 +685,12 @@ public:
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool replace(uint0 start, uint0 end, const DArray<T2, Alloc2>& array) noexcept
     {
-        const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
+        const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::replace(start, end, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -707,12 +708,12 @@ public:
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool replace(uint0 start, uint0 end, const Array<T2, Alloc2>& array) noexcept
     {
-        const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
+        const uint0 additionalSize = array.getSize() - ((end - start) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::replace(start, end, array);
             return true;
@@ -730,13 +731,13 @@ public:
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool replace(TypeIterator& start, TypeIterator& end, const DArray<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize =
             array.getSize() - (reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
-        if (const T* requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
+        if (const Type* requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
             checkWithinReserved(requiredReserved, start, end)) [[likely]] {
             this->IArray::replace(start, end, *reinterpret_cast<const Array<T2, Alloc2>*>(&array));
             return true;
@@ -754,13 +755,13 @@ public:
      * @return Boolean if replace could be performed (Will return false if failed to allocate memory).
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool replace(TypeIterator& start, TypeIterator& end, const Array<T2, Alloc2>& array) noexcept
     {
         const uint0 additionalSize =
             array.getSize() - (reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
-        if (const T* requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
+        if (const Type* requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->nextElement) + additionalSize);
             checkWithinReserved(requiredReserved, start, end)) [[likely]] {
             this->IArray::replace(start, end, array);
             return true;
@@ -778,12 +779,12 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
-        const uint0 additionalSize = ((end - start) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
+        const uint0 additionalSize = ((end - start) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
@@ -801,12 +802,12 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
-        const uint0 additionalSize = ((end - start) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
+        const uint0 additionalSize = ((end - start) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(array, start, end);
             return true;
@@ -827,12 +828,12 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(uint0 position, const DArray<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
-        const uint0 additionalElements = ((end - start + position) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
+        const uint0 additionalElements = ((end - start + position) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, *reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
@@ -853,12 +854,12 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(uint0 position, const Array<T2, Alloc2>& array, uint0 start, uint0 end) noexcept
     {
-        const uint0 additionalElements = ((end - start + position) * sizeof(T));
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
+        const uint0 additionalElements = ((end - start + position) * sizeof(Type));
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalElements);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, array, start, end);
             return true;
@@ -878,14 +879,14 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const DArray<T2, Alloc2>& array, const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         const uint0 additionalSize =
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), start, end);
             return true;
@@ -905,14 +906,14 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(const Array<T2, Alloc2>& array, const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         const uint0 additionalSize =
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
-        if (const T* XS_RESTRICT requiredReserved =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
+        if (const Type* XS_RESTRICT requiredReserved =
+                reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + additionalSize);
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(array, start, end);
             return true;
@@ -933,13 +934,13 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(TypeIterator& iterator, const DArray<T2, Alloc2>& array,
         const typename DArray<T2, Alloc2>::TypeConstIterator& start,
         const typename DArray<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         // Check we have enough space
-        if (const T* XS_RESTRICT requiredReserved = iterator.pointer +
+        if (const Type* XS_RESTRICT requiredReserved = iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
                     reinterpret_cast<const uint8* const>(start.pointer));
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
@@ -962,13 +963,13 @@ public:
      * @return Whether operation could be performed.
      */
     template<typename T2, typename Alloc2>
-    requires((isNothrowConstructible<T, T2> && isNothrowAssignable<T, T2>) || isSame<T, T2>)
+    requires((isNothrowConstructible<Type, T2> && isNothrowAssignable<Type, T2>) || isSame<Type, T2>)
     XS_INLINE bool set(TypeIterator& iterator, const Array<T2, Alloc2>& array,
         const typename Array<T2, Alloc2>::TypeConstIterator& start,
         const typename Array<T2, Alloc2>::TypeConstIterator& end) noexcept
     {
         // Check we have enough space
-        if (const T* XS_RESTRICT requiredReserved = iterator.pointer +
+        if (const Type* XS_RESTRICT requiredReserved = iterator.pointer +
                 (reinterpret_cast<const uint8* const>(end.pointer) -
                     reinterpret_cast<const uint8* const>(start.pointer));
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
@@ -984,9 +985,9 @@ public:
      * @param number The number of elements in the input.
      * @return Whether operation could be performed.
      */
-    XS_INLINE bool set(const T* XS_RESTRICT const elements, uint0 number) noexcept
+    XS_INLINE bool set(const Type* XS_RESTRICT const elements, uint0 number) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = &this->handle.pointer[number];
+        if (const Type* XS_RESTRICT requiredReserved = &this->handle.pointer[number];
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(elements, number);
             return true;
@@ -1003,9 +1004,9 @@ public:
      * @param number   The number of elements in the input.
      * @return Whether operation could be performed.
      */
-    XS_INLINE bool set(const uint0 position, const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE bool set(const uint0 position, const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = &this->handle.pointer[position + number];
+        if (const Type* XS_RESTRICT requiredReserved = &this->handle.pointer[position + number];
             checkWithinReserved(requiredReserved)) [[likely]] {
             this->IArray::set(position, elements, number);
             return true;
@@ -1023,9 +1024,9 @@ public:
      * @param          number   The number of elements in the input.
      * @return Whether operation could be performed.
      */
-    XS_INLINE bool set(TypeIterator& iterator, const T* const XS_RESTRICT elements, const uint0 number) noexcept
+    XS_INLINE bool set(TypeIterator& iterator, const Type* const XS_RESTRICT elements, const uint0 number) noexcept
     {
-        if (const T* XS_RESTRICT requiredReserved = &at(iterator) + number;
+        if (const Type* XS_RESTRICT requiredReserved = &at(iterator) + number;
             checkWithinReserved(requiredReserved, iterator)) [[likely]] {
             this->IArray::set(iterator, elements, number);
             return true;
@@ -1069,7 +1070,7 @@ public:
         const uint0 ret =
             static_cast<uint0>(reinterpret_cast<uint8*>(endAllocated) - reinterpret_cast<uint8*>(this->handle.pointer));
         // Ensure return value is rounded to element size
-        return ret / sizeof(T) * sizeof(T);
+        return ret / sizeof(Type) * sizeof(Type);
     }
 
     /**
@@ -1080,10 +1081,10 @@ public:
     template<typename = require<Handle::isResizable>>
     XS_INLINE bool setReservedLength(const uint0 number) noexcept
     {
-        if (this->IArray::setReservedSize(number * sizeof(T))) [[likely]] {
+        if (this->IArray::setReservedSize(number * sizeof(Type))) [[likely]] {
             // Update end allocated
-            endAllocated =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
+            endAllocated = reinterpret_cast<Type*>(
+                reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
             return true;
         }
         return false;
@@ -1099,8 +1100,8 @@ public:
     {
         if (this->IArray::setReservedSize(size)) [[likely]] {
             // Update end allocated
-            endAllocated =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
+            endAllocated = reinterpret_cast<Type*>(
+                reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
             return true;
         }
         return false;
@@ -1113,7 +1114,7 @@ public:
      */
     XS_INLINE bool checkReservedSize(const uint0 reserve) noexcept
     {
-        return checkWithinReserved(reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + reserve));
+        return checkWithinReserved(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + reserve));
     }
 
     /**
@@ -1216,8 +1217,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
     }
@@ -1231,8 +1232,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), position);
     }
@@ -1246,8 +1247,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findFirst(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findFirst(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         return this->IArray::findFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), iterator);
     }
@@ -1262,8 +1263,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
     }
@@ -1279,8 +1280,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const DArray<T2, Alloc2>& array, const uint0 position) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), position);
     }
@@ -1296,8 +1297,8 @@ public:
      * @return The element found within the array (return is nullptr if the input element could not be found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
-    XS_INLINE const T& findLast(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
+    requires(isComparable<Type, T2>)
+    XS_INLINE const Type& findLast(const DArray<T2, Alloc2>& array, const TypeConstIterator& iterator) const noexcept
     {
         return this->IArray::findLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array), iterator);
     }
@@ -1313,7 +1314,7 @@ public:
      * found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfFirst(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::indexOfFirst(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1330,7 +1331,7 @@ public:
      * found).
      */
     template<typename T2, typename Alloc2>
-    requires(isComparable<T, T2>)
+    requires(isComparable<Type, T2>)
     XS_INLINE uint0 indexOfLast(const DArray<T2, Alloc2>& array) const noexcept
     {
         return this->IArray::indexOfLast(*reinterpret_cast<const Array<T2, Alloc2>*>(&array));
@@ -1369,7 +1370,7 @@ public:
      */
     XS_INLINE DArray operator+(const DArray& array2) const noexcept
     {
-        DArray ret((this->IArray::getSize() + array2.getSize()) / sizeof(T));
+        DArray ret((this->IArray::getSize() + array2.getSize()) / sizeof(Type));
         ret.add(*this);
         ret.add(array2);
         return ret;
@@ -1382,7 +1383,7 @@ public:
      */
     XS_INLINE DArray operator+(const IArray& array2) const noexcept
     {
-        DArray ret((this->IArray::getSize() + array2.getSize()) / sizeof(T));
+        DArray ret((this->IArray::getSize() + array2.getSize()) / sizeof(Type));
         ret.add(*this);
         ret.add(array2);
         return ret;
@@ -1394,11 +1395,11 @@ private:
      * @param requiredEndAllocated Pointer to new minimum required endAllocated (i.e. allocated+1).
      * @return Boolean false if new memory was required but could not be allocated.
      */
-    XS_INLINE bool increaseReservedSize(const T* const XS_RESTRICT requiredEndAllocated) noexcept
+    XS_INLINE bool increaseReservedSize(const Type* const XS_RESTRICT requiredEndAllocated) noexcept
     {
-        XS_ASSERT(reinterpret_cast<uint0>(requiredEndAllocated) % alignof(T) == 0);
+        XS_ASSERT(reinterpret_cast<uint0>(requiredEndAllocated) % alignof(Type) == 0);
         // Get number of required elements and current elements (must use elements to ensure reserved size is multiple
-        // of size(T))
+        // of size(Type))
         const uint0 requiredAdditional = static_cast<uint0>(
             reinterpret_cast<const uint8*>(requiredEndAllocated) - reinterpret_cast<uint8*>(this->nextElement));
         const uint0 currentSize =
@@ -1407,27 +1408,27 @@ private:
         // use 1/4 growth algorithm
         uint0 oversize = currentSize >> 2;
         // Ensure faster grow for smaller arrays than larger ones
-        const uint0 minOversize = sizeof(T) << 2;
+        const uint0 minOversize = sizeof(Type) << 2;
         oversize = (oversize < minOversize) ? minOversize : oversize;
         // Increase grow in case required additional size is larger (uses grow rate on required size)
         oversize = (oversize < requiredAdditional) ? (requiredAdditional + (requiredAdditional >> 2)) : oversize;
 
-        // Ensure that we oversize by multiple of size(T) (assumes compiler opts out / and * with bitshift)
+        // Ensure that we oversize by multiple of size(Type) (assumes compiler opts out / and * with bitshift)
         oversize += currentSize;
-        oversize = (oversize + (sizeof(T) - 1)) / sizeof(T);
-        oversize = oversize * sizeof(T);
+        oversize = (oversize + (sizeof(Type) - 1)) / sizeof(Type);
+        oversize = oversize * sizeof(Type);
 
         // Try and extend the currently available memory
-        const T* XS_RESTRICT oldPointer = this->handle.pointer;
+        const Type* XS_RESTRICT oldPointer = this->handle.pointer;
         if (const uint0 arraySize = this->IArray::getSize();
             this->handle.reallocate(oversize, arraySize, arraySize + requiredAdditional)) [[likely]] {
             // Update next pointer if memory move
             if (oldPointer != this->handle.pointer) [[likely]] {
-                this->nextElement = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + arraySize);
+                this->nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + arraySize);
             }
             // Update end allocated
-            endAllocated =
-                reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
+            endAllocated = reinterpret_cast<Type*>(
+                reinterpret_cast<uint8*>(this->handle.pointer) + this->handle.getAllocatedSize());
 
             return true;
         }
@@ -1443,7 +1444,7 @@ private:
      * CheckAllocated+1).
      * @return Boolean false if new memory was required but could not be allocated.
      */
-    XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated) noexcept
+    XS_INLINE bool checkWithinReserved(const Type* const XS_RESTRICT requiredEndAllocated) noexcept
     {
         if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
@@ -1451,7 +1452,8 @@ private:
         return increaseReservedSize(requiredEndAllocated);
     }
 
-    XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator) noexcept
+    XS_INLINE bool checkWithinReserved(
+        const Type* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator) noexcept
     {
         if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
@@ -1460,14 +1462,14 @@ private:
         const auto backup = reinterpret_cast<uint8*>(iterator.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
         if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
-            iterator.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup);
+            iterator.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup);
             return true;
         }
         return false;
     }
 
     XS_INLINE bool checkWithinReserved(
-        const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1, TypeIterator& iterator2) noexcept
+        const Type* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1, TypeIterator& iterator2) noexcept
     {
         if (requiredEndAllocated <= endAllocated) [[likely]] {
             return true;
@@ -1479,14 +1481,14 @@ private:
             reinterpret_cast<uint8*>(iterator2.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
         if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
-            iterator1.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
-            iterator2.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);
+            iterator1.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
+            iterator2.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);
             return true;
         }
         return false;
     }
 
-    XS_INLINE bool checkWithinReserved(const T* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1,
+    XS_INLINE bool checkWithinReserved(const Type* const XS_RESTRICT requiredEndAllocated, TypeIterator& iterator1,
         TypeIterator& iterator2, TypeIterator& iterator3) noexcept
     {
         if (requiredEndAllocated <= endAllocated) [[likely]] {
@@ -1501,9 +1503,9 @@ private:
             reinterpret_cast<uint8*>(iterator3.pointer) - reinterpret_cast<uint8*>(this->handle.pointer);
         if (increaseReservedSize(requiredEndAllocated)) [[likely]] {
             // update indexes
-            iterator1.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
-            iterator2.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);
-            iterator3.pointer = reinterpret_cast<T*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup3);
+            iterator1.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup1);
+            iterator2.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup2);
+            iterator3.pointer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(this->handle.pointer) + backup3);
             return true;
         }
         return false;
