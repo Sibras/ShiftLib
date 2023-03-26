@@ -721,13 +721,13 @@ constexpr addRRef<T> declval() noexcept;
  * @returns The forwarded reference.
  */
 template<typename T>
-constexpr T&& forward(removeRef<T>& param) noexcept
+[[msvc::intrinsic]] XS_INLINE constexpr T&& forward(removeRef<T>& param) noexcept
 {
     return static_cast<T&&>(param);
 }
 
 template<typename T>
-constexpr T&& forward(removeRef<T>&& param) noexcept
+[[msvc::intrinsic]] XS_INLINE constexpr T&& forward(removeRef<T>&& param) noexcept
 {
     static_assert(!isLRef<T>, "Invalid use of forward");
     return static_cast<T&&>(param);
@@ -740,7 +740,7 @@ constexpr T&& forward(removeRef<T>&& param) noexcept
  * @returns An rvalue reference to the moved input object.
  */
 template<typename T>
-constexpr removeRef<T>&& move(T&& param) noexcept
+[[msvc::intrinsic]] XS_INLINE constexpr removeRef<T>&& move(T&& param) noexcept
 {
     return static_cast<removeRef<T>&&>(param);
 }
