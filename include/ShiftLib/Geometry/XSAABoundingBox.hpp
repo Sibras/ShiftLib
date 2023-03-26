@@ -235,9 +235,7 @@ public:
     XS_INLINE AABoundingBox(const Point3DDef& minValues, const Point3DDef& maxValues) noexcept
         : minPoint(minValues)
         , maxPoint(maxValues)
-    {
-        XS_ASSERT(minPoint.values <= maxPoint.values);
-    }
+    {}
 
     /**
      * Construct a bounding box around a single point.
@@ -254,7 +252,7 @@ public:
      */
     XS_INLINE static AABoundingBox Invalid() noexcept
     {
-        return AABoundingBox(Point3DDef(Limits<Type>::Max), Point3DDef(Limits<Type>::Lowest));
+        return AABoundingBox(Point3DDef(Limits<Type>::Max()), Point3DDef(Limits<Type>::Lowest()));
     }
 
     /**

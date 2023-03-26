@@ -170,12 +170,7 @@ public:
     XS_INLINE AABoundingBox4(const Point3D4Def& minValues, const Point3D4Def& maxValues) noexcept
         : minPoints(minValues)
         , maxPoints(maxValues)
-    {
-        XS_ASSERT(minPoints.template getPoint<0>().values <= maxPoints.template getPoint<0>().values);
-        XS_ASSERT(minPoints.template getPoint<1>().values <= maxPoints.template getPoint<1>().values);
-        XS_ASSERT(minPoints.template getPoint<2>().values <= maxPoints.template getPoint<2>().values);
-        XS_ASSERT(minPoints.template getPoint<3>().values <= maxPoints.template getPoint<3>().values);
-    }
+    {}
 
     /**
      * Construct a boundingBox4 from 4 regular bounding boxes.
@@ -205,7 +200,7 @@ public:
      */
     XS_INLINE static AABoundingBox4 Invalid() noexcept
     {
-        return AABoundingBox4(Point3D4Def(Limits<Type>::Max), Point3D4Def(Limits<Type>::Lowest));
+        return AABoundingBox4(Point3D4Def(Limits<Type>::Max()), Point3D4Def(Limits<Type>::Lowest()));
     }
 
     /**

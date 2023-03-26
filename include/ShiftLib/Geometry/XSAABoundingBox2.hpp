@@ -241,10 +241,7 @@ public:
     XS_INLINE AABoundingBox2(const Point3D2Def& minValues, const Point3D2Def& maxValues) noexcept
         : minPoints(minValues)
         , maxPoints(maxValues)
-    {
-        XS_ASSERT(minPoints.template getPoint<0>().values <= maxPoints.template getPoint<0>().values);
-        XS_ASSERT(minPoints.template getPoint<1>().values <= maxPoints.template getPoint<1>().values);
-    }
+    {}
 
     /**
      * Construct a boundingBox2 from 2 regular bounding boxes.
@@ -271,7 +268,7 @@ public:
      */
     XS_INLINE static AABoundingBox2 Invalid() noexcept
     {
-        return AABoundingBox2(Point3D2Def(Limits<Type>::Max), Point3D2Def(Limits<Type>::Lowest));
+        return AABoundingBox2(Point3D2Def(Limits<Type>::Max()), Point3D2Def(Limits<Type>::Lowest()));
     }
 
     /**
