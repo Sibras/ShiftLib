@@ -26,25 +26,25 @@ public:
     using Type1 = T1;
     using Type2 = T2;
 
-    T1 first;
-    T2 second;
+    Type1 first;
+    Type2 second;
 
     /** Default constructor. */
     constexpr Pair() noexcept = default;
 
     /**
      * Constructor from member variables.
-     * @param firstIn The value for the first element.
+     * @param firstIn  The value for the first element.
      * @param secondIn The value for the second element.
      */
-    constexpr Pair(const T1& firstIn, const T2& secondIn) noexcept
+    constexpr Pair(const Type1& firstIn, const Type2& secondIn) noexcept
         : first(firstIn)
         , second(secondIn)
     {}
 
-    constexpr Pair(T1&& firstIn, T2&& secondIn) noexcept
-        : first(forward(firstIn))
-        , second(forward(secondIn))
+    constexpr Pair(Type1&& firstIn, Type2&& secondIn) noexcept
+        : first(forward<Type1>(firstIn))
+        , second(forward<Type2>(secondIn))
     {}
 
     constexpr Pair(const Pair& other) noexcept = default;
@@ -54,6 +54,48 @@ public:
     constexpr Pair& operator=(const Pair& other) noexcept = default;
 
     constexpr Pair& operator=(Pair&& other) noexcept = default;
+};
+
+template<typename T1, typename T2 = T1, typename T3 = T1>
+class Triplet
+{
+public:
+    using Type1 = T1;
+    using Type2 = T2;
+    using Type3 = T3;
+
+    Type1 first;
+    Type2 second;
+    Type3 third;
+
+    /** Default constructor. */
+    constexpr Triplet() noexcept = default;
+
+    /**
+     * Constructor from member variables.
+     * @param firstIn  The value for the first element.
+     * @param secondIn The value for the second element.
+     * @param thirdIn  The value for the third element.
+     */
+    constexpr Triplet(const Type1& firstIn, const Type2& secondIn, const Type3& thirdIn) noexcept
+        : first(firstIn)
+        , second(secondIn)
+        , third(thirdIn)
+    {}
+
+    constexpr Triplet(Type1&& firstIn, Type2&& secondIn, Type3&& thirdIn) noexcept
+        : first(forward<Type1>(firstIn))
+        , second(forward<Type2>(secondIn))
+        , third(forward<Type3>(thirdIn))
+    {}
+
+    constexpr Triplet(const Triplet& other) noexcept = default;
+
+    constexpr Triplet(Triplet&& other) noexcept = default;
+
+    constexpr Triplet& operator=(const Triplet& other) noexcept = default;
+
+    constexpr Triplet& operator=(Triplet&& other) noexcept = default;
 };
 
 /**
