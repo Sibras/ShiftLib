@@ -334,6 +334,28 @@ public:
     }
 
     /**
+     * Dynamically get an element of the object.
+     * @note Optimised for getting value from register.
+     * @param index The index of the element to retrieve (range is 0-2).
+     * @returns SIMDInBase containing the desired value.
+     */
+    XS_INLINE InBaseDef getValueInBase(const uint32 index) const noexcept
+    {
+        return this->values.getValueInBase(index);
+    }
+
+    /**
+     * Dynamically get an element of the object.
+     * @note Optimised for getting value from register.
+     * @param index The index of the element to retrieve (range is 0-2).
+     * @returns BaseDef containing the desired value.
+     */
+    XS_INLINE BaseDef getValue(const uint32 index) const noexcept
+    {
+        return this->values.getValue(index);
+    }
+
+    /**
      * Set an element of a 3-D vector.
      * @tparam Index The index of the element to set (must be between 0 and 2).
      * @param value The new value.
