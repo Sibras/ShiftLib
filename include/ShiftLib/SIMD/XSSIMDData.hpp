@@ -790,5 +790,31 @@ public:
         XS_ASSERT(index < numValues);
         return this->pad[index];
     }
+
+    template<uint32 Index>
+    constexpr void setPad(const Type& newPad)
+    {
+        static_assert(Index < numValues);
+        this->pad[Index] = newPad;
+    }
+
+    constexpr void setPad(uint0 index, const Type& newPad)
+    {
+        XS_ASSERT(index < numValues);
+        this->pad[index] = newPad;
+    }
+
+    template<uint32 Index>
+    constexpr void setPad(const Type&& newPad)
+    {
+        static_assert(Index < numValues);
+        this->pad[Index] = newPad;
+    }
+
+    constexpr void setPad(uint0 index, const Type&& newPad)
+    {
+        XS_ASSERT(index < numValues);
+        this->pad[index] = newPad;
+    }
 };
 } // namespace Shift::NoExport
