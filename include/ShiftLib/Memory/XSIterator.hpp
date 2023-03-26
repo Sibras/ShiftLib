@@ -83,6 +83,11 @@ public:
         return *pointer;
     }
 
+    XS_INLINE T& operator->() const noexcept
+    {
+        return *pointer;
+    }
+
     /**
      * Increment an iterator.
      * @return The result of the operation.
@@ -287,6 +292,11 @@ public:
      * @return The data referenced by the iterator.
      */
     XS_INLINE const T& operator*() const noexcept
+    {
+        return *pointer;
+    }
+
+    XS_INLINE const T& operator->() const noexcept
     {
         return *pointer;
     }
