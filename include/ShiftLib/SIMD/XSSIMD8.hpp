@@ -215,7 +215,7 @@ public:
          * Copy constructor.
          * @param other The other.
          */
-        XS_INLINE Mask(const Mask& other) = default;
+        XS_INLINE Mask(const Mask& other) noexcept = default;
 
         /**
          * Move constructor.
@@ -228,7 +228,7 @@ public:
          * @param other The other.
          * @returns A shallow copy of this object.
          */
-        XS_INLINE Mask& operator=(const Mask& other) = default;
+        XS_INLINE Mask& operator=(const Mask& other) noexcept = default;
 
         /**
          * Move assignment operator.
@@ -845,7 +845,7 @@ public:
          * Copy constructor.
          * @param other The other.
          */
-        XS_INLINE Shuffle(const Shuffle& other) = default;
+        XS_INLINE Shuffle(const Shuffle& other) noexcept = default;
 
         /**
          * Move constructor.
@@ -858,7 +858,7 @@ public:
          * @param other The other.
          * @returns A shallow copy of this object.
          */
-        XS_INLINE Shuffle& operator=(const Shuffle& other) = default;
+        XS_INLINE Shuffle& operator=(const Shuffle& other) noexcept = default;
 
         /**
          * Move assignment operator.
@@ -1030,7 +1030,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE SIMD8(const SIMD8& other) = default;
+    XS_INLINE SIMD8(const SIMD8& other) noexcept = default;
 
     /**
      * Constructor.
@@ -1043,7 +1043,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE SIMD8& operator=(const SIMD8& other) = default;
+    XS_INLINE SIMD8& operator=(const SIMD8& other) noexcept = default;
 
     /**
      * Move assignment operator.

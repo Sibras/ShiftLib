@@ -25,7 +25,7 @@ public:
     uint0 pointerOffset = 0;
 
     /** Defaulted constructor. */
-    IteratorOffset() = default;
+    IteratorOffset() noexcept = default;
 
     /**
      * Constructor.

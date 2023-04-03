@@ -234,13 +234,13 @@ public:
     T const* pointer = nullptr;
 
     /** Defaulted constructor. */
-    XS_INLINE ConstIterator() = default;
+    XS_INLINE ConstIterator() noexcept = default;
 
     /**
      * Constructor.
      * @param pointer The pointer.
      */
-    explicit XS_INLINE ConstIterator(T const* const pointer)
+    explicit XS_INLINE ConstIterator(T const* const pointer) noexcept
         : pointer(pointer)
     {}
 
@@ -265,7 +265,7 @@ public:
      * Defaulted copy constructor.
      * @param other The other.
      */
-    XS_INLINE ConstIterator(const ConstIterator& other) = default;
+    XS_INLINE ConstIterator(const ConstIterator& other) noexcept = default;
 
     /**
      * Defaulted move constructor.
@@ -278,7 +278,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE ConstIterator& operator=(const ConstIterator& other) = default;
+    XS_INLINE ConstIterator& operator=(const ConstIterator& other) noexcept = default;
 
     /**
      * Defaulted move assignment operator.

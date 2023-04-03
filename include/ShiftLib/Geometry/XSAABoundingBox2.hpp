@@ -200,7 +200,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE AABoundingBox2(const AABoundingBox2& other) = default;
+    XS_INLINE AABoundingBox2(const AABoundingBox2& other) noexcept = default;
 
     /**
      * Constructor.
@@ -213,7 +213,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE AABoundingBox2& operator=(const AABoundingBox2& other) = default;
+    XS_INLINE AABoundingBox2& operator=(const AABoundingBox2& other) noexcept = default;
 
     /**
      * Move assignment operator.

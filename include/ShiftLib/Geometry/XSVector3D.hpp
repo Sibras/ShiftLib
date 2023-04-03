@@ -34,7 +34,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Vector3DData(const Vector3DData& other) = default;
+    XS_INLINE Vector3DData(const Vector3DData& other) noexcept = default;
 
     /**
      * Forwarding Constructor.
@@ -47,7 +47,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Vector3DData& operator=(const Vector3DData& other) = default;
+    XS_INLINE Vector3DData& operator=(const Vector3DData& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -233,7 +233,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Vector3D(const Vector3D& other) = default;
+    XS_INLINE Vector3D(const Vector3D& other) noexcept = default;
 
     /**
      * Forwarding Constructor.
@@ -246,7 +246,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Vector3D& operator=(const Vector3D& other) = default;
+    XS_INLINE Vector3D& operator=(const Vector3D& other) noexcept = default;
 
     /**
      * Move assignment operator.

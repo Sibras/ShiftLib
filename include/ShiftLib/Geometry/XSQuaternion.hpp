@@ -152,7 +152,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Quaternion(const Quaternion& other) = default;
+    XS_INLINE Quaternion(const Quaternion& other) noexcept = default;
 
     /**
      * Constructor.
@@ -165,7 +165,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Quaternion& operator=(const Quaternion& other) = default;
+    XS_INLINE Quaternion& operator=(const Quaternion& other) noexcept = default;
 
     /**
      * Move assignment operator.

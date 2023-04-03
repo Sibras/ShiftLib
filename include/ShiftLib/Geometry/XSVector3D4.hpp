@@ -287,7 +287,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Vector3D4(const Vector3D4& other) = default;
+    XS_INLINE Vector3D4(const Vector3D4& other) noexcept = default;
 
     /**
      * Constructor.
@@ -300,7 +300,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Vector3D4& operator=(const Vector3D4& other) = default;
+    XS_INLINE Vector3D4& operator=(const Vector3D4& other) noexcept = default;
 
     /**
      * Move assignment operator.

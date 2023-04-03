@@ -34,7 +34,7 @@ class Expected
 
 public:
     /** Default constructor. */
-    constexpr Expected() = default;
+    constexpr Expected() noexcept = default;
 
     /**
      * Constructor.

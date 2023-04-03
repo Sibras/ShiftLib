@@ -120,7 +120,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Range(const Range& other) = default;
+    XS_INLINE Range(const Range& other) noexcept = default;
 
     /**
      * Constructor.
@@ -133,7 +133,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Range& operator=(const Range& other) = default;
+    XS_INLINE Range& operator=(const Range& other) noexcept = default;
 
     /**
      * Move assignment operator.

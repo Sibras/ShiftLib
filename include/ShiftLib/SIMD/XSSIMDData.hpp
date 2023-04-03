@@ -28,7 +28,7 @@ class SIMDDataType
 public:
     T values;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE explicit SIMDDataType(T v0) noexcept
@@ -42,7 +42,7 @@ class SIMDDataType1
 public:
     T value;
 
-    XS_INLINE SIMDDataType1() = default;
+    XS_INLINE SIMDDataType1() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE explicit SIMDDataType1(T v0) noexcept
@@ -57,7 +57,7 @@ public:
     T values0;
     T2 values1;
 
-    XS_INLINE SIMDDataType2() = default;
+    XS_INLINE SIMDDataType2() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType2(T v0, T2 v1) noexcept
@@ -73,7 +73,7 @@ public:
     T values0;
     T values1;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1) noexcept
@@ -90,7 +90,7 @@ public:
     T values1;
     T values2;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2) noexcept
@@ -109,7 +109,7 @@ public:
     T values2;
     T values3;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3) noexcept
@@ -130,7 +130,7 @@ public:
     T values3;
     T values4;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4) noexcept
@@ -153,7 +153,7 @@ public:
     T values4;
     T values5;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5) noexcept
@@ -179,7 +179,7 @@ public:
     T values6;
     T values7;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7) noexcept
@@ -208,7 +208,7 @@ public:
     T values7;
     T values8;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) noexcept
@@ -241,7 +241,7 @@ public:
     T values10;
     T values11;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(T v0, T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11) noexcept
@@ -281,7 +281,7 @@ public:
     T values14;
     T values15;
 
-    XS_INLINE SIMDDataType() = default;
+    XS_INLINE SIMDDataType() noexcept = default;
 
     template<bool C = Constructor, require<C, int32> = 0>
     XS_INLINE SIMDDataType(

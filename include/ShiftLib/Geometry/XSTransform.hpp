@@ -293,7 +293,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Transform(const Transform& other) = default;
+    XS_INLINE Transform(const Transform& other) noexcept = default;
 
     /**
      * Constructor.
@@ -306,7 +306,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Transform& operator=(const Transform& other) = default;
+    XS_INLINE Transform& operator=(const Transform& other) noexcept = default;
 
     /**
      * Move assignment operator.

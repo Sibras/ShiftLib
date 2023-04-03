@@ -30,13 +30,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool2() = default;
+    XS_INLINE Bool2() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool2(const Bool2& other) = default;
+    XS_INLINE Bool2(const Bool2& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -49,7 +49,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool2& operator=(const Bool2& other) = default;
+    XS_INLINE Bool2& operator=(const Bool2& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -337,13 +337,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool3() = default;
+    XS_INLINE Bool3() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool3(const Bool3& other) = default;
+    XS_INLINE Bool3(const Bool3& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -356,7 +356,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool3& operator=(const Bool3& other) = default;
+    XS_INLINE Bool3& operator=(const Bool3& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -649,13 +649,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool3x2() = default;
+    XS_INLINE Bool3x2() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool3x2(const Bool3x2& other) = default;
+    XS_INLINE Bool3x2(const Bool3x2& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -668,7 +668,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool3x2& operator=(const Bool3x2& other) = default;
+    XS_INLINE Bool3x2& operator=(const Bool3x2& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -1006,13 +1006,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool4() = default;
+    XS_INLINE Bool4() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool4(const Bool4& other) = default;
+    XS_INLINE Bool4(const Bool4& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -1025,7 +1025,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool4& operator=(const Bool4& other) = default;
+    XS_INLINE Bool4& operator=(const Bool4& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -1309,13 +1309,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool6() = default;
+    XS_INLINE Bool6() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool6(const Bool6& other) = default;
+    XS_INLINE Bool6(const Bool6& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -1328,7 +1328,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool6& operator=(const Bool6& other) = default;
+    XS_INLINE Bool6& operator=(const Bool6& other) noexcept = default;
 
     /**
      * Move assignment operator.
@@ -1636,13 +1636,13 @@ public:
     using InternalData::SIMDBoolData;
 
     /** Default constructor. */
-    XS_INLINE Bool8() = default;
+    XS_INLINE Bool8() noexcept = default;
 
     /**
      * Copy constructor.
      * @param other The other.
      */
-    XS_INLINE Bool8(const Bool8& other) = default;
+    XS_INLINE Bool8(const Bool8& other) noexcept = default;
 
     /**
      * Move constructor.
@@ -1655,7 +1655,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Bool8& operator=(const Bool8& other) = default;
+    XS_INLINE Bool8& operator=(const Bool8& other) noexcept = default;
 
     /**
      * Move assignment operator.

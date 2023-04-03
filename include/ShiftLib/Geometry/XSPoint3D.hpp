@@ -232,7 +232,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Point3D(const Point3D& other) = default;
+    XS_INLINE Point3D(const Point3D& other) noexcept = default;
 
     /**
      * Forwarding Constructor.
@@ -245,7 +245,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Point3D& operator=(const Point3D& other) = default;
+    XS_INLINE Point3D& operator=(const Point3D& other) noexcept = default;
 
     /**
      * Move assignment operator.

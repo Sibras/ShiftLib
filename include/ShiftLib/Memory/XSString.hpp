@@ -1157,7 +1157,8 @@ public:
      */
     XS_INLINE CharType* getData() noexcept
     {
-        this->add(CharType('\0'));
+        this->checkAddReservedLength(1);
+        *this->nextElement = CharType('\0');
         return this->handle.pointer;
     }
 

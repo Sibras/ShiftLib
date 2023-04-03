@@ -45,7 +45,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Ray(const Ray& other) = default;
+    XS_INLINE Ray(const Ray& other) noexcept = default;
 
     /**
      * Constructor.
@@ -58,7 +58,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Ray& operator=(const Ray& other) = default;
+    XS_INLINE Ray& operator=(const Ray& other) noexcept = default;
 
     /**
      * Move assignment operator.

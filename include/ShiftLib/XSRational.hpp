@@ -95,7 +95,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Rational(const Rational& other) = default;
+    XS_INLINE Rational(const Rational& other) noexcept = default;
 
     /**
      * Constructor.
@@ -108,7 +108,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Rational& operator=(const Rational& other) = default;
+    XS_INLINE Rational& operator=(const Rational& other) noexcept = default;
 
     /**
      * Move assignment operator.

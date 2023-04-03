@@ -248,7 +248,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE Matrix3x3(const Matrix3x3& other) = default;
+    XS_INLINE Matrix3x3(const Matrix3x3& other) noexcept = default;
 
     /**
      * Constructor.
@@ -261,7 +261,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE Matrix3x3& operator=(const Matrix3x3& other) = default;
+    XS_INLINE Matrix3x3& operator=(const Matrix3x3& other) noexcept = default;
 
     /**
      * Move assignment operator.

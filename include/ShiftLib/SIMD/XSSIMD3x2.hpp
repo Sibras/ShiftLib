@@ -395,7 +395,7 @@ public:
          * Copy constructor.
          * @param other The other.
          */
-        XS_INLINE Mask(const Mask& other) = default;
+        XS_INLINE Mask(const Mask& other) noexcept = default;
 
         /**
          * Move constructor.
@@ -408,7 +408,7 @@ public:
          * @param other The other.
          * @returns A shallow copy of this object.
          */
-        XS_INLINE Mask& operator=(const Mask& other) = default;
+        XS_INLINE Mask& operator=(const Mask& other) noexcept = default;
 
         /**
          * Move assignment operator.
@@ -947,7 +947,7 @@ public:
      * Constructor.
      * @param other The other.
      */
-    XS_INLINE SIMD3x2(const SIMD3x2& other) = default;
+    XS_INLINE SIMD3x2(const SIMD3x2& other) noexcept = default;
 
     /**
      * Constructor.
@@ -960,7 +960,7 @@ public:
      * @param other The other.
      * @returns A shallow copy of this object.
      */
-    XS_INLINE SIMD3x2& operator=(const SIMD3x2& other) = default;
+    XS_INLINE SIMD3x2& operator=(const SIMD3x2& other) noexcept = default;
 
     /**
      * Move assignment operator.
