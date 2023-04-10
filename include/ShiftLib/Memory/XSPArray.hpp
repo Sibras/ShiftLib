@@ -268,11 +268,8 @@ public:
             // Can just use normal add method to add to existing array
             return this->IArray::add(element);
         } else {
-            // Remove ID from available list now that it is in use
-            availableArray.remove();
-
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<Type>(&at(availableArray.atEnd()), element);
+            memConstruct<Type>(&at(availableArray.pop()), element);
             return true;
         }
     }
@@ -294,11 +291,8 @@ public:
             // Can just use normal add method to add to existing array
             return this->IArray::add(forward<Args>(values)...);
         } else {
-            // Remove ID from available list now that it is in use
-            availableArray.remove();
-
             // Use existing element from available list to reconstruct new item (points to previous end element).
-            memConstruct<Type>(&at(availableArray.atEnd()), forward<Args>(values)...);
+            memConstruct<Type>(&at(availableArray.pop()), forward<Args>(values)...);
             return true;
         }
     }
