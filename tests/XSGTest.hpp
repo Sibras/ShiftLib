@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <ostream>
 
-#define XS_USE_TEST_NAMESPACE 1
+#define XS_USE_TEST_NAMESPACE 0
 
 // Need macro indirection to get TESTISA macro to work
 #define GTEST_TYPED_TEST(test_suite_name, test_name) TYPED_TEST(test_suite_name, test_name)
