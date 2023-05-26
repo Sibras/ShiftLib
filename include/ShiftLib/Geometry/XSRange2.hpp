@@ -302,7 +302,7 @@ public:
      */
     XS_INLINE void setMin2(BaseDef min)
     {
-        this->minMax.template setDualFloat<0>(XSFloat2(min));
+        this->minMax.template setValue2<0>(SIMD2Def(min));
         if constexpr (Width > SIMDWidth::Scalar) {
             this->minMax = this->minMax.template negate<true, true, false, false>();
         }
@@ -312,9 +312,9 @@ public:
      * Sets the maximum value of all range elements.
      * @param max The new maximum.
      */
-    XS_INLINE void setMaxDual(BaseDef max)
+    XS_INLINE void setMax2(BaseDef max)
     {
-        this->minMax.template setDualFloat<1>(XSFloat2(max));
+        this->minMax.template setValue2<1>(SIMD2Def(max));
     }
 
     /**

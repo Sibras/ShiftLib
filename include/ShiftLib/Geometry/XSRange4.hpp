@@ -280,7 +280,7 @@ public:
      * Sets the maximum value of all range elements.
      * @param max The new maximum.
      */
-    XS_INLINE void setMaxQuad(BaseDef max)
+    XS_INLINE void setMax4(BaseDef max)
     {
         this->maxs = SIMD4Def(max);
     }
