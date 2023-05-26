@@ -1723,6 +1723,26 @@ public:
     }
 
     /**
+     * Manually set the number of elements in the array.
+     * @param number The number of elements to size for.
+     * @return Boolean signaling if new memory could be reserved.
+     */
+    XS_INLINE void setElements(const uint0 number) noexcept
+    {
+        const uint0 currentSize = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer);
+        const uint0 newSize = number * sizeof(Type);
+        XS_ASSERT(newSize <= getReservedSize());
+        const int0 diffSize = static_cast<int0>(newSize) - static_cast<int0>(currentSize);
+        if (diffSize > 0) {
+            memConstructRange<Type>(nextElement, diffSize);
+        } else {
+            const uint0 posDiff = abs(diffSize);
+            memDestructRange<Type>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) - posDiff), posDiff);
+        }
+        nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + diffSize);
+    }
+
+    /**
      * Remove all elements from the array and clear.
      * @note This removes all elements from the array and de-allocates the arrays memory.
      */
