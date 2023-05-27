@@ -42,7 +42,7 @@ public:
      */
     template<typename>
     requires(isNothrowCopyConstructible<T>)
-    constexpr explicit Expected(const Type& valueIn) noexcept
+    XS_INLINE constexpr explicit Expected(const Type& valueIn) noexcept
         : value(valueIn)
         , valid(true)
     {}
@@ -53,7 +53,7 @@ public:
      */
     template<typename>
     requires(isNothrowMoveConstructible<T>)
-    constexpr explicit Expected(Type&& valueIn) noexcept
+    XS_INLINE constexpr explicit Expected(Type&& valueIn) noexcept
         : value(forward<Type>(valueIn))
         , valid(true)
     {}
@@ -64,7 +64,7 @@ public:
      */
     template<typename... Args>
     requires(isNothrowConstructible<T, Args...>)
-    constexpr explicit Expected(Args&&... valueIn) noexcept
+    XS_INLINE constexpr explicit Expected(Args&&... valueIn) noexcept
         : value(forward<Args>(valueIn)...)
         , valid(true)
     {}
@@ -82,7 +82,7 @@ public:
     constexpr Expected(Expected&& other) noexcept = default;
 
     /** Destructor. */
-    constexpr ~Expected() noexcept
+    XS_INLINE constexpr ~Expected() noexcept
     {
         if (valid) {
             value.~T();
@@ -96,7 +96,7 @@ public:
      */
     template<typename>
     requires(isNothrowCopyAssignable<T>)
-    constexpr Expected& operator=(const Expected& other) noexcept
+    XS_INLINE constexpr Expected& operator=(const Expected& other) noexcept
     {
         if (valid) {
             if (other.valid) {
@@ -121,7 +121,7 @@ public:
      */
     template<typename>
     requires(isNothrowMoveAssignable<T>)
-    constexpr Expected& operator=(Expected&& other) noexcept
+    XS_INLINE constexpr Expected& operator=(Expected&& other) noexcept
     {
         if (valid) {
             if (other.valid) {
@@ -148,7 +148,7 @@ public:
      */
     template<typename>
     requires(isNothrowCopyAssignable<T>)
-    constexpr Expected& operator=(const Type& other) noexcept
+    XS_INLINE constexpr Expected& operator=(const Type& other) noexcept
     {
         if (valid) {
             this->value = other.value;
@@ -166,7 +166,7 @@ public:
      */
     template<typename>
     requires(isNothrowMoveAssignable<T>)
-    constexpr Expected& operator=(Type&& other) noexcept
+    XS_INLINE constexpr Expected& operator=(Type&& other) noexcept
     {
         if (valid) {
             swap(this->value, other.value);
@@ -183,7 +183,7 @@ public:
      */
     template<typename>
     requires(isNothrowCopyAssignable<T> && isNothrowMoveConstructible<T>)
-    constexpr void swap(Expected& other) noexcept
+    XS_INLINE constexpr void swap(Expected& other) noexcept
     {
         *this = forward<Expected>(other);
     }
@@ -192,7 +192,7 @@ public:
      * Create a Expected set to an invalid value.
      * @return The request Expected.
      */
-    static constexpr Expected Fail() noexcept
+    XS_INLINE static constexpr Expected Fail() noexcept
     {
         return Expected();
     }
@@ -201,7 +201,7 @@ public:
      * Query if this object has valid internal value.
      * @returns True if valid, false if not.
      */
-    [[nodiscard]] constexpr bool isValid() const noexcept
+    [[nodiscard]] XS_INLINE constexpr bool isValid() const noexcept
     {
         return valid;
     }
@@ -211,7 +211,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr const Type& getValue() const&
+    [[nodiscard]] XS_INLINE constexpr const Type& getValue() const&
     {
         XS_ASSERT(valid);
         return value;
@@ -222,7 +222,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr Type& getValue() &
+    [[nodiscard]] XS_INLINE constexpr Type& getValue() &
     {
         XS_ASSERT(valid);
         return value;
@@ -233,7 +233,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr Type&& getValue() &&
+    [[nodiscard]] XS_INLINE constexpr Type&& getValue() &&
     {
         XS_ASSERT(valid);
         return move(value);
@@ -243,7 +243,7 @@ public:
      * Query if this object has valid internal value.
      * @returns True if valid, false if not.
      */
-    [[nodiscard]] explicit constexpr operator bool() const noexcept
+    [[nodiscard]] XS_INLINE explicit constexpr operator bool() const noexcept
     {
         return valid;
     }
@@ -253,7 +253,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr const Type& operator*() const&
+    [[nodiscard]] XS_INLINE constexpr const Type& operator*() const&
     {
         return getValue();
     }
@@ -263,7 +263,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr Type& operator*() &
+    [[nodiscard]] XS_INLINE constexpr Type& operator*() &
     {
         return getValue();
     }
@@ -273,7 +273,7 @@ public:
      * @note Care should be taken to only call this when the internal value is valid. Behaviour is undefined otherwise.
      * @returns The internal value.
      */
-    [[nodiscard]] constexpr Type&& operator*() &&
+    [[nodiscard]] XS_INLINE constexpr Type&& operator*() &&
     {
         return move(getValue());
     }
