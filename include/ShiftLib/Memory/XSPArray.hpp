@@ -788,10 +788,10 @@ public:
      * At function to set or get the first element.
      * @return Modifiable reference to desired element.
      */
-    XS_INLINE Type& atStart() noexcept
+    XS_INLINE Type& atBegin() noexcept
     {
         // May have issue where start item is on available item list
-        auto ret(offsetIteratorAt(&this->IArray::begin()));
+        auto ret(offsetIteratorAt(&this->IArray::atBegin()));
         while (&availableArray.findFirst(ret) != nullptr) {
             ++ret;
         }
