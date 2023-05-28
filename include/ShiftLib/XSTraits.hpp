@@ -952,6 +952,18 @@ struct IsComparableHelper<T, T2, Void<decltype(declval<T>() == declval<T2>())>>
 {
     static constexpr bool value = true;
 };
+
+template<typename T, typename T2, typename = void>
+struct IsComparableOrderedHelper
+{
+    static constexpr bool value = false;
+};
+
+template<typename T, typename T2>
+struct IsComparableOrderedHelper<T, T2, Void<decltype(declval<T>() < declval<T2>())>>
+{
+    static constexpr bool value = true;
+};
 } // namespace NoExport
 
 /**
@@ -960,6 +972,13 @@ struct IsComparableHelper<T, T2, Void<decltype(declval<T>() == declval<T2>())>>
 template<typename T, typename T2 = T>
 inline constexpr bool isComparable =
     NoExport::IsComparableHelper<addLRef<T>, addLRef<T2>>::value || NoExport::IsComparableHelper<T, T2>::value;
+
+/**
+ * Query if a type is ordered comparable with another using a < function.
+ */
+template<typename T, typename T2 = T>
+inline constexpr bool isComparableOrdered = NoExport::IsComparableOrderedHelper<addLRef<T>, addLRef<T2>>::value ||
+    NoExport::IsComparableOrderedHelper<T, T2>::value;
 
 namespace NoExport {
 template<bool B, class T, class T2>

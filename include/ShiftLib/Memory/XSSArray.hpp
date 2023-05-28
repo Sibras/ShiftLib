@@ -25,6 +25,7 @@ namespace Shift {
  * @tparam Alloc  Type of allocator use to allocate elements of type Type.
  */
 template<typename T, class Alloc = AllocRegionHeap<T>>
+requires(isComparableOrdered<T, T>)
 class SArray : public Array<T, Alloc>
 {
 public:
@@ -182,12 +183,10 @@ public:
      * @note If there is not enough space allocated for the new element
      * the dynamic array will be expanded to make room.
      * @param element The element to add to the dynamic array.
-     * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
-     *         allocated).
      */
     XS_INLINE void add(const Type& element) noexcept
     {
-        const auto location = binarySearch(element);
+        const auto location = findClosest(element);
         // Avoid unnecessary copy attempts when actually inserting at end of array
         if (location < end()) {
             this->IArray::insert(location, element);
@@ -202,15 +201,13 @@ public:
      * for the element. This should only be used if you are sure space has been allocated already.
      * @tparam Args Type of the arguments.
      * @param values The values used to construct the new array element.
-     * @return Boolean representing if element could be added to dynamic array. (will be false if memory could not be
-     *         allocated).
      */
     template<typename... Args>
     requires(isNothrowConstructible<Type, Args...>)
     XS_INLINE void add(Args&&... values) noexcept
     {
         const Type element(values...);
-        const auto location = binarySearch(element);
+        const auto location = findClosest(element);
         // Avoid unnecessary copy attempts when actually inserting at end of array
         if (location < end()) {
             this->IArray::insert(location, element);
@@ -246,13 +243,14 @@ public:
     using IArray::setReservedSize;
     using IArray::swap;
 
-private:
     /**
-     * Search for the position of the first item greater than a specified value.
+     * Search for the position of the closest item greater or equal than a specified value.
      * @param element The element to search with.
-     * @return Memory pointer to the item larger that search item (or end ot array if none found).
+     * @return Iterator to the item larger than search item (or end of array if none found).
      */
-    XS_INLINE TypeIterator binarySearch(const Type& element) noexcept
+    template<typename T2>
+    requires(isComparableOrdered<Type, T2>)
+    XS_INLINE TypeIterator findClosest(const T2& element) noexcept
     {
         // Search through looking for last element >= value
         TypeIterator first = begin();
