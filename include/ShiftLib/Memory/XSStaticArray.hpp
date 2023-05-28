@@ -16,7 +16,7 @@
  */
 
 #include "Memory/XSAllocatorStack.hpp"
-#include "Memory/XSArray.hpp"
+#include "Memory/XSSArray.hpp"
 
 namespace Shift {
 /**
@@ -26,4 +26,12 @@ namespace Shift {
  */
 template<class T, uint0 NumElements>
 using StaticArray = Array<T, AllocRegionStack<T, NumElements>>;
+
+/**
+ * Static Sorted Array template class used to store sorted sections of memory with a fixed size.
+ * @tparam T           Type of element stored within array.
+ * @tparam NumElements Number of elements of type 'T' to allocate memory for.
+ */
+template<class T, uint0 NumElements>
+using StaticSArray = SArray<T, AllocRegionStack<T, NumElements>>;
 } // namespace Shift
