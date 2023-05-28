@@ -213,6 +213,26 @@ public:
     }
 
     /**
+     * Compare to iterators are greater than or equal.
+     * @param iterator2 The second iterator to compare to.
+     * @return True/false.
+     */
+    XS_INLINE bool operator>=(const Iterator& iterator2) const noexcept
+    {
+        return (pointer >= iterator2.pointer);
+    }
+
+    /**
+     * Compare to iterators are greater than.
+     * @param iterator2 The second iterator to compare to.
+     * @return True/false.
+     */
+    XS_INLINE bool operator>(const Iterator& iterator2) const noexcept
+    {
+        return (pointer > iterator2.pointer);
+    }
+
+    /**
      * Compare to iterators are not equal.
      * @param iterator2 The second iterator to compare to.
      * @return True/false.
@@ -231,7 +251,7 @@ template<typename T>
 class ConstIterator
 {
 public:
-    T const* pointer = nullptr;
+    const T* pointer = nullptr;
 
     /** Defaulted constructor. */
     XS_INLINE ConstIterator() noexcept = default;
@@ -240,7 +260,7 @@ public:
      * Constructor.
      * @param pointer The pointer.
      */
-    explicit XS_INLINE ConstIterator(T const* const pointer) noexcept
+    explicit XS_INLINE ConstIterator(const T* const pointer) noexcept
         : pointer(pointer)
     {}
 
@@ -423,6 +443,26 @@ public:
     XS_INLINE bool operator<(const ConstIterator& iterator2) const noexcept
     {
         return (pointer < iterator2.pointer);
+    }
+
+    /**
+     * Compare to iterators are greater than or equal.
+     * @param iterator2 The second iterator to compare to.
+     * @return True/false.
+     */
+    XS_INLINE bool operator>=(const ConstIterator& iterator2) const noexcept
+    {
+        return (pointer >= iterator2.pointer);
+    }
+
+    /**
+     * Compare to iterators are greater than.
+     * @param iterator2 The second iterator to compare to.
+     * @return True/false.
+     */
+    XS_INLINE bool operator>(const ConstIterator& iterator2) const noexcept
+    {
+        return (pointer > iterator2.pointer);
     }
 
     /**
