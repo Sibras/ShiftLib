@@ -131,8 +131,7 @@ public:
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
-        const uint0 arraySize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
+        const uint0 arraySize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         // Perform Copy operation
         memConstructRange<Type>(handle.pointer, startIndex, arraySize);
         // Update next element
@@ -157,8 +156,7 @@ public:
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
-        const uint0 arraySize =
-            static_cast<uint0>(reinterpret_cast<const uint8*>(endIndex) - reinterpret_cast<const uint8*>(startIndex));
+        const uint0 arraySize = reinterpret_cast<const uint8*>(endIndex) - reinterpret_cast<const uint8*>(startIndex);
         // Perform Copy operation
         memConstructRange<Type, T2>(handle.pointer, startIndex, arraySize);
         // Update next element
@@ -177,8 +175,8 @@ public:
         XS_ASSERT(start.pointer < array.nextElement && start.pointer >= array.handle.pointer);
         XS_ASSERT(end.pointer <= array.nextElement && end.pointer > array.handle.pointer);
 
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         // Perform Copy operation
         memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
         // Update next element
@@ -202,8 +200,7 @@ public:
         XS_ASSERT(start.pointer < array.nextElement && start.pointer >= array.handle.pointer);
         XS_ASSERT(end.pointer <= array.nextElement && end.pointer > array.handle.pointer);
 
-        const uint0 arraySize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
+        const uint0 arraySize = reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer);
         // Perform Copy operation
         memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
         // Update next element
@@ -226,8 +223,8 @@ public:
     XS_INLINE Array& operator=(const Array& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         // Perform Copy operation and construct additional if copying more than already exists
         memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
@@ -254,8 +251,8 @@ public:
     XS_INLINE Array& operator=(const Array<T2, Alloc2>& array) noexcept
     {
         XS_ASSERT(handle.pointer != array.handle.pointer);
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         // Perform Copy operation and construct additional if copying more than already exists
         memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
@@ -345,8 +342,8 @@ public:
     requires(isNothrowConstructible<Type, T2> || isSame<Type, T2>)
     XS_INLINE void add(const Array<T2, Alloc2>& array) noexcept
     {
-        const uint0 array2Size = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 array2Size =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 array2Size <=
             getReservedSize());
@@ -449,8 +446,8 @@ public:
         Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up to make room for insertion
-        const uint0 inRange = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 inRange =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
@@ -468,12 +465,11 @@ public:
      * extra memory copies based on size of array.
      * @param iterator The iterator of the location the element should be inserted at.
      * @param element  The element to insert in the array.
-     * @return Boolean representing if element could be inserted into array. (will be false if memory could not be
-     *         allocated).
      */
     XS_INLINE void insert(const TypeIterator& iterator, const Type& element) noexcept
     {
-        XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) < getReservedSize());
+        XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) <
+            getReservedSize());
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up 1 to make room for insertion
@@ -524,8 +520,8 @@ public:
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up to make room for insertion
-        const uint0 inRange = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 inRange =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
@@ -607,8 +603,8 @@ public:
             reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + iterator.pointerOffset);
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up to make room for insertion
-        const uint0 inRange = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
+        const uint0 inRange =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) + inRange <=
             getReservedSize());
         memMoveBackwards<Type, T2>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange), index,
@@ -683,8 +679,7 @@ public:
         memDestructRange<Type>(
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        const uint0 remaining =
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
+        const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex);
         memMove<Type>(startIndex, endIndex, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
@@ -723,8 +718,7 @@ public:
         memDestructRange<Type>(start.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        const uint0 remaining =
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer));
+        const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer);
         memMove<Type>(start.pointer, end.pointer, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(start.pointer) + remaining);
     }
@@ -771,8 +765,7 @@ public:
         memDestructRange<Type>(
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        const uint0 remaining =
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
+        const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex);
         memMove<Type>(startIndex, endIndex, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
@@ -811,8 +804,7 @@ public:
         memDestructRange<Type>(startElement,
             static_cast<uint0>(reinterpret_cast<uint8*>(endElement) - reinterpret_cast<uint8*>(startElement)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        const uint0 remaining =
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endElement));
+        const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endElement);
         memMove<Type>(startElement, endElement, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startElement) + remaining);
     }
@@ -847,15 +839,13 @@ public:
         Type* XS_RESTRICT endIndex = &handle.pointer[end];
         XS_ASSERT(startIndex < nextElement && startIndex >= handle.pointer);
         XS_ASSERT(endIndex <= nextElement && endIndex > handle.pointer);
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
-        const uint0 replacedSize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
+        const uint0 arraySize =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
+        const uint0 replacedSize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         if (const int0 additionalSize = static_cast<int0>(arraySize) - static_cast<int0>(replacedSize);
             additionalSize != 0) {
             Type* XS_RESTRICT dst = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + arraySize);
-            const uint0 sizeDisplaced =
-                static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex));
+            const uint0 sizeDisplaced = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex);
             if (additionalSize > 0) {
                 XS_ASSERT(static_cast<uint0>(
                               reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
@@ -896,15 +886,13 @@ public:
     {
         XS_ASSERT(start.pointer < nextElement && start.pointer >= handle.pointer);
         XS_ASSERT(end.pointer <= nextElement && end.pointer > handle.pointer);
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer));
-        const uint0 replacedSize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
+        const uint0 replacedSize = reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer);
         if (const int0 additionalSize = static_cast<int0>(arraySize) - static_cast<int0>(replacedSize);
             additionalSize != 0) {
             Type* XS_RESTRICT dst = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(start.pointer) + arraySize);
-            const uint0 sizeDisplaced =
-                static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer));
+            const uint0 sizeDisplaced = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer);
             if (additionalSize > 0) {
                 XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) -
                               reinterpret_cast<uint8*>(handle.pointer) + additionalSize) <= getReservedSize());
@@ -947,8 +935,7 @@ public:
         XS_ASSERT(startIndex < array.nextElement && startIndex >= array.handle.pointer);
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
 
-        const uint0 arraySize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
+        const uint0 arraySize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
         memCopyConstructRange<Type, T2>(handle.pointer, startIndex, arraySize,
@@ -984,8 +971,7 @@ public:
         XS_ASSERT(endIndex <= array.nextElement && endIndex > array.handle.pointer);
         XS_ASSERT((index <= nextElement || nextElement == handle.pointer) && index >= handle.pointer);
 
-        const uint0 arraySize =
-            static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex));
+        const uint0 arraySize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(index) - reinterpret_cast<uint8*>(handle.pointer)) +
                 arraySize <=
             getReservedSize());
@@ -1014,8 +1000,8 @@ public:
         XS_ASSERT(start.pointer < array.nextElement && start.pointer >= array.handle.pointer);
         XS_ASSERT(end.pointer <= array.nextElement && end.pointer > array.handle.pointer);
 
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
         memCopyConstructRange<Type, T2>(handle.pointer, start.pointer, arraySize,
@@ -1051,8 +1037,8 @@ public:
         XS_ASSERT(
             (iterator.pointer <= nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
 
-        const uint0 arraySize = static_cast<uint0>(
-            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer));
+        const uint0 arraySize =
+            reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         XS_ASSERT(
             static_cast<uint0>(reinterpret_cast<uint8*>(iterator.pointer) - reinterpret_cast<uint8*>(handle.pointer)) +
                 arraySize <=

@@ -35,7 +35,7 @@ public:
 
     D1024() noexcept = default;
 
-    D1024(const size_t in) noexcept
+    explicit D1024(const size_t in) noexcept
     {
         data[0] = in;
     }
@@ -45,7 +45,7 @@ public:
         return data[0] == in.data[0];
     }
 
-    bool operator<(const int in)
+    bool operator<(const size_t in) const noexcept
     {
         return data[0] < in;
     }
@@ -110,7 +110,7 @@ TYPED_TEST_NS2(PArray, PArrayTest, AddElement)
     ASSERT_TRUE(test1.isValid());
 
     // Add some data
-    for (TestType i = 0; i < 8; ++i) {
+    for (TestType i = TestType(0); i < 8; ++i) {
         test1.add(i);
     }
 
