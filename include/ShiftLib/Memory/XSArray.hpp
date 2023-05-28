@@ -776,7 +776,7 @@ public:
      * adds extra memory copies based on size of array.
      * @param [in] element Pointer to the location the element should be removed from.
      */
-    XS_INLINE void remove(const Type* XS_RESTRICT element) noexcept
+    XS_INLINE void remove(Type* const XS_RESTRICT element) noexcept
     {
         XS_ASSERT(element < nextElement && element >= handle.pointer);
         // Destruct the removed data
@@ -796,7 +796,7 @@ public:
      * @param [in] startElement Pointer to the location the elements should be removed from.
      * @param [in] endElement   Pointer to the location the elements should be removed till (non inclusive).
      */
-    XS_INLINE void remove(const Type* XS_RESTRICT startElement, const Type* XS_RESTRICT endElement) noexcept
+    XS_INLINE void remove(Type* const XS_RESTRICT startElement, Type* const XS_RESTRICT endElement) noexcept
     {
         XS_ASSERT(startElement < nextElement && startElement >= handle.pointer);
         XS_ASSERT(endElement <= nextElement && endElement > handle.pointer);
@@ -1272,7 +1272,7 @@ public:
      * @param [in] element Pointer to element within the array.
      * @return An offset iterator pointing to desired element of the array.
      */
-    XS_INLINE TypeIteratorOffset offsetIteratorAt(const Type* const XS_RESTRICT element) noexcept
+    XS_INLINE TypeIteratorOffset offsetIteratorAt(Type* const XS_RESTRICT element) noexcept
     {
         XS_ASSERT(handle.pointer <= element);
         return TypeIteratorOffset(handle.pointer, element);
