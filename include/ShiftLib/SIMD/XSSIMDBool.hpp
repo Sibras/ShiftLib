@@ -308,6 +308,25 @@ public:
     }
 
     /**
+     * Gets the index of the last internal boolean set to true.
+     * @returns The zero-based index of the found last true, undefined if no valid element is found.
+     */
+    XS_INLINE uint32 indexOfLastValid() noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (IsSIMD) {
+            // Need to avoid top bits affecting result. Done here in hopes that function
+            // inlining will prevent duplication (Note loss of const) noexcept
+            this->values &= 0x3_ui8;
+            return bsr(static_cast<uint32>(this->values));
+        } else
+#endif
+        {
+            return ((this->values1) ? 1_ui32 : 0_ui32);
+        }
+    }
+
+    /**
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
@@ -615,6 +634,25 @@ public:
 #endif
         {
             return (this->values0) ? 0_ui32 : ((this->values1) ? 1_ui32 : 2_ui32);
+        }
+    }
+
+    /**
+     * Gets the index of the last internal boolean set to true.
+     * @returns The zero-based index of the found last true, undefined if no valid element is found.
+     */
+    XS_INLINE uint32 indexOfLastValid() noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (IsSIMD) {
+            // Need to avoid top bits affecting result. Done here in hopes that function
+            // inlining will prevent duplication (Note loss of const) noexcept
+            this->values &= 0x7_ui8;
+            return bsr(static_cast<uint32>(this->values));
+        } else
+#endif
+        {
+            return (this->values2) ? 2_ui32 : ((this->values1) ? 1_ui32 : 0_ui32);
         }
     }
 
@@ -1278,6 +1316,22 @@ public:
 #endif
         {
             return (this->values0) ? 0_ui32 : ((this->values1) ? 1_ui32 : ((this->values2) ? 2_ui32 : 3_ui32));
+        }
+    }
+
+    /**
+     * Gets the index of the last internal boolean set to true.
+     * @returns The zero-based index of the found last true, undefined if no valid element is found.
+     */
+    XS_INLINE uint32 indexOfLastValid() const noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (IsSIMD) {
+            return bsr(static_cast<uint32>(this->values));
+        } else
+#endif
+        {
+            return (this->values3) ? 3_ui32 : ((this->values2) ? 2_ui32 : ((this->values1) ? 1_ui32 : 0_ui32));
         }
     }
 

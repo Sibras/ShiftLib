@@ -145,6 +145,10 @@ TYPED_TEST_NS(Bool, B2, Bool2)
     ASSERT_EQ(test2.indexOfFirstValid(), 1_ui32);
     ASSERT_EQ(test3.indexOfFirstValid(), 0_ui32);
 
+    ASSERT_EQ(test1.indexOfLastValid(), 0_ui32);
+    ASSERT_EQ(test2.indexOfLastValid(), 1_ui32);
+    ASSERT_EQ(test3.indexOfLastValid(), 1_ui32);
+
     ASSERT_EQ(test1.getAsInteger(), 0x1_ui8);
     ASSERT_EQ(test2.getAsInteger(), 0x2_ui8);
     ASSERT_EQ(test3.getAsInteger(), 0x3_ui8);
@@ -217,6 +221,10 @@ TYPED_TEST_NS(Bool, B3, Bool3)
     ASSERT_EQ(test1.indexOfFirstValid(), 0_ui32);
     ASSERT_EQ(test2.indexOfFirstValid(), 1_ui32);
     ASSERT_EQ(test3.indexOfFirstValid(), 0_ui32);
+
+    ASSERT_EQ(test1.indexOfLastValid(), 0_ui32);
+    ASSERT_EQ(test2.indexOfLastValid(), 2_ui32);
+    ASSERT_EQ(test3.indexOfLastValid(), 2_ui32);
 
     ASSERT_EQ(test1.getAsInteger(), 0x1_ui8);
     ASSERT_EQ(test2.getAsInteger(), 0x6_ui8);
@@ -300,6 +308,10 @@ TYPED_TEST_NS(Bool, B4, Bool4)
     ASSERT_EQ(test1.indexOfFirstValid(), 0_ui32);
     ASSERT_EQ(test2.indexOfFirstValid(), 1_ui32);
     ASSERT_EQ(test3.indexOfFirstValid(), 0_ui32);
+
+    ASSERT_EQ(test1.indexOfLastValid(), 3_ui32);
+    ASSERT_EQ(test2.indexOfLastValid(), 2_ui32);
+    ASSERT_EQ(test3.indexOfLastValid(), 3_ui32);
 
     ASSERT_EQ(test1.getAsInteger(), 0x9_ui8);
     ASSERT_EQ(test2.getAsInteger(), 0x6_ui8);
