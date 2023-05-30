@@ -98,6 +98,53 @@ public:
     constexpr Triplet& operator=(Triplet&& other) noexcept = default;
 };
 
+template<typename T1, typename T2 = T1, typename T3 = T1, typename T4 = T1>
+class Quartet
+{
+public:
+    using Type1 = T1;
+    using Type2 = T2;
+    using Type3 = T3;
+    using Type4 = T4;
+
+    Type1 first;
+    Type2 second;
+    Type3 third;
+    Type4 fourth;
+
+    /** Default constructor. */
+    constexpr Quartet() noexcept = default;
+
+    /**
+     * Constructor from member variables.
+     * @param firstIn  The value for the first element.
+     * @param secondIn The value for the second element.
+     * @param thirdIn  The value for the third element.
+     * @param fourthIn The value for the fourth element.
+     */
+    constexpr Quartet(const Type1& firstIn, const Type2& secondIn, const Type3& thirdIn, const Type4& fourthIn) noexcept
+        : first(firstIn)
+        , second(secondIn)
+        , third(thirdIn)
+        , fourth(fourthIn)
+    {}
+
+    constexpr Quartet(Type1&& firstIn, Type2&& secondIn, Type3&& thirdIn, Type4&& fourthIn) noexcept
+        : first(forward<Type1>(firstIn))
+        , second(forward<Type2>(secondIn))
+        , third(forward<Type3>(thirdIn))
+        , fourth(forward<Type4>(fourthIn))
+    {}
+
+    constexpr Quartet(const Quartet& other) noexcept = default;
+
+    constexpr Quartet(Quartet&& other) noexcept = default;
+
+    constexpr Quartet& operator=(const Quartet& other) noexcept = default;
+
+    constexpr Quartet& operator=(Quartet&& other) noexcept = default;
+};
+
 /**
  * Swap 2 objects.
  * @tparam T Generic type parameter.
