@@ -37,6 +37,8 @@ class AllocRegionStackHandle
 public:
     using Allocator = AllocRegionStack<T, Number>;
     static constexpr uint0 isResizable = false;
+    /**< Max possible allocated size */
+    static constexpr uint0 maxSize = Number * sizeof(T);
 
     T pointer[Number]; /**< Pointer to allocated memory */ // NOLINT(modernize-avoid-c-arrays)
 
@@ -106,7 +108,7 @@ public:
      */
     XS_INLINE bool reallocate(const uint0 size) noexcept
     {
-        return (size <= (Number * sizeof(T)));
+        return (size <= maxSize);
     }
 
     /**
@@ -122,7 +124,7 @@ public:
      */
     XS_INLINE bool reallocate(const uint0 size, [[maybe_unused]] const uint0 copySize) noexcept
     {
-        return (size <= (Number * sizeof(T)));
+        return (size <= maxSize);
     }
 
     /**
@@ -142,7 +144,7 @@ public:
     XS_INLINE bool reallocate(
         [[maybe_unused]] const uint0 size, [[maybe_unused]] const uint0 copySize, const uint0 minSize) noexcept
     {
-        return (minSize <= (Number * sizeof(T)));
+        return (minSize <= maxSize);
     }
 
     /**
@@ -164,7 +166,7 @@ public:
     XS_INLINE uint0 getAllocatedSize() const noexcept
     {
         // Allocated elements is always fixed so the size is constant
-        return Number * sizeof(T);
+        return maxSize;
     }
 
     /**

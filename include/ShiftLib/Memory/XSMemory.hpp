@@ -18,6 +18,7 @@
 #include "SIMD/XSSIMDTraits.hpp"
 #include "SIMD/XSSIMDx86.hpp"
 #include "XSBit.hpp"
+#include "XSLimits.hpp"
 #include "XSMath.hpp"
 
 namespace Shift {
@@ -162,14 +163,13 @@ template<typename T, uint0 Align>
  * allocator used to create the memory to copy it. This allows for easy support of copying data between different
  * devices and memory ranges. It is a requirement that all memory locations used for the copy be aligned to at least
  * the default alignment of the type T.
- * @tparam T           Type of objects being copied.
- * @tparam AllocSource Type of the allocator used to create the source memory.
- * @tparam AllocDest   Type of the allocator used to create the destination memory.
+ * @tparam T       Type of objects being copied.
+ * @tparam MaxSize (Optional) Maximum possible size of memory section (used for small memory optimisations).
  * @param  dest   The destination address to start moving to.
  * @param  source The source address to start moving from.
  * @param  size   The number of bytes to copy.
  */
-template<typename T /*, typename AllocSource, typename AllocDest*/>
+template<typename T, uint0 MaxSize = Limits<uint0>::Max()>
 XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 size)
 {
     XS_ASSERT((reinterpret_cast<uint0>(dest) % alignof(T)) == 0);
@@ -181,7 +181,7 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
         auto dest2 = reinterpret_cast<uint8*>(dest);
         auto source2 = reinterpret_cast<const uint8*>(source);
 
-        if constexpr (hasISAFeature<ISAFeature::SSE2>) {
+        if constexpr (hasISAFeature<ISAFeature::SSE2> && (MaxSize > 4096)) {
             if (constexpr auto repMovSize = 8000 * systemAlignment; size > repMovSize) {
                 // Once the movement size reaches a certain limit then 'rep movs' becomes faster
                 if constexpr (currentArch == Architecture::Bit64 && alignof(T) % 8 == 0) {
@@ -792,14 +792,13 @@ XS_INLINE void memMove(T* XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 s
  * greater than the source. This uses the type of allocator used to create the memory to copy it. This allows for easy
  * support of copying data between different devices and memory ranges. It is a requirement that all memory locations
  * used for the copy be aligned to at least the default alignment of the type T.
- * @tparam T           Type of objects being copied.
- * @tparam AllocSource Type of the allocator used to create the source memory.
- * @tparam AllocDest   Type of the allocator used to create the destination memory.
+ * @tparam T       Type of objects being copied.
+ * @tparam MaxSize (Optional) Maximum possible size of memory section (used for small memory optimisations).
  * @param  dest   The destination address to start moving to.
  * @param  source The source address to start moving from.
  * @param  size   The number of bytes to copy.
  */
-template<typename T /*, typename AllocSource, typename AllocDest*/>
+template<typename T, uint0 MaxSize = Limits<uint0>::Max()>
 XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT source, uint0 size)
 {
     XS_ASSERT((reinterpret_cast<uint0>(dest) % alignof(T)) == 0);
@@ -813,7 +812,7 @@ XS_INLINE void memMoveBackwards(T* const XS_RESTRICT dest, const T* XS_RESTRICT 
         dest2 += size;
         source2 += size;
 
-        if constexpr (hasISAFeature<ISAFeature::SSE2>) {
+        if constexpr (hasISAFeature<ISAFeature::SSE2> && (MaxSize > 4096)) {
             if constexpr (alignof(T) % systemAlignment == 0) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     if constexpr (sizeof(T) >= 512) {
@@ -1474,13 +1473,14 @@ XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const int0 size) noexce
 /**
  * Construct a range of memory addresses to match a second input range of values.
  * @note This can be used to ensure that allocated memory is correctly filled with correct data.
- * @tparam T  Generic type parameter.
- * @tparam T2 Type of destination object.
+ * @tparam T       Generic type parameter.
+ * @tparam T2      Type of destination object.
+ * @tparam MaxSize (Optional) Maximum possible size of memory section (used for small memory optimisations).
  * @param  pointer The destination address to start constructing at.
  * @param  values  The values to construct at the addresses.
  * @param  size    The number of bytes to construct over.
  */
-template<typename T, typename T2>
+template<typename T, typename T2, uint0 MaxSize = Limits<uint0>::Max()>
 XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const T2* const XS_RESTRICT values, const uint0 size) noexcept
 {
     static_assert(isSame<T, T2> || isConstructible<T, T2>, "Memory of type 'T' can not be constructed from 'T2'");
@@ -1489,7 +1489,7 @@ XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const T2* const XS_REST
     XS_ASSERT(size % sizeof(T) == 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove<T>(pointer, reinterpret_cast<const T*>(values), size);
+        memMove<T, MaxSize>(pointer, reinterpret_cast<const T*>(values), size);
     } else {
         /*Must loop over all elements in the range and construct as required */
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1505,14 +1505,15 @@ XS_INLINE void memConstructRange(T* XS_RESTRICT pointer, const T2* const XS_REST
  * Copy data from one location to another constructing if required.
  * @note This will not just copy data but also insure that appropriate
  * assignment operators are called on any non constructed areas when requested.
- * @tparam T  Generic type parameter.
- * @tparam T2 Type of destination object.
+ * @tparam T       Generic type parameter.
+ * @tparam T2      Type of destination object.
+ * @tparam MaxSize (Optional) Maximum possible size of memory section (used for small memory optimisations).
  * @param  pointer         The destination address to start copying to.
  * @param  values          The source address to start copying from.
  * @param  size            The number of bytes to copy.
  * @param  constructedSize The number of bytes at destination that have already been constructed.
  */
-template<typename T, typename T2>
+template<typename T, typename T2, uint0 MaxSize = Limits<uint0>::Max()>
 XS_INLINE void memCopyConstructRange(
     T* XS_RESTRICT pointer, const T2* XS_RESTRICT values, const uint0 size, const uint0 constructedSize) noexcept
 {
@@ -1524,7 +1525,7 @@ XS_INLINE void memCopyConstructRange(
     XS_ASSERT(constructedSize % sizeof(T) == 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove<T>(pointer, reinterpret_cast<const T*>(values), size);
+        memMove<T, MaxSize>(pointer, reinterpret_cast<const T*>(values), size);
     } else {
         /*Copy data over the range that has been constructed already */
         constexpr auto logSize = NoExport::log2(sizeof(T));
@@ -1570,13 +1571,14 @@ XS_INLINE void memDestructRange(T* XS_RESTRICT pointer, const uint0 size) noexce
  * Copy data from one location to another.
  * @note This will not just copy data but also insure that appropriate
  * assignment operators are called when requested.
- * @tparam T  Generic type parameter.
- * @tparam T2 Type of destination object.
+ * @tparam T       Generic type parameter.
+ * @tparam T2      Type of destination object.
+ * @tparam MaxSize (Optional) Maximum possible size of memory section (used for small memory optimisations).
  * @param  dest   The destination address to start copying to.
  * @param  source The source address to start copying from.
  * @param  size   The number of bytes to copy.
  */
-template<typename T, typename T2>
+template<typename T, typename T2, uint0 MaxSize = Limits<uint0>::Max()>
 XS_INLINE void memCopy(T* XS_RESTRICT dest, const T2* XS_RESTRICT source, const uint0 size) noexcept
 {
     static_assert(isSame<T, T2> || isAssignable<T, T2>, "Memory of type 'T' can not be assigned a type 'T2'");
@@ -1584,7 +1586,7 @@ XS_INLINE void memCopy(T* XS_RESTRICT dest, const T2* XS_RESTRICT source, const 
     XS_ASSERT(size % sizeof(T) == 0);
     if constexpr (isTriviallyCopyable<T> && isSame<T, T2>) {
         // TODO: c++20 is_layout_compatible with isTriviallyCopyable<T> && isTriviallyCopyable<T2>
-        memMove<T>(dest, reinterpret_cast<const T*>(source), size);
+        memMove<T, MaxSize>(dest, reinterpret_cast<const T*>(source), size);
     } else {
         // Cant use memcopy as complex types require an overloaded equals operator
         constexpr auto logSize = NoExport::log2(sizeof(T));

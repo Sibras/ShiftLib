@@ -68,7 +68,7 @@ public:
               (reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer))))
     {
         // Perform Copy operation
-        memConstructRange<Type>(handle.pointer, array.handle.pointer,
+        memConstructRange<Type, Type, Handle::maxSize>(handle.pointer, array.handle.pointer,
             static_cast<uint0>(
                 reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer)));
     }
@@ -88,7 +88,7 @@ public:
     {
         // TODO: Handle different allocator memory types
         // Perform Copy operation
-        memConstructRange<Type, T2>(handle.pointer, array.handle.pointer,
+        memConstructRange<Type, T2, Handle::maxSize>(handle.pointer, array.handle.pointer,
             static_cast<uint0>(
                 reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<const uint8*>(array.handle.pointer)));
     }
@@ -114,7 +114,7 @@ public:
         , nextElement(handle.pointer + number)
     {
         // Perform Copy operation
-        memConstructRange<Type>(handle.pointer, elements, number * sizeof(Type));
+        memConstructRange<Type, Type, Handle::maxSize>(handle.pointer, elements, number * sizeof(Type));
     }
 
     /**
@@ -133,7 +133,7 @@ public:
 
         const uint0 arraySize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         // Perform Copy operation
-        memConstructRange<Type>(handle.pointer, startIndex, arraySize);
+        memConstructRange<Type, Type, Handle::maxSize>(handle.pointer, startIndex, arraySize);
         // Update next element
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
@@ -158,7 +158,7 @@ public:
 
         const uint0 arraySize = reinterpret_cast<const uint8*>(endIndex) - reinterpret_cast<const uint8*>(startIndex);
         // Perform Copy operation
-        memConstructRange<Type, T2>(handle.pointer, startIndex, arraySize);
+        memConstructRange<Type, T2, Handle::maxSize>(handle.pointer, startIndex, arraySize);
         // Update next element
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
@@ -178,7 +178,7 @@ public:
         const uint0 arraySize =
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         // Perform Copy operation
-        memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
+        memConstructRange<Type, Type, Handle::maxSize>(handle.pointer, start.pointer, arraySize);
         // Update next element
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
@@ -202,7 +202,7 @@ public:
 
         const uint0 arraySize = reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer);
         // Perform Copy operation
-        memConstructRange<Type>(handle.pointer, start.pointer, arraySize);
+        memConstructRange<Type, Type, Handle::maxSize>(handle.pointer, start.pointer, arraySize);
         // Update next element
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
     }
@@ -226,7 +226,7 @@ public:
         const uint0 arraySize =
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         // Perform Copy operation and construct additional if copying more than already exists
-        memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
+        memCopyConstructRange<Type, Type, Handle::maxSize>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Deallocate any existing data above new end
         Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
@@ -254,7 +254,7 @@ public:
         const uint0 arraySize =
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         // Perform Copy operation and construct additional if copying more than already exists
-        memCopyConstructRange<Type, Type>(handle.pointer, array.handle.pointer, arraySize,
+        memCopyConstructRange<Type, Type, Handle::maxSize>(handle.pointer, array.handle.pointer, arraySize,
             reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer));
         // Deallocate any existing data above new end
         Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
@@ -347,7 +347,7 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 array2Size <=
             getReservedSize());
-        memConstructRange<Type, T2>(nextElement, array.handle.pointer, array2Size);
+        memConstructRange<Type, T2, Handle::maxSize>(nextElement, array.handle.pointer, array2Size);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + array2Size);
     }
 
@@ -378,7 +378,7 @@ public:
         const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory
-        memConstructRange<Type>(nextElement, elements, arraySize);
+        memConstructRange<Type, Type, Handle::maxSize>(nextElement, elements, arraySize);
         // Deallocate any existing data above new end
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + arraySize);
     }
@@ -399,7 +399,7 @@ public:
         Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(index + 1, index,
+        memMoveBackwards<Type, Handle::maxSize>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(index, element);
@@ -423,7 +423,7 @@ public:
         Type* XS_RESTRICT index = &handle.pointer[position];
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(index + 1, index,
+        memMoveBackwards<Type, Handle::maxSize>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(index, forward<Args>(values)...);
@@ -451,11 +451,11 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
-        memMoveBackwards<Type>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange), index,
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
+        memMoveBackwards<Type, Handle::maxSize>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange),
+            index, static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<Type, T2>(index, array.handle.pointer, inRange);
+        memConstructRange<Type, T2, Handle::maxSize>(index, array.handle.pointer, inRange);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
@@ -473,7 +473,7 @@ public:
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(iterator.pointer + 1, iterator.pointer,
+        memMoveBackwards<Type, Handle::maxSize>(iterator.pointer + 1, iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(iterator.pointer, element);
@@ -497,7 +497,7 @@ public:
         XS_ASSERT(
             (iterator.pointer < nextElement || nextElement == handle.pointer) && iterator.pointer >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(iterator.pointer + 1, iterator.pointer,
+        memMoveBackwards<Type, Handle::maxSize>(iterator.pointer + 1, iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(iterator.pointer, forward<Args>(values)...);
@@ -525,12 +525,12 @@ public:
         XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)) +
                 inRange <=
             getReservedSize());
-        memMoveBackwards<Type>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + inRange),
-            iterator.pointer,
+        memMoveBackwards<Type, Handle::maxSize>(
+            reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + inRange), iterator.pointer,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(iterator.pointer)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<Type, T2>(iterator.pointer, array.handle.pointer, inRange);
+        memConstructRange<Type, T2, Handle::maxSize>(iterator.pointer, array.handle.pointer, inRange);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
@@ -550,7 +550,7 @@ public:
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) < getReservedSize());
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(index + 1, index,
+        memMoveBackwards<Type, Handle::maxSize>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(index, element);
@@ -577,7 +577,7 @@ public:
             getReservedSize());
         XS_ASSERT((index < nextElement || nextElement == handle.pointer) && index >= handle.pointer);
         // Move any elements up 1 to make room for insertion
-        memMoveBackwards<Type>(index + 1, index,
+        memMoveBackwards<Type, Handle::maxSize>(index + 1, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new element (force construct to prevent destruct on whats now moved data)
         memConstruct<Type>(index, forward<Args>(values)...);
@@ -607,11 +607,11 @@ public:
             reinterpret_cast<uint8*>(array.nextElement) - reinterpret_cast<uint8*>(array.handle.pointer);
         XS_ASSERT(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer) + inRange <=
             getReservedSize());
-        memMoveBackwards<Type, T2>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange), index,
-            static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
+        memMoveBackwards<Type, Handle::maxSize>(reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + inRange),
+            index, static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         // Copy in new elements (force construct to prevent destruct on whats now moved data). Also allows for inserting
         // more than previously existed.
-        memConstructRange<Type, T2>(index, array.handle.pointer, inRange);
+        memConstructRange<Type, T2, Handle::maxSize>(index, array.handle.pointer, inRange);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + inRange);
     }
 
@@ -656,7 +656,7 @@ public:
         memDestruct<Type>(index2);
         Type* XS_RESTRICT index = index2++;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<Type>(index, index2,
+        memMove<Type, Handle::maxSize>(index, index2,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index2)));
         --nextElement;
     }
@@ -680,7 +680,7 @@ public:
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex);
-        memMove<Type>(startIndex, endIndex, remaining);
+        memMove<Type, Handle::maxSize>(startIndex, endIndex, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
 
@@ -698,7 +698,7 @@ public:
         // move any elements down 1
         Type* XS_RESTRICT index = iterator.pointer + 1;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<Type>(iterator.pointer, index,
+        memMove<Type, Handle::maxSize>(iterator.pointer, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         --nextElement;
     }
@@ -719,7 +719,7 @@ public:
             static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(start.pointer)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(end.pointer);
-        memMove<Type>(start.pointer, end.pointer, remaining);
+        memMove<Type, Handle::maxSize>(start.pointer, end.pointer, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(start.pointer) + remaining);
     }
 
@@ -740,7 +740,7 @@ public:
         // move any elements down 1
         Type* XS_RESTRICT index = index2++;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<Type>(index, index2,
+        memMove<Type, Handle::maxSize>(index, index2,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index2)));
         --nextElement;
     }
@@ -766,7 +766,7 @@ public:
             startIndex, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endIndex);
-        memMove<Type>(startIndex, endIndex, remaining);
+        memMove<Type, Handle::maxSize>(startIndex, endIndex, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startIndex) + remaining);
     }
 
@@ -784,7 +784,7 @@ public:
         // move any elements down 1
         Type* XS_RESTRICT index = element + 1;
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
-        memMove<Type>(element, index,
+        memMove<Type, Handle::maxSize>(element, index,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(index)));
         --nextElement;
     }
@@ -805,7 +805,7 @@ public:
             static_cast<uint0>(reinterpret_cast<uint8*>(endElement) - reinterpret_cast<uint8*>(startElement)));
         // Use generic memory move so that we don't unnecessarily call constructors and destructors
         const uint0 remaining = reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(endElement);
-        memMove<Type>(startElement, endElement, remaining);
+        memMove<Type, Handle::maxSize>(startElement, endElement, remaining);
         nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(startElement) + remaining);
     }
 
@@ -852,23 +852,24 @@ public:
                         static_cast<uint0>(additionalSize) <=
                     getReservedSize());
                 // Move up elements in the array
-                memMoveBackwards<Type>(dst, endIndex, sizeDisplaced);
+                memMoveBackwards<Type, Handle::maxSize>(dst, endIndex, sizeDisplaced);
                 // Force Construct of new elements
-                memCopyConstructRange<Type, T2>(startIndex, array.handle.pointer, arraySize, replacedSize);
+                memCopyConstructRange<Type, T2, Handle::maxSize>(
+                    startIndex, array.handle.pointer, arraySize, replacedSize);
             } else {
                 // Destruct any now unused memory
                 memDestructRange<Type>(
                     dst, static_cast<uint0>(reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(dst)));
                 // move any elements down
-                memMove<Type>(dst, endIndex, sizeDisplaced);
+                memMove<Type, Handle::maxSize>(dst, endIndex, sizeDisplaced);
                 // Copy across new elements
-                memCopy<Type, T2>(startIndex, array.handle.pointer, arraySize);
+                memCopy<Type, T2, Handle::maxSize>(startIndex, array.handle.pointer, arraySize);
             }
             // update next element
             nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
         } else {
             // Copy across new memory
-            memCopy<Type, T2>(startIndex, array.handle.pointer, arraySize);
+            memCopy<Type, T2, Handle::maxSize>(startIndex, array.handle.pointer, arraySize);
         }
     }
 
@@ -897,23 +898,24 @@ public:
                 XS_ASSERT(static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) -
                               reinterpret_cast<uint8*>(handle.pointer) + additionalSize) <= getReservedSize());
                 // Move up elements in the array
-                memMoveBackwards<Type>(dst, end.pointer, sizeDisplaced);
+                memMoveBackwards<Type, Handle::maxSize>(dst, end.pointer, sizeDisplaced);
                 // Force Construct of new elements
-                memCopyConstructRange<Type, T2>(start.pointer, array.handle.pointer, arraySize, replacedSize);
+                memCopyConstructRange<Type, T2, Handle::maxSize>(
+                    start.pointer, array.handle.pointer, arraySize, replacedSize);
             } else {
                 // Destruct any now unused memory
                 memDestructRange<Type>(
                     dst, static_cast<uint0>(reinterpret_cast<uint8*>(end.pointer) - reinterpret_cast<uint8*>(dst)));
                 // move any elements down
-                memMove<Type>(dst, end.pointer, sizeDisplaced);
+                memMove<Type, Handle::maxSize>(dst, end.pointer, sizeDisplaced);
                 // Copy across new elements
-                memCopy<Type, T2>(start.pointer, array.handle.pointer, arraySize);
+                memCopy<Type, T2, Handle::maxSize>(start.pointer, array.handle.pointer, arraySize);
             }
             // update next element
             nextElement = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(nextElement) + additionalSize);
         } else {
             // Copy across new memory
-            memCopy<Type, T2>(start.pointer, array.handle.pointer, arraySize);
+            memCopy<Type, T2, Handle::maxSize>(start.pointer, array.handle.pointer, arraySize);
         }
     }
 
@@ -938,7 +940,7 @@ public:
         const uint0 arraySize = reinterpret_cast<uint8*>(endIndex) - reinterpret_cast<uint8*>(startIndex);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type, T2>(handle.pointer, startIndex, arraySize,
+        memCopyConstructRange<Type, T2, Handle::maxSize>(handle.pointer, startIndex, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
         Type* newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
@@ -1004,7 +1006,7 @@ public:
             reinterpret_cast<const uint8* const>(end.pointer) - reinterpret_cast<const uint8* const>(start.pointer);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type, T2>(handle.pointer, start.pointer, arraySize,
+        memCopyConstructRange<Type, T2, Handle::maxSize>(handle.pointer, start.pointer, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
         Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
@@ -1044,7 +1046,7 @@ public:
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type, T2>(iterator.pointer, start.pointer, arraySize,
+        memCopyConstructRange<Type, T2, Handle::maxSize>(iterator.pointer, start.pointer, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
         Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);
@@ -1061,7 +1063,7 @@ public:
         const uint0 arraySize = static_cast<uint0>(number) * sizeof(Type);
         XS_ASSERT(arraySize <= getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type>(handle.pointer, elements, arraySize,
+        memCopyConstructRange<Type, Type, Handle::maxSize>(handle.pointer, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Deallocate any existing data above new end
         Type* XS_RESTRICT newEnd = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(handle.pointer) + arraySize);
@@ -1090,7 +1092,7 @@ public:
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type>(index, elements, arraySize,
+        memCopyConstructRange<Type, Type, Handle::maxSize>(index, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
         Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(index) + arraySize);
@@ -1115,7 +1117,7 @@ public:
                 arraySize <=
             getReservedSize());
         // Copy across new memory and construct additional if copying more than already exists
-        memCopyConstructRange<Type>(iterator.pointer, elements, arraySize,
+        memCopyConstructRange<Type, Type, Handle::maxSize>(iterator.pointer, elements, arraySize,
             static_cast<uint0>(reinterpret_cast<uint8*>(nextElement) - reinterpret_cast<uint8*>(handle.pointer)));
         // Update next element if needed
         Type* XS_RESTRICT endTransfer = reinterpret_cast<Type*>(reinterpret_cast<uint8*>(iterator.pointer) + arraySize);

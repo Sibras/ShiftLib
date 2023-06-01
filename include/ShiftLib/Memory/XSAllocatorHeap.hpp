@@ -249,6 +249,8 @@ public:
 
     static constexpr uint0 align = Allocator::align;
     static constexpr uint0 isResizable = true;
+    /**< Max possible allocated size */
+    static constexpr uint0 maxSize = Limits<uint0>::Max();
 
     T* pointer = nullptr; /**< Pointer to allocated memory */
 
