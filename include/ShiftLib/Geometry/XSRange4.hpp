@@ -195,7 +195,7 @@ public:
     XS_INLINE InBaseDef getMinInBase() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
-        return this->mins.template getValueInBase<0>();
+        return this->mins.template getValueInBase<Index>();
     }
 
     /**
@@ -207,7 +207,7 @@ public:
     XS_INLINE InBaseDef getMaxInBase() const noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
-        return this->maxs.template getValueInBase<0>();
+        return this->maxs.template getValueInBase<Index>();
     }
 
     /**
