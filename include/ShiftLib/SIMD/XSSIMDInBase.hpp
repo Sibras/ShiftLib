@@ -929,7 +929,7 @@ XS_INLINE bool operator>=(const SIMDInBase<T, Width> other1, const SIMDInBase<T,
     } else
 #endif
     {
-        return other1.value <= other2.value;
+        return other1.value >= other2.value;
     }
 }
 
@@ -1021,7 +1021,7 @@ XS_INLINE bool operator>(const SIMDInBase<T, Width> other1, const SIMDInBase<T, 
     } else
 #endif
     {
-        return other1.value < other2.value;
+        return other1.value > other2.value;
     }
 }
 
