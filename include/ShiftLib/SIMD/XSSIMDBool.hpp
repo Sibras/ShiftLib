@@ -16,7 +16,6 @@
  */
 
 #include "SIMD/XSSIMDData.hpp"
-#include "SIMD/XSSIMDTraits.hpp"
 #include "XSBit.hpp"
 
 namespace Shift {
@@ -64,6 +63,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool2(uint8 bool2) noexcept
     {
+        XS_ASSERT((bool2 & ~0x3_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool2;
@@ -190,13 +190,10 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3_ui8;
             return this->values;
         } else
 #endif
@@ -209,13 +206,10 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3_ui8;
             return this->values == 0x3_ui8;
         } else
 #endif
@@ -228,7 +222,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -292,13 +286,10 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3_ui8;
             return ctz(this->values);
         } else
 #endif
@@ -311,13 +302,10 @@ public:
      * Gets the index of the last internal boolean set to true.
      * @returns The zero-based index of the found last true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfLastValid() noexcept
+    XS_INLINE uint32 indexOfLastValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3_ui8;
             return bsr(static_cast<uint32>(this->values));
         } else
 #endif
@@ -330,13 +318,10 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_INLINE constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3_ui8;
             return this->values;
         } else
 #endif
@@ -346,7 +331,7 @@ public:
     }
 };
 
-/** Tri Boolean object used to store true/false values for 3 different booleans at once in a single value. */
+/** Triplet Boolean object used to store true/false values for 3 different booleans at once in a single value. */
 template<bool IsSIMD = hasSIMD<float32>>
 class Bool3 : public NoExport::SIMDBoolData<3, IsSIMD>
 {
@@ -390,6 +375,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool3(uint8 bool3) noexcept
     {
+        XS_ASSERT((bool3 & ~0x7_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool3;
@@ -431,7 +417,7 @@ public:
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            return Bool3(0x7);
+            return Bool3(0x7_ui8);
         } else
 #endif
         {
@@ -520,13 +506,10 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x7_ui8;
             return this->values;
         } else
 #endif
@@ -539,13 +522,10 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x7_ui8;
             return this->values == 0x7_ui8;
         } else
 #endif
@@ -558,7 +538,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -622,13 +602,10 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x7_ui8;
             return ctz(this->values);
         } else
 #endif
@@ -641,13 +618,10 @@ public:
      * Gets the index of the last internal boolean set to true.
      * @returns The zero-based index of the found last true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfLastValid() noexcept
+    XS_INLINE uint32 indexOfLastValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x7_ui8;
             return bsr(static_cast<uint32>(this->values));
         } else
 #endif
@@ -660,13 +634,10 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_INLINE constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x7_ui8;
             return this->values;
         } else
 #endif
@@ -721,6 +692,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool3x2(uint8 bool3x2) noexcept
     {
+        XS_ASSERT((bool3x2 & ~0x77_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool3x2;
@@ -743,6 +715,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool3x2(uint8 bool30, uint8 bool31) noexcept
     {
+        XS_ASSERT((bool30 & ~0x7_ui8) == 0 && (bool31 & ~0x7_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool30 | (bool31 << 4_ui8);
@@ -886,13 +859,10 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x77_ui8;
             return (this->values);
         } else
 #endif
@@ -905,13 +875,10 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x77_ui8;
             return (this->values == 0x77_ui8);
         } else
 #endif
@@ -924,7 +891,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -991,13 +958,10 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x77_ui8;
             uint32 index = ctz(this->values);
             index = (index >= 3_ui32) ? index - 1_ui32 : index;
             return index;
@@ -1016,13 +980,10 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_INLINE constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x77_ui8;
             return this->values;
         } else
 #endif
@@ -1078,6 +1039,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool4(uint8 bool4) noexcept
     {
+        XS_ASSERT((bool4 & ~0xF_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool4;
@@ -1397,6 +1359,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool6(uint8 bool6) noexcept
     {
+        XS_ASSERT((bool6 & ~0x3F_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool6;
@@ -1537,13 +1500,10 @@ public:
      * Get boolean signalling if any element of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAny() noexcept
+    XS_INLINE constexpr bool getAny() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3F_ui8;
             return (this->values);
         } else
 #endif
@@ -1556,13 +1516,10 @@ public:
      * Get boolean signalling if all elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getAll() noexcept
+    XS_INLINE constexpr bool getAll() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3F_ui8;
             return (this->values == 0x3F_ui8);
         } else
 #endif
@@ -1575,7 +1532,7 @@ public:
      * Get boolean signalling if no elements of bool is set.
      * @returns Boolean.
      */
-    XS_INLINE constexpr bool getNone() noexcept
+    XS_INLINE constexpr bool getNone() const noexcept
     {
         return !getAny();
     }
@@ -1639,13 +1596,10 @@ public:
      * Gets the index of the first internal boolean set to true.
      * @returns The zero-based index of the found first true, undefined if no valid element is found.
      */
-    XS_INLINE uint32 indexOfFirstValid() noexcept
+    XS_INLINE uint32 indexOfFirstValid() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3F_ui8;
             return ctz(this->values);
         } else
 #endif
@@ -1662,13 +1616,10 @@ public:
      * Get as an integer where each bit corresponds to a member bool.
      * @returns The required integer.
      */
-    XS_INLINE constexpr uint8 getAsInteger() noexcept
+    XS_INLINE constexpr uint8 getAsInteger() const noexcept
     {
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
-            // Need to avoid top bits affecting result. Done here in hopes that function
-            // inlining will prevent duplication (Note loss of const) noexcept
-            this->values &= 0x3F_ui8;
             return this->values;
         } else
 #endif
@@ -1724,6 +1675,7 @@ public:
      */
     XS_INLINE constexpr explicit Bool8(uint8 bool8) noexcept
     {
+        XS_ASSERT((bool8 & ~0xFF_ui8) == 0);
 #if XS_ISA == XS_X86
         if constexpr (IsSIMD) {
             this->values = bool8;

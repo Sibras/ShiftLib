@@ -263,9 +263,9 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool2(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool2(static_cast<uint8>(_cvtmask8_u32(this->values)) & 0x3_ui8);
                 } else {
-                    return Bool2(static_cast<uint8>(_mm_movemask_ps(this->values)));
+                    return Bool2(static_cast<uint8>(_mm_movemask_ps(this->values)) & 0x3_ui8);
                 }
             } else
 #endif

@@ -568,17 +568,19 @@ public:
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool3x2(static_cast<uint8>(_cvtmask8_u32(this->values)));
+                    return Bool3x2(static_cast<uint8>(_cvtmask8_u32(this->values)) & 0x77_ui8);
                 } else {
-                    return Bool3x2(static_cast<uint8>(_mm256_movemask_ps(this->values)));
+                    return Bool3x2(static_cast<uint8>(_mm256_movemask_ps(this->values)) & 0x77_ui8);
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool3x2(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
-                        static_cast<uint8>(_cvtmask8_u32(this->values1)));
+                    return Bool3x2((static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
+                                       static_cast<uint8>(_cvtmask8_u32(this->values1))) &
+                        0x77_ui8);
                 } else {
-                    return Bool3x2(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
-                        static_cast<uint8>(_mm_movemask_ps(this->values1)));
+                    return Bool3x2((static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
+                                       static_cast<uint8>(_mm_movemask_ps(this->values1))) &
+                        0x77_ui8);
                 }
             } else
 #endif
