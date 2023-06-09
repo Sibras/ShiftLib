@@ -192,7 +192,8 @@ public:
         if constexpr (Width > SIMDWidth::Scalar) {
             RangeDef ret;
             ret.minMax = this->minMax.template shuffle<0 + Index, 2 + Index, 0 + Index,
-                2 + Index>(); // Need to avoid re-negating the min values in constructor
+                                         2 + Index>()
+                             .template getValue2<0>(); // Need to avoid re-negating the min values in constructor
             return ret;
         } else {
             return RangeDef(SIMD2(
