@@ -49,7 +49,7 @@ XS_INLINE T reciprocal(const T& value) noexcept
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         const __m256 recip = _mm256_recip_ps(value.values);
         return T(_mm256_fnmadd_ps(_mm256_mul_ps(recip, recip), value.values, _mm256_add_ps(recip, recip)));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         const __m128 recip0 = _mm_recip_ps(value.values0);
         const __m128 recip1 = _mm_recip_ps(value.values1);
         const __m128 recip2 = _mm_recip_ps(value.values2);
@@ -58,14 +58,14 @@ XS_INLINE T reciprocal(const T& value) noexcept
             _mm_fnmadd_ps(_mm_mul_ps(recip1, recip1), value.values1, _mm_add_ps(recip1, recip1)),
             _mm_fnmadd_ps(_mm_mul_ps(recip2, recip2), value.values2, _mm_add_ps(recip2, recip2)),
             _mm_fnmadd_ps(_mm_mul_ps(recip3, recip3), value.values3, _mm_add_ps(recip3, recip3)));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         const __m128 recip0 = _mm_recip_ps(value.values0);
         const __m128 recip1 = _mm_recip_ps(value.values1);
         const __m128 recip2 = _mm_recip_ps(value.values2);
         return T(_mm_fnmadd_ps(_mm_mul_ps(recip0, recip0), value.values0, _mm_add_ps(recip0, recip0)),
             _mm_fnmadd_ps(_mm_mul_ps(recip1, recip1), value.values1, _mm_add_ps(recip1, recip1)),
             _mm_fnmadd_ps(_mm_mul_ps(recip2, recip2), value.values2, _mm_add_ps(recip2, recip2)));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         const __m128 recip0 = _mm_recip_ps(value.values0);
         const __m128 recip1 = _mm_recip_ps(value.values1);
         return T(_mm_fnmadd_ps(_mm_mul_ps(recip0, recip0), value.values0, _mm_add_ps(recip0, recip0)),
@@ -142,13 +142,13 @@ XS_INLINE T ceil(const T& value) noexcept
         return T(_mm256_round_ps(value.values0, FROUND_CEIL), _mm_round_ps(value.values1, FROUND_CEIL));
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(_mm256_round_ps(value.values, FROUND_CEIL));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         return T(_mm_round_ps(value.values0, FROUND_CEIL), _mm_round_ps(value.values1, FROUND_CEIL),
             _mm_round_ps(value.values2, FROUND_CEIL), _mm_round_ps(value.values3, FROUND_CEIL));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         return T(_mm_round_ps(value.values0, FROUND_CEIL), _mm_round_ps(value.values1, FROUND_CEIL),
             _mm_round_ps(value.values2, FROUND_CEIL));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         return T(_mm_round_ps(value.values0, FROUND_CEIL), _mm_round_ps(value.values1, FROUND_CEIL));
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 4)) {
         return T(_mm_round_ps(value.values, FROUND_CEIL));
@@ -220,13 +220,13 @@ XS_INLINE T floor(const T& value) noexcept
         return T(_mm256_round_ps(value.values0, FROUND_FLOOR), _mm_round_ps(value.values1, FROUND_FLOOR));
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(_mm256_round_ps(value.values, FROUND_FLOOR));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         return T(_mm_round_ps(value.values0, FROUND_FLOOR), _mm_round_ps(value.values1, FROUND_FLOOR),
             _mm_round_ps(value.values2, FROUND_FLOOR), _mm_round_ps(value.values3, FROUND_FLOOR));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         return T(_mm_round_ps(value.values0, FROUND_FLOOR), _mm_round_ps(value.values1, FROUND_FLOOR),
             _mm_round_ps(value.values2, FROUND_FLOOR));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         return T(_mm_round_ps(value.values0, FROUND_FLOOR), _mm_round_ps(value.values1, FROUND_FLOOR));
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 4)) {
         return T(_mm_round_ps(value.values, FROUND_FLOOR));
@@ -298,13 +298,13 @@ XS_INLINE T trunc(const T& value) noexcept
         return T(_mm256_round_ps(value.values0, FROUND_TRUNC), _mm_round_ps(value.values1, FROUND_TRUNC));
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(_mm256_round_ps(value.values, FROUND_TRUNC));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         return T(_mm_round_ps(value.values0, FROUND_TRUNC), _mm_round_ps(value.values1, FROUND_TRUNC),
             _mm_round_ps(value.values2, FROUND_TRUNC), _mm_round_ps(value.values3, FROUND_TRUNC));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         return T(_mm_round_ps(value.values0, FROUND_TRUNC), _mm_round_ps(value.values1, FROUND_TRUNC),
             _mm_round_ps(value.values2, FROUND_TRUNC));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         return T(_mm_round_ps(value.values0, FROUND_TRUNC), _mm_round_ps(value.values1, FROUND_TRUNC));
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 4)) {
         return T(_mm_round_ps(value.values, FROUND_TRUNC));
@@ -376,12 +376,12 @@ XS_INLINE T sqrt(const T& value) noexcept
         return T(_mm256_sqrt_ps(value.values0), _mm_sqrt_ps(value.values1));
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(_mm256_sqrt_ps(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         return T(_mm_sqrt_ps(value.values0), _mm_sqrt_ps(value.values1), _mm_sqrt_ps(value.values2),
             _mm_sqrt_ps(value.values3));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         return T(_mm_sqrt_ps(value.values0), _mm_sqrt_ps(value.values1), _mm_sqrt_ps(value.values2));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         return T(_mm_sqrt_ps(value.values0), _mm_sqrt_ps(value.values1));
     } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 4)) {
         return T(_mm_sqrt_ps(value.values));
@@ -476,7 +476,7 @@ XS_INLINE T rsqrt(const T& value) noexcept
         const __m256 val1 = _mm256_mul_ps(_mm256_mul_ps(_mm256_set1_ps(0.5f), value.values), recip);
         const __m256 val2 = _mm256_fnmadd_ps(recip, val1, _mm256_set1_ps(1.5f));
         return T(_mm256_mul_ps(recip, val2));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         const __m128 recip0 = _mm_recipsqrt_ps(value.values0);
         const __m128 recip1 = _mm_recipsqrt_ps(value.values1);
         const __m128 recip2 = _mm_recipsqrt_ps(value.values2);
@@ -493,7 +493,7 @@ XS_INLINE T rsqrt(const T& value) noexcept
         const __m128 val32 = _mm_fnmadd_ps(recip3, val31, threeHalf);
         return T(
             _mm_mul_ps(recip0, val02), _mm_mul_ps(recip1, val12), _mm_mul_ps(recip2, val22), _mm_mul_ps(recip3, val32));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         const __m128 recip0 = _mm_recipsqrt_ps(value.values0);
         const __m128 recip1 = _mm_recipsqrt_ps(value.values1);
         const __m128 recip2 = _mm_recipsqrt_ps(value.values2);
@@ -506,7 +506,7 @@ XS_INLINE T rsqrt(const T& value) noexcept
         const __m128 val12 = _mm_fnmadd_ps(recip1, val11, threeHalf);
         const __m128 val22 = _mm_fnmadd_ps(recip2, val21, threeHalf);
         return T(_mm_mul_ps(recip0, val02), _mm_mul_ps(recip1, val12), _mm_mul_ps(recip2, val22));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         const __m128 recip0 = _mm_recipsqrt_ps(value.values0);
         const __m128 recip1 = _mm_recipsqrt_ps(value.values1);
         const __m128 half = _mm_set1_ps(0.5f);
@@ -609,7 +609,7 @@ XS_INLINE T exp2(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::exp2f8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::exp2f16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -624,7 +624,7 @@ XS_INLINE T exp2(const T& value) noexcept
             return T(NoExport::exp2f4(value.values0), NoExport::exp2f4(value.values1), NoExport::exp2f4(value.values2),
                 NoExport::exp2f4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::exp2f16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -633,9 +633,9 @@ XS_INLINE T exp2(const T& value) noexcept
             const __m256 res = NoExport::exp2f8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1), NoExport::exp2f4(value.values2));
         } else {
-            return T(T::exp2f4(value.values0), NoExport::exp2f4(value.values1), NoExport::exp2f4(value.values2));
+            return T(NoExport::exp2f4(value.values0), NoExport::exp2f4(value.values1), NoExport::exp2f4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::exp2f8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -749,7 +749,7 @@ XS_INLINE T exp(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::expf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::expf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -764,7 +764,7 @@ XS_INLINE T exp(const T& value) noexcept
             return T(NoExport::expf4(value.values0), NoExport::expf4(value.values1), NoExport::expf4(value.values2),
                 NoExport::expf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::expf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -775,7 +775,7 @@ XS_INLINE T exp(const T& value) noexcept
         } else {
             return T(NoExport::expf4(value.values0), NoExport::expf4(value.values1), NoExport::expf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::expf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -870,7 +870,7 @@ XS_INLINE T log2(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::log2f8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::log2f16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -885,7 +885,7 @@ XS_INLINE T log2(const T& value) noexcept
             return T(NoExport::log2f4(value.values0), NoExport::log2f4(value.values1), NoExport::log2f4(value.values2),
                 NoExport::log2f4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::log2f16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -896,7 +896,7 @@ XS_INLINE T log2(const T& value) noexcept
         } else {
             return T(NoExport::log2f4(value.values0), NoExport::log2f4(value.values1), NoExport::log2f4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::log2f8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -1010,7 +1010,7 @@ XS_INLINE T log(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::logf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::logf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -1025,7 +1025,7 @@ XS_INLINE T log(const T& value) noexcept
             return T(NoExport::logf4(value.values0), NoExport::logf4(value.values1), NoExport::logf4(value.values2),
                 NoExport::logf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::logf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -1036,7 +1036,7 @@ XS_INLINE T log(const T& value) noexcept
         } else {
             return T(NoExport::logf4(value.values0), NoExport::logf4(value.values1), NoExport::logf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::logf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -1136,7 +1136,7 @@ XS_INLINE T pow(const T& value, const T& other) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::powf8(value.values, other.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::powf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0),
@@ -1154,7 +1154,7 @@ XS_INLINE T pow(const T& value, const T& other) noexcept
             return T(NoExport::powf4(value.values0, other.values0), NoExport::powf4(value.values1, other.values1),
                 NoExport::powf4(value.values2, other.values2), NoExport::powf4(value.values3, other.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::powf16(
                 _mm512_insertf32x4(
@@ -1171,7 +1171,7 @@ XS_INLINE T pow(const T& value, const T& other) noexcept
             return T(NoExport::powf4(value.values0, other.values0), NoExport::powf4(value.values1, other.values1),
                 NoExport::powf4(value.values2, other.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::powf8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
@@ -1313,7 +1313,7 @@ XS_INLINE T powr(const T& value, const T& other) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::powrf8(value.values, other.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::powrf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0),
@@ -1331,7 +1331,7 @@ XS_INLINE T powr(const T& value, const T& other) noexcept
             return T(NoExport::powrf4(value.values0, other.values0), NoExport::powrf4(value.values1, other.values1),
                 NoExport::powrf4(value.values2, other.values2), NoExport::powrf4(value.values3, other.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::powrf16(
                 _mm512_insertf32x4(
@@ -1348,7 +1348,7 @@ XS_INLINE T powr(const T& value, const T& other) noexcept
             return T(NoExport::powrf4(value.values0, other.values0), NoExport::powrf4(value.values1, other.values1),
                 NoExport::powrf4(value.values2, other.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::powrf8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
@@ -1470,7 +1470,7 @@ XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::powf8(value.values, other.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::powf16(_mm512_set_m128(value.values1, value.values0, value.values3, value.values2),
@@ -1488,7 +1488,7 @@ XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
             return T(NoExport::powf4(value.values0, other.values), NoExport::powf4(value.values1, other.values),
                 NoExport::powf4(value.values2, other.values), NoExport::powf4(value.values3, other.values));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::powf16(
                 _mm512_insertf32x4(
@@ -1504,7 +1504,7 @@ XS_INLINE T pow(const T& value, const typename T::BaseDef other) noexcept
             return T(NoExport::powf4(value.values0, other.values), NoExport::powf4(value.values1, other.values),
                 NoExport::powf4(value.values2, other.values));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res =
                 NoExport::powf8(_mm256_set_m128(value.values1, value.values0), _mm256_broadcastf128_ps(other.values));
@@ -1625,7 +1625,7 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::powrf8(value.values, other.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::powrf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0),
@@ -1642,7 +1642,7 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
             return T(NoExport::powrf4(value.values0, other.values), NoExport::powrf4(value.values1, other.values),
                 NoExport::powrf4(value.values2, other.values), NoExport::powrf4(value.values3, other.values));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::powrf16(
                 _mm512_insertf32x4(
@@ -1658,7 +1658,7 @@ XS_INLINE T powr(const T& value, const typename T::BaseDef other) noexcept
             return T(NoExport::powrf4(value.values0, other.values), NoExport::powrf4(value.values1, other.values),
                 NoExport::powrf4(value.values2, other.values));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res =
                 NoExport::powrf8(_mm256_set_m128(value.values1, value.values0), _mm256_broadcastf128_ps(other.values));
@@ -1781,7 +1781,7 @@ XS_INLINE T sin(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::sinf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::sinf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -1796,7 +1796,7 @@ XS_INLINE T sin(const T& value) noexcept
             return T(NoExport::sinf4(value.values0), NoExport::sinf4(value.values1), NoExport::sinf4(value.values2),
                 NoExport::sinf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::sinf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -1807,7 +1807,7 @@ XS_INLINE T sin(const T& value) noexcept
         } else {
             return T(NoExport::sinf4(value.values0), NoExport::sinf4(value.values1), NoExport::sinf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::sinf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -1932,7 +1932,7 @@ XS_INLINE T cos(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::cosf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::cosf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -1947,7 +1947,7 @@ XS_INLINE T cos(const T& value) noexcept
             return T(NoExport::cosf4(value.values0), NoExport::cosf4(value.values1), NoExport::cosf4(value.values2),
                 NoExport::cosf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::cosf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -1958,7 +1958,7 @@ XS_INLINE T cos(const T& value) noexcept
         } else {
             return T(NoExport::cosf4(value.values0), NoExport::cosf4(value.values1), NoExport::cosf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::cosf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -2054,7 +2054,7 @@ XS_INLINE T tan(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::tanf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::tanf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -2069,7 +2069,7 @@ XS_INLINE T tan(const T& value) noexcept
             return T(NoExport::tanf4(value.values0), NoExport::tanf4(value.values1), NoExport::tanf4(value.values2),
                 NoExport::tanf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::tanf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -2080,7 +2080,7 @@ XS_INLINE T tan(const T& value) noexcept
         } else {
             return T(NoExport::tanf4(value.values0), NoExport::tanf4(value.values1), NoExport::tanf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::tanf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -2267,7 +2267,7 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::sincosf8(value.values, cosReturn.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             __m512 ret;
             const __m512 res =
@@ -2294,7 +2294,7 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
                 NoExport::sincosf4(value.values2, cosReturn.values2),
                 NoExport::sincosf4(value.values3, cosReturn.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             __m512 ret;
             const __m512 res = NoExport::sincosf16(
@@ -2319,7 +2319,7 @@ XS_INLINE T sincos(const T& value, T& cosReturn) noexcept
                 NoExport::sincosf4(value.values1, cosReturn.values1),
                 NoExport::sincosf4(value.values2, cosReturn.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             __m256 tempReturn;
             const __m256 res = NoExport::sincosf8(_mm256_set_m128(value.values1, value.values0), tempReturn);
@@ -2460,7 +2460,7 @@ XS_INLINE T asin(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::asinf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::asinf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -2475,7 +2475,7 @@ XS_INLINE T asin(const T& value) noexcept
             return T(NoExport::asinf4(value.values0), NoExport::asinf4(value.values1), NoExport::asinf4(value.values2),
                 NoExport::asinf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::asinf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -2486,7 +2486,7 @@ XS_INLINE T asin(const T& value) noexcept
         } else {
             return T(NoExport::asinf4(value.values0), NoExport::asinf4(value.values1), NoExport::asinf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::asinf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -2584,7 +2584,7 @@ XS_INLINE T acos(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::acosf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::acosf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -2599,7 +2599,7 @@ XS_INLINE T acos(const T& value) noexcept
             return T(NoExport::acosf4(value.values0), NoExport::acosf4(value.values1), NoExport::acosf4(value.values2),
                 NoExport::acosf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::acosf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -2610,7 +2610,7 @@ XS_INLINE T acos(const T& value) noexcept
         } else {
             return T(NoExport::acosf4(value.values0), NoExport::acosf4(value.values1), NoExport::acosf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::acosf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -2711,7 +2711,7 @@ XS_INLINE T atan(const T& value) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::atanf8(value.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::atanf16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0));
@@ -2726,7 +2726,7 @@ XS_INLINE T atan(const T& value) noexcept
             return T(NoExport::atanf4(value.values0), NoExport::atanf4(value.values1), NoExport::atanf4(value.values2),
                 NoExport::atanf4(value.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::atanf16(_mm512_insertf32x4(
                 _mm512_castps256_ps512(_mm256_set_m128(value.values1, value.values0)), value.values2, 2));
@@ -2737,7 +2737,7 @@ XS_INLINE T atan(const T& value) noexcept
         } else {
             return T(NoExport::atanf4(value.values0), NoExport::atanf4(value.values1), NoExport::atanf4(value.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::atanf8(_mm256_set_m128(value.values1, value.values0));
             return T(_mm256_castps256_ps128(res), _mm256_extractf128_ps(res, 1));
@@ -2878,7 +2878,7 @@ XS_INLINE T atan2(const T& value, const T& other) noexcept
         }
     } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B32) && (T::totalValues == 8)) {
         return T(NoExport::atan2f8(value.values, other.values));
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 16)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res =
                 NoExport::atan2f16(_mm512_set_m128(value.values3, value.values2, value.values1, value.values0),
@@ -2896,7 +2896,7 @@ XS_INLINE T atan2(const T& value, const T& other) noexcept
             return T(NoExport::atan2f4(value.values0, other.values0), NoExport::atan2f4(value.values1, other.values1),
                 NoExport::atan2f4(value.values2, other.values2), NoExport::atan2f4(value.values3, other.values3));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 12)) {
         if constexpr (hasSIMD512<typename T::Type>) {
             const __m512 res = NoExport::atan2f16(
                 _mm512_insertf32x4(
@@ -2913,7 +2913,7 @@ XS_INLINE T atan2(const T& value, const T& other) noexcept
             return T(NoExport::atan2f4(value.values0, other.values0), NoExport::atan2f4(value.values1, other.values1),
                 NoExport::atan2f4(value.values2, other.values2));
         }
-    } else if constexpr (hasSIMD256<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
+    } else if constexpr (hasSIMD128<typename T::Type> && (T::widthImpl == SIMDWidth::B16) && (T::totalValues == 8)) {
         if constexpr (hasSIMD256<typename T::Type>) {
             const __m256 res = NoExport::atan2f8(
                 _mm256_set_m128(value.values1, value.values0), _mm256_set_m128(other.values1, other.values0));
