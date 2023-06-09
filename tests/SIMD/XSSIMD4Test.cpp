@@ -311,16 +311,14 @@ TYPED_TEST_NS2(SIMD4, TESTISA(SIMD4), SIMD4)
         }
 
 #    if S4_ALL_GET3_TESTS
-#        define S4_GETTRI_TESTX(index0, index1)   \
-            {                                     \
-                S4_GETTRI_TEST(index0, index1, 0) \
-                S4_GETTRI_TEST(index0, index1, 1) \
-                S4_GETTRI_TEST(index0, index1, 2) \
-                S4_GETTRI_TEST(index0, index1, 3) \
+#        define S4_GETTRI_TESTX(index0, index1)                                                                    \
+            {S4_GETTRI_TEST(index0, index1, 0) S4_GETTRI_TEST(index0, index1, 1) S4_GETTRI_TEST(index0, index1, 2) \
+                    S4_GETTRI_TEST(index0, index1, 3)}
+#        define S4_GETTRI_TESTXX(index0)                                                         \
+            {                                                                                    \
+                S4_GETTRI_TESTX(index0, 0)                                                       \
+                S4_GETTRI_TESTX(index0, 1) S4_GETTRI_TESTX(index0, 2) S4_GETTRI_TESTX(index0, 3) \
             }
-#        define S4_GETTRI_TESTXX(index0)                                                      \
-            {S4_GETTRI_TESTX(index0, 0) S4_GETTRI_TESTX(index0, 1) S4_GETTRI_TESTX(index0, 2) \
-                    S4_GETTRI_TESTX(index0, 3)}
     S4_GETTRI_TESTXX(0);
     S4_GETTRI_TESTXX(1);
     S4_GETTRI_TESTXX(2);
@@ -1168,13 +1166,9 @@ TYPED_TEST_NS2(SIMD4, TESTISA(SIMD4), SIMD4)
         }
 
 #    if S4_ALL_SHUFFLE_TESTS
-#        define S4_SHUFFLE_TESTX(index0, index1, index2, val)   \
-            {                                                   \
-                S4_SHUFFLE_TEST(index0, index1, index2, 0, val) \
-                S4_SHUFFLE_TEST(index0, index1, index2, 1, val) \
-                S4_SHUFFLE_TEST(index0, index1, index2, 2, val) \
-                S4_SHUFFLE_TEST(index0, index1, index2, 3, val) \
-            }
+#        define S4_SHUFFLE_TESTX(index0, index1, index2, val)                                                \
+            {S4_SHUFFLE_TEST(index0, index1, index2, 0, val) S4_SHUFFLE_TEST(index0, index1, index2, 1, val) \
+                    S4_SHUFFLE_TEST(index0, index1, index2, 2, val) S4_SHUFFLE_TEST(index0, index1, index2, 3, val)}
 #        define S4_SHUFFLE_TESTXX(index0, index1, val)   \
             {                                            \
                 S4_SHUFFLE_TESTX(index0, index1, 0, val) \
@@ -1182,9 +1176,11 @@ TYPED_TEST_NS2(SIMD4, TESTISA(SIMD4), SIMD4)
                 S4_SHUFFLE_TESTX(index0, index1, 2, val) \
                 S4_SHUFFLE_TESTX(index0, index1, 3, val) \
             }
-#        define S4_SHUFFLE_TESTXXX(index0, val)                                                                    \
-            {S4_SHUFFLE_TESTXX(index0, 0, val) S4_SHUFFLE_TESTXX(index0, 1, val) S4_SHUFFLE_TESTXX(index0, 2, val) \
-                    S4_SHUFFLE_TESTXX(index0, 3, val)}
+#        define S4_SHUFFLE_TESTXXX(index0, val)                                                                       \
+            {                                                                                                         \
+                S4_SHUFFLE_TESTXX(index0, 0, val)                                                                     \
+                S4_SHUFFLE_TESTXX(index0, 1, val) S4_SHUFFLE_TESTXX(index0, 2, val) S4_SHUFFLE_TESTXX(index0, 3, val) \
+            }
     S4_SHUFFLE_TESTXXX(0, test1);
     S4_SHUFFLE_TESTXXX(1, test1);
     S4_SHUFFLE_TESTXXX(2, test1);
@@ -1349,6 +1345,12 @@ TYPED_TEST_NS2(SIMD4, TESTISA(SIMD4), SIMD4)
 
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
         test4.shuffleVar(TestType::Shuffle::Swap2(TestType::SIMD2Def::Mask(true, false))), 4.0f, 10.0f, 7.0f, 5.0f);
+
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test4.shuffleVar(TestType::Shuffle::Interleave(false)), 10.0f, 7.0f, 4.0f, 5.0f);
+
+    ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
+        test4.shuffleVar(TestType::Shuffle::Interleave(true)), 4.0f, 5.0f, 10.0f, 7.0f);
 
     ASSERT_PRED5((assertSIMD4<typename TestFixture::TypeInt, TestFixture::width>),
         test4.shuffleVar(TestType::Shuffle::RotateLeft(0)), 10.0f, 4.0f, 7.0f, 5.0f);

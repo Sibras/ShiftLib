@@ -202,6 +202,25 @@ public:
     }
 
     /**
+     * Returns an internal range element.
+     * @param index Index of range element to get (must be between 0 and 1).
+     * @returns The specified range.
+     */
+    XS_INLINE RangeDef getRange(uint32 index) const noexcept
+    {
+        static_assert(index < 2, "Invalid Index: Index must be <2");
+        if constexpr (Width > SIMDWidth::Scalar) {
+            RangeDef ret;
+            ret.minMax = this->minMax.shuffleVar(SIMD4Def::Interleave(index))
+                             .template getValue2<0>(); // Need to avoid re-negating the min values in constructor
+            return ret;
+        } else {
+            return RangeDef(
+                SIMD2(this->minMax.template getValueInBase(index), this->minMax.template getValueInBase(2 + index)));
+        }
+    }
+
+    /**
      * Returns the ranges minimum value.
      * @tparam Index Index of range element to get (must be between 0 and 1).
      * @returns The minimum value return as a InBaseDef.

@@ -781,7 +781,7 @@ public:
         /**
          * Constructor to build a Shuffle that swaps high 2 elements with low 2 elements with a mask.
          * @note Where the mask is valid the shuffled value will be output else the
-         * original an shuffled value will be copied.
+         * original un shuffled value will be copied.
          * @param mask Mask used to determine which elements are swapped.
          * @returns Newly constructed Shuffle with required attributes.
          */
@@ -866,6 +866,34 @@ public:
             {
                 return Shuffle(static_cast<uint32>(mask.values0), 1_ui32 ^ static_cast<uint32>(mask.values0),
                     2_ui32 ^ static_cast<uint32>(mask.values1), 3_ui32 ^ static_cast<uint32>(mask.values1));
+            }
+        }
+
+        /**
+         * Constructor to build a Shuffle that conditionally interleaves even and off values together.
+         * @note Where the conditional is true then shuffle produces even values in the low 2 elements and odd values in
+         * the high (i.e. (0,2,1,3)) otherwise odd values go first (i.e. (1.3.0.2)).
+         * @param conditional Conditional value used to determine whether elements are swapped.
+         * @returns Newly constructed Shuffle with required attributes.
+         */
+        XS_INLINE static Shuffle Interleave(const bool conditional) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX>) {
+                    const __m128i norm = _mm_set_epi32(3, 1, 2, 0);
+                    const __m128i condition = _mm_set1_epi32(conditional);
+                    return Shuffle(_mm_xor_si128(condition, norm));
+                } else {
+                    const __m128i norm = _mm_set_epi32(0x0F0E0D0C, 0x07060504, 0x0B0A0908, 0x03020100);
+                    const __m128i condition = _mm_set1_epi8(conditional * 4);
+                    return Shuffle(_mm_xor_si128(condition, norm));
+                }
+            } else
+#endif
+            {
+                const uint32 condition = conditional;
+                return Shuffle(0 ^ condition, 2 ^ condition, 1 ^ condition, 3 ^ condition);
             }
         }
 
