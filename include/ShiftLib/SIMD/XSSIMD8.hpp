@@ -443,11 +443,11 @@ public:
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool8(static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
-                        static_cast<uint8>(_cvtmask8_u32(this->values1)));
+                    return Bool8(static_cast<uint8>(_cvtmask8_u32(this->values1) << 4UL) |
+                        static_cast<uint8>(_cvtmask8_u32(this->values0)));
                 } else {
-                    return Bool8(static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
-                        static_cast<uint8>(_mm_movemask_ps(this->values1)));
+                    return Bool8(static_cast<uint8>(_mm_movemask_ps(this->values1) << 4UL) |
+                        static_cast<uint8>(_mm_movemask_ps(this->values0)));
                 }
             } else
 #endif
@@ -810,14 +810,17 @@ public:
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values));
                 } else {
-                    return Mask(_mm256_xor_ps(mask.values, _mm256_cmp_ps(mask.values, mask.values, _CMP_EQ_OQ)));
+                    const auto zero = _mm256_setzero_ps();
+                    const auto bits = _mm256_cmp_ps(zero, zero, _CMP_EQ_OQ);
+                    return Mask(_mm256_xor_ps(mask.values, bits));
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values0), _knot_mask8(mask.values1));
                 } else {
-                    return Mask(_mm_xor_ps(mask.values0, _mm_cmpeq_ps(mask.values0, mask.values0)),
-                        _mm_xor_ps(mask.values1, _mm_cmpeq_ps(mask.values1, mask.values1)));
+                    const auto zero = _mm_setzero_ps();
+                    const auto bits = _mm_cmpeq_ps(zero, zero);
+                    return Mask(_mm_xor_ps(mask.values0, bits), _mm_xor_ps(mask.values1, bits));
                 }
             } else
 #endif

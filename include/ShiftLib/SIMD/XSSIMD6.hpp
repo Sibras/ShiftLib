@@ -443,26 +443,17 @@ public:
         {
 #if XS_ISA == XS_X86
             if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
-                if constexpr (hasISAFeature<ISAFeature::AVX2>) {
-                    this->values = _kor_mask8(
-                        _kor_mask8(_kor_mask8(_kor_mask8(_kor_mask8(_kand_mask8(mask0.values & 0x1),
-                                                             _kand_mask8(_kshiftli_mask8(mask1.values, 1) & 0x2)),
-                                                  _kand_mask8(_kshiftli_mask8(mask0.values, 1) & 0x4)),
-                                       _kand_mask8(_kshiftli_mask8(mask1.values, 2) & 0x8)),
-                            _kand_mask8(_kshiftli_mask8(mask1.values, 2) & 0x10)),
-                        _kand_mask8(_kshiftli_mask8(mask1.values, 5) & 0x20));
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    this->values = _pdep_u32(mask0.values, 0x15) | _pdep_u32(mask1.values, 0x2A);
                 } else {
                     this->values = _mm256_set_m128(
                         _mm_unpackhi_ps(mask0.values, mask1.values), _mm_unpacklo_ps(mask0.values, mask1.values));
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    this->values0 = _kor_mask8(_kor_mask8(_kor_mask8(_kand_mask8(mask0.values & 0x1),
-                                                              _kand_mask8(_kshiftli_mask8(mask1.values, 1) & 0x2)),
-                                                   _kand_mask8(_kshiftli_mask8(mask0.values, 1) & 0x4)),
-                        _kand_mask8(_kshiftli_mask8(mask1.values, 2) & 0x8));
-                    this->values1 = _kor_mask8(_kand_mask8(_kshiftri_mask8(mask0.values, 2) & 0x1),
-                        _kand_mask8(_kshiftri_mask8(mask1.values, 2) & 0x2));
+                    const uint32 mask = _pdep_u32(mask0.values, 0x15) | _pdep_u32(mask1.values, 0x2A);
+                    this->values0 = mask;
+                    this->values1 = mask >> 4;
                 } else {
                     this->values0 = _mm_unpacklo_ps(mask0.values, mask1.values);
                     this->values1 = _mm_unpackhi_ps(mask0.values, mask1.values);
@@ -476,6 +467,43 @@ public:
                 this->values3 = mask1.values1;
                 this->values4 = mask0.values2;
                 this->values5 = mask1.values2;
+            }
+        }
+
+        /**
+         * Construct a mask from a mask3.
+         * @note Each bit in the input is used to set the mask accordingly.
+         * @param mask Input mask.
+         */
+        XS_INLINE Mask(const typename SIMD3Def::Mask& mask) noexcept
+        {
+#if XS_ISA == XS_X86
+            if constexpr (isSame<T, float32> && hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    this->values = _pdep_u32(mask.values, 0x15);
+                    this->values |= this->values << 1;
+                } else {
+                    this->values = _mm256_set_m128(_mm_shuffle3322_ps(mask.values), _mm_shuffle1100_ps(mask.values));
+                }
+            } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+                if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
+                    uint32 maskInt = _pdep_u32(mask.values, 0x15);
+                    maskInt |= maskInt << 1;
+                    this->values0 = maskInt;
+                    this->values1 = maskInt >> 4;
+                } else {
+                    this->values0 = _mm_shuffle1100_ps(mask.values);
+                    this->values1 = _mm_shuffle3322_ps(mask.values);
+                }
+            } else
+#endif
+            {
+                this->values0 = mask.values0;
+                this->values1 = mask.values0;
+                this->values2 = mask.values1;
+                this->values3 = mask.values1;
+                this->values4 = mask.values2;
+                this->values5 = mask.values2;
             }
         }
 
@@ -539,12 +567,12 @@ public:
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
-                    return Bool6((static_cast<uint8>(_cvtmask8_u32(this->values0) << 4UL) |
-                                     static_cast<uint8>(_cvtmask8_u32(this->values1))) &
+                    return Bool6((static_cast<uint8>(_cvtmask8_u32(this->values1) << 4_ui8) |
+                                     static_cast<uint8>(_cvtmask8_u32(this->values0))) &
                         0x3F_ui8);
                 } else {
-                    return Bool6((static_cast<uint8>(_mm_movemask_ps(this->values0) << 4UL) |
-                                     static_cast<uint8>(_mm_movemask_ps(this->values1))) &
+                    return Bool6((static_cast<uint8>(_mm_movemask_ps(this->values1) << 4_ui8) |
+                                     static_cast<uint8>(_mm_movemask_ps(this->values0))) &
                         0x3F_ui8);
                 }
             } else
@@ -890,14 +918,17 @@ public:
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values));
                 } else {
-                    return Mask(_mm256_xor_ps(mask.values, _mm256_cmp_ps(mask.values, mask.values, _CMP_EQ_OQ)));
+                    const auto zero = _mm256_setzero_ps();
+                    const auto bits = _mm256_cmp_ps(zero, zero, _CMP_EQ_OQ);
+                    return Mask(_mm256_xor_ps(mask.values, bits));
                 }
             } else if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values0), _knot_mask8(mask.values1));
                 } else {
-                    return Mask(_mm_xor_ps(mask.values0, _mm_cmpeq_ps(mask.values0, mask.values0)),
-                        _mm_xor_ps(mask.values1, _mm_cmpeq_ps(mask.values1, mask.values1)));
+                    const auto zero = _mm_setzero_ps();
+                    const auto bits = _mm_cmpeq_ps(zero, zero);
+                    return Mask(_mm_xor_ps(mask.values0, bits), _mm_xor_ps(mask.values1, bits));
                 }
             } else
 #endif

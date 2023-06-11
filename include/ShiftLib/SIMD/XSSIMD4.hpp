@@ -579,7 +579,9 @@ public:
                 if constexpr (hasISAFeature<ISAFeature::AVX512F>) {
                     return Mask(_knot_mask8(mask.values));
                 } else {
-                    return Mask(_mm_xor_ps(mask.values, _mm_cmpeq_ps(mask.values, mask.values)));
+                    const auto zero = _mm_setzero_ps();
+                    const auto bits = _mm_cmpeq_ps(zero, zero);
+                    return Mask(_mm_xor_ps(mask.values0, bits));
                 }
             } else
 #endif
