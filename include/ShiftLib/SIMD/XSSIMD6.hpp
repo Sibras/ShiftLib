@@ -933,7 +933,7 @@ public:
             } else
 #endif
             {
-                return Mask(~mask.values0, ~mask.values1, ~mask.values2, ~mask.values3, ~mask.values4, ~mask.values5);
+                return Mask(!mask.values0, !mask.values1, !mask.values2, !mask.values3, !mask.values4, !mask.values5);
             }
         }
     };

@@ -706,7 +706,7 @@ public:
             } else
 #endif
             {
-                return Mask(~mask.values0, ~mask.values1, ~mask.values2);
+                return Mask(!mask.values0, !mask.values1, !mask.values2);
             }
         }
     };
