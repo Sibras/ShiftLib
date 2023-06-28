@@ -291,6 +291,25 @@ public:
     {}
 
     /**
+     * Construct from 3 different values.
+     * @param value0 The first value.
+     * @param value1 The second value.
+     * @param value2 The third value.
+     */
+    XS_INLINE Point3D(const BaseDef value0, const BaseDef value1, const BaseDef value2) noexcept
+        : values(value0, value1, value2)
+    {}
+
+    /**
+     * Construct from a SIMD2 and a single scalar value.
+     * @param other0 The input SIMD2.
+     * @param other1 The third value.
+     */
+    XS_INLINE Point3D(const typename SIMD3Def::SIMD2Def& other0, const InBaseDef other1) noexcept
+        : values(other0, other1)
+    {}
+
+    /**
      * Function to build a 3-D point with all elements set to 0.
      * @returns Newly constructed Point3D with required attributes.
      */

@@ -292,6 +292,25 @@ public:
     {}
 
     /**
+     * Construct from 3 different values.
+     * @param value0 The first value.
+     * @param value1 The second value.
+     * @param value2 The third value.
+     */
+    XS_INLINE Vector3D(const BaseDef value0, const BaseDef value1, const BaseDef value2) noexcept
+        : values(value0, value1, value2)
+    {}
+
+    /**
+     * Construct from a SIMD2 and a single scalar value.
+     * @param other0 The input SIMD2.
+     * @param other1 The third value.
+     */
+    XS_INLINE Vector3D(const typename SIMD3Def::SIMD2Def& other0, const InBaseDef other1) noexcept
+        : values(other0, other1)
+    {}
+
+    /**
      * Constructor to build a 3-D vector with all elements set to 0.
      * @returns Newly constructed Vector3D with required attributes.
      */
@@ -511,6 +530,18 @@ XS_INLINE Vector3D<T, Width> operator*(
     const Vector3D<T, Width>& vector, typename Vector3D<T, Width>::BaseDef value) noexcept
 {
     return Vector3D<T, Width>(vector.values * value);
+}
+
+/**
+ * Multiply a 3-D vector by another.
+ * @param vector1 The first vector.
+ * @param vector2 Vector to multiply the first one by.
+ * @returns The result of the operation.
+ */
+template<typename T, SIMDWidth Width>
+XS_INLINE Vector3D<T, Width> operator*(const Vector3D<T, Width>& vector1, const Vector3D<T, Width>& vector2) noexcept
+{
+    return Vector3D<T, Width>(vector1.values * vector2.values);
 }
 
 /**
