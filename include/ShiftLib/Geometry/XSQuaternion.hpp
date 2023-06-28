@@ -371,6 +371,60 @@ public:
     }
 
     /**
+     * Constructor to build a Quaternion that converts a given direction to align to the X axis.
+     * @param direction The direction to align to.
+     * @returns Newly constructed Quaternion with required attributes.
+     */
+    XS_INLINE static Quaternion RotationX(Vector3DDef direction) noexcept
+    {
+        if (direction.template getValueInBase<0>() >= InBaseDef(-0.99999f)) {
+            SIMD4Def directionValues(direction.values, BaseDef::Zero());
+            directionValues = directionValues.template shuffle<3, 2, 1, 0>();
+            directionValues.template addValue<3>(BaseDef::One());
+            directionValues.template negate<false, false, true, false>();
+            return Quaternion(directionValues);
+        } else {
+            return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    /**
+     * Constructor to build a Quaternion that converts a given direction to align to the Y axis.
+     * @param direction The direction to align to.
+     * @returns Newly constructed Quaternion with required attributes.
+     */
+    XS_INLINE static Quaternion RotationY(Vector3DDef direction) noexcept
+    {
+        if (direction.template getValueInBase<1>() >= InBaseDef(-0.99999f)) {
+            SIMD4Def directionValues(direction.values, BaseDef::Zero());
+            directionValues = directionValues.template shuffle<2, 3, 0, 1>();
+            directionValues.template addValue<3>(BaseDef::One());
+            directionValues.template negate<true, false, false, false>();
+            return Quaternion(directionValues);
+        } else {
+            return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    /**
+     * Constructor to build a Quaternion that converts a given direction to align to the Z axis.
+     * @param direction The direction to align to.
+     * @returns Newly constructed Quaternion with required attributes.
+     */
+    XS_INLINE static Quaternion RotationZ(Vector3DDef direction) noexcept
+    {
+        if (direction.template getValueInBase<2>() >= InBaseDef(-0.99999f)) {
+            SIMD4Def directionValues(direction.values, BaseDef::Zero());
+            directionValues = directionValues.template shuffle<1, 0, 3, 2>();
+            directionValues.template addValue<3>(BaseDef::One());
+            directionValues.template negate<false, true, false, false>();
+            return Quaternion(directionValues);
+        } else {
+            return Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    /**
      * Constructor to build a Quaternion with fixed rotation about arbitrary axis.
      * @param axis     The axis to rotate around.
      * @param rotation The amount to rotate the quaternion by (in radians).
