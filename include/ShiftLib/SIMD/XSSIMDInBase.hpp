@@ -476,6 +476,36 @@ public:
             return SIMDInBase(Shift::min<T>(this->value, other.value));
         }
     }
+
+    /**
+     * Clamp a value between 2 other values.
+     * @param min The minimum allowed value to clamp to.
+     * @param max The maximum allowed value to clamp to.
+     * @returns The clamped value.
+     */
+    XS_INLINE SIMDInBase clamp(const SIMDInBase min, const SIMDInBase max) const noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_ss(_mm_min_ss(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epu32(_mm_min_epu32(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epi32(_mm_min_epi32(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epu16(_mm_min_epu16(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epi16(_mm_min_epi16(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epu8(_mm_min_epu8(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMDInBase(_mm_max_epi8(_mm_min_epi8(this->values, max.values), min.values));
+        } else
+#endif
+        {
+            return SIMDInBase(Shift::max<T>(Shift::min<T>(this->value, max.value), min.value));
+        }
+    }
 };
 
 /**

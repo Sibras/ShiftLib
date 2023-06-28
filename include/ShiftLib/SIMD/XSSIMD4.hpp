@@ -1785,6 +1785,33 @@ public:
      * @returns The current object after modification.
      */
     template<uint32 Index>
+    XS_INLINE SIMD4& addValue(const BaseDef other) noexcept
+    {
+        static_assert(Index < 4, "Invalid Index: Index must be <4");
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (Index == 0) {
+                this->values = _mm_add_ss(this->values, other.values);
+            } else if constexpr (Index == 1) {
+                this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, other.values);
+            } else {
+                this->values = _mm_blend_add_ps(this->values, 1 << Index, this->values, other.values);
+            }
+        } else
+#endif
+        {
+            (&this->values0)[Index] += other.value;
+        }
+        return *this;
+    }
+
+    /**
+     * Add a value to an element of the object.
+     * @tparam Index The index of the element to modify (range is 0-3).
+     * @param other The value to add.
+     * @returns The current object after modification.
+     */
+    template<uint32 Index>
     XS_INLINE SIMD4& addValue(const InBaseDef other) noexcept
     {
         static_assert(Index < 4, "Invalid Index: Index must be <4");
@@ -1837,6 +1864,33 @@ public:
     }
 
     /**
+     * Subtract a value from an element of the object.
+     * @tparam Index The index of the element to modify (range is 0-3).
+     * @param other The value to subtract.
+     * @returns The current object after modification.
+     */
+    template<uint32 Index>
+    XS_INLINE SIMD4& subValue(const BaseDef other) noexcept
+    {
+        static_assert(Index < 4, "Invalid Index: Index must be <4");
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (Index == 0) {
+                this->values = _mm_sub_ss(this->values, other.values);
+            } else if constexpr (Index == 1) {
+                this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, other.values);
+            } else {
+                this->values = _mm_blend_sub_ps(this->values, 1 << Index, this->values, other.values);
+            }
+        } else
+#endif
+        {
+            (&this->values0)[Index] -= other.value;
+        }
+        return *this;
+    }
+
+    /**
      * Multiply an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-3).
      * @param other The value to multiply by.
@@ -1856,6 +1910,33 @@ public:
             } else {
                 const __m128 value = _mm_shuffle0000_ps(other.values);
                 this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, value);
+            }
+        } else
+#endif
+        {
+            (&this->values0)[Index] *= other.value;
+        }
+        return *this;
+    }
+
+    /**
+     * Multiply an element of the object by a value.
+     * @tparam Index The index of the element to modify (range is 0-3).
+     * @param other The value to multiply by.
+     * @returns The current object after modification.
+     */
+    template<uint32 Index>
+    XS_INLINE SIMD4& mulValue(const BaseDef other) noexcept
+    {
+        static_assert(Index < 4, "Invalid Index: Index must be <4");
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (Index == 0) {
+                this->values = _mm_mul_ss(this->values, other.values);
+            } else if constexpr (Index == 1) {
+                this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, other.values);
+            } else {
+                this->values = _mm_blend_mul_ps(this->values, 1 << Index, this->values, other.values);
             }
         } else
 #endif
@@ -1895,6 +1976,33 @@ public:
     }
 
     /**
+     * Divide an element of the object by a value.
+     * @tparam Index The index of the element to modify (range is 0-3).
+     * @param other The value to divide by.
+     * @returns The current object after modification.
+     */
+    template<uint32 Index>
+    XS_INLINE SIMD4& divValue(const BaseDef other) noexcept
+    {
+        static_assert(Index < 4, "Invalid Index: Index must be <4");
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (Index == 0) {
+                this->values = _mm_div_ss(this->values, other.values);
+            } else if constexpr (Index == 1) {
+                this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, other.values);
+            } else {
+                this->values = _mm_blend_div_ps(this->values, 1 << Index, this->values, other.values);
+            }
+        } else
+#endif
+        {
+            (&this->values0)[Index] /= other.value;
+        }
+        return *this;
+    }
+
+    /**
      * Multiply then add to an element of the object by a value.
      * @tparam Index The index of the element to modify (range is 0-3).
      * @param other1 The value to multiply by.
@@ -1917,6 +2025,34 @@ public:
                 const __m128 value1 = _mm_shuffle0000_ps(other1.values);
                 const __m128 value2 = _mm_shuffle0000_ps(other2.values);
                 this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), value1, value2);
+            }
+        } else
+#endif
+        {
+            (&this->values0)[Index] = Shift::fma<T>((&this->values0)[Index], other1.value, other2.value);
+        }
+        return *this;
+    }
+
+    /**
+     * Multiply then add to an element of the object by a value.
+     * @tparam Index The index of the element to modify (range is 0-3).
+     * @param other1 The value to multiply by.
+     * @param other2 The value to add.
+     * @returns The current object after modification.
+     */
+    template<uint32 Index>
+    XS_INLINE SIMD4& madValue(const BaseDef other1, const BaseDef other2) noexcept
+    {
+        static_assert(Index < 4, "Invalid Index: Index must be <4");
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (Index % 4 == 0) {
+                this->values = _mm_fmadd_ss(this->values, other1.values, other2.values);
+            } else if constexpr (Index % 4 == 1) {
+                this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), other1.values, other2.values);
+            } else {
+                this->values = _mm_blend_fmadd_ps(this->values, 1 << (Index % 4), other1.values, other2.values);
             }
         } else
 #endif
@@ -2746,6 +2882,39 @@ public:
         {
             return SIMD4(Shift::min<T>(this->values0, other.value), Shift::min<T>(this->values1, other.value),
                 Shift::min<T>(this->values2, other.value), Shift::min<T>(this->values3, other.value));
+        }
+    }
+
+    /**
+     * Clamp a value between 2 other values.
+     * @param min The minimum allowed value to clamp to.
+     * @param max The maximum allowed value to clamp to.
+     * @returns The clamped value.
+     */
+    XS_INLINE SIMD4 clamp(const BaseDef min, const BaseDef max) const noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_ps(_mm_min_ps(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epu32(_mm_min_epu32(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epi32(_mm_min_epi32(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epu16(_mm_min_epu16(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epi16(_mm_min_epi16(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epu8(_mm_min_epu8(this->values, max.values), min.values));
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            return SIMD4(_mm_max_epi8(_mm_min_epi8(this->values, max.values), min.values));
+        } else
+#endif
+        {
+            return SIMD4(Shift::max<T>(Shift::min<T>(this->values0, max.value), min.value),
+                Shift::max<T>(Shift::min<T>(this->values1, max.value), min.value),
+                Shift::max<T>(Shift::min<T>(this->values2, max.value), min.value),
+                Shift::max<T>(Shift::min<T>(this->values3, max.value), min.value));
         }
     }
 

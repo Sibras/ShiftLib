@@ -832,6 +832,7 @@ public:
     }
 
     /**
+     * Minimum of two objects.
      * @param other The second object.
      * @returns The minimum value.
      */
@@ -898,6 +899,78 @@ public:
 #endif
         {
             return SIMDBase(Shift::min<T>(this->value, other.value));
+        }
+    }
+
+    /**
+     * Clamp a value between 2 other values.
+     * @param min The minimum allowed value to clamp to.
+     * @param max The maximum allowed value to clamp to.
+     * @returns The clamped value.
+     */
+    XS_INLINE SIMDBase clamp(const SIMDBase min, const SIMDBase max) const noexcept
+    {
+#if XS_ISA == XS_X86
+        if constexpr (isSame<T, float32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDBase(_mm512_max_ps(_mm512_min_ps(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDBase(_mm256_max_ps(_mm256_min_ps(this->values, max.values), min.values));
+            } else {
+                return SIMDBase(_mm_max_ps(_mm_min_ps(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, uint32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epu32(_mm512_min_epu32(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm256_max_epu32(_mm256_min_epu32(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epu32(_mm_min_epu32(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, int32> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epi32(_mm512_min_epi32(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm256_max_epi32(_mm256_min_epi32(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epi32(_mm_min_epi32(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, uint16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epu16(_mm512_min_epu16(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm256_max_epu16(_mm256_min_epu16(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epu16(_mm_min_epu16(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, int16> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epi16(_mm512_min_epi16(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm256_max_epi16(_mm256_min_epi16(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epi16(_mm_min_epi16(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, uint8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epu8(_mm512_min_epu8(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm256_max_epu8(_mm256_min_epu8(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epu8(_mm_min_epu8(this->values, max.values), min.values));
+            }
+        } else if constexpr (isSame<T, int8> && hasSIMD<T> && (Width > SIMDWidth::Scalar)) {
+            if constexpr (hasSIMD512<T> && (Width >= SIMDWidth::B64)) {
+                return SIMDInBase(_mm512_max_epi8(_mm512_min_epi8(this->values, max.values), min.values));
+            } else if constexpr (hasSIMD256<T> && (Width >= SIMDWidth::B32)) {
+                return SIMDInBase(_mm512_max_epi8(_mm512_min_epi8(this->values, max.values), min.values));
+            } else {
+                return SIMDInBase(_mm_max_epi8(_mm_min_epi8(this->values, max.values), min.values));
+            }
+        } else
+#endif
+        {
+            return SIMDBase(Shift::max<T>(Shift::min<T>(this->value, max.value)), min.value);
         }
     }
 };
