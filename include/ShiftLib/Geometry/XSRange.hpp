@@ -179,6 +179,20 @@ public:
     }
 
     /**
+     * Construct from a minimum and maximum value.
+     * @param min The minimum value.
+     * @param max The maximum value.
+     */
+    XS_INLINE Range(const BaseDef min, const BaseDef max)
+    {
+        if constexpr (Width > SIMDWidth::Scalar) {
+            this->minMax = SIMD2<T>(-min, max);
+        } else {
+            this->minMax = SIMD2<T>(min, max);
+        }
+    }
+
+    /**
      * Returns the ranges minimum value.
      * @returns The minimum value return as a InBaseDef.
      */
