@@ -48,6 +48,11 @@ template<typename T>
 requires(isFloat<T>)
 inline constexpr T val2Pi = static_cast<T>(6.2831853071795864769252867665590057683L);
 
+/**< The value pi */
+template<typename T>
+requires(isFloat<T>)
+inline constexpr T valInv2Pi = static_cast<T>(0.159154943091895335768883763372514362L);
+
 /**< The value pi / 2 */
 template<typename T>
 requires(isFloat<T>)
